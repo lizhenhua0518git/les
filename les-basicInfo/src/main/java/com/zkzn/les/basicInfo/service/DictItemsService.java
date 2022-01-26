@@ -55,17 +55,6 @@ public interface DictItemsService {
 	
 	/**.
 	 * 
-	 * 功能描述：通过id查询字典信息
-	 * 作者：wangzhou
-	 * 时间：2018年6月28日
-	 * @param id
-	 * @return
-	 */
-	DictItems getDictItemsById(String id);
-	
-
-	/**.
-	 * 
 	 * 创建人: wangzhou
 	 * 时间:2020年3月31日上午9:19:23
 	 * List<DictItems>
@@ -75,14 +64,4 @@ public interface DictItemsService {
 	 */
 	List<DictItems> listDictItemsByType(List<String> type);
 	
-	   /**.
-     * 
-     * 功能描述：通过字典名称查询字典信息
-     * 作者：wangzhou
-     * 时间：2018年7月27日
-     * @param itemName
-     * @param dictName
-     * @return
-     */
-    DictItems getDictItemByName(@Param("itemName")String itemName,@Param("dictName")String dictName);
 }

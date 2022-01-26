@@ -66,26 +66,5 @@ public interface DictService {
 	 */
 	Dict getDict(Dict dict);
 
-	/**
-	 * 初始化库位库存流水库存类型
-	 * @return
-	 */
-	List<Map<String,String>> initStockType();
-
-	/**
-	 * 初始化库位库存流水库存状态
-	 * @return
-	 */
-	List<Map<String,String>> initStockStatus();
-    /* *
-     * @Author 刘松山
-     * @Description 根据名称标记 查询一组字典类型
-     * @Date 9:48 2021/6/16
-     * @Param
-     * @return
-     **/
-
-	List<Dict> listDict(Dict dict);
-
 	List<DictItems> initDictItemList(String dictType);
 }

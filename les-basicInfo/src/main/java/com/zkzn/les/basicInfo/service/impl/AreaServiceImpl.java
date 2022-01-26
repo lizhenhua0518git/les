@@ -63,23 +63,8 @@ public class AreaServiceImpl implements AreaService{
 	}
 
 	@Override
-	public Area getAreaById(String id) {
-		return areaDao.getAreaById(id);
-	}
-
-	@Override
 	public Area getAreaByCode(String areaCode, String warehouse) {
 		return areaDao.getAreaByCode(areaCode, warehouse);
-	}
-
-	@Override
-	public int updateAreaByList(List<Map<String, Object>> areaMap) {
-		return areaDao.updateAreaByList(areaMap);
-	}
-
-	@Override
-	public int importArea(List<Map<String, Object>> areaMap) {
-		return areaDao.importArea(areaMap);
 	}
 
     @Override
@@ -106,30 +91,6 @@ public class AreaServiceImpl implements AreaService{
     public int changeStatus(List<String> ids, String remark, int status,String modifier,Date modifiedTime) {
         return areaDao.changeStatus(ids,remark,status,modifier,modifiedTime);
     }
-
-	@Override
-	public int getAreaUnUse(String areaType, List<String> warehouse) {
-		// TODO Auto-generated method stub
-		return areaDao.getAreaUnUse(areaType, warehouse);
-	}
-
-	@Override
-	public List<Area> listUnUseArea(List<String> warehouse) {
-		// TODO Auto-generated method stub
-		return areaDao.listUnUseArea(warehouse);
-	}
-
-	@Override
-	public List<Area> listAreaByStorage(Map<String,Object> params) {
-		// TODO Auto-generated method stub
-		return areaDao.listAreaByStorage(params);
-	}
-
-	@Override
-	public int updateAreaUseStatus(List<String> ids, int useStatus) {
-		// TODO Auto-generated method stub
-		return areaDao.updateAreaUseStatus(ids, useStatus);
-	}
 
 	public  List<Map<String, Object>> formatAreaTree(List<Area> areaList, List<String> areaIds ){
         List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -194,30 +155,4 @@ public class AreaServiceImpl implements AreaService{
         return areaIds;
     }
 
-    @Override
-    public List<Area> getAreaData(Area area) {
-        List<Area> list = areaDao.queryAreaTypeByCode(area);
-        return list;
-    }
-
-    @Override
-    public String checkAreaByCode(Map<String, Object> map) {
-        String userId = map.get("userId")+"";
-        String areaId = "";
-        String warehouse = SecurityUserUtil.getCurrOrgCode(userId, redisTemplate, "app");// 库存地点
-        Area area = new Area();
-        area.setAreaCode(map.get("areaCode")+"");
-        area.setWarehouse(warehouse);
-        List<Area> list = areaDao.queryAreaTypeByCode(area);
-        if (list.size()>0){
-            areaId = list.get(0).getId();
-        }
-        return areaId;
-    }
-
-    @Override
-    public List<Area> getAreaByWarehouse(String warehouseCode) {
-        List<Area> map = areaDao.getAreaByWarehouse(warehouseCode);
-        return map;
-    }
 }

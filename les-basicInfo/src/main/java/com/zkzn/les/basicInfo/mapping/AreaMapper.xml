@@ -70,9 +70,7 @@
 		order by a.create_time desc
 		<if test="sortColums !=null and  '' !=sortColums">,${sortColums}</if>
 	</select>
-	<select id="getAreaById" resultMap="areaMap">
-		select * from t_area where id=#{id}
-	</select>
+
 	<resultMap id="areaMap" type="com.zkzn.les.basicInfo.pojo.Area">
 		<result property="areaCode" column="area_code"/>
 		<result property="areaName" column="area_name"/>
@@ -90,38 +88,6 @@
 		select * from t_area where  area_code=#{areaCode} and warehouse=#{warehouse} and status=1
 	</select>
 	
-	<update id="updateAreaByList">
-		<foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
-			update t_area
-			<trim prefix="set" prefixOverrides=",">
-				<if test="item.areaCode !=null and ''!= item.areaCode">,area_code = #{item.areaCode}</if>
-				<if test="item.areaName !=null and ''!= item.areaName">,area_name=#{item.areaName}</if>
-				<if test="item.areaType !=null and ''!= item.areaType">,area_type=#{item.areaType}</if>
-				<if test="item.warehouse !=null and ''!= item.warehouse">,warehouse=#{item.warehouse}</if>
-				<if test="item.stationCode !=null and ''!= item.stationCode">,station_code=#{item.stationCode}</if>
-				<if test="item.status !=null">,status=#{item.status}</if>
-				<if test="item.useStatus !=null">,use_status=#{item.useStatus}</if>
-			</trim>
-			where id=#{item.id}
-		</foreach>
-	</update>
-	<insert id="importArea">
-		<foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
-			insert into t_area (ID,area_code,area_name,area_type,warehouse,creater_id,creater_name,status,use_status,create_time)
-			select  replace(uuid(),'-',''),
-			'${item.areaCode}',
-			'${item.areaName}',
-			'${item.areaType}',
-			'${item.warehouse}',
-			'${item.createrId}',
-			'${item.createrName}',
-			'${item.status}',
-			'${item.useStatus}',
-			#{item.createTime}
-			from dual
-		</foreach>
-	</insert>
-	
 	<update id="changeStatus">
     <if test="ids.size()>0">
        update t_area 
@@ -138,47 +104,6 @@
     </if>
     </update>
     
-    <select id="getAreaUnUse" resultType="java.lang.Integer">
-		select count(0) from t_area where area_type=#{areaType}  and  warehouse in
-		 <foreach collection="storageList" item="item" index="index" separator="," open="(" close=")">
-			#{item,jdbcType=VARCHAR}
-		</foreach>
-		 and status='1' and use_status='0'
-	</select>
-	<select id="listUnUseArea" resultType="com.zkzn.les.basicInfo.pojo.Area">
-		select * from t_area where (area_type='05' or area_type='06' or area_type='20') and warehouse in
-		<foreach collection="storageList" item="item" index="index" separator="," open="(" close=")">
-			#{item,jdbcType=VARCHAR}
-		</foreach>
-		  and status=1  and use_status=0
-		order by area_type,area_code asc
-	</select>
-	<select id="listAreaByStorage" resultType="com.zkzn.les.basicInfo.pojo.Area">
-		select * from t_area 
-		<where>
-			<if test="status != null"> and status=#{status}</if>
-			<if test="useStatus != null"> and use_status=#{useStatus}</if>
-			<if test="storageList!=null">
-				<foreach collection="storageList" item="item" index="index" separator="," open="and warehouse in (" close=")">
-					#{item,jdbcType=VARCHAR}
-				</foreach>
-			</if>
-			<if test="areaType!=null" >and area_type=#{areaType} </if>
-			<if test="areaCode !=null " >and area_code=#{areaCode} </if>
-			<if test="warehouse !=null and ''!= warehouse"> and warehouse = #{warehouse}</if>
-		</where>
-		
-		
-		
-		order by area_code asc
-	</select>
-	<update id="updateAreaUseStatus" >
-		update t_area set use_status=#{useStatus},MODIFIED_TIME=sysdate where id in
-		<foreach collection="ids" item="item" index="index" separator="," open="(" close=")">
-			#{item,jdbcType=VARCHAR}
-		</foreach>
-	</update>
-	
 	<select id="getWarehouse"  resultType="String">
 	   select distinct warehouse from t_area where parent_id='0' order by warehouse
 	</select>
@@ -189,20 +114,5 @@
 	       #{item.id,jdbcType=VARCHAR}
 	   </foreach>
 	</select>
-	<select id="queryAreaTypeByCode"  resultType="com.zkzn.les.basicInfo.pojo.Area">
-	select * from t_area where  area_code=#{areaCode} and warehouse=#{warehouse} and status=1
-	<if test="areaTypeList !=null and areaTypeList.size()>0">
-	and area_type in
-		<foreach collection="areaTypeList" item="item" index="index" separator="," open="(" close=")">
-		#{item,jdbcType=VARCHAR}
-		</foreach>
-	</if>
-	</select>
-	<select id="getAreaByWarehouse" resultType="com.zkzn.les.basicInfo.pojo.Area">
-		select * from t_area where warehouse=#{warehouseCode} and status=1
-	</select>
 
-	<select id="getAreaList" resultType="com.zkzn.les.basicInfo.pojo.Area">
-		select * from t_area
-	</select>
 </mapper>

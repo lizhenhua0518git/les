@@ -68,24 +68,6 @@ public class DictServiceImpl implements DictService{
 	}
 
 	@Override
-	public List<Map<String, String>> initStockType() {
-		List<Map<String, String>> list = dictDao.initStockType("stock_type");
-		return list;
-	}
-
-	@Override
-	public List<Map<String, String>> initStockStatus() {
-		List<Map<String, String>> list = dictDao.initStockType("stock_status");
-		return list;
-	}
-
-	@Override
-	public List<Dict> listDict(Dict dict) {
-		List<Dict> list = dictDao.listDict(dict);
-		return list;
-	}
-
-	@Override
 	public List<DictItems> initDictItemList(String dictType) {
 		List<DictItems> list = dictDao.initDictItemList(dictType);
 		return list;

@@ -55,20 +55,9 @@ public class DictItemsServiceImpl implements DictItemsService {
 	}
 
 	@Override
-	public DictItems getDictItemsById(String id) {
-		// TODO Auto-generated method stub
-		return dictItemsDao.getDictItemsById(id);
-	}
-	
-	@Override
 	public List<DictItems> listDictItemsByType(List<String> type) {
 		// TODO Auto-generated method stub
 		return dictItemsDao.listDictItemsByType(type);
 	}
-
-	@Override
-    public DictItems getDictItemByName(String itemName, String dictName) {
-        return dictItemsDao.getDictItemByName(itemName, dictName);
-    }
 
 }

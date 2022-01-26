@@ -56,16 +56,7 @@ public interface AreaDao {
 	 * @return
 	 */
 	List<Area> listArea(Area area);
-	/**.
-	 * 
-	 * 功能描述：通过id查询区域信息
-	 * 作者：wangzhou
-	 * 时间：2018年7月3日
-	 * @param id
-	 * @return
-	 */
-	Area getAreaById(String id);
-	
+
 	/**.
 	 * 
 	 * 功能描述：通过区域编号查询区域信息
@@ -76,26 +67,6 @@ public interface AreaDao {
 	 * @return
 	 */
 	Area getAreaByCode(@Param("areaCode")String areaCode,@Param("warehouse")String warehouse);
-	
-	/**.
-	 * 
-	 * 功能描述：批量更新区域信息
-	 * 作者：wangzhou
-	 * 时间：2019年5月31日
-	 * @param areaMap
-	 * @return
-	 */
-	int updateAreaByList(List<Map<String,Object>> areaMap);
-	
-	/**.
-	 * 
-	 * 功能描述：导入区域信息
-	 * 作者：wangzhou
-	 * 时间：2019年5月31日
-	 * @param areaMap
-	 * @return
-	 */
-	int importArea(List<Map<String,Object>> areaMap);
 	
 	/**
 	 * .
@@ -108,51 +79,7 @@ public interface AreaDao {
 	 * @return
 	 */
 	int changeStatus(@Param(value="ids") List<String> ids, @Param(value="remark") String remark, @Param(value="status") int status,@Param(value="modifier")String modifier,@Param(value="modifiedTime")Date modifiedTime);
-	/**.
-	 * 
-	 * 创建人: wangzhou
-	 * 时间:2020年3月31日下午1:41:47
-	 * int
-	 * @param areaType
-	 * @param warehouse
-	 * @return
-	 * 功能描述:查询空闲区域总数
-	 */
-	int getAreaUnUse(@Param("areaType")String areaType,@Param("storageList")List<String> warehouse);
-	/**.
-	 * 
-	 * 创建人: wangzhou
-	 * 时间:2020年3月31日下午1:54:33
-	 * List<Area>
-	 * @param warehouse
-	 * @return
-	 * 功能描述:查询空闲的集配区、大部件区、异常区
-	 */
-	List<Area> listUnUseArea(@Param("storageList")List<String> warehouse);
-	/**.
-	 * 
-	 * 创建人: wangzhou
-	 * 时间:2020年3月31日下午1:58:39
-	 * List<Area>
-	 * @param status
-	 * @param areaType
-	 * @param storageList
-	 * @return
-	 * 功能描述:通过库存地点查询区域
-	 */
-	List<Area> listAreaByStorage(Map<String,Object> params);
-	/**.
-	 * 
-	 * 创建人: wangzhou
-	 * 时间:2020年3月31日下午3:16:53
-	 * int
-	 * @param ids
-	 * @param useStatus
-	 * @return
-	 * 功能描述:批量修改区域的使用状态
-	 */
-	int updateAreaUseStatus(@Param("ids")List<String> ids,@Param("useStatus")int useStatus);
-	
+
 	/**
 	 * .
 	 * 功能描述: 查询仓位的所有仓库编码
@@ -172,18 +99,4 @@ public interface AreaDao {
      */
 	List<String>  hasChildren(@Param("originalAreaList")List<Area> originalAreaList);
 
-	/**
-	 * 根据区域号+仓库编号+区域类型查询区域是否存在
-	 * @param area
-	 * @return
-	 */
-	List<Area> queryAreaTypeByCode(Area area);
-
-	List<Area> getAreaByWarehouse(@Param("warehouseCode") String warehouseCode);
-
-	/**
-	 * 查询列表
-	 * @return
-	 */
-	List<Area> getAreaList();
 }

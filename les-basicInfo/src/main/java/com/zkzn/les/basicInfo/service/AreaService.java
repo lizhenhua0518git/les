@@ -60,16 +60,6 @@ public interface AreaService {
 	
 	/**.
 	 * 
-	 * 功能描述：通过id查询区域信息
-	 * 作者：wangzhou
-	 * 时间：2018年7月3日
-	 * @param id
-	 * @return
-	 */
-	Area getAreaById(String id);
-	
-	/**.
-	 * 
 	 * 功能描述：查询区域列表信息
 	 * 作者：wangzhou
 	 * 时间：2018年9月5日
@@ -77,8 +67,7 @@ public interface AreaService {
 	 * @return
 	 */
 	List<Area> listArea(Area area);
-	
-	
+
 	/**.
 	 * 
 	 * 功能描述：通过区域编号查询区域信息
@@ -89,25 +78,7 @@ public interface AreaService {
 	 * @return
 	 */
 	Area getAreaByCode(@Param("areaCode")String areaCode,@Param("warehouse")String warehouse);
-	
-	/**.
-	 * 功能描述：批量更新区域信息
-	 * 作者：wangzhou
-	 * 时间：2019年5月31日
-	 * @param areaMap
-	 * @return
-	 */
-	int updateAreaByList(List<Map<String,Object>> areaMap);
-	/**.
-	 * 
-	 * 功能描述：导入区域信息
-	 * 作者：wangzhou
-	 * 时间：2019年5月31日
-	 * @param areaMap
-	 * @return
-	 */
-	int importArea(List<Map<String,Object>> areaMap);
-	
+
 	   /**
      * .
      * 功能描述: 批量更新区域状态
@@ -119,50 +90,7 @@ public interface AreaService {
      * @return
      */
    int changeStatus(List<String> ids, String remark, int status,String modifier,Date modifiedTime);
-   /**.
-	 * 
-	 * 创建人: wangzhou
-	 * 时间:2020年3月31日下午1:41:47
-	 * int
-	 * @param areaType
-	 * @param warehouse
-	 * @return
-	 * 功能描述:查询空闲区域总数
-	 */
-	int getAreaUnUse(@Param("areaType")String areaType,@Param("storageList")List<String> warehouse);
-   /**.
-	 * 
-	 * 创建人: wangzhou
-	 * 时间:2020年3月31日下午1:54:33
-	 * List<Area>
-	 * @param warehouse
-	 * @return
-	 * 功能描述:查询空闲的集配区、大部件区、异常区
-	 */
-	List<Area> listUnUseArea(@Param("storageList")List<String> warehouse);
-	/**.
-	 * 
-	 * 创建人: wangzhou
-	 * 时间:2020年3月31日下午1:58:39
-	 * List<Area>
-	 * @param params
 
-	 * @return
-	 * 功能描述:通过库存地点查询区域
-	 */
-	List<Area> listAreaByStorage(Map<String,Object> params);
-	/**.
-	 * 
-	 * 创建人: wangzhou
-	 * 时间:2020年3月31日下午3:16:53
-	 * int
-	 * @param ids
-	 * @param useStatus
-	 * @return
-	 * 功能描述:批量修改区域的使用状态
-	 */
-	int updateAreaUseStatus(@Param("ids")List<String> ids,@Param("useStatus")int useStatus);
-	
 	/**
 	 * .
 	 * 功能描述:格式化区域树
@@ -202,21 +130,4 @@ public interface AreaService {
      */
 	List<String> hasChildren(List<Area> originalAreaList);
 
-	/**
-	 * 根据区域号+仓库编号+区域类型查询区域是否存在
-	 * @param area
-	 * @return
-	 */
-	List<Area> getAreaData(Area area);
-
-	/**
-	 * @Author 胡志明
-	 * @Description //TODO 根据区域编号+仓库编号获取区域ID
-	 * @Date 14:19 2020/5/18
-	 * @Param [map]
-	 * @return java.lang.String
-	 **/
-	String checkAreaByCode(Map<String,Object> map);
-
-	List<Area> getAreaByWarehouse(String warehouseCode);
 }
