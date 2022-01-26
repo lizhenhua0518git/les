@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class DateSourceConfig {
 
-	
 	@ConfigurationProperties(prefix = "spring.datasource")
 	@Bean(name="druidDataSource",initMethod="init")
 	public DruidDataSource druidDataSource(){

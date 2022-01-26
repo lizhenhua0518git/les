@@ -20,10 +20,8 @@ import springfox.documentation.spring.web.plugins.Docket;
  * @Description swagger 配置信息类
  */
 @Configuration
-//@EnableSwagger2
 public class SwaggerConfig {
 
-	
 	 @Bean
 	 public Docket customDocket() {
         return new Docket(DocumentationType.SWAGGER_2)

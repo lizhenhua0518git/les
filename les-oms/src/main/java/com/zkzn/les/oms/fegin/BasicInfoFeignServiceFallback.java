@@ -10,10 +10,6 @@ import feign.hystrix.FallbackFactory;
 public class BasicInfoFeignServiceFallback implements FallbackFactory<BasicInfoFeignService>{
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
-
-	
-
 
 	@Override
 	public BasicInfoFeignService create(Throwable arg0) {

@@ -22,15 +22,11 @@ public class SecurityConfig {
                 .pathMatchers("/auth/login").permitAll()
                 .anyExchange()
                 .access(rdbaAccessManager);
-                //.authenticated();
-        
         http.oauth2ResourceServer().opaqueToken()
-         
         .and().authenticationEntryPoint(serverAuthenticationEntryPoint())//处理登陆信息失效
         .accessDeniedHandler(tokenAccessDenied())//处理登陆用户没有权限
         .and().addFilterAt(new AccessTokenFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)//处理通过参数传递token的情况
         ;
-
         return http.build();
     }
 
@@ -44,6 +40,5 @@ public class SecurityConfig {
 		ServerAuthenticationEntryPoint serverAuthenticationEntryPoint = new AuthenticationFailHandle();
 		return serverAuthenticationEntryPoint;
 	}
-	
-	
+
 }

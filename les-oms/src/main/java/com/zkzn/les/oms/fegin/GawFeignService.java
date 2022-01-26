@@ -18,7 +18,6 @@ import com.zkzn.les.oms.config.FeignConfig;
 fallbackFactory=GawFeignServiceFallback.class)
 public interface GawFeignService {
 
-	
 	/**
 	 * 
 	 * @param jsonStr

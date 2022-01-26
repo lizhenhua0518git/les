@@ -34,24 +34,6 @@ public interface StationOrderService {
 	 */
 	PageInfo<PcShipmentTaskPojo> listStationOrder(PcShipmentTaskPojo pcShipmentTaskPojo);
 
-	/***
-	 * @Discription: 工位订单派发
-	 * @param
-	 * @return void
-	 * @Author: zhanglei on 2020/9/9 16:53
-	 */
-	void taskStationOrder(List<String> ids) throws Exception;
-
-	List<StationOrderWithDetail> findAllOrders(StationOrderWithDetail stationOrderWithDetail);
-	/**
-	 * @Discription: 退货采购订单出库任务派发
-	 * @Author:luozhihong
-	 * @date:2020年12月2日
-	 * @param ids 采购订单明细ID集合
-	 * @return void
-	 */
-	String savePurchaseBillRefundStationOrder(List<String> ids) throws Exception;
-
 	/**
 	 * 出来订单管理
 	 * @param orderTaskPojo

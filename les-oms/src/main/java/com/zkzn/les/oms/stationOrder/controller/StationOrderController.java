@@ -1,9 +1,6 @@
 package com.zkzn.les.oms.stationOrder.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.github.pagehelper.PageInfo;
 import com.zkzn.les.common.util.lang.SecurityUserUtil;
 import com.zkzn.les.common.util.page.PageUtil;
 import com.zkzn.les.common.util.response.Ecode;
@@ -11,20 +8,19 @@ import com.zkzn.les.common.util.response.Result;
 import com.zkzn.les.oms.stationOrder.pojo.OrderTaskDetailPojo;
 import com.zkzn.les.oms.stationOrder.pojo.OrderTaskPojo;
 import com.zkzn.les.oms.stationOrder.pojo.PcShipmentTaskPojo;
+import com.zkzn.les.oms.stationOrder.service.StationOrderService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.oms.pojo.StationOrderWithDetail;
-import com.zkzn.les.oms.stationOrder.service.StationOrderService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 
 /**.
@@ -71,55 +67,6 @@ public class StationOrderController {
 		}
 		return Result.toJson(Ecode.SUCCESS, pageInfo);
     }
-
-	@ApiOperation("查询出库任务派发列表")
-	@ApiResponses({
-			@ApiResponse(code = 200, message = "[{\"code\":\"0 成功 -1 失败\",\"msg\":\"成功\",\"data\":\"空对象\"}]") })
-    @GetMapping(value ="/findAllOrders", produces="application/json;charset=UTF-8")
-    public String findAllOrders(StationOrderWithDetail stationOrderWithDetail,HttpServletRequest request){
-		List<StationOrderWithDetail> result = null;
-    	try{
-			result = stationOrderService.findAllOrders(stationOrderWithDetail);
-		}catch(Exception e){
-			e.printStackTrace();
-			logger.debug("查询出库任务派发列表:"+e.getMessage());
-			return Result.toJson(Ecode.FAIL, "查询出库任务派发列表:"+e.getMessage());
-		}
-		return Result.toJson(Ecode.SUCCESS, result);
-	}
-	@ApiOperation("拣料下发")
-	@ApiResponses({
-			@ApiResponse(code = 200, message = "[{\"code\":\"0 成功 -1 失败\",\"msg\":\"成功\",\"data\":\"空对象\"}]") })
-	@PostMapping(value = "/taskStationOrder", produces="application/json;charset=UTF-8")
-	public  String taskStationOrder(@RequestBody List<String> ids){
-		try{
-			 stationOrderService.taskStationOrder(ids);
-		}catch(Exception e){
-			e.printStackTrace();
-			logger.debug("工位订单下发:"+e.getMessage());
-			return Result.toJson(Ecode.FAIL, "工位订单下发:"+e.getMessage());
-		}
-		return Result.toJson(Ecode.SUCCESS, null);
-	}
-
-	@ApiOperation("退货采购订单出库任务派发")
-	@ApiResponses({
-			@ApiResponse(code = 200, message = "[{\"code\":\"0 成功 -1 失败\",\"msg\":\"成功\",\"data\":\"空对象\"}]") })
-	@PostMapping(value = "/savePurchaseBillRefundStationOrder", produces="application/json;charset=UTF-8")
-	public  String savePurchaseBillRefundStationOrder(@RequestBody List<String> ids){
-		try{
-			String returnString = stationOrderService.savePurchaseBillRefundStationOrder(ids);
-			if (!"".equals(returnString)&&returnString!=null){
-				return Result.toJson(Ecode.FAIL, returnString);
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-			logger.debug("退货采购订单出库任务派发:"+e.getMessage());
-			return Result.toJson(Ecode.FAIL, "退货采购订单出库任务派发:"+e.getMessage());
-		}
-		return Result.toJson(Ecode.SUCCESS, null);
-	}
-
 
 	@ApiOperation(value="查询BOM主订单列表")
 	@GetMapping(value="/listBOMMainList",produces="application/json;charset=UTF-8")

@@ -35,8 +35,6 @@ public class AreaServiceImpl implements AreaService{
 	@Resource
 	private AreaDao areaDao;
     @Autowired
-    private RedisTemplate<String ,String> redisTemplate;
-    @Autowired
     private DictItemsService dictItemsService;
 	
 	@Override

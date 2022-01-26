@@ -24,8 +24,6 @@ import java.util.*;
 @Service
 public class AppStationOrderServiceImpl implements AppStationOrderService {
 
-    private Logger logger = LoggerFactory.getLogger(AppStationOrderServiceImpl.class);
-
     @Autowired
     private AppStationOrderDao appStationOrderDao;
 
