@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.zkzn.les.uas.service.LoginService;
+import com.zkzn.les.uas.service.OrgnizationService;
+import com.zkzn.les.uas.service.UserService;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,9 +34,6 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSONObject;
 import com.zkzn.les.uas.pojo.SecurityUser;
 import com.zkzn.les.uas.pojo.User;
-import com.zkzn.les.uas.service.LoginService;
-import com.zkzn.les.uas.service.OrgnizationService;
-import com.zkzn.les.uas.service.UserService;
 import com.zkzn.les.uas.util.BeanUtil;
 import com.zkzn.les.uas.util.Ecode;
 import com.zkzn.les.uas.util.RedisUtil;
@@ -66,7 +65,7 @@ public class SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandle
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-			throws IOException, ServletException {
+			throws IOException {
 		// TODO Auto-generated method stub
 		logger.info("成功成功处理界面"+authentication);
 		SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
@@ -95,19 +94,7 @@ public class SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandle
 		response.setHeader("Access-Control-Max-Age", "3600");
         response.setContentType("application/json;charset=UTF-8");
         PrintWriter out =  response.getWriter();
-
 		Map<String,Object> userMap = BeanUtil.objectToMap(securityUser);
-//		List<String> userUrlList = userService.getUserUrl(securityUser.getId());
-//		if (userUrlList.size()>0){
-//			Map<String,Object> userUrlMap = new HashMap<>();
-//			for (int i = 0; i < userUrlList.size(); i++) {
-//				userUrlMap.put(userUrlList.get(i),null);
-//			}
-//			System.out.println("-------------》"+token.getValue());
-//			userMap.put("userUrlMap",userUrlMap);
-//		}else {
-//			userMap.put("userUrlMap",null);
-//		}
 		RedisUtil.putCache(redisTemplate, token.getValue(), userMap, 3600);
 		System.out.println(userMap);
 
@@ -121,7 +108,6 @@ public class SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandle
         out.write(Result.toJson(Ecode.SUCCESS, userMap));
         out.flush();
         out.close();
-		//super.onAuthenticationSuccess(request, response, authentication);
 	}
 
 	/**
@@ -130,18 +116,14 @@ public class SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandle
      */
     private JSONObject token2Json(OAuth2AccessToken token) {
 		JSONObject json = new JSONObject();
-
 		// 核心信息
 		json.put("access_token", token.getValue());
 		json.put("token_type", token.getTokenType());
-		//json.put("refresh_token", token.getRefreshToken().getValue());
 		json.put("expires_in", token.getExpiresIn());
 		json.put("scope", token.getScope());
-
 		// 补充信息
 		Map<String, Object> map = token.getAdditionalInformation();
 		json.putAll(map);
-
 		return json;
     }
 

@@ -40,25 +40,5 @@
 		</if>
 	</trim>
 </insert>
-
-<select id="queryLoginMessage" resultMap="BaseResultMap" parameterType="com.zkzn.les.uas.pojo.Login">
-	select l.USER_ID,u.user_name,l.LOG_TIME,l.TYPE
-	from T_LOGIN l left join t_user u
-	on l.user_id = u.id
-	where 1 = 1
-	<if test="null != userName and '' != userName">
-		AND u.user_name like CONCAT(CONCAT('%',#{userName}),'%')
-	</if>
-	<if test="null != startTime and '' != startTime">
-		AND l.login_time <![CDATA[>=]]> str_to_date(#{startTime}, '%Y-%m-%d')
-	</if>
-	<if test="null != endTime and '' != endTime">
-		AND l.login_time <![CDATA[<=]]> str_to_date(#{endTime}, '%Y-%m-%d')
-	</if>
-	<if test="(null != type and '' != type) or type==0">
-		AND l.type = #{type}
-	</if>
-	order by l.LOG_TIME desc
-</select>
-
+	
 </mapper>

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MybatisConfig {
+
     /**
      * mybatis resultType为map时下划线键值转小写驼峰形式插
      */
@@ -20,7 +21,6 @@ public class MybatisConfig {
         return configuration -> configuration.setObjectWrapperFactory(new MapWrapperFactory());
     }
 
-    
     static class MapWrapperFactory implements ObjectWrapperFactory {
         @Override
         public boolean hasWrapperFor(Object object) {
@@ -76,4 +76,5 @@ public class MybatisConfig {
             return sb.toString();
         }
     }
+
 }

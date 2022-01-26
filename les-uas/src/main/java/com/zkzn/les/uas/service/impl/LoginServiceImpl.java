@@ -29,23 +29,6 @@ public class LoginServiceImpl implements LoginService{
 	}
 
 	@Override
-	public int deleteLogin(Login login) {
-		// TODO Auto-generated method stub
-		return loginDao.deleteLogin(login);
-	}
-
-	@Override
-	public PageInfo<Login> queryLogin(Login login) {
-		// TODO Auto-generated method stub
-		PageHelper.startPage(login.getPage(), login.getLimit());
-		
-		List<Login> loginList = loginDao.queryLoginMessage(login);
-		
-		PageInfo<Login> loginPage = new PageInfo<>(loginList);
-		
-		return loginPage;
-	}
-	@Override
 	public int recordLoginInfo(String userId, int type){
 		Login login = new Login();
 		login.setUserId(userId);

@@ -14,7 +14,6 @@ import com.zkzn.les.uas.util.PageCondition;
  */
 public class User extends PageCondition{
 
-
 	/**
 	 *
 	 */

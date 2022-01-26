@@ -52,14 +52,6 @@ public class AuthoUserDetailsServiceImpl implements UserDetailsService{
 	 * @return
 	 */
 	private Set<GrantedAuthority> obtionGrantedAuthorities(User user) {
-//        List<Role> roles=roleDAO.findRolesByLoginName(user.getLoginName());
-//            Set<GrantedAuthority> authSet = new HashSet<GrantedAuthority>();
-//            for (Role res : roles) {
-//                // 用户可以访问的资源名称（或者说用户所拥有的权限） 注意：必须"ROLE_"开头
-//                authSet.add(new SimpleGrantedAuthority(res.getRoleName()));
-//            }
-//            return authSet;
-//        }
 		Set<GrantedAuthority> authSet = new HashSet<GrantedAuthority>();
 		//authSet.add(new SimpleGrantedAuthority("admin"));
 		return authSet;

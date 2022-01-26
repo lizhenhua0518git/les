@@ -27,7 +27,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @ConfigurationProperties(prefix="spring.cache.redis")
 public class CacheConfig {
 
-	
 	private int timeToLive;
 	
 	@Bean

@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.zkzn.les.uas.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.druid.util.StringUtils;
 import com.zkzn.les.uas.pojo.User;
-import com.zkzn.les.uas.service.UserService;
 import com.zkzn.les.uas.util.Ecode;
 import com.zkzn.les.uas.util.MD5;
 import com.zkzn.les.uas.util.Result;
@@ -85,4 +85,5 @@ public class LoginCotroller {
 			return Result.toJsonUseApp(Ecode.FAIL, "密码修改失败！");
 		}
 	}
+
 }

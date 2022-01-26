@@ -9,10 +9,8 @@ import com.zkzn.les.uas.util.PageCondition;
 
 public class Orgnization extends PageCondition  {
 
-	
-	
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1976259277169614992L;
 

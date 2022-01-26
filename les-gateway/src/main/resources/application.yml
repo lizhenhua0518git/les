@@ -21,32 +21,14 @@ spring:
           uri: lb://les-uas-provider
           predicates:
                     - Path=/auth/**
-
         - id: les-basicInfo-providerId
           uri: lb://les-basicInfo-provider
           predicates:
                     - Path=/basicInfo/**
-
-        - id: les-mesApi-provider
-          uri: lb://les-mesApi-provider
-          predicates:
-                    - Path=/mes/**
-        - id: les-srmApi-provider
-          uri: lb://les-srmApi-provider
-          predicates:
-                    - Path=/srm/**
-        - id: les-gawApi-provider
-          uri: lb://les-gawApi-provider
-          predicates:
-                    - Path=/gaw/**
         - id: les-oms-provider
           uri: lb://les-oms-provider
           predicates:
                     - Path=/oms/**
-        - id: les-quartz-provider
-          uri: lb://les-quartz-provider
-          predicates:
-                    - Path=/quartz/**
         - id: les-wms-opt-providers
           uri: lb://les-wms-opt-providers
           predicates:

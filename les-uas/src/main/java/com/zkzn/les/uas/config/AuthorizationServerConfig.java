@@ -42,8 +42,6 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private AuthorizationServerTokenServices   authorizationServerTokenServices;
     
-    private Logger logger  = LoggerFactory.getLogger(AuthorizationServerConfig.class);
-    
     @Bean
     public RedisTokenStore tokenStore() {
         return new RedisTokenStore(connectionFactory);
