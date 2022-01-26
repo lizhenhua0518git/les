@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.stock.dao.StorageBinDao">
+    <select id="listMaterialStorageBin" parameterType="com.zkzn.les.stock.pojo.MaterialStorageBin" resultType="com.zkzn.les.stock.pojo.MaterialStorageBin">
+        SELECT
+            m.storage_bin_id AS "storageBinId",
+            m.warehouse_name AS "warehouseName",
+            m.warehouse_code AS "warehouseCode",
+            m.client_name AS "clientName",
+            sp.position_code AS "positionCode",
+            m.position_car_code AS "positionCarCode",
+            m.material_desc AS "materialDesc",
+            m.material_unit AS "materialUnit",
+            m.stock_count AS "stockCount",
+            m.frozen_count AS "frozenCount",
+            m.pre_use_count AS "preUseCount",
+            m.batch_no AS "batchNo",
+            m.stock_status AS "stockStatus",
+            m.create_time AS "createTime"
+        FROM
+            s_material_storage_bin m
+        LEFT JOIN b_storage_position sp ON m.storage_position_id = sp.storage_position_id
+        LEFT JOIN b_client_manage c ON c.client_name = m.client_name
+        <where>
+        1=1
+        <if test="warehouseCode != null and '' != warehouseCode">
+            <foreach collection="warehouseCode.split(';')" open="and m.warehouse_code in (" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="materialDesc != null and '' != materialDesc">
+            AND m.material_desc like '%${materialDesc}%'
+        </if>
+        <if test="positionCarCode != null and '' != positionCarCode">
+            AND m.position_car_code like '%${positionCarCode}%'
+        </if>
+        <if test="clientName != null and '' != clientName">
+            <foreach collection="clientName.split(';')" open="and c.client_manage_id in (" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="positionCode != null and '' != positionCode">
+            AND sp.position_code like '%${positionCode}%'
+        </if>
+        </where>
+        ORDER BY m.create_time DESC
+    </select>
+    <select id="listMaterialInstock" resultType="com.zkzn.les.stock.pojo.MaterialInStockPojo" parameterType="com.zkzn.les.stock.pojo.MaterialInStockPojo">
+        SELECT
+            s.material_in_stock_id AS "materialInStockId",
+            s.material_desc AS "materialDesc",
+            s.material_unit AS "materialUnit",
+            s.client_name AS "clientName",
+            s.batch_no AS "batchNo",
+            s.warehouse_name AS "warehouseName",
+            s.warehouse_code AS "warehouseCode",
+            s.qualified_type AS "qualifiedType",
+            s.unlimited_number AS "unlimitedNumber",
+            s.create_time AS "createTime"
+        FROM
+            s_material_in_stock s
+        LEFT JOIN b_client_manage c ON c.client_name = s.client_name
+        <where>
+            1=1
+            <if test="warehouseCode != null and '' != warehouseCode">
+                <foreach collection="warehouseCode.split(';')" open="and s.warehouse_code in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="materialDesc != null and '' != materialDesc">
+                AND s.material_desc like '%${materialDesc}%'
+            </if>
+            <if test="clientName != null and '' != clientName">
+                <foreach collection="clientName.split(';')" open="and c.client_manage_id in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="batchNo != null and '' != batchNo">
+                AND s.batch_no like '%${batchNo}%'
+            </if>
+        </where>
+        ORDER BY s.create_time DESC
+    </select>
+
+    <insert id="saveStorageBinInfo">
+        <if test="list.size() > 0">
+            <foreach collection="list" item="item" index="index" separator=";">
+                INSERT INTO t_material_storage_bin
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="item.materialCode !=null and '' !=item.materialCode">material_code</if>
+                    <if test="item.positionCode !=null and '' !=item.positionCode">,position_code</if>
+                    <if test="item.storageId !=null">,storage_id</if>
+                    <if test="item.materialCode !=null and '' !=item.materialCode">,material_code</if>
+                    <if test="item.materialDesc !=null and '' != item.materialDesc">,material_desc</if>
+                    <if test="item.materialUnit !=null and '' !=item.materialUnit">,material_unit</if>
+                    <if test="item.frozenCount !=null">,frozen_count</if>
+                    <if test="item.stockCount !=null ">,stock_count</if>
+                    <if test="item.enableCount !=null">,enable_count</if>
+                    <if test="item.supplierCode !=null and '' !=item.supplierCode">,supplier_code</if>
+                    <if test="item.supplierName !=null and '' != item.supplierName">,supplier_name</if>
+                    <if test="item.receiveDate !=null and '' !=item.receiveDate">,receive_date</if>
+                    <if test="item.batchNo !=null and '' !=item.batchNo">,batch_no</if>
+                    <if test="item.storageLocation !=null and '' !=item.storageLocation">,storage_location</if>
+                    <if test="item.factory !=null and '' !=item.factory">,factory</if>
+                    <if test="item.warehouseCode !=null and '' != item.warehouseCode ">,warehouse_code</if>
+                    <if test="item.warehouseName !=null and '' !=item.warehouseName">,warehouse_name </if>
+                    <if test="item.orderCode !=null and '' !=item.orderCode">,order_code</if>
+                    <if test="item.stockType !=null ">,stock_type</if>
+                    <if test="item.stationCode !=null and '' !=item.stationCode">,station_code</if>
+                    <if test="item.sellOrder !=null and '' !=item.sellOrder">,sell_order</if>
+                    <if test="item.sellOrderItem !=null ">,sell_order_item</if>
+                </trim>
+                <trim prefix="values (" suffix=")" suffixOverrides=",">
+                    <if test="item.materialCode !=null and '' !=item.materialCode">#{item.materialCode}</if>
+                    <if test="item.positionCode !=null and '' !=item.positionCode">,#{item.positionCode}</if>
+                    <if test="item.storageId !=null">,#{item.storageId}</if>
+
+                    <if test="item.materialDesc !=null and '' != item.materialDesc">,#{item.materialDesc}</if>
+                    <if test="item.materialUnit !=null and '' !=item.materialUnit">,#{item.materialUnit}</if>
+                    <if test="item.frozenCount !=null">,#{item.frozenCount}</if>
+                    <if test="item.stockCount !=null ">,#{item.stockCount}</if>
+                    <if test="item.enableCount !=null">,#{item.enableCount}</if>
+                    <if test="item.supplierCode !=null and '' !=item.supplierCode">,#{item.supplierCode}</if>
+                    <if test="item.supplierName !=null and '' != item.supplierName">,#{item.supplierName}</if>
+                    <if test="item.receiveDate !=null and '' !=item.receiveDate">,#{item.receiveDate}</if>
+                    <if test="item.batchNo !=null and '' !=item.batchNo">,#{item.batchNo}</if>
+                    <if test="item.storageLocation !=null and '' !=item.storageLocation">,#{item.storageLocation}</if>
+                    <if test="item.factory !=null and '' !=item.factory">,#{item.factory}</if>
+                    <if test="item.warehouseCode !=null and '' != item.warehouseCode ">,#{item.warehouseCode}</if>
+                    <if test="item.warehouseName !=null and '' !=item.warehouseName">,#{item.warehouseName} </if>
+                    <if test="item.orderCode !=null and '' !=item.orderCode">,#{item.orderCode}</if>
+                    <if test="item.stockType !=null ">,#{item.stockType}</if>
+                    <if test="item.stationCode !=null and '' !=item.stationCode">,#{item.stationCode}</if>
+                    <if test="item.sellOrder !=null and '' !=item.sellOrder">,#{item.sellOrder}</if>
+                    <if test="item.sellOrderItem !=null ">,#{item.sellOrderItem}</if>
+                </trim>
+            </foreach>
+        </if>
+    </insert>
+
+    <insert id="updateStorageBinInfo">
+        INSERT INTO t_material_storage_bin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialCode !=null and '' !=materialCode">material_code</if>
+            <if test="positionCode !=null and '' !=positionCode">,position_code</if>
+            <if test="storageId !=null">,storage_id</if>
+            <if test="materialDesc !=null and '' != materialDesc">,material_desc</if>
+            <if test="materialUnit !=null and '' !=materialUnit">,material_unit</if>
+            <if test="frozenCount !=null">,frozen_count</if>
+            <if test="stockCount !=null ">,stock_count</if>
+            <if test="enableCount !=null">,enable_count</if>
+            <if test="supplierCode !=null and '' !=supplierCode">,supplier_code</if>
+            <if test="supplierName !=null and '' != supplierName">,supplier_name</if>
+            <if test="receiveDate !=null and '' !=receiveDate">,receive_date</if>
+            <if test="batchNo !=null and '' !=batchNo">,batch_no</if>
+            <if test="storageLocation !=null and '' !=storageLocation">,storage_location</if>
+            <if test="factory !=null and '' !=factory">,factory</if>
+            <if test="warehouseCode !=null and '' != warehouseCode ">,warehouse_code</if>
+            <if test="warehouseName !=null and '' !=warehouseName">,warehouse_name </if>
+            <if test="orderCode !=null and '' !=orderCode">,order_code</if>
+            <if test="stockType !=null ">,stock_type</if>
+            <if test="stationCode !=null and '' !=stationCode">,station_code</if>
+            <if test="sellOrder !=null and '' !=sellOrder">,sell_order</if>
+            <if test="sellOrderItem !=null ">,sell_order_item</if>
+            <if test="stockStatus != null">,stock_status</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialCode !=null and '' !=materialCode">#{materialCode}</if>
+            <if test="positionCode !=null and '' !=positionCode">,#{positionCode}</if>
+            <if test="storageId !=null">,#{storageId}</if>
+            <if test="materialDesc !=null and '' != materialDesc">,#{materialDesc}</if>
+            <if test="materialUnit !=null and '' !=materialUnit">,#{materialUnit}</if>
+            <if test="frozenCount !=null">,#{frozenCount}</if>
+            <if test="stockCount !=null ">,#{stockCount}</if>
+            <if test="enableCount !=null">,#{enableCount}</if>
+            <if test="supplierCode !=null and '' !=supplierCode">,#{supplierCode}</if>
+            <if test="supplierName !=null and '' != supplierName">,#{supplierName}</if>
+            <if test="receiveDate !=null and '' !=receiveDate">,#{receiveDate}</if>
+            <if test="batchNo !=null and '' !=batchNo">,#{batchNo}</if>
+            <if test="storageLocation !=null and '' !=storageLocation">,#{storageLocation}</if>
+            <if test="factory !=null and '' !=factory">,#{factory}</if>
+            <if test="warehouseCode !=null and '' != warehouseCode ">,#{warehouseCode}</if>
+            <if test="warehouseName !=null and '' !=warehouseName">,#{warehouseName} </if>
+            <if test="orderCode !=null and '' !=orderCode">,#{orderCode}</if>
+            <if test="stockType !=null ">,#{item.stockType}</if>
+            <if test="stationCode !=null and '' !=stationCode">,#{stationCode}</if>
+            <if test="sellOrder !=null and '' !=sellOrder">,#{sellOrder}</if>
+            <if test="sellOrderItem !=null ">,#{sellOrderItem}</if>
+            <if test="stockStatus != null">,#{stockStatus}</if>
+        </trim>
+        ON DUPLICATE KEY UPDATE
+            material_code = VALUES(material_code)
+        <if test="frozenCount !=null">
+            ,frozen_count = VALUES(frozen_count) + frozen_count
+        </if>
+        <if test="stockCount != null">
+            ,stock_count = VALUES(stock_count) + stock_count
+        </if>
+        <if test="enableCount != null">
+            ,enable_count = VALUES(enable_count) + enable_count
+        </if>
+        <if test="stockType != null">
+            ,stock_type = VALUES(stock_type)
+        </if>
+        <if test="stockStatus !=null">
+            ,stock_status = VALUES(stock_status)
+        </if>
+        <if test="positionCode != null">
+            ,position_code = VALUES(position_code)
+        </if>
+        <if test="storageId != null">
+            ,storage_id = VALUES(storage_id)
+        </if>
+    </insert>
+    <select id="carInStock" resultType="java.util.Map">
+        SELECT
+            m.material_desc AS "materialDesc",
+            m.material_unit AS "materialUnit",
+            m.stock_count AS "stockCount",
+            m.frozen_count AS "frozenCount",
+            m.pre_use_count AS "preUseCount",
+            (m.stock_count+m.frozen_count+m.pre_use_count) AS "sumCount",
+            m.batch_no AS "batchNo",
+            m.position_car_code AS "positionCarCode",
+            m.client_name AS "clientName",
+            IF(m.stock_status = 0, "合格", "不合格") AS "stockStatusName",
+            s.position_code AS "positionCode"
+        FROM
+        s_material_storage_bin m
+        LEFT JOIN b_storage_position s ON m.storage_position_id = s.storage_position_id
+        WHERE
+         m.position_car_code = #{positionCarCode} AND m.warehouse_code = #{warehouseCode}
+    </select>
+</mapper>

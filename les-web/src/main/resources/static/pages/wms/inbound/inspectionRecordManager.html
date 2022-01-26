@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>质检记录管理</title>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css" type="text/css"/>
+</head>
+<script type="text/html" id="toolbar">
+    {{#  if(d.inspectStatus == 1){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="showDetail">查看序列号</a>
+    {{#  } }}
+    {{#  if(d.deleteStatus== 1){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="showWriteDetail">冲销详情</a>
+    {{# } }}
+</script>
+<script type="text/html" id="statusTmp">
+</script>
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库</label>
+                <div class="layui-input-inline">
+                    <select id="warehouseCode_search" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">送货单号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="billCode_search" class="layui-input" placeholder="请输入送货单号">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">任务号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="taskCode_search" class="layui-input" placeholder="请输入任务号">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">质检时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="inspectTime_search" class="layui-input" placeholder="请输入质检时间">
+                </div>
+            </div>
+
+            <div class="layui-col-md2">
+                <label class="layui-form-label">单据类型</label>
+                <div class="layui-input-inline">
+                    <select id="billType_search" xm-select="billTypeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">供应商编码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="supplierCode_search" class="layui-input" placeholder="请输入供应商编码">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料编码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="materialCode_search" class="layui-input" placeholder="请输入物料编码">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">质检库位</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="inspectPositionCode_search" class="layui-input" placeholder="请输入质检库位">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">质检状态</label>
+                <div class="layui-input-inline">
+                    <select id="status_search" xm-select="statusSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+<!--            <div class="layui-col-md2">-->
+<!--                <label class="layui-form-label">冲销状态</label>-->
+<!--                <div class="layui-input-inline">-->
+<!--                    <select id="deleteStatus_search" xm-select="deleteStatusSelect" xm-select-show-count="1">-->
+<!--                        <option value="">请选择</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--            </div>-->
+            <div class="layui-btn-container" style="text-align: right;">
+                {{# if(d.search==null || d.search=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search"
+                        type="button"><i class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset"
+                        type="button"><i class="layui-icon layui-icon-reset"></i>重置
+                </button>
+                {{# } }}
+            </div>
+        </div>
+    </div>
+    <div class="layui-fluid-table">
+<!--        <div class="layui-row layui-form">-->
+<!--            <div class="layui-btn-container">-->
+<!--                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="writeOff" type="button"><i class="layui-icon layui-icon-edit"></i>质检入库冲销</button>-->
+<!--            </div>-->
+<!--        </div>-->
+        <table class="layui-hide" id="inspectRecordTab" lay-filter="inspectRecordTabF"></table>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    var $ = layui.$;
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var contextPath = config.wmsoptConfig.contextPath;
+    var laydate = layui.laydate;
+    var defulatstatusStr = "15;20;25;45";
+    var oldData;
+    var active = {
+
+        writeOff : function(othis) {
+            var checkStatus = table.checkStatus('inspectRecordTabId');
+            oldData = checkStatus.data;
+            if (oldData.length <= 0) {
+                layer.alert('请选择要冲销的行项目！', {
+                    icon : 2
+                });
+                return;
+            } else if (oldData.length > 1) {
+                layer.alert('请选择一个行项目！', {
+                    icon : 2
+                });
+                return;
+            }
+            if(oldData[0].status != '32'){
+                layer.alert('请选择质检完成的行项目！', {
+                    icon : 2
+                });
+                return;
+            }
+            if(oldData[0].deleteStatus == '1'){
+                layer.alert('该行项目已经冲销过了！', {
+                    icon : 2
+                });
+                return;
+            }
+            var type = othis.data('type');
+            layer.open({
+                type: 2,
+                title: '质检入库冲销',
+                maxmin: false,
+                area: ['450px', '360px'],
+                offset: type,
+                id: 'writeOff' + type //防止重复弹出
+                ,
+                content: '/iles/pages/wms/inbound/writeOff.html',
+                shade: [0.8, '#393D49'],
+                yes: function() {
+                    layer.closeAll();
+                }
+            });
+        },
+        search: function (othis) {
+            var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+            var billType = layui.formSelects.value('billTypeSelect', 'valueStr');
+
+            //送货单号
+            var billCode = $("#billCode_search").val();
+            //任务号
+            var orderCode = $("#taskCode_search").val();
+            //inspectTime_search 质检时间
+            var inspectTime = $("#inspectTime_search").val();
+            //供应商编码
+            var supplierCode = $("#supplierCode_search").val();
+            //materialCode_search
+            var materialCode = $("#materialCode_search").val();
+            //inspectPositionCode_search
+            var inspectPositionCode = $("#inspectPositionCode_search").val();
+            var startTimeBeginStr = '';
+            var startTimeEndStr = '';
+            if (inspectTime && inspectTime.length > 0) {
+                startTimeBeginStr = inspectTime.substring(0, 19);
+                startTimeEndStr = inspectTime.substring(22);
+            }
+
+            var status = layui.formSelects.value('statusSelect', 'valueStr');
+            var deleteStatus = layui.formSelects.value('deleteStatusSelect', 'valueStr');
+            table.reload('inspectRecordTabId', {
+                where: {
+                    wareHouseCode: warehouseCode,
+                    billType: billType,
+                    billCode: billCode,
+                    supplierCode: supplierCode,
+                    startTimeBeginStr: startTimeBeginStr,
+                    startTimeEndStr: startTimeEndStr,
+                    materialCode: materialCode,
+                    inspectPositionCode: inspectPositionCode,
+                    receivedTaskCode: orderCode,
+                    status:status,
+                    deleteStatus:deleteStatus
+                }
+            });
+        },
+        reset: function (othis) {
+            layui.formSelects.value('warehouseCodeSelect', []);
+            layui.formSelects.value('billTypeSelect', []);
+            $("#billCode_search").val("");
+            $("#taskCode_search").val("");
+            $("#supplierCode_search").val("");
+            $("#materialCode_search").val("");
+            $("#inspectTime_search").val("");
+            $("#inspectPositionCode_search").val("");
+            layui.formSelects.value('statusSelect', []);
+            layui.formSelects.value('deleteStatusSelect', []);
+            form.render("select");
+        }
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#inspectRecordTab',
+            id: 'inspectRecordTabId',
+            url: contextPath + 'inspectionRecordPc/listInspectionInfo',
+            cols: [[
+                {
+                    type: 'checkbox',fixed:'left'
+                },
+                {type: 'numbers', title: '序号',fixed:'left'},
+
+                {field: 'warehouseCode', title: '仓库编码', width: '100',fixed:'left'},
+                {field: 'warehouseName', title: '仓库名称', width: '100',fixed:'left'},
+                {field: 'inspectionTaskCode', title: '任务号',fixed:'left', width: '125'},
+
+                {field: 'materialCode', title: '物料编码',fixed:'left', width: '117'},
+                {field: 'materialDesc', title: '物料名称',width: '117'},
+
+                {field: 'qualifiedNum', title: '质检合格数量', width: '106'},
+                // {field: 'extractNum', title: '抽检数量', width: '90'},
+                {field: 'unqualifiedNum', title: '质检冻结数量', width: '111'},
+                {field: 'materialUnit', title: '单位'},
+                {field: 'storageLocation', title: '仓库库存地',width: '122'},
+                {field: 'inspectionPositionCode', title: '质检库位', width: '122'},
+                {field: 'inspectionName', title: '质检人', width: '106'},
+                {field: 'inspectionTime', title: '质检时间', width: '106'},
+                {field: 'batchNo', title: '批次号', width: '158'},
+                {field: 'billType', title: '单据类型编码', width: '106'},
+                {field: 'billName', title: '单据类型名称', width: '106'},
+                // {field: 'supplierCode', title: '供应商编码', width: '106'},
+                // {field: 'supplierName', title: '供应商名称', width: '111'},
+                {field: 'billCode', title: '送货单号', width: '130'},
+                {field: 'itemNo', title: '送货单行项目号' ,width: '125'},
+                // {field: 'deleteStatus', title: '冲销状态' ,width: '100',templet: function(d){
+                //         if (d.deleteStatus == 0){
+                //             return '未冲销';
+                //         }else if (d.deleteStatus == 1){
+                //             return '已冲销';
+                //         }
+                //     }},
+                // {align: 'center', title: '操作', toolbar: "#toolbar",width: '120',fixed:'right'},
+            ]],
+            page: {theme: '#008155'},
+            even: true,
+            where: {deleteStatus:0}
+        });
+        //创建时间区间
+        laydate.render({
+            elem: '#inspectTime_search',
+            range: true,
+            trigger: 'click',
+            type: 'datetime'
+        });
+
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+        initWarehouseMultiSelect("warehouseCode_search", "warehouseCodeSelect", 1, '');
+        inintBillTypeMultiSelects("billTypeSelect", []);
+        //初始化质检状态
+        initStatus();
+        //初始化冲销状态
+        initDeleteStatus();
+        form.render("select");
+
+        table.on('tool(inspectRecordTabF)', function (obj) {
+            var eventName = obj.event;
+            var data = obj.data;
+            var url = contextPath + "receiveDetialRecord/findSerialNum?materialCode=" + data.materialCode+"&batchNo="+data.batchNo;
+            if (eventName == "showDetail") {
+                $.ajax({
+                    url: url,
+                    type: 'get',
+
+                    success: function (data) {
+                        var dataJson;
+                        if (data != null || data != '') {
+                            dataJson = JSON.parse(data)
+                        }
+                        if (dataJson.code == 0) {
+                            var msg = dataJson.data.toString();
+                            layer.open({
+                                title: "物料序列号",
+                                content: msg
+                            })
+                        } else if (dataJson.code == -1234) {
+                            layer.open(
+                                {
+                                    title: "物料序列号",
+                                    content: "物料序列号不存在"
+                                }
+                            )
+                        } else {
+                            layer.open(
+                                {
+                                    title: "物料序列号",
+                                    content: "物料序列号查询失败"
+                                }
+                            )
+                        }
+                    },
+                    complete: function () {
+                        layer.close(this.layerIndex);
+                    }
+                })
+            }
+            else if(eventName == "showWriteDetail"){
+                oldData = data;
+                layer.open({
+                    type: 2,
+                    title: '质检入库冲销',
+                    maxmin: false,
+                    area: ['600px', '360px'],
+                    id: 'writeOffDetail' //防止重复弹出
+                    ,
+                    content: '/iles/pages/wms/inbound/writeOffDetail.html',
+                    shade: [0.8, '#393D49'],
+                    yes: function() {
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * 加载单据类型
+     */
+    function inintBillTypeMultiSelects(xmselectId, defualtValue) {
+        var contextPath = config.basicInfoConfig.contextPath
+        var option = {
+            //0,2分别代表入库类型，调拨类型,        4,1代表排除4	生产退补料收货(不合格)1	生产退料收货(合格)
+            url: contextPath + 'documentType/listByBusinessType?status=1&businessTypeStr=0,2&documentCodesSpecific=4,1',
+            type: "GET",
+            success: function (result) {
+                if (result.code == 0) {
+                    var documentType = result.data;
+                    if (documentType.length > 0) {
+                        var optoinArray = new Array();
+                        for (var i = 0; i < documentType.length; i++) {
+                            itemOption = {
+                                "name": "" + documentType[i].documentName,
+                                "value": "" + documentType[i].documentCode
+                            };
+                            optoinArray.push(itemOption);
+                        }
+                        layui.formSelects.data(xmselectId, 'local', {
+                            arr: optoinArray
+                        });
+                        layui.formSelects.value(xmselectId, defualtValue, true);
+                        layui.form.render("select");
+                    }
+                }
+            }
+        }
+        $.ajax(option);
+    }
+
+    function initStatus() {
+        var optoinArray = [{name: '待质检', value: '30'}, {name: '质检中', value: '31'}, {name: '质检完成', value: '32'}];
+        layui.formSelects.data("statusSelect", 'local', {
+            arr: optoinArray
+        });
+    }
+    function initDeleteStatus() {
+        var optoinArray = [{name: '未冲销', value: '0'}, {name: '已冲销', value: '1'}];
+        layui.formSelects.data("deleteStatusSelect", 'local', {
+            arr: optoinArray
+        });
+    }
+</script>
+</body>
+
+</html>

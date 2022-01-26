@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>序列号打印</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+</head>
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+				<div class="layui-inline">
+				    <label class="layui-form-label layui-required">序列号</label>
+				    <div class="layui-input-block">
+				    	<textarea placeholder="请输入序列号" class="layui-textarea" name="serialNum" id="serialNum"></textarea>
+				    </div>
+			 	</div>
+			</div>
+			<div class="layui-form-item">
+	                <div class="layui-btn-container" style="text-align: center;">
+	                  <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="serialSubit" id="serve" >打印</button>
+	                  <button class="layui-btn layui-btn-normal layui-btn-sm"  lay-submit=""  lay-filter="reset" id="reset">重置</button>
+	                </div>
+            </div>
+		</form>
+</div>
+
+<!--打印内容-->
+<div id="printDiv">
+</div>
+<script type="text/html" id="printContent">
+	<div STYLE="page-break-before:always;border:1px solid black;">
+		<div style="position:relative;float:right;width:100%;text-align: center;border:2px solid black;">
+			<span >(70*30)整车物料</span></br>
+		</div>
+		<div STYLE="page-break-before:always;border:2px solid black;padding: 10px;">
+			<div class="layui-row">
+				<div class="layui-col-md3">
+					<div class="layui-card">
+						<div class="layui-card-body" style="border:2px solid black;height: 150px;margin-top: 10px">
+							<div style="color: black;font-weight: bold;width: 100%;text-align: center">中车时代电动</div>
+							<div  style="float: left" align="left">
+								物料号:{{d.materialCode}}<br>
+								供应商:{{d.supplierCode}}<br>
+								生产日期:{{d.createTime}}<br>
+								流水号:{{d.batchNo}}<br>
+								描述:无<br>
+							</div>
+							<div id="barcode" style="float: right;width: 100px"  align="right"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<!--打印-->
+<script src="/iles/pages/lib/jquery-qrcode-0.14.0/jquery.min.js"></script>
+<script src="/iles/pages/lib/jquery-qrcode-0.14.0/jquery-qrcode-0.14.0.min.js"></script>
+<script src="/iles/pages/lib/jquery-barcode/jquery-migrate-1.2.1.min.js"></script>
+<script src="/iles/pages/lib/jquery-barcode/jquery.jqprint-0.3.js"></script>
+<script src="/iles/pages/lib/jquery-barcode/jquery-barcode.js"></script>
+<script type="text/javascript">var jquery$ = $;</script>
+<script type="text/javascript">
+var form = layui.form;
+var layer = layui.layer;
+var laytpl = layui.laytpl;
+form.on('submit(serialSubit)', function(data){
+	var serialNum = data.field.serialNum;
+	if(serialNum.length<68){
+		layer.alert("请输入68位序列号");
+		return false;
+	}
+	//物料号
+	var materialCode=serialNum.substring(10,26);
+	//供应商编码
+	var supplierCode=serialNum.substring(0,10);
+	//生产日期
+	var createTime=serialNum.substring(26,32);
+	//流水号
+	var batchNo=serialNum.substring(32,42);
+	var data={materialCode:materialCode,supplierCode:supplierCode,createTime:createTime,batchNo:batchNo};
+	$("#printDiv").show();
+	var getTpl = $('#printContent').html()
+			,view = document.getElementById('printDiv');
+	laytpl(getTpl).render(data, function(html){
+		view.innerHTML = html;
+	});
+	jquery$('#barcode').empty().barcode(serialNum, "code128",{//code128为条形码样式
+		output:'css',
+		color: '#000000',
+		barWidth: 1,        //单条条码宽度
+		barHeight: 50,     //单体条码高度
+		addQuietZone: false,
+		showHRI:false
+	});
+	// 打印
+	jquery$("#printDiv").jqprint();
+	$("#printDiv").hide();
+	return false;
+});
+
+</script>
+</body>
+</html>

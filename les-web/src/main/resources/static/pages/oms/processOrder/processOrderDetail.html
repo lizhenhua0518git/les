@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<title>物料需求清单明细</title>
+</head>
+<script type="text/html" id="toolbar">
+	<a class="layui-btn layui-btn-xs" lay-event="showStationOrder">{{d.matchNum}}</a>
+</script>
+<body id="bodyDiv">
+	<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid" >
+        <div class="layui-row layui-form">
+			<div class="layui-col-md2">
+                <label class="layui-form-label">订单号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="orderCode_search" class="layui-input" placeholder="请输入订单号">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">预留行项目</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="reserveRow_search" class="layui-input" placeholder="请输入预留行项目">
+                </div>
+            </div>
+ 			<div class="layui-col-md2">
+                <label class="layui-form-label">组件行项目</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="materialRow_search" class="layui-input" placeholder="请输入组件行项目">
+                </div>
+            </div>
+			<div class="layui-col-md2">
+                <label class="layui-form-label">组件物料号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="materialCode_search" class="layui-input" placeholder="请输入组件物料号">
+                </div>
+            </div>
+			<div class="layui-col-md2">
+                <label class="layui-form-label">预留号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="reserveCode_search" class="layui-input" placeholder="请输入预留号">
+                </div>
+            </div>
+        </div>
+		<div class="layui-row layui-form">
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">仓库</label>
+				<div class="layui-input-inline">
+			        <select  id="storageLocation_search" lay-filter="storageLocationFilter" xm-select="storageLocationSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+			</div>
+			 <div class="layui-col-md2">
+                <label class="layui-form-label">工位</label>
+                <div class="layui-input-inline">
+					<select  id="stationCode_search"  xm-select="stationCodeSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+                </div>
+            </div>
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                {{# if(d.search==null || d.search=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon  layui-icon-reset"></i>重置</button>
+                {{# } }}
+            </div>
+		</div>
+    </div>
+    <div class="layui-fluid-table">
+        <div class="layui-btn-container" style="text-align: left;">
+            <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="match" type="button"><i class="layui-icon layui-icon-util"></i>开始匹配</button>
+        </div>
+        <table id="processOrderDetailTab" lay-filter="processOrderDetailTabF"></table>
+    </div>
+</script>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var laydate = layui.laydate;
+		var oldData = parent.oldData;
+		var processOrderDetailData;
+		var contextPath = config.omsConfig.contextPath;
+		var active = {
+
+			search : function(othis) {
+				var orderCode = $('#orderCode_search').val();
+				var reserveRow = $('#reserveRow_search').val();
+				var materialRow = $('#materialRow_search').val();
+				var materialCode = $('#materialCode_search').val();
+				var reserveCode = $('#reserveCode_search').val();
+				var storageLocation = layui.formSelects.value('storageLocationSelect', 'valueStr');
+				var stationCode = layui.formSelects.value('stationCodeSelect', 'valueStr');
+				var params = {};
+				params.orderCode = orderCode;
+				params.reserveRow = reserveRow;
+				params.materialRow = materialRow;
+				params.materialCode = materialCode;
+				params.reserveCode = reserveCode;
+				params.reserveCode = reserveCode;
+				params.storageLocation = storageLocation;
+				params.stationCode = stationCode;
+				//执行重载
+				table.reload('processOrderDetailTabId', {
+					where : params,
+				});
+			},
+			reset : function(othis) {
+				$('#orderCode_search').val("");
+				$('#reserveRow_search').val("");
+				$('#materialRow_search').val("");
+				$('#materialCode_search').val("");
+				$('#reserveCode_search').val("");
+				layui.formSelects.value('storageLocationSelect', []);
+				layui.formSelects.value('stationCodeSelect', []);
+			},
+            match:function(othis){
+                var checkStatus = table.checkStatus('processOrderDetailTabId');
+                var oldData = checkStatus.data;
+                if (oldData.length <= 0) {
+                    layer.alert('请选择要匹配的订单！', {
+                        icon : 2
+                    });
+                    return;
+                }
+                var requestList = new Array();
+                for(var i=0;i<oldData.length;i++){
+                    var requestMap = {};
+                    requestMap.id = oldData[i].id;
+                    requestMap.requireNum = oldData[i].requiredNum-oldData[i].matchNum;
+                    requestList.push(requestMap);
+               }
+                var option = {
+                    url:contextPath+'processOrderDetail/matchStockByProcessDetail',
+                    data:JSON.stringify(requestList),
+                    contentType:"application/json",
+                    type:"POST",
+                    dataType:"json",
+                    success:function(res){
+                        if(res.code==0){
+                            layer.alert("库存匹配成功");
+                            table.reload("processOrderDetailTabId");
+                        }else{
+                            layer.alert(res.data);
+                        }
+
+
+                    },error:function(res){
+                        layer.alert("库存匹配失败")
+                    }
+                };
+                $.ajax(option);
+            }
+		};
+
+		function loadding() {
+			table
+					.render({
+						elem : '#processOrderDetailTab',
+						id : 'processOrderDetailTabId',
+						url : contextPath
+								+ 'processOrderDetail/listProcessOrderDetail',
+						cols : [ [ {
+							type : 'checkbox'
+						}, {
+							type : 'numbers',
+                            width:'50',
+							title : '序号'
+						}, {
+							field : 'orderCode',
+                            width:'180',
+							title : '订单号'
+						}, {
+							field : 'reserveCode',
+                            width:'100',
+							title : '预留号'
+						}, {
+							field : 'reserveRow',
+                            width:'100',
+							title : '预留行项目'
+						}, {
+							field : 'materialRow',
+                            width:'100',
+							title : '组件行项目'
+						}, {
+							field : 'materialCode',
+                            width:'120',
+							title : '组件物料号',
+                            style:'overflow:hidden'
+						}, {
+							field : 'requiredNum',
+                            width:'100',
+							title : '需求数量',
+                            edit: 'text'
+						}, {
+							field : 'itemUnit',
+                            width:'100',
+							title : '条目单位'
+						}, {
+							field : 'recoilMaterialTab',
+                            width:'120',
+							title : '反冲物料标识'
+						}, {
+							field : 'bulkMaterialTab',
+                            width:'120',
+							title : '散装物料标识'
+						}, {
+							field : 'specialType',
+                            width:'120',
+							title : '特殊库存标识'
+						}, {
+							field : 'storageLocationName',
+                            width:'100',
+							title : '仓库'
+						}, {
+							field : 'doneActiveNo',
+                            width:'120',
+							title : '操作活动编号'
+						}, {
+							field : 'stationCode',
+                            width:'120',
+							title : '配送工位码'
+						}, {
+							field : 'stationDesc',
+                            width:'100',
+							title : '工位描述'
+						}, {
+							field : 'matchNum',
+							title : '完成分库位数量',
+                            width:'150',
+							toolbar:"#toolbar"
+						}, {
+							field : 'surplusNum',
+                            width:'150',
+							title : '未完成分库位数量'
+						}, {
+							field : 'callTime',
+                            width:'100',
+							title : '呼叫时间'
+						}, {
+							field : 'callNum',
+                            width:'100',
+							title : '呼叫数量'
+						} ] ],
+						page : {
+							theme : '#008155'
+						},
+						even : true,
+						where : {
+							processOrderId : oldData[0].id
+						},
+                        done: function(res, page, count) { //列表数据回调函数
+                           // 根据条件判断加背景色
+                            var that = this.elem.next();
+                            $.each(res.data, function (index, item) {
+                                if (item.matchNum == item.requiredNum) {
+                                    var tr = that.find(".layui-table-box tbody tr[data-index='" + index + "']");
+                                    tr.css("background-color", "#93FF93");
+                                }
+                            });
+
+                        }
+					});
+			$('.layui-btn-container button').on('click', function() {
+				var othis = $(this), method = othis.data('method');
+				active[method] ? active[method].call(this, othis) : '';
+			});
+			initWarehouseMultiSelect("storageLocation_search","storageLocationSelect",0,'');
+			inintPlantMultiSelect("stationCodeSelect", [], 4);//工位
+			table.on('tool(processOrderDetailTabF)', function(obj){
+				var data = obj.data;
+				processOrderDetailData=data;
+				 if(data.event = "showStationOrder"){//点击物料编码的某一列
+					 layer.open({
+					        type: 2
+					        ,title:'库位下架清单'
+					        ,area: ['100%', '400px']
+					        ,id: 'processStationOrder' //防止重复弹出
+					        ,content: 'processStationOrder.html'
+					        ,shade: 0 //不显示遮罩
+					        ,cancel:function(index, layero){
+					        	layer.closeAll();
+
+					        }
+					  });
+				}
+			});
+		}
+
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<meta charset="UTF-8">
+  <#if athemTag.add?? && athemTag.add=="true">
+  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>增加</button>
+  </#if>
+  <#if athemTag.edit?? && athemTag.edit=="true">
+  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+  </#if>
+  <#if athemTag.check?? && athemTag.check=="true">
+  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="check" type="button"><i class="layui-icon layui-icon-about"></i>查看</button>
+  </#if>
+  <#if athemTag.del?? && athemTag.del=="true">
+  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>
+  </#if>
+  <#if athemTag.print?? && athemTag.print=="true">
+  	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="print" type="button"><i class="mine-icon icon-print"></i>打印</button>
+  </#if>
+
+
+  
+   <#if athemTag.revoke?? && athemTag.revoke=="true">
+    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="revoke" type="button"><i class="layui-icon">&#xe603;</i>作废</button>
+  </#if>
+    <#if athemTag.goDown?? && athemTag.goDown=="true">
+    <button class="layui-btn layui-btn-normal layui-btn-sm" id="goDown" data-method="goDown" type="button"><i class="layui-icon">&#xe61a;</i>下达</button>
+  </#if>
+
+  <#if athemTag.search?? && athemTag.search=="true">
+  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+  </#if>
+  <#if athemTag.import?? && athemTag.import=="true">
+  	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="import" id="import" type="button"><i class="layui-icon layui-icon-import"></i>导入</button>
+  </#if>
+  <#if athemTag.export?? && athemTag.export=="true">
+  	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+  </#if>
+  <#if athemTag.handle?? && athemTag.handle=="true">
+  	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="handle" type="button"><i class="mine-icon"></i>处理</button>
+  </#if>
+  
+  <script src="${ctx}/pages/js/jquery-3.3.1.min.js" charset="UTF-8"></script>
+  <script src="${ctx}/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+	$(function(){
+		$(document).keyup(function(event){
+			if(event.keyCode==13){
+				 $("#search").click();
+			}
+		})
+	});
+	</script>

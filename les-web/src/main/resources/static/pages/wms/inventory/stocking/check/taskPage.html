@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+    <title>盘点任务列表</title>
+</head>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库名称</label>
+                <div class="layui-input-inline">
+                    <select id="warehouseCode" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="layui-col-md2">
+                <label class="layui-form-label">执行状态</label>
+                <div class="layui-input-inline">
+                    <select id="checkStatus" xm-select="checkStatusSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                        <option value="0">待盘点</option>
+                        <option value="1">正在盘点</option>
+                        <option value="-1">盘点结束</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-col-md2">
+                <label class="layui-form-label">审核状态</label>
+                <div class="layui-input-inline">
+                    <select id="verifyStatus" xm-select="verifyStatusSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                        <option value="0">未审核</option>
+                        <option value="-1">取消损益</option>
+                        <option value="5">接受损益</option>
+                        <option value="10">客户平仓</option>
+                    </select>
+                </div>
+            </div>
+            
+
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button">
+                    <i class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i
+                        class="layui-icon layui-icon-reset"></i>重置
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <div class="layui-fluid-table">
+        <div class="layui-row layui-form">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="new" id="new" type="button"
+                        title="新建"><i class="layui-icon layui-icon-add-circle"></i>新建
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="delete" id="delete" type="button"
+                        title="删除"><i class="layui-icon layui-icon-edit"></i>删除
+                </button>
+            </div>
+        </div>
+        <table id="taskTab" lay-filter="taskTabF"></table>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/commonUtil.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+    var wmsContextPath = config.stockConfig.contextPath;
+    var table = layui.table;
+    var form = layui.form;
+    var laydate = layui.laydate;
+    var oldData;
+    var active = {
+        /** 搜索 */
+        search: function (othis) {
+            let warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+            let checkStatus = $('#checkStatus').val() != '' ? $('#checkStatus').val() : '';
+            let verifyStatus = $('#verifyStatus').val() != '' ? $('#verifyStatus').val() : '';
+
+            //执行重载
+            table.reload('taskTabId', {
+                where: {
+                    warehouseCode: warehouseCode,
+                    checkStatus: checkStatus,
+                    verifyStatus: verifyStatus
+                },
+                page: { "curr": 1 }
+            });
+        },
+        /** 重置 */
+        reset: function (othis) {
+            layui.formSelects.value('warehouseCodeSelect', []);//仓库编号
+            form.render();
+        },
+
+        /** 新建 */
+        new: function (othis) {
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                , title: '新增盘点任务'
+                , maxmin: false
+                , area: ['450px', '450px']
+                , offset: type
+                , id: 'task_new' + type //防止重复弹出
+                , content: 'createTask.html'
+                , shade: [0.8, '#393D49'] //显示遮罩
+                , yes: function () {
+                    layer.closeAll();
+                }
+            });
+        },
+        /** 修改 */
+        modify: function (othis) {
+            let task = table.checkStatus('taskTabId').data;
+
+            if (task.length <= 0) {
+                layer.alert('请选择要编辑的行！', { icon: 2 });
+                return;
+            } else if (task.length > 1) {
+                layer.alert('编辑不能超过多行！', { icon: 2 });
+                return;
+            }
+            oldData = task[0];
+            if (oldData.checkStatus >= 0) {
+                layer.alert('任务状态错误:该盘点任务不可编辑', { icon: 2 });
+                return;
+            }
+            console.log("修改>>>", oldData);
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                , title: '编辑任务'
+                , maxmin: false
+                , area: ['1500px', '600px']
+                , offset: type
+                , id: 'task_modify' + type //防止重复弹出
+                , content: '/iles/pages/wms/inventory/check/job/updateTask.html'
+                , shade: [0.8, '#393D49'] //显示遮罩
+                , yes: function () {
+                    layer.closeAll();
+                }
+            });
+        },
+        /** 删除 */
+        delete: function (othis) {
+            let task = table.checkStatus('taskTabId').data;
+            if (task == null || task.length === 0) {
+                layer.alert('请选择要删除的盘点任务信息！', { icon: 2 });
+                return;
+            } else if (task.length > 1) {
+                layer.alert('请选中一行进行删除操作', { icon: 2 });
+                return;
+            }
+            let checkStatus = task[0].checkStatus;
+            if (checkStatus != 0) {
+                layer.alert('该任务 正在盘点(盘点完成),不可删除', { icon: 2 });
+                return;
+            }
+            let list = { id: task[0].taskId };
+            console.log(">>>>>删除list:", list);
+            layer.confirm('是否删除所选的记录?', { icon: 3, title: '提示' }, function (index) {
+                var option = {
+                    url: wmsContextPath + 'web/checkInventory/removeTask?id=' + task[0].taskId,
+                    type: 'POST',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify(list),
+                    success: function (data) {
+                        if (data.code == 0) {
+                            layer.alert("执行成功");
+                            table.reload('taskTabId');
+                        } else {
+                            console.log(">>>>data", data);
+                            layer.alert("执行失败");
+                        }
+                    }, error: function (data) {
+                        layer.alert(data.msg);
+                    }
+                };
+                $.ajax(option);
+                layer.close(index);
+            });
+        },
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#taskTab',
+            id: 'taskTabId',
+            url: wmsContextPath + 'web/checkInventory/pageResult',
+            cols: [[
+                { type: 'checkbox', fixed: 'left' },
+                { type: 'numbers', title: '序号', fixed: 'left' },
+                { field: 'taskNumber', title: '任务号' },
+                { field: 'clientName', title: '客户名称' },
+                { field: 'warehouseName', title: '仓库名称' },
+                { field: 'positionNum', title: '待盘仓位数量' },
+                { field: 'createBy', title: '创建人' },
+                {
+                    field: 'checkStatus', width: 100, title: '盘点状态',
+                    templet(d) {
+                        let type = d.checkStatus;
+                        if (type == 0) {
+                            return '待盘点';
+                        } else if (type == 1) {
+                            return '正在盘点';
+                        } else if (type == -1) {
+                            return '盘点结束';
+                        } else {
+                            return '-';
+                        }
+                    }
+                },
+                {field: 'createTime', width: 125, title: '开始日期',},
+                {
+                    field: 'endTime', width: 125, title: '结束日期',
+                    templet(d) {
+                        return d.endTime == null ? '未结束' : d.endTime;
+                    }
+                },
+                { field: 'verifyUserName',  width: 125, title: '指定审核人' },
+                {
+                    align: 'center', field: 'verifyStatus', width: 130, title: '审核状态',
+                    templet(d) {
+                        let status = d.verifyStatus;
+                        if (status == 0) {
+                            return '未审核';
+                        } else if (status == 5) {
+                            return '接受结果损益';
+                        } else if (status == 10) {
+                            return '客户平仓';
+                        } else if (status == -1) {
+                            return '取消损益';
+                        } else {
+                            return '-';
+                        }
+                    }
+                },
+
+                { align: 'center', title: '操作', toolbar: '#toolBar', width: 185, fixed: 'right' }
+
+            ]],
+            page: { theme: '#008155' },
+            height: 'full-95',
+            even: true,
+            done: function (res, page, count) {//列表数据回调函数
+
+            }
+        });
+
+        //监听工具条
+        table.on('tool(taskTabF)', function (obj) {
+            var eventName = obj.event;
+            var clickObj = obj.data;
+            console.log("clickObj", clickObj);
+
+            /** 任务详情 */
+            if (eventName == "detail") {//详情
+                oldData = obj.data;
+                layer.open({
+                    type: 2
+                    , title: '盘点任务详情'
+                    , maxmin: true
+                    , area: ['1000px', '700px']
+                    , offset: 2
+                    , id: 'taskTabFDetail' + 2 //防止重复弹出
+                    , content: 'detailLG.html'
+                    , shade: [0.8, '#fff'] //显示遮罩
+                    , yes: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+            /** 任务撤销 */
+            if (eventName == "revoke") {
+                let vo = { "id": clickObj.id }
+                layer.confirm('是否撤销所选的任务?', { icon: 3, title: '提示' }, function (index) {
+                    var option = {
+                        url: wmsContextPath + 'web/checkInventory/inventoryTaskCancellation',
+                        type: 'POST',
+                        contentType: "application/json",
+                        dataType: 'json',
+                        data: JSON.stringify(vo),
+                        success: function (data) {
+                            if (data.code == 0) {
+                                layer.alert("执行成功");
+                                table.reload('taskTabId');
+                            } else {
+                                console.log(">>>>data", data);
+                                layer.alert("执行失败");
+                            }
+                        }, error: function (data) {
+                            layer.alert(data.msg);
+                        }
+                    };
+                    $.ajax(option);
+                    layer.close(index);
+                });
+            }
+            /** 任务复盘 */
+            if (eventName == "replay") {
+                let vo = { "id": clickObj.id }
+                layer.confirm('是否复盘所选的任务?', { icon: 3, title: '提示' }, function (index) {
+                    var option = {
+                        url: wmsContextPath + 'web/checkInventory/inventoryTaskReplay',
+                        type: 'POST',
+                        contentType: "application/json",
+                        dataType: 'json',
+                        data: JSON.stringify(vo),
+                        success: function (data) {
+                            if (data.code == 0) {
+                                layer.alert("执行成功");
+                                table.reload('taskTabId');
+                            } else {
+                                console.log(">>>>data", data);
+                                layer.alert("执行失败");
+                            }
+                        }, error: function (data) {
+                            layer.alert(data.msg);
+                        }
+                    };
+                    $.ajax(option);
+                    layer.close(index);
+                });
+            }
+            /** 任务损益信息 */
+            if (eventName == "gainsLosses") {
+                oldData = obj.data;
+                layer.open({
+                    type: 2
+                    , title: '盘点任务损益信息'
+                    , maxmin: true
+                    , area: ['1000px', '700px']
+                    , offset: 2
+                    , id: 'taskTabF_LG' + 2 //防止重复弹出
+                    , content: '/iles/pages/wms/inventory/check/lossGain/detailLG.html'
+                    , shade: [0.8, '#fff'] //显示遮罩
+                    , yes: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+        laydate.render({
+            elem: '#inventoryDates'
+            , type: 'date'
+            , trigger: 'click'
+            , range: true
+        });
+        initWarehouseMultiSelect("warehouseCode", "warehouseCodeSelect", "1", '');
+
+        form.render();
+    }
+</script>
+<script type="text/html" id="toolBar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail" title="查看任务详情">查看</a>
+    <!-- {{#  if(d.checkStatus == 0){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="revoke" title="盘点任务撤销">撤销</a>
+    {{#  } }}
+
+    {{#  if(d.checkStatus == 10  ){ }}
+    {{#  if(d.levelTask < 2 && d.checkStatus != 5 ){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="replay" title="异常仓位复盘">复盘</a>
+    {{#  } }}
+
+    <a class="layui-btn layui-btn-xs" lay-event="gainsLosses" title="盘点损益详情">损益</a>
+    {{#  } }} -->
+</script>
+
+</html>

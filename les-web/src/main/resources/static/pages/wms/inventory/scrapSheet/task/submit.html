@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+    <title>提交报废任务</title>
+
+</head>
+<div id="bodyDiv">
+
+</div>
+
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/layui/lay/modules/formSelects-v4.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/commonUtil.js" charset="UTF-8"></script>
+
+<script type="text/html" id="bodyTpl">
+    <div class="layui-form">
+        <form class="layui-form" style="margin: 5% 15px 0 10px;"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-required">申请人姓名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="userName" lay-verify="required" placeholder="请输入申请人姓名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-required">申请人工号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="userCode" lay-verify="required" placeholder="请输入申请人姓名" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-required">部门名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="deptName" lay-verify="required" placeholder="请输入部门名称" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label layui-required">申请部门号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="deptCode" lay-verify="required" placeholder="请输入申请部门号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="text-align: center;">
+                <div class="layui-input-block" style="margin-left: auto;">
+                    <div class="layui-footer">
+                        <a class="layui-btn layui-btn-xs click" lay-event="submit" lay-submit="" data-method="submit">立即提交</a>
+                    </div>
+
+<!--                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">提交表单</button>-->
+<!--                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>-->
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+
+
+
+
+</script>
+
+<script type="text/javascript">
+
+
+    var wmsContextPath = config.wmsConfig.contextPath;
+    var form= layui.form;
+    var formSelects = layui.formSelects;
+    var oldData = parent.oldData;
+
+    var active = {
+
+        /** 提交 */
+        submit: function (othis) {
+
+            let userName = $("[name='userName']").val();
+            let userCode = $("[name='userCode']").val();
+            let deptName = $("[name='deptName']").val();
+            let deptCode = $("[name='deptCode']").val();
+
+            let data1= {
+                "id":oldData.id,
+                "warehouseCode":oldData.storageLocation,
+                "checkCode":oldData.taskCode,
+                "userName":userName,
+                "userCode":userCode,
+                "deptName":deptName,
+                "deptCode":deptCode,
+            };
+            layer.confirm('是否提交报废申请?', {icon: 3, title: '提示'}, function (index) {
+                var option = {
+                    url: wmsContextPath + 'discardMainPC/scrapApplicationSubmit',
+                    type: 'POST',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify(data1),
+                    success: function (data) {
+                        if (data.code == 0) {
+                            layer.alert("执行成功");
+                            var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                            parent.layer.close(index);
+                            parent.table.reload('taskTabId');
+                        } else {
+                            console.log(">>>>data", data);
+                            layer.alert("执行失败");
+                            return false;
+                        }
+                    }, error: function (data) {
+                        console.error("错误>>>", data);
+                        layer.alert("执行失败");
+                    }
+                };
+                $.ajax(option);
+                layer.close(index);
+            });
+        },
+    };
+
+
+
+    function loadding() {
+
+        $('.click').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+        $("[name='userName']").val(oldData.createrName);
+
+        form.render();
+    };
+
+</script>
+</html>

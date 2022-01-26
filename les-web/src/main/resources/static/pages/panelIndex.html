@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>LES物流执行系统</title>
+<link href="${ctx}/pages/css/panel/assets/css/bootstrap.css" rel="stylesheet" />
+<link href="${ctx}/pages/css/panel/assets/css/panelIndexStyle.css" rel="stylesheet" />
+</head>
+<body>
+<div class="login-bg"></div>
+<div class="login-main">
+  <div class="login-top"> <img src="/iles/pages/assets/img/panel_logo.png"> </div>
+  <div class="login-bottom">
+    <!--========ROW==========-->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="col-md-12" id="station_manage" style="cursor: pointer;">
+          <div class="card bg-gradient-success card-img-holder text-white">
+            <div class="card-body text1"><img src="/iles/pages/assets/img/icon_7.png" class="card-img-absolute2" alt="circle-image"/>工位齐套管理</div>
+          </div>
+        </div>
+        <div class="col-md-6" >
+          <div                      id="home_index"  class="card bg-gradient-success1 card-img-holder text-white">
+            <div class="card-body"><img src="/iles/pages/assets/img/icon_11.png" class="card-img-absolute" alt="circle-image"/></div>
+          </div>
+        </div>
+        <div class="col-md-6" id="send_plan" style="cursor: pointer;">
+          <div class="card bg-gradient-success2 card-img-holder text-white">
+            <div class="card-body text2"><img src="/iles/pages/assets/img/icon_5.png" class="card-img-absolute4" alt="circle-image"/>配送计划管理</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="col-md-6" id="pointReceive" style="cursor: pointer;">
+          <div class="card bg-gradient-success3 card-img-holder text-white">
+            <div class="card-body text2"><img src="/iles/pages/assets/img/icon_4.png" class="card-img-absolute4" alt="circle-image"/>卸货点收管理</div>
+          </div>
+        </div>
+        <div class="col-md-6" id="zjrwgl" style="cursor: pointer;">
+          <div class="card bg-gradient-success4 card-img-holder text-white">
+            <div class="card-body text2"><img src="/iles/pages/assets/img/icon_3.png" class="card-img-absolute4" alt="circle-image"/>质检任务管理</div>
+          </div>
+        </div>
+        <div class="col-md-12" id="assemble_manage" style="cursor: pointer;">
+          <div class="card bg-gradient-success5 card-img-holder text-white">
+            <div class="card-body text1"><img src="/iles/pages/assets/img/icon_6.png" class="card-img-absolute2" alt="circle-image"/>集配任务管理</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="col-md-6 col-xs-6 col-sm-6"  id="send_manage" style="cursor: pointer;">
+         <div class="card bg-gradient-success6 card-img-holder text-white" >
+            <div class="card-body text3"><img src="/iles/pages/assets/img/icon_2.png" class="card-img-absolute3" alt="circle-image"/>配送任务管理</div>
+          </div>
+
+        </div>
+
+           <div class="card bg-gradient-success8 card-img-holder text-white" id="video">
+            <div class="card-body text33"><img src="/iles/pages/assets/img/icon_8.png" class="card-img-absolute33" alt="circle-image"/>标准智能物流</div>
+          </div>
+		   <div class="card bg-gradient-success7 card-img-holder text-white" id="help_manual">
+            <div class="card-body text33" id="help_manual"><img src="/iles/pages/assets/img/icon_1.png" class="card-img-absolute33" alt="circle-image"/>标准物流作业</div>
+          </div>
+
+
+
+      </div>
+    </div>
+    <!--========END ROW==========-->
+  </div>
+</div>
+<script src="${ctx}/pages/layui/layui.all.js"></script>
+<script type="text/javascript">
+	var $ = layui.$;
+	$("#station_manage").click(function(obj){
+		//location.href="mfc/panel/quehuo.html";
+		location.href="http://172.31.120.33:8080/TableauMobile/WorkstationMaterials.html";
+	});
+	$("#pointReceive").click(function(obj){
+		location.href="mfc/panel/dxallnew.html";
+	});
+	$("#send_manage").click(function(obj){
+		location.href="mfc/panel/sendPanel.html";
+	});
+	$("#zjrwgl").click(function(obj){
+		location.href="mfc/panel/zhijian.html";
+	});
+	$("#assemble_manage").click(function(obj){
+		location.href="mfc/panel/assemblePlanManage.html";
+	});
+	$("#send_plan").click(function(obj){
+		location.href="orders/outOrders/stationOrdersAll.html";
+	});
+
+	$("#home_index").click(function(obj){
+		location.href="/iles/homePage";
+	});
+
+	$("#help_manual").click(function(obj){
+		//location.href="workIndex.html";
+		window.open("workIndex.html");
+	});
+
+	$("#video").click(function(obj){
+		location.href="/iles/pages/video.html";
+	});
+
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+html,body{height: 100%;overflow: hidden;}
+.table-responsive {
+    overflow-x: hidden;
+    overflow-y: auto !important;
+	font-family: 'Arial Unicode MS';
+}
+.table-responsive table th {
+    background-color: #F2F2F2;
+    border: 0.5px solid #000;
+    position: relative !important;
+    text-align: center;
+    top: 0;
+}
+.table-responsive table thead tr:first-child th{background-color: white;}
+.table-responsive table th>div{
+    display: block;
+    height: 100%;
+	line-height: 20px;
+	box-sizing: border-box;
+}
+.section-scroll{
+    height:calc(100% - 60px);
+}
+
+.table-responsive table thead tr:last-child th{display: none;}
+
+.buttons{margin-top: 20px;}
+.buttons .dateBox{display: inline-block; margin-left: 20px;}
+.buttons .dateBox input{width: 150px; height: 36px; border: 0.5px solid #838B8B; padding: 0 10px;}
+.buttons .timeBox{display: inline-block; margin-left: 20px;}
+.buttons .timeBox select{width: 170px; height: 36px; border: 0.5px solid #838B8B; padding: 0 10px;}
+.buttons .search{margin-left: 60px;}
+.buttons .export{margin-left: 20px;}
+
+
+.branchTable{}
+.branchTable table{width: 100%; font-size: 15px; border-collapse:collapse; border:0;}
+.branchTable table th,td{border: 0.5px solid #838B8B;}
+.branchTable table thead tr + tr + tr{background-color: white;}
+.branchTable table thead tr:first-child th{padding: 10px 0; font-size: 20px; border: 0;}
+/* .branchTable table tbody tr:nth-child(2n){background-color: #838B8B;} */
+.branchTable table tbody tr:hover{background-color: #F2F2F2;}
+.branchTable table tbody tr:hover:first-child td:nth-child(2){background-color: white;}
+.branchTable table tbody tr:hover:nth-child(7n+1) td:first-child{background-color: white;}
+.branchTable table tbody tr:nth-child(7n){font-weight: bold;}
+.branchTable table tbody td{text-align: center; padding: 3px 0;}
+.branchTable table .remarks textarea{width: 100%; min-height: 80px; resize: vertical; border: 0; padding: 0; font-size: 18px; outline: none; text-indent: 1em;}
+.branchTable table .dateBox{float: right; margin-right: 1em;}
+
+.storeTable{}
+.storeTable table{width: 100%; font-size: 15px; border-collapse:collapse; border:0;}
+.storeTable table th,td{border: 0.5px solid #838B8B;}
+.storeTable table thead tr + tr + tr{background-color: #838B8B;}
+.storeTable table thead tr:first-child th{padding: 20px 0; font-size: 26px; border: 0;}
+.storeTable table tbody tr:nth-child(2n){background-color: #838B8B;}
+.storeTable table tbody tr:hover{background-color: #F2F2F2;}
+.storeTable table tbody tr:hover:first-child td:nth-child(1){background-color: white;}
+.storeTable table tbody tr:nth-child(7n){font-weight: bold;}
+.storeTable table tbody td{text-align: center; padding: 3px 0;}
+.storeTable table .dateBox{float: right; margin-right: 1em;}
+
+.abnormalTable{}
+.abnormalTable table{width: 100%; font-size: 15px; border-collapse:collapse; border:0;}
+.abnormalTable table th,td{border: 0.8px solid #838B8B;}
+.abnormalTable table thead tr + tr + tr{background-color: #838B8B;}
+.abnormalTable table thead tr:first-child th{padding: 20px 0; font-size: 26px; border: 0;}
+/* .abnormalTable table tbody tr:nth-child(2n){background-color: #838B8B;} */
+.abnormalTable table tbody tr:hover{background-color: #F2F2F2;}
+.abnormalTable table tbody td{text-align: center; padding: 3px 0;}
+.abnormalTable table .dateBox{float: right; margin-right: 1em;}
+
+.analysisTable{}
+.analysisTable table{width: 100%; font-size: 15px; border-collapse:collapse; border:0;}
+.analysisTable table tr.assort td:first-child{color: red;}
+.analysisTable table tr.subtitle{background-color: #838B8B;}
+.analysisTable table th,td{border: 0.5px solid #838B8B;}
+.analysisTable table thead tr:first-child th{padding: 20px 0; font-size: 26px; border: 0;}
+.analysisTable table tbody tr:hover{background-color: #F2F2F2;}
+.analysisTable table tbody td{text-align: center; padding: 3px 0;}

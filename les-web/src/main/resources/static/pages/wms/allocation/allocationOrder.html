@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>调拨任务管理</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+</head>
+<style type="text/css">
+	.layui-table-body{overflow-x:scroll;}
+	.firstSpan{margin-left: 35px}
+	.aloneSpan{margin-left: 35px;cursor: pointer}
+	.hidden2Div{margin-top: 15px;margin-left: 30px}
+	.hidden2Div li{margin-bottom: 10px}
+</style>
+
+<body>
+<div id="bodyDiv">
+
+</div>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script type="text/html" id="bodyTpl">
+<div class="layui-collapse">
+   <div class="layui-colla-item">
+   	<h2 class="layui-colla-title">检索信息</h2>
+   	<div class="layui-colla-content">
+		<div class="layui-fluid">
+			<div class="layui-row layui-form">
+			    <div class="layui-col-md3">
+					<label class="layui-form-label">凭证号:</label>
+			 	  	<div class="layui-input-block">
+			      		<input type="text" id="voucherCode" class="layui-input">
+			     	</div>
+				</div>
+
+			   <div class="layui-col-md3">
+			 	 <label class="layui-form-label">集配订单:</label>
+			 	  <div class="layui-input-block">
+			      	<input type="text" id="assembleOrderCode" class="layui-input">
+			     </div>
+			   </div>
+
+				<div class="layui-col-md3">
+				 	<label class="layui-form-label">状态:</label>
+					<div class="layui-input-block layui-form">
+					      <select  id="status">
+					        <option value="">请选择</option>
+					        <option value="0">未处理</option>
+					        <option value="1">已处理</option>
+					      </select>
+					</div>
+				</div>
+
+				</div>
+				<div class="layui-row layui-form">
+
+					<div class="layui-col-md3">
+						<label class="layui-form-label">发货时间:</label>
+				 	  	<div class="layui-input-block">
+				      		<input type="text" id="deliveryTime" class="layui-input">
+				     	</div>
+					</div>
+					<div class="layui-col-md3">
+						<label class="layui-form-label">发货仓库:</label>
+				 	  	<div class="layui-input-block">
+				      		<input type="text" id="lgort" class="layui-input">
+				     	</div>
+					</div>
+					<div class="layui-col-md2">
+						<div class="layui-btn-container" style="text-align: right;">
+							{{# if(d.search==null || d.search=="true"){ }}
+		                       <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+		                       <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+	                        {{# } }}
+						</div>
+					  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<table class="" id="allocationTab" lay-filter="allocationTabF"></table>
+</script>
+<script type="text/javascript">
+var element = layui.element;
+var layer = layui.layer;
+var table = layui.table;
+var laydate = layui.laydate;
+var form = layui.form;
+var data1 = null;
+var other1 = null;
+var voucherCode="";
+var contextPath = config.wmsConfig.contextPath;
+function loadding(){
+	//日期范围
+	laydate.render({
+	  elem: '#dateTime'
+	  ,range: true
+	});
+	laydate.render({
+		  elem: '#needDate'
+		  ,range: true
+	});
+	layui.use('laydate', function(){
+		var laydate = layui.laydate;
+		//时间选择器
+		  laydate.render({
+		    elem: '#deliveryTime'
+		    ,type: 'datetime'
+		    ,range: true
+		  });
+	});
+	form.render('select');
+
+	table.render({
+		elem:'#allocationTab',
+		id:'allocationTabId',
+		url:contextPath+'allocationOrder/queryAllocationList',
+		cols:[[
+			 {checkbox:true,fixed: 'left'}
+			,{field:'voucherCode',title:'凭证号',width:120,fixed: 'left'}
+			,{field:'assembleOrderCode',title:'集配单号',width:200,fixed: 'left'}
+			,{field:'allocationCode',title:'调拨单号',width:200,fixed: 'left'}
+			,{field:'createTime',title:'凭证日期',width:180}
+			,{field:'handoverUid',title:'交接人',width:200}
+			,{field:'lgort',title:'发货地点',width:90}
+			,{field:'umwrk',title:'收货工厂',width:90}
+			,{field:'umlgo',title:'收货地点',width:90}
+			,{field:'status',title:'状态',width:100}
+		]],
+		page: {theme: '#008155'},
+		height: 'full-95',
+		even:true
+	});
+	table.on('rowDouble(allocationTabF)',function(obj){
+		var data = obj.data;//当前行数据
+		voucherCode = data.voucherCode;
+		layer.open({
+	        type: 2
+	        ,title:'调拨任务详情列表'
+	        ,maxmin:false
+	        ,area: ['100%', '100%']
+	        ,id: 'allocationDetail' //防止重复弹出
+	        ,content: 'allocationDetail.html'
+	        ,shade: 0 //不显示遮罩
+	        ,yes: function(){
+	          layer.closeAll();
+	        }
+	 	 });
+	});
+	var active = {
+			search:function(othis){
+				  var deliveryTime = $('#deliveryTime').val();
+				  var deliveryStartTime = "";
+				  var deliveryEndTime="";
+				  if(deliveryTime.length>0){
+					  deliveryStartTime = deliveryTime.substring(0,20);
+					  deliveryEndTime =  deliveryTime.substring(22);
+				  }
+			      //执行重载
+			      table.reload('allocationTabId', {
+			        where:{
+//		 	        	beginTime:$('#dateTime').val().substring(0,10),
+//		        			endTime:$('#dateTime').val().substring(13),
+			        	voucherCode: $('#voucherCode').val(),
+			        	assembleOrderCode: $('#assembleOrderCode').val(),
+			        	deliveryStartTime:deliveryStartTime,
+			        	deliveryEndTime:deliveryEndTime,
+			        	lgort:$("#lgort").val(),
+			        	status:$('#status').val()
+			        },page:{"curr":1}
+			      });
+			},reset:function(othis){
+//		 		$('#dateTime').val("");
+				$('#voucherCode').val("");
+				$('#assembleOrderCode').val("");
+				$('#status').val("");
+				$("#lgort").val("");
+				$('#deliveryTime').val("");
+			}
+		};
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+		});
+		element.init();
+}
+</script>
+</body>
+</html>

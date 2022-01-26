@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>定时配置</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+ 
+</head>
+<body > 
+<div id="bodyDiv">
+
+</div>
+	<script type="text/html" id="bodyTpl">
+  <div class="layui-fluid">
+	<div class="layui-row layui-form">
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">任务名称:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="jobName_search" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">任务编号:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="jobCode_search" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">状态:</label>
+			 	 <div class="layui-input-block">
+			       <select name="status_search" id="status_search" class="layui-select">
+						<option value=""></option>
+					</select>
+			    </div>
+			</div>
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">任务类型:</label>
+			 	 <div class="layui-input-block">
+			       <select name="type_search" id="type_search" class="layui-select">
+						<option value=""></option>
+						<option value="0">类处理</option>
+						<option value="1">接口处理</option>
+					</select>
+			    </div>
+			</div>
+              
+		     <div class="layui-btn-container" style="text-align: right;">
+					{{# if(d.search==null || d.search=="true"){ }}
+             	 		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              			<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+              		{{# } }}
+		    </div>
+	   </div>
+     </div>
+<div class="layui-fluid-table">
+<div class="layui-row layui-form" style="margin-bottom: 0">
+		<div class="layui-btn-container" style="text-align: left;">
+		  
+         {{# if(d.add==null || d.add=="true"){ }}
+	      <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>增加</button>
+	     
+          {{# } }}	
+
+        {{# if(d.edit==null || d.edit=="true"){ }}
+ 
+	    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+                     
+        {{# } }}	
+
+        {{# if(d.del==null || d.del=="true"){ }}
+	     <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>				
+        {{# } }}	
+	     
+         
+	  </div>
+		 
+	</div>
+<table class="layui-hide" id="jobSetTab" lay-filter="jobSetTabF"></table>  
+ 
+</div>
+  </script>
+  	<script type="text/html" id="jobContrlBar">
+		<a class="layui-btn layui-btn-xs" lay-event="nowStart">立即执行</a>
+		<a class="layui-btn layui-btn-xs" lay-event="start" id="status_a">启动</a>
+	</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+  
+	<script type="text/javascript">
+	 var contextPath = config.quartzConfig.contextPath;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var oldData;//编辑时使用的
+		var dictItems = null;//数据字典
+		
+		function loadding(){
+		table.render({
+			elem:'#jobSetTab',
+			id:'jobSetTabId',
+			url:contextPath+'jobSetting/list',
+			cols:[[
+			{type:'checkbox'}
+			 ,{type:'numbers',title:'序号'}
+			,{field:'jobName',title:'任务名称'}
+			,{field:'jobCode',title:'任务编号'}
+			,{field:'jobClassName',title:'任务接口类'}
+			,{field:'jobGroup',title:'调用方式'}
+			,{field:'intervalTime',title:'间隔时间'}
+			,{field:'cron',title:'定时时间'}
+			,{field:'jobDesc',title:'任务描述'}
+			,{field:'type',title:'任务处理类型'}
+			,{field:'url',title:'接口处理地址'}
+			,{field:'status',title:'状态'}
+			//,{fiexd:'right',width: 180, align:'center', toolbar: '#jobContrlBar',title:'操作'},
+			,{width: 180, align:'center', toolbar: '#jobContrlBar',title:'操作'},
+			]],
+			page: {theme: '#c7272f'},
+//			height: 'full-95',
+    		even:true
+    		,done:function(res,page,count){//列表数据回调函数
+    			var dictType = new Array();
+    			dictType.push("enable");
+    			dictType.push("job_group");
+    			//查询字典
+    			var option={
+    					url:config.basicInfoConfig.contextPath+'dictItems/listDictItemByTypes',
+    					type:'POST',
+    					dataType:'json',
+    					contentType: "application/json",
+    					data:JSON.stringify(dictType),
+    					success:function(res){
+    						if(res.code==0){
+    							dictItems = res.data
+    							//列表中的状态赋值
+    							changeItemName(res.data);
+    							//搜索框的状态赋值
+    							defulatSelect(dictItems);
+    						}
+    					}
+	    			};
+    			$.ajax(option);
+    			//修改启动和停止按钮的值
+    			$("[data-field='12']").children().each(function(k){
+    				if(k<res.data.length+1 && k>0){
+    					if(res.data[k-1].status==0){
+    						$(this).find("#status_a").text("启动");
+    					}else if(res.data[k-1].status==1){
+    						$(this).find("#status_a").text("停止");
+    					}
+    				}else if(k>res.data.length+1){
+    					if(res.data[k-(res.data.length+2)].status==0){
+    						$(this).find("#status_a").text("启动");
+    					}else if(res.data[k-(res.data.length+2)].status==1){
+    						$(this).find("#status_a").text("停止");
+    					}
+    				}
+    			});
+    		}
+		});		
+		var active = {
+				add:function(othis){
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'新增任务配置信息'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type 
+				        ,id: 'jobAdd'+type //防止重复弹出
+				        ,content:'addJobSetting.html'
+				        ,shade: 0 //不显示遮罩
+			      	});
+				},
+				edit:function(othis){
+					var checkStatus = table.checkStatus('jobSetTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要编辑的行！',{icon: 2});
+      					return ;
+					}else if(oldData.length >1){
+      					layer.alert('编辑不能超过多行！',{icon: 2});
+      					return ;
+      				}
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'编辑任务调度信息'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type 
+				        ,id: 'jobEdit'+type //防止重复弹出
+				        ,content:'editJobSetting.html'
+				        ,shade: 0 //不显示遮罩
+				        ,yes: function(){
+				          layer.closeAll();
+				        }
+			     	 });
+				},del:function(othis){
+					var checkStatus = table.checkStatus('jobSetTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要删除的行！',{icon: 2});
+      					return ;
+					}
+					var idarrys = new Array();
+					for(var i=0;i<oldData.length;i++){
+						idarrys.push(oldData[i].id);
+					}
+					layer.confirm('确定删除任务调度信息', {icon: 3, title:'提示'}, function(index){
+			  			  //do something
+			  			  var option ={
+								url:contextPath+'jobSetting/deleteJobSetting',
+								type:'POST',
+								contentType: "application/json",
+								dataType:'json',
+								data:JSON.stringify(idarrys),
+								success:function(data){
+									if(data.code==0){
+										table.reload('jobSetTabId');//刷新列表
+									}
+								},error:function(data){
+									layer.alert(data.msg);
+								}
+							}
+							$.ajax(option);
+			  			  layer.close(index);
+			  			});
+				},search:function(othis){
+					var jobName = $('#jobName_search');
+					var jobCode =  $('#jobCode_search');
+					var status =  $('#status_search');
+					var type = $('#type_search');
+				      //执行重载
+				      table.reload('jobSetTabId', {
+				        where:{
+				        	jobName: jobName.val()
+				        	,jobCode: jobCode.val()
+				        	,status: status.val()
+				        	,type:type.val()
+				        }
+//				        ,page:{"curr":1}
+				      });
+				},reset:function(othis){
+					$('#jobName_search').val("");
+					$('#jobCode_search').val("");
+					$('#status_search').val("");
+					$('#type_search').val("");
+					form.render("select");
+				},check:function(othis){
+					var checkStatus =  table.checkStatus('jobSetTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要查看的行！',{icon: 2});
+      					return ;
+					}else if(oldData.length >1){
+      					layer.alert('查看不能超过多行！',{icon: 2});
+      					return ;
+      				}
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'任务调度信息'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type 
+				        ,id: 'jobInfo'+type //防止重复弹出
+				        ,content: 'jobSettingInfo.html'
+				        ,shade: 0 //不显示遮罩
+			     	 });
+				}
+				
+				
+		
+		};
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		
+		
+		function changeItemName(data){
+	    		//状态数据处理
+	    		$("[data-field='status']").children().each(function(){
+	    			for(var i=0;i<data.length;i++){
+	    				if(data[i].dictTypeId=="enable" && data[i].itemValue==$(this).text().trim()){
+	    					$(this).text(data[i].itemName);
+	    				}
+	    			}
+	    		});
+	    		$("[data-field='jobGroup']").children().each(function(){
+	    			for(var i=0;i<data.length;i++){
+	    				if(data[i].dictTypeId=="job_group" && data[i].itemValue==$(this).text().trim()){
+	    					$(this).text(data[i].itemName);
+	    				}
+	    			}
+	    		});
+	    		$("[data-field='type']").children().each(function(){
+	    			
+    				if("0"==$(this).text().trim()){
+    					$(this).text("类处理");
+    				}else if("1"==$(this).text().trim()){
+    					$(this).text("接口处理");
+    				}
+	    		
+	    		});
+		}
+		function defulatSelect(dictItems){
+			if(dictItems && dictItems.length>0){
+				if($("#status_search").find("option").length==1){
+				  for(var i=0;i<dictItems.length;i++){
+					   if(dictItems[i].dictTypeId=="enable"){
+						  $("#status_search").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+					  }
+				  }
+				  form.render('select');
+			  }
+			}
+		}
+		table.on('tool(jobSetTabF)', function(obj){
+			var eventName = obj.event;
+			var data = obj.data;
+			var urlStr="";
+			var flg = false;
+			if("nowStart"==eventName){
+				urlStr=contextPath+"jobSetting/nowStart";
+			}else if("pause"==eventName){
+				
+			}else if("start"==eventName){
+				if(data.status==0){
+					urlStr=contextPath+"jobSetting/startSchedul";
+				}else if(data.status==1){
+					urlStr=contextPath+"jobSetting/stopSchedule";
+				}
+				flg = true;
+			}
+			var option = {
+					url:urlStr,
+					type:'POST',
+					contentType: "application/json",
+					dataType:'json',
+					data:JSON.stringify(data),
+					success:function(res){
+						if(res.code==0){
+							layer.alert(res.data,{icon: 2});
+							if(flg)
+								table.reload("jobSetTabId");
+						}else{
+							layer.alert("失败:"+res.data);
+						}
+					}
+			}
+			$.ajax(option);
+		});
+		}
+	</script>
+
+ </body>
+</html>

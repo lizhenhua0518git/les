@@ -1,0 +1,31 @@
+{
+	"code": 0,
+	"msg": "成功！",
+	"data": {
+		"finishedCount": 16,
+		"totalCount": 80,
+		"task": [
+			{
+				"status": "15",
+				"materialDesc": "乘用车前桥C50",
+				"supplierName": "湖南飞桥设备生产有限公司",
+				"lengthOfTime": "14"
+			}, {
+				"status": "10",
+				"materialDesc": "乘用车前车门",
+				"supplierName": "湖南车门设备生产有限公司",
+				"lengthOfTime": "11"
+			}, {
+				"status": "15",
+				"materialDesc": "乘用车前桥C50",
+				"supplierName": "湖南飞桥设备生产有限公司",
+				"lengthOfTime": "12"
+			}, {
+				"status": "10",
+				"materialDesc": "乘用车前车门",
+				"supplierName": "湖南车门设备生产有限公司",
+				"lengthOfTime": "11"
+			}
+		]
+	}
+}

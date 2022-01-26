@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.dao.StrategyInfoDao">
+   
+
+    
+      <insert id="save" >
+<!--        <selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">-->
+<!--            select replace(uuid(),'-','') from dual-->
+<!--        </selectKey>-->
+        INSERT INTO t_strategy_result
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+
+            dict_id,
+            dict_item_id,
+            dict_type,
+            <if test="createTime != null">create_time</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+
+             #{dictId},
+             #{dictItemId},
+             #{dictType},
+
+            <if test="createTime != null ">#{createTime}</if>
+        </trim>
+    </insert>
+    
+    
+
+    
+    <delete id="remove">
+
+        delete from t_strategy_result   where  dict_id =#{dictId}
+
+    </delete>
+    
+    
+
+    
+    <select id="listStrategyInfoList" resultType="java.util.Map">
+         SELECT
+	i.id,
+	i.item_name,
+	i.item_value,
+	ifnull( r.id, '-1' ) 'flag',
+	r.id 'rid',
+CASE
+
+		WHEN r.id IS NULL THEN
+		"否" ELSE "是"
+	END 'flagName'
+FROM
+	t_dict_items i
+	LEFT JOIN t_strategy_result r ON r.dict_id = i.dict_type_id
+	AND r.dict_item_id = i.id
+	where i.dict_type_id =#{dictTypeId}
+    </select>
+    
+    
+
+    
+
+     
+
+</mapper>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+
+<title>成本中心管理</title>
+</head>
+<body id="bodyDiv">
+
+    <script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+    <script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+	<div class="layui-row layui-form">
+			<div class="layui-col-md2">
+                <label class="layui-form-label">成本中心编码</label>
+                 <div class="layui-input-inline">
+                  <input type="text" id="costCenterCode"    class="layui-input">
+                </div>
+            </div>
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">成本中心名称</label>
+			 	 <div class="layui-input-inline">
+			      <input type="text" id="costCenterName"    class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">成本中心类型</label>
+			 	 <div class="layui-input-inline">
+			       <select name="costCenterType" id="costCenterType" lay-verify="required">
+						<option value="">请选择</option>
+
+					</select>
+			    </div>
+			</div>
+      <div class="layui-col-md2">&nbsp;</div>
+      <div class="layui-col-md2">&nbsp;</div>
+		<div class="layui-col-md2">
+			<div class="layui-btn-container" style="text-align: right;">
+				{{# if(d.search==null || d.search=="true"){ }}
+             	 	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+              	{{# } }}
+			</div>
+		</div>
+	</div>
+</div>
+		<div class="layui-fluid-table">
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+
+			 <div class="layui-btn-container" style="text-align: left;">
+
+                  {{# if(d.syn==null || d.syn=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="syn" type="button"><i class="layui-icon layui-icon-search"></i>同步</button>
+                 {{# } }}
+
+		</div>
+	</div>
+	<table id="costCenterTab" lay-filter="costCenterTabF"></table>
+</div>
+</script>
+
+    <script type="text/javascript">
+
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var contextPath = config.basicInfoConfig.contextPath;
+    var oldData;
+
+    function loadding(){
+    table.render({
+        elem:'#costCenterTab',
+        id:'costCenterTabId',
+        url: contextPath + 'costCenter/',
+        cols:[[
+
+        {type:'numbers',title:'序号',width: 80},
+        {field:'costCenterDesc',title:'成本中心名称',sort:true},
+        {field:'costCenterCode', title: '成本中心编码'},
+        {field:'costCenterTypeName', title: '类型名称'},
+        {field:'companyCode', title: '公司代码'},
+        {field:'personLiable', title: '负责人'},
+        {field:'startDate', title: '生效时间'},
+        {field:'endDate', title: '截止时间'},
+        {field:'createTime', title: '创建时间'}
+        ]],
+        page: {theme: '#008155'},
+        even:true,
+        done:function(res,page,count){//列表数据回调函数
+
+        }
+    });
+
+    $('.layui-btn-container button').on('click', function(){
+        var othis = $(this), method = othis.data('method');
+        active[method] ? active[method].call(this, othis) : '';
+    });
+
+    queryDictItem('costCenter_type','costCenterType','');
+	form.render("select");
+   }
+
+
+    var active = {
+            syn:function(othis){
+            	var option ={
+						url:contextPath+'costCenter/getCostCenter',
+						type:'POST',
+						contentType: "application/json",
+						dataType:'json',
+						data:{},
+						success:function(data){
+							if(data.code==0){
+								layer.alert("同步成功");
+								table.reload('costCenterTabId');
+							}
+						},error:function(data){
+							layer.alert(data.msg);
+						}
+					}
+					$.ajax(option);
+            },
+            search:function(othis){
+                var costCenterName=$('#costCenterName').val();
+                var costCenterCode=$('#costCenterCode').val();
+                var costCenterType=$('#costCenterType').val();
+
+                var params={};
+                params.costCenterName=costCenterName;
+                params.costCenterCode=costCenterCode;
+                if(null !=costCenterType && costCenterType !=""){
+                	  params.costCenterType=costCenterType;
+                }
+
+                  //执行重载
+                  table.reload('costCenterTabId', {
+                    where:params,
+                    page:{"curr":1}
+                  });
+            },reset:function(othis){
+                $('#costCenterName').val("");
+                $('#costCenterCode').val("");
+                $('#costCenterType').val("");
+                form.render("select");
+            }
+
+    };
+
+    table.on('sort(costCenterTabF)', function (obj) {
+        var sortColums;
+        if(obj.field=="costCenterCode"){
+            sortColums = "costCenter_code "+obj.type;
+        }else if(obj.field=="createTime"){
+            sortColums = "create_time "+obj.type;
+        }
+        var costCenterName=$('#costCenterName').val();
+        var costCenterCode=$('#costCenterCode').val();
+        var costCenterType=$('#costCenterType').val();
+          //执行重载
+          table.reload('costCenterTabId', {
+            where:{
+            	costCenterName:costCenterName,
+            	costCenterCode:costCenterCode,
+            	costCenterType:costCenterType,
+                sortColums:sortColums,
+                page:1
+            }
+          });
+    });
+
+
+
+
+
+</script>
+</body>
+</html>

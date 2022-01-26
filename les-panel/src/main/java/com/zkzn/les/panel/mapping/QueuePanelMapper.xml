@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zkzn.les.panel.dao.QueuePanelDao">
+
+    <select id="listQueuePanel" parameterType="com.zkzn.les.common.pojo.panel.QueuePanel" resultType="com.zkzn.les.common.pojo.panel.QueuePanel">
+		select distinct rr.queue_code queueCode,
+           rr.queue_num queueNum,
+          fw.warehouse_name warehouseName,
+           rr.supplier_name supplierName,
+           (CASE WHEN  rr.status = 5 THEN '待入场' WHEN rr.status = 10 THEN '排队中' WHEN rr.status = 15 THEN '排队中' ELSE '已完成' END) AS "status",
+           rr.uplod_plat uplodPlat,
+           sc.car_code carCode,
+           date_format(rr.QUEUE_TIME,' %Y-%m-%d  HH24:MI') queueTime
+    from t_receive_record  rr
+        left join t_plm_plant_structure pp on pp.model_code = rr.factory
+        left join t_receive_detail_record d on d.receive_id=rr.id
+        left join t_receive_time_record rtr on rtr.receive_id = rr.id
+        left join t_send_car sc on sc.bill_id=rr.source_id
+         left join t_factory_warehouse fw on fw.storage_location = d.storage_location
+        where  fw.status=1 and  rr.status <![CDATA[<]]>15
+        and date_format(rr.create_time, '%Y-%m-%d')=date_format(sysdate, '%Y-%m-%d')
+        order by queue_code asc
+	</select>
+
+</mapper>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.receiveRecord.dao.CarrierDao">
+
+    <select id="listCarrier" resultType="java.util.Map">
+        SELECT t.id AS "id",
+        t.CARRIER_NAME AS "carrierName",
+        t.CARRIER_CODE AS "carrierCode",
+        t.CARRIER_TYPE AS "carrierType",
+        t.WAREHOUSE_CODE AS "warehouseCode"
+        FROM t_carrier t
+        WHERE t.STATUS = 0
+        <if test="null != list and list.size >0">
+            <foreach collection="list" open=" and t.CARRIER_CODE in  (" close=")" index="index" item="item"
+                     separator=",">
+                #{item.carrierCode}
+            </foreach>
+        </if>
+    </select>
+
+    <insert id="saveCarrierInfo" parameterType="java.util.List">
+        <foreach collection="list" separator=";" index="index" item="item">
+            INSERT INTO w_receive_carrier
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.receiveDetailId != null ">
+                    receive_detail_id,
+                </if>
+                <if test="item.carryNumber != null">
+                    carry_number,
+                </if>
+                <if test="item.carrierCode != null">
+                    carrier_code,
+                </if>
+                <if test="item.areaCode != null">
+                    area_code,
+                </if>
+                <if test="item.batchNo != null and '' != item.batchNo">
+                    batch_no,
+                </if>
+                <if test="item.materialDesc != null and '' != item.materialDesc">
+                    material_desc,
+                </if>
+                <if test="item.qualifiedType != null ">
+                    qualified_type,
+                </if>
+                    create_time
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="item.receiveDetailId != null ">
+                    #{item.receiveDetailId},
+                </if>
+                <if test="item.carryNumber != null">
+                    #{item.carryNumber,jdbcType=DOUBLE},
+                </if>
+                <if test="item.carrierCode != null">
+                    #{item.carrierCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.areaCode != null">
+                    #{item.areaCode},
+                </if>
+                <if test="item.batchNo != null and item.batchNo != ''">
+                    #{item.batchNo},
+                </if>
+                <if test="item.materialDesc != null and '' != item.materialDesc">
+                    #{item.materialDesc,jdbcType=VARCHAR},
+                </if>
+                <if test="item.qualifiedType != null ">
+                    #{item.qualifiedType},
+                </if>
+                sysdate()
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateOldCarrierInfo">
+        UPDATE t_receive_carrier
+        <set>
+            <if test="transferNum != null">
+                UNQUALIFIED_NUM = unqualified_num + #{transferNum}
+            </if>
+            <if test="transferNum != null">
+                ,QUALIFIED_NUM = qualified_num - #{transferNum}
+            </if>
+            <if test="transferDetailId != null">
+                ,TRANSFER_DETAIL_ID = #{transferDetailId}
+            </if>
+        </set>
+        WHERE CARRIER_ID = #{oldCarrierId} and MATERIAL_CODE= #{materialCode} and BATCH_NO =#{batchNo} and ORDER_CODE =
+        #{orderCode}
+    </update>
+
+    <select id="listReceiveCarrierInfo" resultType="java.util.Map">
+        SELECT
+            ID AS "id",
+            CARRY_NUMBER AS "carryNum",
+            CARRIER_CODE AS "carrierCode",
+            CARRIER_ID  AS "carrierId",
+            CARRIER_TYPE AS "carrierType",
+            ORDER_CODE AS "orderCode",
+            MATERIAL_CODE AS "materialCode",
+            BATCH_NO AS "batchNo",
+            UNQUALIFIED_NUM AS "unQualifiedNum",
+            QUALIFIED_NUM AS "qualifiedNum",
+            RECEIVE_DETAIL_ID AS "receiveDetailId"
+        FROM t_receive_carrier
+        <where>
+            <if test="newCarrierCode != null and ''!=carrierCode">
+                carrier_code = #{newCarrierCode}
+            </if>
+            <if test="materialCode != null and ''!=materialCode">
+               AND MATERIAL_CODE = #{materialCode}
+            </if>
+            <if test="batchNo != null and ''!=batchNo">
+               AND BATCH_NO = #{batchNo}
+            </if>
+            <if test="newCarrierId != null and ''!=newCarrierId">
+               AND CARRIER_ID = #{newCarrierId}
+            </if>
+            <if test="orderCode != null and ''!=orderCode">
+               AND ORDER_CODE = #{orderCode}
+            </if>
+        </where>
+    </select>
+
+
+    <update id="updateNewCarrierInfo">
+        UPDATE t_receive_carrier
+        <set>
+            <if test="transferNum != null">
+                UNQUALIFIED_NUM = unqualified_num + #{transferNum}
+            </if>
+            <if test="transferDetailId != null">
+                ,TRANSFER_DETAIL_ID = #{transferDetailId}
+            </if>
+        </set>
+        WHERE CARRIER_ID = #{newCarrierId} and MATERIAL_CODE= #{materialCode} and BATCH_NO =#{batchNo} and ORDER_CODE =
+        #{orderCode}
+    </update>
+</mapper>

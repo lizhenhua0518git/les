@@ -1,0 +1,340 @@
+<#assign  title="载具调拨管理" />
+	<#include '/header.html' />
+	<meta charset="UTF-8">
+
+<#if athemTag.loginFlag=="true" && athemTag.menuFlag=="true">
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+
+
+			 <div class="layui-col-md3">
+				<label class="layui-form-label">源仓库:</label>
+			 	 <div class="layui-input-block">
+			       <select  id="sourceWarehouseCode" name="sourceWarehouseCode">
+			        <option value="">请选择</option>
+			      </select>
+			    </div>
+			</div>
+
+
+			 <div class="layui-col-md3">
+				<label class="layui-form-label">目的仓库:</label>
+			 	 <div class="layui-input-block">
+			       <select  id="targetWarehouseCode" name="targetWarehouseCode">
+			        <option value="">请选择</option>
+			      </select>
+			    </div>
+			</div>
+
+
+            <div class="layui-col-md3">
+                <label class="layui-form-label">调拨数量:</label>
+                <div class="layui-input-block layui-form">
+                    <input type="text" class="layui-input" name="startAllocation" id="startAllocation" >
+
+                </div>
+            </div>
+            <div class="layui-col-md3" style="margin-left:-70px">
+                <label class="layui-form-label">至</label>
+                <div class="layui-input-block layui-form">
+
+                     <input type="text" class="layui-input" name="endAllocation" id="endAllocation">
+                </div>
+            </div>
+			 </div>
+			 <br>
+			<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+                <label class="layui-form-label">创建时间:</label>
+                <div class="layui-input-block layui-form">
+                    <input type="text" class="layui-input" name="startTime" id="startTime" placeholder="">
+
+                </div>
+            </div>
+            <div class="layui-col-md3" style="margin-left:-70px">
+                <label class="layui-form-label">至</label>
+                <div class="layui-input-block layui-form">
+
+                     <input type="text" class="layui-input" name="endTime" id="endTime" placeholder="">
+                </div>
+            </div>
+		</div>
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+			<div class="layui-col-md6">&nbsp;</div>
+			<div class="layui-col-md6">
+				<div class="layui-btn-container" style="text-align: center;">
+
+				  <#if athemTag.search?? && athemTag.search=="true">
+			 	 		<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+				  		<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+				  	</#if>
+				  	<#if athemTag.add?? && athemTag.add=="true">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" type="button"><i class="layui-icon layui-icon-del"></i>创建调拨任务</button>
+
+				  	</#if>
+
+				  	<#if athemTag.edit?? && athemTag.edit=="true">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-del"></i>修改调拨任务</button>
+
+				  	</#if>
+				  	<#if athemTag.del?? && athemTag.del=="true">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-del"></i>取消调拨任务</button>
+
+				  	</#if>
+
+          <input type="text" hidden="true"  id="id" name="id">
+
+				</div>
+			</div>
+		</div>
+	</div>
+	  <script src="${ctx}/pages/js/jquery-3.3.1.min.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<table class="layui-hide" id="carrierAllocationTab" lay-filter="carrierAllocationTabF"></table>
+
+	<script type="text/javascript">
+
+	layui.use('laydate', function(){
+		var laydate = layui.laydate;
+		//时间选择器
+		laydate.render({
+			 elem: '#startTime',
+		        range: false
+		});
+		//时间选择器
+		laydate.render({
+			 elem: '#endTime',
+		        range: false
+		});
+	});
+	var oldData;
+	var $ = layui.$;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	layui.use(['form','table','layer'],function(){
+
+
+
+	initWarehouseCode();
+	table.render({
+		elem:'#carrierAllocationTab',
+		id:'carrierAllocationTabId',
+		url:'${ctx}/carrier/queryCarrierAllocation',
+		cols:[[
+		{type:'checkbox'},
+		//{field:'id', title: 'ID', sort: true},
+		{field:'sourceWarehouseName', width:'15%', title: '源仓库',sort:true},
+		{field:'targetWarehouseName',width:'15%',title:'目的仓库'},
+		{field:'carrierNum', width:'11%', title: '调拨数量'},
+		{field:'carrierTypeName', width:'15%',title: '载具类型'},
+		{field:'createUserName', width:'15%', title: '创建人'},
+		{field:'createTime', width:'15%', title: '创建时间'},
+		 {fixed:'right',align:'center',title:'操作', toolbar:'#toolBar',width:100}
+		]],
+		page: {theme: '#008155'},
+   		height: 'full-95',
+   		even:true,
+   		done:function(res,page,count){//列表数据回调函数
+   			//initTableDate(res.data);
+
+   		}
+	});
+
+	var active = {
+			add:function(othis){
+				var type = othis.data('type');
+	  			layer.open({
+		        type: 2
+		        ,title:'新增载具调拨任务'
+		        ,maxmin:true
+		        ,area: ['800px', '300px']
+		        ,offset: type
+		        ,id: 'carrierAllocationAdd'+type //防止重复弹出
+		        ,content: '${ctx}/pages/basicInfo/carrier/addcarrierAllocation.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+		      });
+			}, edit:function(othis){
+                var checkStatus = table.checkStatus('carrierAllocationTabId');
+                oldData = checkStatus.data;
+            if(oldData.length<=0){
+                layer.alert('请选择要修改的行！',{icon: 2});
+                    return ;
+            }else if(oldData.length >1){
+                    layer.alert('修改不能超过多行！',{icon: 2});
+                    return ;
+                }
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                ,title:'修改调拨任务'
+                ,maxmin:true
+                ,area: ['800px', '450px']
+                ,offset: type
+                ,id: 'edit'+type //防止重复弹出
+                ,content: '${ctx}/pages/basicInfo/carrier/editcarrierAllocation.html'
+                ,shade: 0 //不显示遮罩
+                ,yes: function(){
+                  layer.closeAll();
+                }
+             });
+        },del:function(othis){
+	                var checkStatus = table.checkStatus('carrierAllocationTabId');
+	                oldData = checkStatus.data;
+	                if(oldData.length<=0){
+	                    layer.alert('请选择要取消的行！',{icon: 2});
+	                    return ;
+	                }
+	                var idarrys = new Array();
+	                for(var i=0;i<oldData.length;i++){
+	                    idarrys.push(oldData[i].id);
+	                }
+	                layer.confirm('确定取消选中的信息吗', {icon: 3, title:'提示'}, function(index){
+	                      //do something
+	                      var option ={
+	                            url:'${ctx}/carrier/delCarrierAllocation',
+	                            type:'POST',
+	                            contentType: "application/json",
+	                            dataType:'json',
+	                            data:JSON.stringify(idarrys),
+	                            success:function(data){
+	                                if(data.code==0){
+	                                	table.reload('carrierAllocationTabId');//刷新列表
+	                                }else{
+	                                	layer.alert(data.data);
+	                                }
+	                            },error:function(data){
+	                                layer.alert(data.data);
+	                            }
+	                        }
+	                        $.ajax(option);
+	                      layer.close(index);
+	                    });
+	            },search:function(othis){
+				var startTime =$('#startTime').val();
+				var endTime =$('#endTime').val();
+
+				if(startTime!=null && endTime!=null && startTime >endTime){
+					layer.alert('开始时间不能大于结束时间！',{icon: 2});
+                    return ;
+				}
+				var sourceWarehouseCode=$('#sourceWarehouseCode').val();
+				var targetWarehouseCode=$('#targetWarehouseCode').val();
+				var endAllocation=$('#endAllocation').val();
+				var startAllocation=$('#startAllocation').val();
+
+
+				var params={};
+				params.sourceWarehouseCode=sourceWarehouseCode;
+				params.targetWarehouseCode=targetWarehouseCode;
+				params.startAllocation=startAllocation;
+				params.endAllocation=endAllocation;
+
+				params.startTime=startTime;
+				params.endTime=endTime;
+			      //执行重载
+			      table.reload('carrierAllocationTabId', {
+			        where:params,
+			        page:{"curr":1}
+			      });
+			},reset:function(othis){
+				$('#sourceWarehouseCode').val("");
+				$('#targetWarehouseCode').val("");
+				$('#startAllocation').val("");
+				$('#endAllocation').val("");
+
+				 $('#startTime').val("");
+                 $('#endTime').val("");
+				form.render("select");
+			}
+
+	};
+
+	 table.on('tool(carrierAllocationTabF)', function(obj){
+	        var eventName = obj.event;          //事件名称
+	            //当前对象tr
+	        var clickObj = $(obj.tr[0]);
+
+	        if(eventName=="detail"){    //查看明细
+
+	        	 $("#id").val(obj.data.id);
+	        	  layer.open({
+	                  type: 2
+	                 ,title:'调拨任务明细'
+	                 ,maxmin:true
+	                 ,area: ['1000px', '500px']
+	                 ,offset: 33
+	                 ,id: 'detailList' //防止重复弹出
+	                 ,content: '${ctx}/pages/basicInfo/carrier/carrierAllocationDetail.html'
+	                 ,shade: 0 //不显示遮罩
+	                 ,yes: function(){
+	                   layer.closeAll();
+	                 }
+	               });
+	        }
+		  });
+
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+  	});
+
+	//表格数据初始化
+
+
+	function initWarehouseCode(){
+		var params={};
+		params.itemName='仓库';
+		params.dictName='组织类型';
+		$.ajax({
+			url:"${ctx}/dictItems/queryDictItemByName",
+			type:"post",
+			data :params,
+			success:function(result){
+				if(result.code==0){
+					var itemValue = result.data.itemValue;
+					params.orgType=itemValue;
+					$.ajax({
+						url:"${ctx}/orgination/queryOrgnizaByType",
+						type:"post",
+						data :params,
+						success:function(res){
+							if(res.code==0){
+								var WarehouseCodes=res.data;
+								if(WarehouseCodes.length>0){
+
+										for(var i=0;i<WarehouseCodes.length;i++){
+											$("#sourceWarehouseCode").append("<option value="+WarehouseCodes[i].orgCode+">"+WarehouseCodes[i].orgName+"</option>");
+											$("#targetWarehouseCode").append("<option value="+WarehouseCodes[i].orgCode+">"+WarehouseCodes[i].orgName+"</option>");
+										}
+
+
+										form.render('select');
+
+								}
+							}
+						}
+					});
+				}
+			}
+		});
+	}
+
+
+
+	});
+
+
+
+</script>
+<script type="text/html" id="toolBar">
+<button type="button" class="layui-btn layui-btn-normal" id="detail" lay-event="detail">明细</button>
+
+ </script>
+<#else>
+	<#include '/noAuthority.html' />
+</#if>
+<#include '/footer.html' />

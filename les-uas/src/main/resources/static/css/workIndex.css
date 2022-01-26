@@ -1,0 +1,122 @@
+/** 娓呴櫎鍐呭杈硅窛 **/
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 缁撴瀯鍏冪礌 */
+dl, dt, dd, ul, ol, li, /* list elements 鍒楄〃鍏冪礌 */
+pre, /* text formatting elements 鏂囨湰鏍煎紡鍏冪礌 */
+form, fieldset, legend, button, input, textarea, /* form elements 琛ㄥ崟鍏冪礌 */
+th, td /* table elements 琛ㄦ牸鍏冪礌 */ {
+  margin: 0;
+  padding: 0;
+}
+/** 閲嶇疆鍒楄〃鍏冪礌 **/
+ul, ol { list-style: none; }
+
+/** 閲嶇疆鏂囨湰鏍煎紡鍏冪礌 **/
+a { text-decoration: none; }
+a:hover { text-decoration: none; }
+
+/** 璁剧疆榛樿瀛椾綋 **/
+body,
+button, input, select, textarea /* for ie */ {
+  font: 12px/1.5 tahoma, arial, \5b8b\4f53, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 { font-size: 100%; }
+address, cite, dfn, em, var { font-style: normal; } /* 灏嗘枩浣撴壎姝� */
+code, kbd, pre, samp { font-family: courier new, courier, monospace; } /* 缁熶竴绛夊瀛椾綋 */
+small { font-size: 12px; } /* 灏忎簬 12px 鐨勪腑鏂囧緢闅鹃槄璇伙紝璁� small 姝ｅ父鍖� */
+
+.clearfix {
+  clear: both;
+}
+
+body {
+  background-color:#0a3e72;
+}
+body * {
+  font-family: "寰蒋闆呴粦";
+}
+
+.login-main {
+  width: 1200px;
+  margin:0 auto;
+  z-index: 2;
+}
+.login-top {
+  margin: 75px 0 0 0;
+}
+.login-bottom {
+  margin: 45px auto 0 auto;
+}
+.card.card-img-holder {
+    position: relative;
+}
+.text-white {
+    color: #ffffff !important;
+}
+
+.col-md-4{padding-right: 20px;
+    padding-left: 20px;
+}
+
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0px solid rgba(0, 0, 0, 0.125);
+    border-radius:0;
+}
+.card {
+    border: 0;
+    margin-bottom: 40px;
+}
+.card-body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+	font-size:26px;
+	text-align:center;
+}
+.card .text1{padding:115px 50px 50px 60px;}
+.card.card-img-holder .card-img-absolute_1 {
+  position: absolute;
+  top: 30px;
+  left:140px;
+  height: 80px;
+}
+.bg-gradient-success_1{background-color:#1b65ae; border:1px #3d9eff solid; height:200px}
+.bg-gradient-success_1 a{color:#FFFFFF;}
+.bg-gradient-success_1 a:hover{color:#FFFFFF; background-color:#3786d3; border:1px #42a1ff solid; height:200px}
+
+
+@media(max-width:1600px) {
+}
+@media(max-width:1440px) {
+.login-top {
+  margin: 70px 0 0 0;
+}
+.login-bottom {
+  margin: 45px auto 0 auto;
+}
+}
+@media(max-width:1366px) {
+.login-top {
+  margin: 65px 0 0 0;
+}
+.login-bottom {
+  margin: 45px auto 0 auto;
+}
+
+}
+@media(max-width:1280px) {
+
+.login-top {
+  margin: 60px 0 0 0;
+}
+.login-bottom {
+  margin: 45px auto 0 auto;
+}
+}
+

@@ -1,0 +1,291 @@
+@charset "utf-8";
+
+/* CSS Document */
+
+body {
+    font-family: "Microsoft YaHei", 'Open Sans', sans-serif;
+    background: #052655;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.clear {}
+
+
+/*===================WRAPPER===================*/
+
+#wrapper {
+    width: 100%;
+}
+
+.clear {
+    clear: both
+}
+
+#page-top {
+    margin: 2px 0 2px 0;
+    width: 100%;
+    height: 40px;
+}
+
+#page-wrapper {
+    position: relative;
+    color: #fff
+}
+
+p {
+    margin: 0
+}
+
+.panel {
+    border-radius: 0px;
+}
+
+.table>thead>tr>th {
+    vertical-align: bottom;
+    border-bottom: 1px solid #fff;
+}
+
+h1 {
+    font-size: 3.5em;
+    font-weight: 700;
+    color: #fff;
+    text-align: center;
+    margin-top: 10px
+}
+
+.text_1 {
+    margin-top: 15px;
+    font-size: 1.8em;
+    font-weight: 300;
+    color: #fff;
+    text-align: center;
+}
+
+.col-lg-1,
+.col-lg-10,
+.col-lg-11,
+.col-lg-12,
+.col-lg-2,
+.col-lg-3,
+.col-lg-4,
+.col-lg-5,
+.col-lg-6,
+.col-lg-7,
+.col-lg-8,
+.col-lg-9,
+.col-md-1,
+.col-md-10,
+.col-md-11,
+.col-md-12,
+.col-md-2,
+.col-md-3,
+.col-md-4,
+.col-md-5,
+.col-md-6,
+.col-md-7,
+.col-md-8,
+.col-md-9,
+.col-sm-1,
+.col-sm-10,
+.col-sm-11,
+.col-sm-12,
+.col-sm-2,
+.col-sm-3,
+.col-sm-4,
+.col-sm-5,
+.col-sm-6,
+.col-sm-7,
+.col-sm-8,
+.col-sm-9,
+.col-xs-1,
+.col-xs-10,
+.col-xs-11,
+.col-xs-12,
+.col-xs-2,
+.col-xs-3,
+.col-xs-4,
+.col-xs-5,
+.col-xs-6,
+.col-xs-7,
+.col-xs-8,
+.col-xs-9 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 1px;
+    padding-left: 1px;
+}
+
+.row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+table {
+    text-align: center;
+    border: 1px solid #fff;
+    font-size: 30px;
+}
+
+tr,
+td,
+th {
+    text-align: center;
+    color: #fff;
+    font-size: 30px;
+}
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+    padding: 1px;
+    line-height: 1.2;
+    vertical-align: middle;
+    border-top: 1px solid #ddd;
+    font-size: 30px;
+}
+
+
+
+@media(max-width:720px) {
+    .panel {
+        border-radius: 0px;
+    }
+    .table>thead>tr>th {
+        vertical-align: bottom;
+        border-bottom: 1px solid #898989;
+        font-size: 30px;
+    }
+    h1 {
+        font-size: 1.5em;
+        font-weight: 700;
+        color: #898989;
+        text-align: center;
+        margin-top: 10px
+    }
+    .text_1 {
+        margin-top: 15px;
+        font-size: 0.8em;
+        font-weight: 300;
+        color: #898989;
+        text-align: center;
+    }
+    .col-lg-1,
+    .col-lg-10,
+    .col-lg-11,
+    .col-lg-12,
+    .col-lg-2,
+    .col-lg-3,
+    .col-lg-4,
+    .col-lg-5,
+    .col-lg-6,
+    .col-lg-7,
+    .col-lg-8,
+    .col-lg-9,
+    .col-md-1,
+    .col-md-10,
+    .col-md-11,
+    .col-md-12,
+    .col-md-2,
+    .col-md-3,
+    .col-md-4,
+    .col-md-5,
+    .col-md-6,
+    .col-md-7,
+    .col-md-8,
+    .col-md-9,
+    .col-sm-1,
+    .col-sm-10,
+    .col-sm-11,
+    .col-sm-12,
+    .col-sm-2,
+    .col-sm-3,
+    .col-sm-4,
+    .col-sm-5,
+    .col-sm-6,
+    .col-sm-7,
+    .col-sm-8,
+    .col-sm-9,
+    .col-xs-1,
+    .col-xs-10,
+    .col-xs-11,
+    .col-xs-12,
+    .col-xs-2,
+    .col-xs-3,
+    .col-xs-4,
+    .col-xs-5,
+    .col-xs-6,
+    .col-xs-7,
+    .col-xs-8,
+    .col-xs-9 {
+        position: relative;
+        min-height: 1px;
+        padding-right: 1px;
+        padding-left: 1px;
+    }
+    .row {
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+    table {
+        text-align: center;
+        border: 1px solid #898989;
+    }
+    tr,
+    td,
+    th {
+        text-align: center;
+        color: #898989;
+        font-size: 30px;
+    }
+    .table>tbody>tr>td,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>td,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td{
+        padding: 1px;
+        line-height: 1.2;
+        vertical-align: middle;
+        border-top: 1px solid #052655;
+        font-size: 30px;
+    }
+    .table>thead>tr>th {
+        font-size: 1.2em;
+        padding: 1px;
+        line-height: 1.5;
+        vertical-align: middle;
+        border-top: 1px solid #052655;
+        font-size: 30px;
+    }
+    .table-striped>tbody>tr:nth-of-type(odd) {
+        background-color: #052655;
+    }
+}
+
+.list {
+  position: relative;
+  overflow: hidden;
+  height: 290px;
+  border: 1px solid gray;
+  border-top: none;
+}
+.list-header{
+    margin:0;
+}
+.list table {
+  border: none;
+  position: absolute;
+  left: 0;
+  top: 0px;
+  margin: 0;
+  width: 100%;
+  /* height: 150px; */
+}
+.list table tr{
+    line-height: 40px;
+}

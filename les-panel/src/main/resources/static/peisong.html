@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta content="" name="description" />
+  <meta content="webthemez" name="author" />
+  <title>配送</title>
+  <!-- Bootstrap Styles-->
+  <link href="/panel/css/bootstrap.css" rel="stylesheet" />
+  <link href="/panel/css/style.css" rel="stylesheet" />
+
+
+  <script src="/panel/js/jquery-1.11.0.min.js"></script>
+  <script src="/panel/js/panel/peisong.js"></script>
+
+  <style type="text/css">
+    .table>thead>tr>td, .table>thead>tr>th {
+      text-align:center;
+      font-size: 40px;
+      font-weight:600;
+      padding: 1px;
+      line-height: 90px;
+      color:#f7ab00;
+      vertical-align: middle;
+      border-top: 1px solid #898989;
+      border-bottom: 1px solid #898989;
+    }
+    .table>tr>td{
+      text-align:center;
+      font-size:38px;
+      font-weight:600;
+      padding: 1px;
+      line-height: 88px;
+      color:#8e8887;
+      vertical-align: middle;
+      border-top: 1px solid #052655;
+    }
+    body{
+      overflow-y: hidden;
+    }
+
+    #page-head{
+      color: white;
+    }
+    #page-head .title{
+      font-size: 48px;
+    }
+    #page-head .subTitle{
+      line-height: 30px;
+    }
+    #page-head .subTitle .time{
+      float: left;
+    }
+    #page-head .subTitle .listInfo{
+      margin-left: 180px;
+      text-align: right;
+    }
+    #page-head .subTitle .itemInfo{
+      list-style: none;
+      display: inline-block;
+      margin-right: 30px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!--========WRAPPER==========-->
+  <div id="wrapper">
+    <div id="page-head">
+      <h1 class="title">配送实时信息</h1>
+      <div class="subTitle">
+        <span class="time">0000-00-00 00:00:00</span>
+        <ul class="listInfo">
+          <li class="itemInfo">今日统计：总数量/已完成/未完成</li>
+          <li class="itemInfo">物料：<span id="info1">0/0/0</span></li>
+          <li class="itemInfo">工位：<span id="info2">0/0/0</span></li>
+
+        </ul>
+      </div>
+    </div>
+    <div id="page-wrapper">
+
+
+      <!--========ROW==========-->
+      <div class="row_1">
+        <table class="table table-striped list-header">
+          <thead>
+            <tr>
+              <th style="width:15%;color:yellow;font-size:2vw">任务号</th>
+              <th style="width:20%;color:yellow;font-size:2vw">开始时间</th>
+              <th style="width:12%;color:yellow;font-size:2vw">作业状态</th>
+              <th style="width:25%;color:yellow;font-size:2vw">生产订单号</th>
+
+              <th style="width:13%;color:yellow;font-size:2vw">配送人</th>
+              <th style="width:15%;color:yellow;font-size:2vw">配送时长</th>
+            </tr>
+          </thead>
+        </table>
+        <div class="list" style="height:1000px;">
+          <table class="grid" class="table table-striped">
+
+          </table>
+        </div>
+      </div>
+      <!--========END ROW==========-->
+
+    </div>
+    <!--========END PAGE WRAPPER==========-->
+  </div>
+  <!--========END WRAPPER==========-->
+</body>
+
+</html>

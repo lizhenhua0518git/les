@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.appUpload.dao.MediaFileDao">
+
+    <insert id="saveMediaFile">
+        INSERT INTO t_media_file(ID, FILE_NAME, FILE_ORIGINAL_NAME, FILE_PATH, FILE_URL, FILE_TYPE, MIME_TYPE,
+                                 FILE_SIZE, FILE_STATUS, UPLOAD_TIME,
+                                 PROCESS_STATUS, TAG)
+        VALUES (#{mediaFile.fileId}, #{mediaFile.fileName,jdbcType=VARCHAR},
+                #{mediaFile.fileOriginalName,jdbcType=VARCHAR}, #{mediaFile.filePath,jdbcType=VARCHAR},
+                #{mediaFile.fileUrl,jdbcType=VARCHAR}, #{mediaFile.fileType,jdbcType=VARCHAR},
+                #{mediaFile.mimeType,jdbcType=VARCHAR}, #{mediaFile.fileSize,jdbcType=NUMERIC},
+                #{mediaFile.fileStatus,jdbcType=NUMERIC}, #{mediaFile.uploadTime,jdbcType=TIMESTAMP},
+                #{mediaFile.processStatus,jdbcType=NUMERIC},
+                #{mediaFile.tag,jdbcType=VARCHAR})
+    </insert>
+    <delete id="delAppPackageInfo">
+        DELETE FROM t_app_package WHERE id IN
+        <foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="findFileByMd5" resultType="com.zkzn.les.basicInfo.appUpload.pojo.MediaFile">
+        SELECT ID                 AS "fileId",
+               FILE_NAME          AS "fileName",
+               FILE_ORIGINAL_NAME AS "fileOriginalName",
+               FILE_PATH          AS "filePath",
+               FILE_URL           AS "fileUrl",
+               FILE_TYPE          AS "fileType",
+               MIME_TYPE          AS "mimeType",
+               FILE_SIZE          AS "fileSize",
+               FILE_STATUS        AS "fileStatus",
+               UPLOAD_TIME        AS "uploadTime",
+               PROCESS_STATUS     AS "processStatus",
+               TAG                AS "tag"
+        FROM t_media_file
+        WHERE ID = #{fileMd5}
+    </select>
+    <select id="wareHouse" parameterType="map" resultType="string">
+        select
+            tw.ORG_NAME
+        from t_app_warehouse taw LEFT JOIN t_warehouse tw on taw.WAREHOUSE_ID = tw.id
+        where taw.APP_PACKAGE_ID = #{itemId}
+    </select>
+
+    <resultMap id="BasePlusResultMap_2" type="com.zkzn.les.basicInfo.appUpload.pojo.AppPackage">
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="VERSION_NAME" jdbcType="VARCHAR" property="versionName" />
+        <result column="VERSION_CODE" jdbcType="VARCHAR" property="versionCode" />
+        <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+        <result column="UPDATE_SCOPE" jdbcType="VARCHAR" property="updateScope" />
+        <result column="CREATER_NAME" jdbcType="VARCHAR" property="createrName" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="IS_PAD" jdbcType="VARCHAR" property="isPad" />
+        <result column="FILE_URL" jdbcType="VARCHAR" property="fileUrl" />
+        <collection property="wareHouseId"  ofType="string" javaType="list" select="wareHouse" column="{itemId=ID}">
+            <result  column="ORG_NAME"></result>
+        </collection>
+    </resultMap>
+
+    <select id="findAppPackages" resultMap="BasePlusResultMap_2" parameterType="java.util.Map">
+        SELECT tap.ID,
+        tap.VERSION_NAME,
+        tap.VERSION_CODE,
+        tap.REMARK,
+        tap.UPDATE_SCOPE,
+        tap.CREATER_NAME,
+        tap.CREATE_TIME,
+        tap.IS_PAD,
+        tmf.FILE_URL
+        FROM t_app_package tap
+        LEFT JOIN t_media_file tmf on tap.MEDIA_ID = tmf.ID
+        <where>
+            <if test="requestMap.versionName != '' and requestMap.versionName != null">
+                tap.VERSION_NAME like '%${requestMap.versionName}%'
+            </if>
+            <if test="requestMap.versionCode != '' and requestMap.versionCode != null">
+                AND tap.VERSION_CODE = #{requestMap.versionCode}
+            </if>
+            <if test="requestMap.startCreateTime != '' and requestMap.startCreateTime != null  and requestMap.endCreateTime != '' and requestMap.endCreateTime != null">
+                AND tap.CREATE_TIME between
+                str_to_date(#{requestMap.startCreateTime}, '%Y-%m-%d') and
+                str_to_date(#{requestMap.endCreateTime}, '%Y-%m-%d')
+            </if>
+            <if test="wareHouseCode != null and wareHouseCode != ''">
+                <foreach collection="wareHouseCode.split(';')" open="AND tw.ORG_CODE in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY tap.create_time DESC
+    </select>
+
+
+
+    <resultMap id="BasePlusResultMap" type="com.zkzn.les.basicInfo.appUpload.pojo.AppPackage">
+        <id column="ID" jdbcType="VARCHAR" property="id" />
+        <result column="VERSION_NAME" jdbcType="VARCHAR" property="versionName" />
+        <result column="VERSION_CODE" jdbcType="VARCHAR" property="versionCode" />
+        <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+        <result column="UPDATE_SCOPE" jdbcType="VARCHAR" property="updateScope" />
+        <result column="CREATER_NAME" jdbcType="VARCHAR" property="createrName" />
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="IS_PAD" jdbcType="VARCHAR" property="isPad" />
+        <result column="FILE_URL" jdbcType="VARCHAR" property="fileUrl" />
+        <collection property="wareHouseId"  ofType="string" javaType="list">
+            <result  column="ORG_NAME"></result>
+        </collection>
+    </resultMap>
+
+
+    <select id="findAppPackages_2" resultMap="BasePlusResultMap" parameterType="java.util.Map">
+        SELECT
+            tap.ID,
+            tap.VERSION_NAME,
+            tap.VERSION_CODE,
+            tap.REMARK,
+            tap.UPDATE_SCOPE,
+            tap.CREATER_NAME,
+            tap.CREATE_TIME,
+            tap.IS_PAD,
+            tmf.FILE_URL,
+            tw.ORG_NAME
+        FROM t_app_package tap
+        LEFT JOIN t_media_file tmf on tap.MEDIA_ID = tmf.ID
+        LEFT JOIN t_app_warehouse taw on taw.APP_PACKAGE_ID = tap.id
+        LEFT JOIN t_warehouse tw on taw.WAREHOUSE_ID = tw.id
+        <where>
+            <if test="requestMap.versionName != '' and requestMap.versionName != null">
+                tap.VERSION_NAME like '%${requestMap.versionName}%'
+            </if>
+            <if test="requestMap.versionCode != '' and requestMap.versionCode != null">
+                AND tap.VERSION_CODE = #{requestMap.versionCode}
+            </if>
+            <if test="requestMap.startCreateTime != '' and requestMap.startCreateTime != null  and requestMap.endCreateTime != '' and requestMap.endCreateTime != null">
+                AND tap.CREATE_TIME between
+                str_to_date(#{requestMap.startCreateTime}, '%Y-%m-%d') and
+                str_to_date(#{requestMap.endCreateTime}, '%Y-%m-%d')
+            </if>
+            <if test="wareHouseCode != null and wareHouseCode != ''">
+                <foreach collection="wareHouseCode.split(';')" open="AND tw.ORG_CODE in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY tap.create_time DESC
+    </select>
+    <select id="findApp" resultType="java.util.Map">
+
+        SELECT
+            tap.creater_name AS "creator",
+            tmf.FILE_URL AS "downloadUrl",
+            tap.is_pad AS "isPad",
+            tap.remark AS "updateDesc",
+            tap.create_time AS "updateTime",
+            tap.version_code AS "versionCode",
+            tap.version_name AS "versionName"
+        FROM t_app_package tap
+        LEFT JOIN t_media_file tmf on tap.MEDIA_ID = tmf.ID
+        WHERE tap.is_pad = #{isPad}
+        AND tap.id in (
+            SELECT taw.APP_PACKAGE_ID
+            FROM t_app_warehouse taw
+            LEFT JOIN t_warehouse twh on twh.id = taw.WAREHOUSE_ID
+            where  twh.ORG_CODE = #{wareHouseCode}
+        )
+        ORDER BY tap.create_time DESC
+
+    </select>
+
+    <insert id="saveAppPackage">
+        INSERT INTO t_app_package(
+        <if test="appPackage.id !=null and appPackage.id !=''">ID</if>
+        <if test="appPackage.versionName and appPackage.versionName !=''">,VERSION_NAME</if>
+        <if test="appPackage.versionCode !=null and appPackage.versionCode !=''">,VERSION_CODE</if>
+        <if test="appPackage.remark != null and appPackage.remark != ''">,REMARK</if>
+        <if test="appPackage.createrName != null and appPackage.createrName !=''">,CREATER_NAME</if>
+        <if test="appPackage.createTime != null ">,CREATE_TIME</if>
+        <if test="appPackage.mediaId != null and appPackage.mediaId != '' ">,MEDIA_ID</if>
+        <if test="appPackage.isPad != null ">,IS_PAD</if>
+        <if test="appPackage.createrId != null and appPackage.createrId !=''">,CREATER_ID</if>
+        )
+        VALUES(
+        <if test="appPackage.id != null and appPackage.id !=''">#{appPackage.id}</if>
+        <if test="appPackage.versionName != null and appPackage.versionName != ''">,#{appPackage.versionName}</if>
+        <if test="appPackage.versionCode != null and appPackage.versionCode != ''">,#{appPackage.versionCode}</if>
+        <if test="appPackage.remark != null and appPackage.remark != ''">,#{appPackage.remark}</if>
+        <if test="appPackage.createrName !=null and appPackage.createrName !=''">,#{appPackage.createrName}</if>
+        <if test="appPackage.createTime != null ">,#{appPackage.createTime}</if>
+        <if test="appPackage.mediaId != null and appPackage.mediaId != '' ">,#{appPackage.mediaId}</if>
+        <if test="appPackage.isPad != null ">,#{appPackage.isPad}</if>
+        <if test="appPackage.createrId != null and appPackage.createrId !=''">,#{appPackage.createrId}</if>
+        )
+    </insert>
+    <insert id="sevaAppPackageWareHouse">
+        INSERT INTO t_app_warehouse(APP_PACKAGE_ID,WAREHOUSE_ID) values
+        <foreach collection="wareHouseList" separator="," item="item">
+            (
+            #{uuid},
+            #{item}
+            )
+        </foreach>
+    </insert>
+</mapper>

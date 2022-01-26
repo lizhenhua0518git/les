@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>资源设置</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+</head>
+<body >
+<div id="bodyDiv">
+
+</div>
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+		<div class="layui-col-md3">
+		<!-- <label class="layui-form-label">资源名称:</label> -->
+			<div>
+				<input type="text" id="resourceName_search" class="layui-input" style="width:79%;margin-top:10px;">
+				<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" style="margin-top:px"><i class="layui-icon">&#xe615;</i>查询</button>
+				<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="save" style="float:;margin-top:px" ><i class="layui-icon">&#xe61f;</i>保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+<table id="resourceTab" lay-filter="resourceTabF"></table>
+	
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<!-- <script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script> -->
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script src="/iles/pages/layui/lay/modules/treeGrid.js" charset="UTF-8"></script>
+<script type="text/html" id="bodyTpl"></script>
+<script type="text/javascript">
+	var contextPath = config.basicInfoConfig.contextPath;
+	var $ = layui.$;
+	var element = layui.element;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var treeGrid = layui.treeGrid;
+	var roleId = parent.roleId;
+	var oldData;//用于编辑时传递参数
+	var privilegeData;
+	var roleArry = new Array();//已经设置好的资源id
+	function loadding(){
+	layui.use(['element', 'tree', 'layer', 'form', 'upload', 'treeGrid'], function () {
+		var tree = layui.tree;
+		var treeTable = treeGrid.render({
+			elem: '#resourceTab'
+			,id:'resourceTabId'
+		   // , data: datatable
+			,url:contextPath+'resource/'
+			, cellMinWidth: 100
+			, treeId: 'id'//树形id字段名称
+			, treeUpId: 'resourceParentId'//树形父id字段名称
+			, treeShowName: 'resourceName'//以树形式显示的字段
+			, cols: [[
+				{type: 'checkbox'}
+				, {field: 'resourceName', /* edit: 'text' ,*/  title: '资源名称'}
+			]]
+			,page: false
+			,isOpen:false
+			,height: 'full-95'
+			,even:true
+			,request: {//修改了分页参数，避免自动分页
+				  pageName: 'pageNumber' //页码的参数名称，默认：page
+				  ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+				}
+			,done:function(res,page,count){//列表回调处理已经设置好了的数据
+				tableDoneCtl(res);
+			}
+		});
+	});
+		
+		var active = {
+				search:function(othis){
+					var resourceName = $('#resourceName_search');
+				      //执行重载
+				     treeGrid.render({
+		            elem: '#resourceTab'
+		            ,id:'resourceTabId'
+		           // , data: datatable
+		            ,url:contextPath+'resource/'
+		            , cellMinWidth: 100
+		            , treeId: 'id'//树形id字段名称
+		            , treeUpId: 'resourceParentId'//树形父id字段名称
+		            , treeShowName: 'resourceName'//以树形式显示的字段
+		            ,where:{
+		            	"resourceName":resourceName.val()
+		            }
+		            , cols: [[
+		                {type: 'checkbox'}
+		                , {field: 'resourceName', /* edit: 'text' ,*/ width: '88%', title: '资源名称'}
+		            ]]
+			        ,page: false
+			        ,isOpen:false
+		    		,height: 'full-95'
+		    		,even:true
+		    		,done:function(res,page,count){//列表回调处理已经设置好了的数据
+		    				tableDoneCtl(res);
+		    			}
+		        	});
+				},
+				save:function(othis){
+					var checkStatus = treeGrid.checkStatus('resourceTabId');
+      				var resourceData = checkStatus.data;
+      				var tempData = "";
+      				var tempArray = new Array();
+      				for(var i=0;i<resourceData.length;i++){
+      					if($.inArray(resourceData[i].id, roleArry)<0)
+    						tempData = tempData + "{'resId':"+"'"+resourceData[i].id+"'"+",'roleId':'"+roleId+"'},";
+      					tempArray.push(resourceData[i].id);
+    				}
+    				tempData = "["+tempData.substring(0,tempData.length-1)+"]";
+      				if(privilegeData && privilegeData.length>0){
+	   					
+   	    				var deletePrivivlege = new Array();
+   	    				for(var i=0;i<privilegeData.length;i++){
+   	    					if($.inArray(privilegeData[i].resId, tempArray)<0){
+   	    						//privilegeData.splice($.inArray(privilegeData[i].resId, tempArray),1);
+   	    						deletePrivivlege.push(privilegeData[i]);
+   	    					}
+   	    				}
+   	    				if(deletePrivivlege.length>0){//有需要删除的数据
+   	    					var option = {
+	   	    						url:contextPath+'privilege/deletePrivilege',
+	   	    						type:'POST',
+	   	    						data: JSON.stringify(deletePrivivlege),
+	   	    			        	contentType:'application/json',
+	   	    						success:function(res){
+	   	    							if(res.code==0){
+	   	    								parent.layer.closeAll();
+	   	    							}
+	   	    						}
+	   	    				};
+   	    					$.ajax(option);
+   	    				}
+   					}
+      				if(tempData.length>3){//说明有新增的数据
+	    				var option = {
+	    						url:contextPath+'privilege/savePrivilege',
+	    						type:'POST',
+	    						data: JSON.stringify(eval('('+tempData+')')),
+	    			        	contentType:'application/json',
+	    						success:function(res){
+	    							if(res.code==0){
+	    								parent.layer.closeAll();
+	    							}
+	    						}
+	    				};
+	    				$.ajax(option);
+      				}
+      				if(tempData.length<=2 && deletePrivivlege.length<=0){//数据不变的情况
+      					parent.layer.closeAll();
+      				}
+				}
+		};
+		//给表格的复选框增加 监听事件
+		treeGrid.on('checkbox(resourceTabF)',function(obj){
+			 if(obj.type=="one"){
+				 var checkObj = $("input[name=layTableCheckbox]");
+				 checekBoxCtl(obj.data,checkObj,obj.checked);
+			 }
+			
+		});
+		//递归选中节点下面的所有子节点
+		function checekBoxCtl(obj,checkObj,flg){
+			var tempIndex;
+			if(obj.children.length>0){
+				for(var i=0;i<obj.children.length;i++){
+					obj.children[i].LAY_CHECKED = flg;
+					tempIndex = obj.children[i].LAY_TABLE_INDEX;
+					if(flg)
+						checkObj[tempIndex+1].nextSibling.className +=" layui-form-checked";
+					else
+						checkObj[tempIndex+1].nextSibling.className = checkObj[tempIndex+1].nextSibling.className.replace("layui-form-checked","");
+					checekBoxCtl(obj.children[i],checkObj,flg);
+				}
+			}
+		}
+		//table加载完成后数据处理
+		function tableDoneCtl(res){
+			var tempData = res.data;
+			var tempStr = "";
+    		if(roleId && roleId.length>0){
+    				var option = {
+    						url:contextPath+'privilege/listPrivilegeByRoleId?roleId='+roleId,
+    						type:'GET',
+    						contentType:'application/json',
+    						success:function(result){
+    							if(result.code==0){
+    								privilegeData = result.data;
+    								if(privilegeData.length>0){
+    									for(var i=0;i<privilegeData.length;i++){
+    										roleArry.push(privilegeData[i].resId);
+    									}
+    									console.log(roleArry);
+    									if(tempData.length>0){
+    					    				for(var i=0;i<tempData.length;i++){
+    					    					if($.inArray(tempData[i].id, roleArry)>=0){//默认选中已经设置好的资源 
+    					    						tempStr = JSON.stringify(tempData[i]);
+    					    						console.log(tempStr);
+    							    				tempStr = tempStr.substring(0,tempStr.length-1)+',"LAY_CHECKED":"true"}';
+    							    				tempData[i] = eval("("+tempStr+")");
+    					    					}
+    					    				}
+    					    				treeGrid.render({//重新渲染数据
+    						    				 elem: '#resourceTab'
+    						    				 ,id:'resourceTabId'
+    						    				 ,data:tempData
+    						    				 , cellMinWidth: 100
+    						 		             , treeId: 'id'//树形id字段名称
+    						 		             , treeUpId: 'resourceParentId'//树形父id字段名称
+    						 		             , treeShowName: 'resourceName'//以树形式显示的字段
+    						 		             , cols: [[
+    						 		                {type: 'checkbox'}
+    						 		                , {field: 'resourceName', /* edit: 'text' ,*/ width: '88%', title: '资源名称'}
+    						 		             ]]
+    						 			        ,page: false
+    						 			        ,isOpen:false
+    						 		    		,height: 'full-95'
+    						 		    		,even:true
+    						    			 });
+    					    			}
+    								}
+    							}else{
+    								layer.msg("初始信息失败");
+    							}
+    						}
+    				};
+    				$.ajax(option);
+    			} 
+		}
+		$('.layui-col-md3 button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		}
+	</script>
+</body>
+</html>

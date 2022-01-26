@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>派工预处理</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<style type="text/css">
+.confirmCss{
+	opacity:0.7;
+	filter:alpha(Opacity=70);
+	-moz-opacity:0.7
+}
+.layui-layer-btn .layui-layer-btn0{
+	margin-right:160px;
+}
+table tr{
+	text-align:center;
+}
+.used-area{
+	background:#FF9800;
+}
+.now-use-area{
+	background:#E51C23;
+}
+</style>
+</head>
+<body>
+	<div id="content"></div>
+	<div id="confirmDiv" style="display:none;margin-top:25%;text-align:center;align-content:center">
+		<span style="font-size:26px;">确定应用此方案?</span>
+	</div>
+	<script src="/iles/pages/layui/layui.all.js"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+	<script type="text/javascript" id="moduleHtml">
+		{{# layui.each(d.preceptList,function(index,item){	}}
+			<fieldset class="layui-elem-field site-demo-button" style="margin-top: 30px;">
+			  <legend style="color:rgb(255, 152, 0)">方案{{index+1}}:</legend>
+			  <div>
+			  	<div class="layui-form" style="width:80%;float:left">
+				 	<table class="layui-table">
+				 		<colgroup>
+				 			<col width="20">
+				 			<col width="100">
+				 			<col width="100">
+				 			<col width="80">
+				 			<col width="80">
+				 			<col width="80">
+				 			<col width="80">
+				 		</colgroup>
+				 		<thead>
+				 			<tr>
+					 			<th>序号</th>
+					 			<th>工位</th>
+					 			<th>波次号</th>
+					 			<th>所需常规载具</th>
+					 			<th>所需超大载具</th>
+					 			<th>需求日期</th>
+					 			<th>需求时间</th>
+				 			</tr>
+				 		</thead>
+				 		<tbody>
+				 		  {{# layui.each(item,function(index,items){	}}
+				 			<tr>
+				 				<td>{{ index+1 }}</td>
+				 				<td>{{ items.station }}</td>
+				 				<td>{{ items.waveCode }}</td>
+				 				<td>{{ items.carCount }}</td>
+				 				<td>{{ items.largeCount }}</td>
+				 				<td>{{ items.requiredDate.substring(0,11) }}</td>
+				 				<td>{{ items.requiredDate.substring(11,19) }}</td>
+				 			</tr>
+				 			{{# }); }}	
+				 		</tbody>
+				 	</table>
+				 	<div style="height:50px;line-height:50px;float:right">
+				 		<span style="height:30px;line-height:30px;font-size:20px;">小部件集配区域使用情况<i class="layui-icon" style="color:rgb(255, 152, 0);font-size:24px;">&#xe602;&#xe602;&#xe602;</i></span>
+				 		<span style="color:#E51C23;height:30px;line-height:30px;font-size:20px;">占用:&nbsp;{{ item[item.length-1].usedCount}}&nbsp;&nbsp;剩余:&nbsp;{{ item[item.length-1].ableCount}}</span>
+				 	</div>
+				 	<div>
+			 		<table class="layui-table" id="areaTable" name="areaTable">
+			 			<tr>
+			 				{{# layui.each(d.areaList,function(index,items){	}}
+			 				 	{{#  if(index%2==0){ }}
+	 						 		 <td {{#  if(items.useStatus==1){ }} class="used-area" {{#  } }} >{{items.areaCode}}</td>
+	 							{{#  } }} 
+			 				 {{# }); }}	
+			 				<td rowspan="2" {{#  if(item[item.length-1].exceptionCount>0){ }}class="now-use-area" {{#  } }} >异常区
+			 					{{item[item.length-1].exceptionCount}}
+							</td>
+			 				<td rowspan="2" {{#  if(item[item.length-1].allLargeCount>0){ }}class="now-use-area" {{#  } }}>大部件集配区{{item[item.length-1].allLargeCount}}</td>
+			 			</tr>
+			 			<tr>
+			 				{{# layui.each(d.areaList,function(index,items){	}}
+			 				    {{#  if(index%2!=0){ }}
+		 						  <td {{#  if(items.useStatus==1){ }} class="used-area" {{#  } }} >{{items.areaCode}}</td>
+		 						{{#  } }} 
+			 				{{# }); }}	
+			 			</tr>
+			 		</table>
+			 	</div>
+				  </div>
+				  <div style="width:20%;float:right">
+				  	<button class="layui-btn layui-btn-warm" style="margin-top:18%;margin-left:18%;" data-method="startThis" data-id={{item[item.length-1].waveId}}>启用此方案并派工</button>
+				  </div>
+			  </div>
+			</fieldset>
+		{{# }); }}	 
+		{{#  if(d.preceptList.length === 0){ }}
+	   		 没有匹配到货架存储物料，请确定物料存储类型是否维护！
+	  	{{#  } }} 
+	
+	</script>
+	<script type="text/html" id="noStorageType">
+		<h1>派工失败！请维护以下物料主数据的存储类型或是否大部件信息</h1>
+		<table class="layui-table">
+			<colgroup>
+				<col width="20">
+				<col width="100">
+				<col width="100">
+				<col width="80">
+				<col width="80">
+				<col width="80">
+				<col width="80">
+			</colgroup>
+			<thead>
+				<tr>
+					<th>序号</th>
+					<th>物料编码</th>
+					<th>物料主数据</th>
+					<th>存储类型</th>
+					<th>是否大部件</th>
+				</tr>
+			</thead>
+		<tbody>
+		{{# layui.each(d,function(index,item){	}}
+			<tr>
+				<td>{{ index+1 }}</td>
+				<td>{{ item.MATERIAL_CODE }}</td>
+				<td>{{ item.ID!=null?item.ID:"" }}</td>
+				<td>{{ item.STORAGE_TYPE!=null?item.STORAGE_TYPE:"" }}</td>
+				<td>{{ item.IS_LARGE!=null?item.IS_LARGE:"" }}</td>
+			</tr>
+		{{# }); }}
+		</tbody>
+	</script>
+	<script type="text/javascript">
+		var layer = layui.layer;
+		var laytpl = layui.laytpl;
+		var contextPath = config.wmsConfig.contextPath;
+		$('button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		var option = {
+				url:contextPath+'assembleOrderDetail/queryNoStorage',
+				type:'GET',
+				success:function(res){
+					if(res.code==0){
+						var data = res.data;
+						if(data.length>0){
+							var getTpl = noStorageType.innerHTML
+							,view = document.getElementById('content');
+							laytpl(getTpl).render(data, function(html){
+								  view.innerHTML = html;
+							});
+						}else{
+							initActiveBefore();
+						}
+					}else{
+						layer.alert("查询失败");
+					}
+				}
+		};
+		$.ajax(option);
+		function initActiveBefore(){
+			var option = {
+					url:'${ctx}/assembleOrder/activeBeforehand?storageLocation=1100',
+					type:'GET',
+					success:function(res){
+						if(res.code==0){
+							var getTpl = moduleHtml.innerHTML
+							,view = document.getElementById('content');
+							var data = res.data;
+							laytpl(getTpl).render(data, function(html){
+							  view.innerHTML = html;
+							});
+							areaHandle(data);
+							$('button').on('click', function(){
+							    var othis = $(this), method = othis.data('method');
+							    active[method] ? active[method].call(this, othis) : '';
+						  	});
+						}
+					}
+			};
+			$.ajax(option);
+		}
+		//处理区域占用情况
+		function areaHandle(data){
+			var tableObj = document.getElementsByName("areaTable");
+			var precepLength = data.preceptList.length;
+			var precepData = data.preceptList;
+			var rows,cells,usedCount;
+			for(var i=0;i<tableObj.length;i++){
+				rows = tableObj[i].rows;
+				usedCount = precepData[i][precepData[i].length-1].usedCount;
+				for(var k=0;k<rows.length;k++){
+					cells = rows[k].cells;
+					for(var j=0;j<cells.length;j++){
+						if(j<19 && cells[j].className=="" && usedCount>0){
+							cells[j].className="now-use-area";
+							usedCount--;
+						}
+					}
+				}
+			}
+			
+		} 
+	</script>
+</body>
+</html>

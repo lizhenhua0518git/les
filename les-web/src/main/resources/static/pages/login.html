@@ -1,0 +1,148 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="shortcut icon" type="image/x-icon" href="img/logo.ico" />
+<link rel="stylesheet" href="/iles/pages/css/login.css" type="text/css" />
+<title>LES物流执行系统</title>
+</head>
+	<body style="overflow: hidden;">
+		<div class="loginWraper">
+			<!--<div style="margin-left: 43%;margin-top: 7%;"><img alt="" src="/iles/pages/img/logobj.png"></div>-->
+			<div id="loginform" class="loginBox" class="layui-form">
+				<div class="layui-form-item" style="margin-left: 33%;">
+<!--					<div style="float:left"><img alt="" src="/iles/pages/img/logo_login.png"></div>-->
+					<div ><span style="font-size: 35px;"><b>LES系统</b></span></div>
+				</div>
+				<div class="layui-form-item"><span style="font-size: 20px;">用户登录</span></div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<div class="layui-input-inline">
+							<span class="login_icon_user"><img src="/iles/pages/images/users.png"/></span>
+							<input type="tel" id="username"  name="username" placeholder="请输入账号" class="layui-input input-text ">
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<div class="layui-input-inline">
+							<span class="login_icon_password"><img src="/iles/pages/images/password.png"/></span>
+							<input type="password"  id="password" name="password" placeholder="请输入密码"  class="layui-input input-text ">
+							<p style="color:red;font-size:12px;margin-top:55px ;" id="errorTips"></p>
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button id="btn-login"  class="layui-btn layui-btn-danger layui-btn-lg login_btn">登录</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="/iles/pages/js/md5.js" charset="UTF-8"  type="text/javascript"></script>
+		<script src="/iles/pages/layui/layui.js" charset="UTF-8"  type="text/javascript"></script>
+		<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+		<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+		<script type="text/javascript">
+			layui.config({
+				base: '/iles/pages/js/'
+			}).extend({
+				jquery_cookie : 'jquery.cookie'
+			});
+			var contextPath = config.uasConfig.contextPath;
+			layui.use(['layer','jquery_cookie','form'],function(){
+				var $ = layui.$;
+				$ = layui.jquery_cookie($);
+				$("#btn-login").on("click",function(){
+					loginMethod();
+				});
+				$(document).keyup(function(event){
+					if(event.keyCode==13){
+						loginMethod();
+					}
+				})
+				function loginMethod(){
+					var userName = $("#username").val().trim();
+					var password = $("#password").val();
+					var error;
+					if (userName == null || userName == "") {
+						error = "账号不能为空";
+						$("#errorTips").text(error);
+						$("#username").focus();
+						return;
+					}
+					if (password == null || password == "") {
+						error = '密码不能为空！';
+						$('#errorTips').text(error);
+						$("#password").focus();
+						return;
+					}else{
+						// if(!regular(password)){
+						// 	layer.alert("密码不符合规则,请修改后登录",{
+						// 		yes:function(index, layero){
+						// 			layer.open({
+						//                 type: 2,    //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+						//                 title:"修改密码",
+						//                 offset:'auto',//具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+						//                 id: 'changePass', //防止重复弹出
+						//                 area: ['650px', '400px'],
+						//                 content: 'changePassWord.html',
+						//                 shade: 0,//不显示遮罩
+						//                 yes: function(){
+						//                     layer.closeAll();
+						//                 }
+						//             });
+						// 		}
+						// 	});
+						//
+						// 	return;
+						// }
+					}
+				   // password = hex_md5(password);
+					var data = {"username":userName,"password":password};
+					$.ajax({
+						type:'post',
+						url:contextPath+'login',
+						async:true,
+						data:data,
+						success:function(backData){
+							if(backData.code==0){
+								var storage = window.localStorage
+								storage.token = backData.data.token.value;
+								var url = "/iles/pages/index.html";
+								window.location.href=url;
+								window.event.returnValue=false;
+							}else{
+								//$.cookie('token', backData.data, {path: '/' });
+								$("#errorTips").text("登陆失败");
+								$("#loginName").focus();
+							}
+						}
+					});
+				}
+				function regular(password){
+					var pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,16}$/;
+					return pattern.test(password);
+				}
+			});
+			$("#changePassWordNew").click(function(){
+				layer.open({
+					type: 2,    //0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+					title:"修改密码",
+					offset:'auto',//具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+					id: 'changePass', //防止重复弹出
+					area: ['650px', '400px'],
+					content: 'changePassWord.html',
+					shade: 0,//不显示遮罩
+					yes: function(){
+						layer.closeAll();
+					}
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.panel.dao.StockPanelDao">
+
+    <select id="selectStockPanel" resultType="com.zkzn.les.panel.domain.stock.StockReport">
+        select
+        smsb.client_name                          as 'clientName',
+        smsb.material_desc                        as 'materialDesc',
+        smsb.warehouse_name                       as 'warehouseName',
+        bsp.position_code                         as 'positionCode',
+        smsb.position_car_code                    as 'positionCarCode',
+        sum(smsb.stock_count)                     as 'sumStockCount',
+        sum(smsb.frozen_count + smsb.check_count) as 'sumFrozenCount',
+        sum(smsb.pre_use_count)                   as 'sumPreUseCount',
+        smsb.batch_no                             as 'batchNo',
+        smsb.stock_status                         as 'stockStatus'
+        from s_material_storage_bin smsb
+        left join b_storage_position bsp on smsb.storage_position_id = bsp.storage_position_id
+        <where>
+            (smsb.stock_count + smsb.frozen_count + smsb.check_count + smsb.pre_use_count) > 0
+            <if test="materialDesc != '' and materialDesc != null">
+                and smsb.material_desc = #{materialDesc}
+            </if>
+            <if test="clientNames != '' and clientNames != null">
+                <foreach collection="clientNames.split(',')" open="and smsb.client_name in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="warehouseNames != null and '' != warehouseNames">
+                <foreach collection="warehouseNames.split(',')" open="and smsb.warehouse_code in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="positionCode != '' and positionCode != null">
+                and bsp.position_code = #{positionCode}
+            </if>
+            <if test="positionCarCode != '' and positionCarCode != null">
+                and smsb.position_car_code = #{positionCarCode}
+            </if>
+            <if test="stockStatus != '' and stockStatus != null">
+                and smsb.stock_status = #{stockStatus}
+            </if>
+        </where>
+
+        group by smsb.client_name,
+        smsb.material_desc,
+        smsb.warehouse_name,
+        bsp.position_code,
+        smsb.position_car_code,
+        smsb.stock_status,
+        smsb.batch_no
+        order by smsb.client_name, smsb.material_desc
+    </select>
+    <select id="selectWarehouse" resultType="java.util.Map">
+        SELECT
+            w.ORG_CODE AS "warehouseCode",
+            w.ORG_NAME AS "warehouseName"
+        FROM t_warehouse w
+        WHERE w.STATUS = 1
+    </select>
+    <select id="selectClient" resultType="java.util.Map">
+
+        SELECT DISTINCT tab.client_name AS "clientName"
+        FROM b_client_manage tab
+
+    </select>
+</mapper>

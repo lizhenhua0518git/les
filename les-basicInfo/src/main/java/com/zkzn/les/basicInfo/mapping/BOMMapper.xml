@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.basicInfo.dao.BOMDao">
+   
+   
+   
+   <select id="listBOMMainList" parameterType="com.zkzn.les.basicInfo.pojo.SapProcessOrder" resultType="com.zkzn.les.basicInfo.pojo.SapProcessOrder">
+		select  t.ID, t.ORDER_TYPE, t.ORDER_CODE, 
+      t.ORDER_STATUS, t.START_TIME, t.END_TIME, 
+      t.VEHICLE_CODE, t.SELL_ORDER, t.CUSTOM_CODE, 
+      t.CUSTOM_DESC, t.VEHICLE_DESC, t.ORDER_NUM, 
+      t.UNIT, t.FACTORY, t.BATCH_NO, 
+      t.STORAGE_LOCATION, t.VIN_CODE, t.CREATE_TIME, 
+      t.SELL_ORDER_ITEM, t.PRIORITY, t.CAR_MODEL, 
+      t.SERIAL_NUM
+		 
+		from t_sap_process_order t
+		<where>
+		
+	    <if test="orderCode !=null and ''!= orderCode">and t.ORDER_CODE like '%${orderCode}%'</if>
+	    <if test="vehicleCode !=null and ''!= vehicleCode">and t.VEHICLE_CODE like '%${vehicleCode}%'</if>
+        <if test="orderStatus !=null and -1!= orderStatus">and t.ORDER_STATUS =#{orderStatus}</if>
+         
+        
+        
+        </where>
+        <if test="sortColums ==null or  '' ==sortColums">order by t.create_time desc</if>
+        <if test="sortColums !=null and  '' !=sortColums">order by ${sortColums}</if>
+	</select>
+	
+	 <select id="listBOMDetailList" parameterType="com.zkzn.les.basicInfo.pojo.SapProcessOrderDetail" resultType="com.zkzn.les.basicInfo.pojo.SapProcessOrderDetail">
+		select  t.ID, t.RESERVE_CODE, t.RESERVE_ROW, t.MATERIAL_ROW, 
+		t.MATERIAL_CODE, t.REQUIRED_NUM, t.ITEM_UNIT, 
+        t.VIRTUAL_MATERIAL_TAB, t.RECOIL_MATERIAL_TAB, 
+        t.BULK_MATERIAL_TAB, t.UPPER_MATERIAL_TAB, 
+        t.STATUS, t.STORAGE_LOCATION, t.BATCH_NO, 
+        t.DONE_ACTIVE_NO, t.STATION_CODE, t.STATION_DESC, 
+        t.CREATE_TIME, t.ORDER_CODE, t.FACTORY, t.SEQUENCE_NO
+		 
+		from t_sap_process_order_detail t  where t.ORDER_CODE=#{orderCode}
+		 
+		
+	   <!--  <if test="orderCode !=null and ''!= orderCode">and t.ORDER_CODE like '%${orderCode}%'</if> -->
+	    <if test="reserveRow !=null and ''!= reserveRow">and t.RESERVE_ROW like '%${reserveRow}%'</if>
+        <if test="materialRow !=null and ''!= materialRow">and t.MATERIAL_ROW like '%${materialRow}%' </if>
+        <if test="materialCode !=null and ''!= materialCode">and t.MATERIAL_CODE like '%${materialCode}%' </if>
+        
+        
+         
+        <if test="sortColums ==null or  '' ==sortColums">order by t.create_time desc</if>
+        <if test="sortColums !=null and  '' !=sortColums">order by ${sortColums}</if>
+	</select>
+   
+  
+   
+</mapper>

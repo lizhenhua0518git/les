@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>盘点报告</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<script src="/iles/pages/layui/layui.all.js"></script>
+<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+<script src="/iles/pages/layui/lay/modules/layer.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/tableFilter.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+</head>
+<body>
+<ul class="layui-nav" style="background-color:#c50822;">
+  <li class="layui-nav-item">盘点报告</li>
+</ul>
+	
+		<div style="padding:20px;">
+		<div> 盘点编号： <span id="code"></span>  下达人：<span id="releaseUser"></span>  账务相符率:<span id="accountCompliance"></span></div>
+		<div>盘点计划时间：  <span id="planTime"></span>   </br>   盘点作业时间：<span id="operTime"></span></div>
+        <div>盘点物料总种类：<span id="count"></span>  实际盘点物料种类：<span id="inventoryCount"></span></div>
+        <div>未盘点的原因：<span id="reason"></span></div>
+		<div class="layui-form-item">
+			<div class="layui-inline" style="width: 400px;">
+				<div>
+					<label class="">盘亏数量<span id="pkNum"></span>种  总价值￥<span id="pkzjz"></span></label>
+				</div>
+				<H3>盘亏情况</H3>
+				<table style="width: 300px;" border="1" id="pkqk">
+					<tr>
+						<th>仓库名称</th>
+						<th>种类</th>
+						<th>价值</th>
+					</tr>
+				</table>
+			</div>
+			<div class="layui-inline" style="width: 400px;">
+				<div>
+					<label class="">盘盈数量<span id="pyNum"></span>种  总价值￥<span id="pyzjz"></span></label>
+				</div>
+				<H3>盘盈情况</H3>
+				<table style="width: 300px;" border="1" id="pyqk">
+					<tr>
+						<th>仓库名称</th>
+						<th>种类</th>
+						<th>价值</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<div class="layui-input-inline">
+				<label class="layui-form-label">账务相符率</label>
+				<table style="width: 800px" border="1">
+					<tr id="ckmc">
+						<th></th>
+					</tr>
+					<tr id="zwxfl">
+						<td>账务相符率</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" style="background-color:#c50822;" lay-submit lay-filter="formDemo" onclick="exportWord()">导出</button>
+				<button class="layui-btn layui-btn-primary" onclick="formClose();">关闭</button>
+			</div>
+		</div>
+
+
+	<script type="text/javascript">
+	var pid = parent.$("#pid").val();
+	var stockTateData;
+	var contextPath = config.wmsConfig.contextPath;
+	$.ajax({
+		url : contextPath+'stockTakePlan/reportDetail?pid="+pid,
+		success : function(res) {
+			if (res.code == 0) {
+				var data =res.data;
+				stockTateData = res.data;
+				$("#code").html(data.STOCK_TAKE_REPORT_CODE);
+				$("#releaseUser").html(data.RELEASE_USER);
+				$("#planTime").html(data.PLAN_TIME);
+				$("#operTime").html(data.OPER_TIME);
+				$("#count").html(data.COUNT+"种");
+				$("#inventoryCount").html(data.INVENTORY_COUNT+"种");
+				$("#reason").html(data.REASON);
+				$("#accountCompliance").html(data.ACCOUNT_COMPLIANCE*100+"%");
+				
+				$("#pkNum").html(data.LOSS_MATERIAL_NUM);
+				$("#pyNum").html(data.PROFIt_material_NUM);
+				$("#pkzjz").html(data.LOSS_MATERIAL_PRICE);
+				$("#pyzjz").html(data.PROFIt_material_PRICE);
+             
+                var pyData =data.pyList;
+                var pkData =data.pkList;
+				var pkListHtml ="<tr><th>仓库名称</th><th>种类</th><th>价值</th></tr>";
+				var pyListHtml ="<tr><th>仓库名称</th><th>种类</th><th>价值</th></tr>";
+				for(var i in pyData){
+					pyListHtml+="<tr><td>"+pyData[i].WAREHOUSE_NAME+"</td><td>"+pyData[i].MATERIAL_NUM+"</td><td>￥"+pyData[i].MATERIAL_PRICE+"</td></tr>";
+				}
+				for(var i in pkData){
+					pkListHtml+="<tr><td>"+pkData[i].WAREHOUSE_NAME+"</td><td>"+pkData[i].MATERIAL_NUM+"</td><td>￥"+pkData[i].MATERIAL_PRICE+"</td></tr>";
+				}
+				$("#pkqk").html(pkListHtml);
+                $("#pyqk").html(pyListHtml);
+				
+                var detail =data.detail;
+				var ckmcHtml ="<th></th>";
+				var zwxflHtml ="<td>账务相符率</td>";
+				var zwxflData =res.data.zwxflList;
+				for(var i in zwxflData){
+					ckmcHtml+="<td>"+zwxflData[i].WAREHOUSE_NAME+"</td>";
+					zwxflHtml+="<td>"+zwxflData[i].ACCOUNT_COMPLIANCE*100+"%</td>";
+				}
+				$("#ckmc").html(ckmcHtml);
+                $("#zwxfl").html(zwxflHtml);
+                
+			}
+		}
+	});
+		
+		
+		 window.formClose = function(){
+             var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+             //layer.msg(index);
+             parent.layer.close(index); //再执行关闭   
+       }
+	   function exportWord(){
+		  /*  var option = {
+				   url:'/iles/stockTakePlan/exoprtInventoryReport',
+				   type:'GET',
+				   sucess:function(res){
+					   
+				   }
+		   };
+		   $.ajax(option); */
+		   //var str = JSON.stringify(stockTateData);
+		   window.open(contextPath+'stockTakePlan/exoprtInventoryReport?pid='+pid);
+	   }
+	</script>
+</body>
+</html>

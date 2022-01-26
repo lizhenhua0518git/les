@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.oms.dao.PurchaseBillDao">
+    <resultMap id="BaseResultMap" type="com.zkzn.les.oms.pojo.PurchaseBill">
+        <result column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="ORDER_CODE" jdbcType="VARCHAR" property="orderCode"/>
+        <result column="ORDER_TYPE" jdbcType="VARCHAR" property="orderType"/>
+        <result column="SUPPLIER_CODE" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="SUPPLIER_NAME" jdbcType="VARCHAR" property="supplierName"/>
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.zkzn.les.oms.pojo.PurchaseBill">
+    insert into t_purchase_bill (ID, ORDER_CODE, ORDER_TYPE,
+      SUPPLIER_CODE, SUPPLIER_NAME, CREATE_TIME
+      )
+    values (#{id,jdbcType=VARCHAR}, #{orderCode,jdbcType=VARCHAR}, #{orderType,jdbcType=VARCHAR}, 
+      #{supplierCode,jdbcType=VARCHAR}, #{supplierName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select ID, ORDER_CODE, ORDER_TYPE, SUPPLIER_CODE, SUPPLIER_NAME, CREATE_TIME
+    from t_purchase_bill
+  </select>
+
+    <select id="listPurchaseBill" parameterType="com.zkzn.les.oms.pojo.PurchaseBill"
+            resultType="com.zkzn.les.oms.pojo.PurchaseBill">
+        select pb.ID, pb.ORDER_CODE, pb.ORDER_TYPE, pb.SUPPLIER_CODE, pb.SUPPLIER_NAME, pb.CREATE_TIME
+        from t_purchase_bill pb
+        WHERE 1=1
+        <if test="purchaseBill.requiredTimeStr != null and '' != purchaseBill.requiredTimeStr">
+            AND pb.CREATE_TIME between
+            str_to_date(#{purchaseBill.startRequiredTime}, '%Y-%m-%d') and
+            str_to_date(#{purchaseBill.endRequiredTime}, '%Y-%m-%d')
+        </if>
+        <if test="purchaseBill.orderCode !=null and ''!= purchaseBill.orderCode">and pb.ORDER_CODE like
+            '%${purchaseBill.orderCode}%'
+        </if>
+        <if test="purchaseBill.supplierName !=null and ''!= purchaseBill.supplierName">and pb.SUPPLIER_NAME like
+            '%${purchaseBill.supplierName}%'
+        </if>
+        <if test="purchaseBill.orderType != null and '' != purchaseBill.orderType">
+          <foreach collection="purchaseBill.orderType.split(';')" open="and pb.ORDER_TYPE in (" close=")" separator="," index="index" item="item">
+            #{item}
+          </foreach>
+        </if>
+    </select>
+
+    <select id="listPurchaseBillRefund" parameterType="com.zkzn.les.oms.pojo.PurchaseBillRefund" resultType="com.zkzn.les.oms.pojo.PurchaseBillRefund">
+        select pbd.ID, pbd.ORDER_CODE, pbd.PARENT_ID, pbd.ITEM_NO, pbd.ITEM_TYPE, pbd.SUBJECT_TYPE, pbd.MATERIAL_CODE,
+        pbd.FACTORY,pps.MODEL_NAME as "FACTORY_DESC", m.STORAGE_LOCATION, pbd.MATERIAL_NUM, m.MATERIAL_UNIT, pbd.IS_RETURN, pbd.IS_FREE, pbd.DELIVERY_DATE,
+        pbd.BILL_DATE, pbd.SALES_ORDER_CODE, pbd.SALES_ORDER_ITEM, pbd.ELIKZ, pbd.UEBTO, pbd.UNTTO, pbd.CREATE_TIME, pb.SUPPLIER_CODE, pb.SUPPLIER_NAME,
+        ifnull(sod.ID,'0') as "status",
+        fw.WAREHOUSE_NAME,m.MATERIAL_DESC
+        from t_purchase_bill_detail pbd
+        left join t_purchase_bill pb on pbd.ORDER_CODE=pb.ORDER_CODE
+        left join t_station_order_detail sod on sod.PROCESS_DETIAL_ID=pbd.id
+        left join t_material m on m.MATERIAL_CODE=pbd.MATERIAL_CODE
+        left join t_factory_warehouse fw on fw.STORAGE_LOCATION=m.STORAGE_LOCATION
+        left join t_plm_plant_structure pps on pps.MODEL_CODE=pbd.FACTORY and pps.MODEL_TYPE='1'
+        WHERE pb.ORDER_TYPE='TETH'
+        <if test="obj.orderCode !=null and ''!= obj.orderCode">and pb.ORDER_CODE like
+            '%${obj.orderCode}%'
+        </if>
+        <if test="obj.materialCode !=null and ''!= obj.materialCode">and pbd.MATERIAL_CODE like
+            '%${obj.materialCode}%'
+        </if>
+        <if test="obj.factory !=null and ''!= obj.factory">and pbd.FACTORY like
+            '%${obj.factory}%'
+        </if>
+        <if test="obj.storageLocation != null and '' != obj.storageLocation">
+            <foreach collection="obj.storageLocation.split(';')" open="and fw.WAREHOUSE_CODE in (" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>

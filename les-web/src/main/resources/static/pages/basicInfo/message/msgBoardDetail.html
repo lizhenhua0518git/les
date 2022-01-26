@@ -1,0 +1,378 @@
+<#assign  title="消息列表" />
+<#include '/header.html' />
+<meta charset="UTF-8">
+<style type="text/css">
+.message-row{
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	background-color: rgba(28, 129, 229, 1);
+	color: rgba(255, 255, 255, 1);
+	font-size: 20px;
+	text-align: left;
+	font-family: Roboto;
+	border: 1px solid rgba(187, 187, 187, 1);
+}
+.message-row div{
+	float:left;
+}
+.message-total{
+	width: 118px;
+	height: 18px;
+	color: rgba(255, 255, 255, 1);
+	font-size: 16px;
+	text-align: left;
+	font-family: SourceHanSansSC-regular;
+	position:absolute;
+}
+.message-total span{
+	margin-left:5px;
+}
+body{
+	overflow:hidden;
+}
+</style>
+<#if athemTag.loginFlag=="true" && athemTag.menuFlag=="true">
+<div class="layui-row message-row">
+    <div class="layui-col-xs12">
+      <div class="grid-demo grid-demo-bg1">
+      	<div style="margin-left:19px">消息提醒</div>
+      <div class="message-total" style="margin-left:34%">未读消息:<span id="unreadCount">0</span></div>
+      	<div class="message-total" style="margin-left:43%">一般:<span id="generalCount">0</span></div>
+      	<div class="message-total" style="margin-left:50%">重要:<span id="importCount">0</span></div>
+      	<div class="message-total" style="margin-left:86%"><button class="layui-btn layui-btn-primary layui-btn-sm" id="readAll">全部已读</button></div>
+      </div>
+    </div>
+</div>
+<div class="layui-fluid" style="margin-top:8px">
+	<div class="layui-row layui-form">
+		<div class="layui-col-md3">
+		 	<label class="layui-form-label">接收人:</label>
+		 	 <div class="layui-input-block">
+		      <input type="text" id="userId_search" class="layui-input">
+		    </div>
+		</div>
+		<div class="layui-col-md3">
+		 	<label class="layui-form-label">消息位置:</label>
+		 	<div class="layui-input-block layui-form">
+			      <select  id="storageLocation_search">
+			        <option value="">请选择</option>
+			      </select>
+			</div>
+		</div>
+		<div class="layui-col-md3">
+		 	<label class="layui-form-label">状态:</label>
+			<div class="layui-input-block layui-form">
+			      <select  id="status_search">
+			        <option value="">请选择</option>
+			      </select>
+			</div>
+		</div>
+		<div class="layui-col-md3">
+		 	<label class="layui-form-label">类别:</label>
+			<div class="layui-input-block layui-form">
+			      <select  id="type_search">
+			        <option value="">请选择</option>
+			      </select>
+			</div>
+		</div>
+	</div>
+	<div class="layui-row layui-form" style="margin-bottom: 0">
+		<div class="layui-col-md4" style="width:52.5%">
+		 	 <label class="layui-form-label" >推送时间</label>
+		      <div class="layui-input-inline">
+		        <input type="text" class="layui-input" id="sendTime_search" placeholder=" - ">
+		      </div>
+		</div>
+		<div class="layui-col-md2">&nbsp;</div>
+		<div class="layui-col-md6">
+			<div class="layui-btn-container" style="text-align: right;" id="messageButton">
+				<#include '/bottonContainer.html' />
+			</div>
+		</div>
+	</div>
+</div>
+<div id="messageTabDiv">
+<table id="messageDetailTab" lay-filter="messageDetailTabF" ></table>
+</div>
+<script src="${ctx}/pages/js/jquery-3.3.1.min.js"></script>
+<script src="${ctx}/pages/layui/layui.js" charset="UTF-8"></script>
+<script src="${ctx}/pages/layui/lay/modules/layer.js" charset="UTF-8"></script>
+<script src="${ctx}/pages/js/printer/jquery.jqprint-0.3.js"></script>
+<script src="${ctx}/pages/js/printer/jquery-migrate-1.2.1.min.js"></script>
+<script src="${ctx}/pages/js/qrcode/jquery.qrcode.min.js"></script>
+<script src="${ctx}/pages/js/barcode/jquery-barcode.js"></script>
+<script type="text/javascript">
+layui.use(['form','table','layer','laydate'],function(){
+	var $ = layui.$;
+	var element = layui.element;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var laydate = layui.laydate;
+	var dictItems=parent.dictItems;//存放数据字典
+	var warehouseData=parent.warehouseData;//仓库字典
+	laydate.render({
+	    elem: '#sendTime_search'
+	    ,type: 'datetime'
+	    ,range: true
+	  });
+	var messageDetailData = table.render({
+		elem:"#messageDetailTab",
+		id:"messageDetailTabId",
+		url:"${ctx}/msgLog/",
+		cols:[[
+			{type:'checkbox'}
+			,{field:'sendTime',title:'推送时间',width:200}
+			,{field:'msgContent',title:'内容'}
+			,{field:'receiver',title:'接收人',width:120}
+			,{field:'storageLocation',title:'消息位置',width:120}
+			,{field:'isreaded',title:'状态',width:120}
+			,{field:'type',title:'类别',width:120}
+		]],
+		where:{
+			sortColums:"type desc,send_time desc,isreaded asc"
+		},
+		page: {theme: '#008155'},
+		title:'消息列表',
+		done:function(res,page,count){//列表数据回调函数
+			//状态数据处理
+			var dictType = new Array();
+			dictType.push("read_status");
+			dictType.push("message_type");
+			//查询字典
+			var option={
+					url:'${ctx}/dictItems/queryDictItemByTypes',
+					type:'POST',
+					dataType:'json',
+					contentType: "application/json",
+					data:JSON.stringify(dictType),
+					success:function(res){
+						if(res.code==0){
+							dictItems = res.data
+							//列表中的状态、接收方式赋值
+							changeItemName(res.data);
+							//搜索框的状态、接收方式赋值
+							defulatSelect(dictItems);
+
+						}
+					}
+    			};
+			if(dictItems==null){
+				$.ajax(option);
+			}else{
+				//列表中的状态、接收方式赋值
+				changeItemName(dictItems);
+				//搜索框的状态、接收方式赋值
+				defulatSelect(dictItems);
+			}
+			initWarehouse();
+			this.where={};//清楚携带的检索条件
+		}
+	});
+	//初始化 未读数量
+	initUnreadCount();
+	function changeItemName(data){
+    		//状态数据处理
+    		$("[data-field='isreaded']").children().each(function(){
+    			for(var i=0;i<data.length;i++){
+    				if(data[i].dictTypeId=="read_status" && data[i].itemValue==$(this).text().trim()){
+    					$(this).text(data[i].itemName);
+    				}
+    			}
+    		});
+    		//接收方式数据处理
+    		$("[data-field='type']").children().each(function(){
+    			for(var i=0;i<data.length;i++){
+    				if(data[i].dictTypeId=="message_type" && data[i].itemValue==$(this).text().trim()){
+    					$(this).text(data[i].itemName);
+    				}
+    			}
+    		});
+
+		}
+		function defulatSelect(dictItems){
+			if(dictItems && dictItems.length>0){
+				if($("#status_search").find("option").length==1){
+				  for(var i=0;i<dictItems.length;i++){
+					   if(dictItems[i].dictTypeId=="read_status"){
+						  $("#status_search").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+					   }else if(dictItems[i].dictTypeId=="message_type"){
+						   $("#type_search").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+					   }
+				  }
+				  form.render('select');
+			  }
+			}
+		}
+		//所属仓库值操作
+	    function  initWarehouse(){
+			 if(warehouseData!=null && warehouseData.length>0){
+				 $("[data-field='storageLocation']").children().each(function(){
+		    			for(var i=0;i<warehouseData.length;i++){
+		    				if(warehouseData[i].orgCode==$(this).text().trim()){
+		    					$(this).text(warehouseData[i].orgName);
+		    				}
+		    				if($("#storageLocation_search").find("option").length<=warehouseData.length){
+		    	  				$("#storageLocation_search").append("<option value="+warehouseData[i].orgCode+">"+warehouseData[i].orgName+"</option>");
+		    				}
+		    			}
+
+		    		});
+				 form.render('select');
+				 return;
+			 }
+			 var option={
+						url:'${ctx}/dictItems/queryDictItemByName?itemName=仓库&dictName=组织类型',
+						type:'GET',
+						contentType: "application/json",
+						success:function(res){
+							if(res.code==0){
+								var orgType = res.data.itemValue;
+								var options={
+										url:'${ctx}/orgination/queryOrgnizaByType?orgType='+orgType,
+										type:'GET',
+										contentType: "application/json",
+										success:function(res){
+											if(res.code==0 && res.data!=null && res.data.length>0){
+												warehouseData = res.data;
+												$("[data-field='storageLocation']").children().each(function(){
+									    			for(var i=0;i<warehouseData.length;i++){
+									    				if(warehouseData[i].orgCode==$(this).text().trim()){
+									    					$(this).text(warehouseData[i].orgName);
+									    				}
+									    				if($("#storageLocation_search").find("option").length<=warehouseData.length){
+									    	  				$("#storageLocation_search").append("<option value="+warehouseData[i].orgCode+">"+warehouseData[i].orgName+"</option>");
+									    				}
+									    			}
+									    			form.render('select');
+									    		});
+											}else{
+												layer.msg("获取仓库资源信息失败！");
+											}
+
+										}
+								};
+								$.ajax(options);
+							}else{
+								layer.msg("获取仓库资源信息失败！");
+							}
+						}
+				};
+				$.ajax(option);
+		  }
+		var active = {
+				search:function(res){
+					var receiverSearch = $("#userId_search").val();
+					var storageLocationSearch = $("#storageLocation_search").val();
+					var statusSearch = $("#status_search").val();
+					var typeSearch = $("#type_search").val();
+					var sendTimeSearch = $("#sendTime_search").val();
+					var startTime="null";
+					var endTime="null";
+					var param = {
+							receiver:receiverSearch,
+							storageLocation:storageLocationSearch,
+							isreaded:statusSearch,
+							type:typeSearch,
+							sortColums:"type desc,send_time desc,isreaded asc"
+					};
+					if(sendTimeSearch.length>0){
+						startTime = new Date(sendTimeSearch.substring(0,20));
+						endTime = new Date(sendTimeSearch.substring(22));
+						param = {
+								receiver:receiverSearch,
+								storageLocation:storageLocationSearch,
+								isreaded:statusSearch,
+								type:typeSearch,
+								startTime:startTime,
+						        endTime:endTime,
+								sortColums:"type desc,send_time desc,isreaded asc"
+						}
+					}
+					table.reload('messageDetailTab',{
+						where:param,
+						page:{"curr":1}
+					});
+				},reset:function(res){
+					 $("#userId_search").val("");
+					 $("#storageLocation_search").val("");
+					 $("#status_search").val("");
+					 $("#type_search").val("");
+					 $("#sendTime_search").val("");
+					 form.render('select');
+				},export:function(othis){
+					//othis.attr("class","layui-btn layui-btn-normal layui-btn-sm layui-btn-disabled");
+					var data = table.cache.messageDetailTabId;
+					if(data.length>0){
+						var receiverSearch = $("#userId_search").val();
+						var storageLocationSearch = $("#storageLocation_search").val();
+						var statusSearch = $("#status_search").val();
+						var typeSearch = $("#type_search").val();
+						var sendTimeSearch = $("#sendTime_search").val();
+						var params="sortColums=type desc,send_time desc,isreaded asc";
+						params = params + "&receiver="+receiverSearch+"&storageLocation="+storageLocationSearch+"&isreaded="+statusSearch+"&type="+typeSearch;
+						if(sendTimeSearch.length>0){
+							params = params + "&startTime="+new Date(sendTimeSearch.substring(0,20))+"&endTime="+new Date(sendTimeSearch.substring(22))
+						}
+						window.open("${ctx}/msgLog/exportMsgList?"+params);
+					}else{
+						layer.alert('导出失败！无数据',{icon: 2});
+					}
+				},print:function(res){
+					 $("#messageTabDiv").jqprint({operaSupport: true});
+				}
+
+		};
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		$("#readAll").click(function(){
+			var tableData = table.cache.messageTabId;
+			if(tableData!=null && tableData.length>0){
+				var ids = new Array();
+				for(var i=0;i<tableData.length;i++){
+					ids.push(tableData[i].id);
+				}
+				var option={
+						url:'${ctx}/msgLog/readAll',
+						data:{"ids":ids},
+						dataType:"json",
+						type:"POST",
+						success:function(res){
+							if(res.code==0){
+								layer.msg("修改成功");
+								table.reload("messageTabId");
+							}else{
+								layer.msg("修改失败");
+							}
+						}
+				};
+				$.ajax(option);
+			}else{
+				layer.msg("无数据");
+			}
+		});
+		function initUnreadCount(){
+			var option ={
+					url:'${ctx}/msgLog/queryUnreadCount',
+					type:"GET",
+					success:function(res){
+						if(res.code==0){
+							$("#importCount").text(res.data.importCount);
+							$("#generalCount").text(res.data.generalCount);
+							$("#unreadCount").text(res.data.unreadCount);
+						}else{
+							layer.msg("初始数据失败");
+						}
+					}
+			};
+			$.ajax(option);
+		}
+});
+</script>
+<#else>
+	<#include '/noAuthority.html' />
+</#if>
+<#include '/footer.html' />

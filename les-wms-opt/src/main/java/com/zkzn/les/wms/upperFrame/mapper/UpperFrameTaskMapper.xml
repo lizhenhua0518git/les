@@ -1,0 +1,825 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.upperFrame.dao.UpperFrameTaskDao">
+
+    <insert id="addUpperFrameRecordList" parameterType="java.util.Map">
+        <foreach collection="list" separator=";" index="index" item="item">
+            INSERT INTO w_upper_frame_record
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+
+                <if test="item.receiveRecordId != '' and item.receiveRecordId != null">
+                    RECEIVE_RECORD_ID,
+                </if>
+                <if test="item.receiveDetailId != '' and item.receiveDetailId != null">
+                    RECEIVE_DETAIL_ID,
+                </if>
+                <if test="item.recommendedPositionId != '' and item.recommendedPositionId != null">
+                    RECOMMENDED_POSITION_ID,
+                </if>
+                <if test="item.recommendedPositionCode != '' and item.recommendedPositionCode != null">
+                    RECOMMENDED_POSITION_CODE,
+                </if>
+                <if test="item.positionCode != '' and item.positionCode != null">
+                    POSITION_CODE,
+                </if>
+                <if test="item.positionId != '' and item.positionId != null">
+                    POSITION_ID,
+                </if>
+                <if test="item.materialCode != '' and item.materialCode != null">
+                    MATERIAL_CODE,
+                </if>
+                <if test="item.factory != '' and item.factory != null">
+                    FACTORY,
+                </if>
+                <if test="item.materialUnit != '' and item.materialUnit != null">
+                    MATERIAL_UNIT,
+                </if>
+                <if test="item.materialNum != null">
+                    MATERIAL_NUM,
+                </if>
+                <if test="item.upperType != null">
+                    UPPER_TYPE,
+                </if>
+                <if test="item.storageLocation != '' and item.storageLocation != null">
+                    STORAGE_LOCATION,
+                </if>
+                <if test="item.upperTime != null">
+                    UPPER_TIME,
+                </if>
+                <if test="item.upperName != '' and item.upperName != null">
+                    UPPER_NAME,
+                </if>
+                <if test="item.upperId != '' and item.upperId != null">
+                    UPPER_ID,
+                </if>
+                <if test="item.carrierCode != '' and item.carrierCode != null">
+                    CARRIER_CODE,
+                </if>
+                <if test="item.carrierId != '' and item.carrierId != null">
+                    CARRIER_ID,
+                </if>
+                <if test="item.upperTaskCode != '' and item.upperTaskCode != null">
+                    UPPER_TASK_CODE,
+                </if>
+                <if test="item.supplierCode != '' and item.supplierCode != null">
+                    SUPPLIER_CODE,
+                </if>
+                <if test="item.supplierName != '' and item.supplierName != null">
+                    SUPPLIER_NAME,
+                </if>
+                <if test="item.batchNo != '' and item.batchNo != null">
+                    BATCH_NO,
+                </if>
+                <if test="item.orderCode != '' and item.orderCode != null">
+                    ORDER_CODE,
+                </if>
+                <if test="item.custormer != '' and item.custormer != null">
+                    CUSTORMER,
+                </if>
+                <if test="item.customName != '' and item.customName != null">
+                    CUSTOM_NAME,
+                </if>
+                <if test="item.stationCode != '' and item.stationCode != null">
+                    STATION_CODE,
+                </if>
+                <if test="item.createTime != null">
+                    CREATE_TIME,
+                </if>
+                <if test="item.upperOrigin != null">
+                    UPPER_ORIGIN,
+                </if>
+                <if test="item.upperTaskType != '' and item.upperTaskType != null">
+                    UPPER_TASK_TYPE
+                </if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+
+                <if test="item.receiveRecordId != '' and item.receiveRecordId != null">
+                    #{item.receiveRecordId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.receiveDetailId != '' and item.receiveDetailId != null">
+                    #{item.receiveDetailId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.recommendedPositionId != '' and item.recommendedPositionId != null">
+                    #{item.recommendedPositionId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.recommendedPositionCode != '' and item.recommendedPositionCode != null">
+                    #{item.recommendedPositionCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.positionCode != '' and item.positionCode != null">
+                    #{item.positionCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.positionId != '' and item.positionId != null">
+                    #{item.positionId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialCode != '' and item.materialCode != null">
+                    #{item.materialCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.factory != '' and item.factory != null">
+                    #{item.factory,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialUnit != '' and item.materialUnit != null">
+                    #{item.materialUnit,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialNum != null">
+                    #{item.materialNum,jdbcType=DOUBLE},
+                </if>
+                <if test="item.upperType != null">
+                    #{item.upperType,jdbcType=INTEGER},
+                </if>
+                <if test="item.storageLocation != '' and item.storageLocation != null">
+                    #{item.storageLocation,jdbcType=VARCHAR},
+                </if>
+                <if test="item.upperTime != null">
+                    #{item.upperTime,jdbcType=DATE},
+                </if>
+                <if test="item.upperName != '' and item.upperName != null">
+                    #{item.upperName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.upperId != '' and item.upperId != null">
+                    #{item.upperId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.carrierCode != '' and item.carrierCode != null">
+                    #{item.carrierCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.carrierId != '' and item.carrierId != null">
+                    #{item.carrierId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.upperTaskCode != '' and item.upperTaskCode != null">
+                    #{item.upperTaskCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.supplierCode != '' and item.supplierCode != null">
+                    #{item.supplierCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.supplierName != '' and item.supplierName != null">
+                    #{item.supplierName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.batchNo != '' and item.batchNo != null">
+                    #{item.batchNo,jdbcType=VARCHAR},
+                </if>
+                <if test="item.orderCode != '' and item.orderCode != null">
+                    #{item.orderCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.custormer != '' and item.custormer != null">
+                    #{item.custormer,jdbcType=VARCHAR},
+                </if>
+                <if test="item.customName != '' and item.customName != null">
+                    #{item.customName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.stationCode != '' and item.stationCode != null">
+                    #{item.stationCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.createTime != null">
+                    #{item.createTime,jdbcType=DATE},
+                </if>
+                <if test="item.upperOrigin != null">
+                    #{item.upperOrigin,jdbcType=INTEGER},
+                </if>
+                <if test="item.upperTaskType != '' and item.upperTaskType != null">
+                    #{item.upperTaskType}
+                </if>
+            </trim>
+        </foreach>
+    </insert>
+
+    <insert id="addUpperFrameRecordLists" parameterType="com.zkzn.les.wms.pojo.UpperFrameRecord">
+        <foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+            INSERT INTO w_upper_frame_record
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.upperRecordId != '' and item.upperRecordId != null">
+                    ID,
+                </if>
+                <if test="item.receiveRecordId != '' and item.receiveRecordId != null">
+                    RECEIVE_RECORD_ID,
+                </if>
+                <if test="item.recevieDetailId != '' and item.recevieDetailId != null">
+                    RECEVIE_DETAIL_ID,
+                </if>
+                <if test="item.recommendedPositionId != '' and item.recommendedPositionId != null">
+                    RECOMMENDED_POSITION_ID,
+                </if>
+                <if test="item.recommendedPositionCode != '' and item.recommendedPositionCode != null">
+                    RECOMMENDED_POSITION_CODE,
+                </if>
+                <if test="item.positionCode != '' and item.positionCode != null">
+                    POSITION_CODE,
+                </if>
+                <if test="item.positionId != '' and item.positionId != null">
+                    POSITION_ID,
+                </if>
+                <if test="item.materialCode != '' and item.materialCode != null">
+                    MATERIAL_CODE,
+                </if>
+                <if test="item.factory != '' and item.factory != null">
+                    FACTORY,
+                </if>
+                <if test="item.materialUnit != '' and item.materialUnit != null">
+                    MATERIAL_UNIT,
+                </if>
+                <if test="item.materialNum != null">
+                    MATERIAL_NUM,
+                </if>
+                <if test="item.upperType != null">
+                    UPPER_TYPE,
+                </if>
+                <if test="item.storageLocation != '' and item.storageLocation != null">
+                    STORAGE_LOCATION,
+                </if>
+                <if test="item.upperTime != null">
+                    UPPER_TIME,
+                </if>
+                <if test="item.upperName != '' and item.upperName != null">
+                    UPPER_NAME,
+                </if>
+                <if test="item.upperId != '' and item.upperId != null">
+                    UPPER_ID,
+                </if>
+                <if test="item.carrierCode != '' and item.carrierCode != null">
+                    CARRIER_CODE,
+                </if>
+                <if test="item.carrierId != '' and item.carrierId != null">
+                    CARRIER_ID,
+                </if>
+                <if test="item.upperTaskCode != '' and item.upperTaskCode != null">
+                    UPPER_TASK_CODE,
+                </if>
+                <if test="item.supplierCode != '' and item.supplierCode != null">
+                    SUPPLIER_CODE,
+                </if>
+                <if test="item.supplierName != '' and item.supplierName != null">
+                    SUPPLIER_NAME,
+                </if>
+                <if test="item.batchNo != '' and item.batchNo != null">
+                    BATCH_NO,
+                </if>
+                <if test="item.orderCode != '' and item.orderCode != null">
+                    ORDER_CODE,
+                </if>
+                <if test="item.custormer != '' and item.custormer != null">
+                    CUSTORMER,
+                </if>
+                <if test="item.customName != '' and item.customName != null">
+                    CUSTOM_NAME,
+                </if>
+                <if test="item.stationCode != '' and item.stationCode != null">
+                    STATION_CODE,
+                </if>
+                <if test="item.createTime != null">
+                    CREATE_TIME,
+                </if>
+                <if test="item.upperOrigin != null">
+                    UPPER_ORIGIN,
+                </if>
+                <if test="item.upperTaskType != '' and item.upperTaskType != null">
+                    UPPER_TASK_TYPE
+                </if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="item.upperRecordId != '' and item.upperRecordId != null">
+                    #{item.upperRecordId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.receiveRecordId != '' and item.receiveRecordId != null">
+                    #{item.receiveRecordId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.recevieDetailId != '' and item.recevieDetailId != null">
+                    #{item.recevieDetailId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.recommendedPositionId != '' and item.recommendedPositionId != null">
+                    #{item.recommendedPositionId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.recommendedPositionCode != '' and item.recommendedPositionCode != null">
+                    #{item.recommendedPositionCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.positionCode != '' and item.positionCode != null">
+                    #{item.positionCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.positionId != '' and item.positionId != null">
+                    #{item.positionId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialCode != '' and item.materialCode != null">
+                    #{item.materialCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.factory != '' and item.factory != null">
+                    #{item.factory,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialUnit != '' and item.materialUnit != null">
+                    #{item.materialUnit,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialNum != null">
+                    #{item.materialNum,jdbcType=DOUBLE},
+                </if>
+                <if test="item.upperType != null">
+                    #{item.upperType,jdbcType=INTEGER},
+                </if>
+                <if test="item.storageLocation != '' and item.storageLocation != null">
+                    #{item.storageLocation,jdbcType=VARCHAR},
+                </if>
+                <if test="item.upperTime != null">
+                    #{item.upperTime,jdbcType=DATE},
+                </if>
+                <if test="item.upperName != '' and item.upperName != null">
+                    #{item.upperName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.upperId != '' and item.upperId != null">
+                    #{item.upperId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.carrierCode != '' and item.carrierCode != null">
+                    #{item.carrierCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.carrierId != '' and item.carrierId != null">
+                    #{item.carrierId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.upperTaskCode != '' and item.upperTaskCode != null">
+                    #{item.upperTaskCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.supplierCode != '' and item.supplierCode != null">
+                    #{item.supplierCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.supplierName != '' and item.supplierName != null">
+                    #{item.supplierName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.batchNo != '' and item.batchNo != null">
+                    #{item.batchNo,jdbcType=VARCHAR},
+                </if>
+                <if test="item.orderCode != '' and item.orderCode != null">
+                    #{item.orderCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.custormer != '' and item.custormer != null">
+                    #{item.custormer,jdbcType=VARCHAR},
+                </if>
+                <if test="item.customName != '' and item.customName != null">
+                    #{item.customName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.stationCode != '' and item.stationCode != null">
+                    #{item.stationCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.createTime != null">
+                    #{item.createTime,jdbcType=DATE},
+                </if>
+                <if test="item.upperOrigin != null">
+                    #{item.upperOrigin,jdbcType=INTEGER},
+                </if>
+                <if test="item.upperTaskType != '' and item.upperTaskType != null">
+                    #{item.upperTaskType}
+                </if>
+            </trim>
+        </foreach>
+    </insert>
+
+
+    <select id="selectUpperFrameRecord" resultType="com.zkzn.les.common.pojo.MaterialData">
+        SELECT
+            u.upper_frame_id AS "upperId",
+            u.upper_frame_id AS "mainId",
+            u.upper_frame_id AS "detailId",
+            u.material_desc AS "materialDesc",
+            u.material_num AS "receiveNum",
+            u.client_name AS "clientName",
+            u.upper_type AS "inspectionStatus",
+            u.batch_no AS "batchNo",
+            u.upper_origin AS "upperOrigin"
+        FROM w_upper_frame_record u
+        WHERE u.STATUS = 0
+        <if test="userId != null and userId != ''">
+            and u.operate_user_id = #{userId}
+        </if>
+        <if test="warehouseCode != null and warehouseCode != ''">
+            and u.warehouse_code = #{warehouseCode}
+        </if>
+    </select>
+
+    <select id="selectDetailStatusByUpperData" resultType="java.lang.Integer"
+            parameterType="com.zkzn.les.common.pojo.MaterialData">
+        select PLAT_TRANSFER_STATUS as "breakUpStatus"
+        FROM w_upper_frame_record u
+                 LEFT JOIN t_inspection_task_detail r ON u.RECEIVE_DETAIL_ID = r.ID
+        where u.UPPER_TYPE = #{dto.inspectionStatus}
+          AND u.batch_no = #{dto.batchNo}
+          AND u.ID = #{dto.upperId}
+    </select>
+
+    <select id="breakUpperFrameRecord" resultType="com.zkzn.les.wms.upperFrame.pojo.BreakUpperPojo">
+        SELECT
+            u.upper_frame_id AS "upperFrameId",
+            u.material_desc AS "materialDesc",
+            u.material_unit AS "materialUnit",
+            u.client_name AS "clientName",
+            u.material_num AS "materialNum",
+            u.carrier_code AS "carrierCode",
+            u.upper_type AS "inspectionStatus",
+            u.batch_no AS "batchNo"
+        FROM w_upper_frame_record u
+        WHERE
+            u.upper_frame_id = #{upperId}
+    </select>
+
+    <select id="getPositionByCodeHouse" resultType="com.zkzn.les.wms.pojo.StoragePosition">
+        SELECT s.POSITION_CODE    AS "positionCode",
+               m.STOCK_STATUS     AS "stockStatus",
+               m.STOCK_COUNT      AS "stockCount",
+               m.SUPPLIER_CODE    AS "supplierCode",
+               m.STATION_CODE     AS "stationCode",
+               m.STORAGE_LOCATION AS "storageLocation",
+               m.MATERIAL_CODE    AS "materialCode",
+               s.id               AS "positionId"
+        FROM t_storage_position s
+                 LEFT JOIN t_material_storage_bin m ON s.ID = m.STORAGE_ID
+        WHERE s.STATUS = '1'
+          AND s.WAREHOUSE = #{warehouse}
+          AND s.POSITION_CODE = #{positionCode}
+    </select>
+
+    <resultMap id="upperFrameRecord" type="com.zkzn.les.wms.pojo.UpperFrameRecord">
+        <id column="ID" property="upperRecordId"/>
+        <result column="RECEIVE_RECORD_ID" property="receiveRecordId"/>
+        <result column="RECEVIE_DETAIL_ID" property="recevieDetailId"/>
+        <result column="RECOMMENDED_POSITION_ID" property="recommendedPositionId"/>
+        <result column="RECOMMENDED_POSITION_CODE" property="recommendedPositionCode"/>
+        <result column="POSITION_CODE" property="positionCode"/>
+        <result column="POSITION_ID" property="positionId"/>
+        <result column="MATERIAL_CODE" property="materialCode"/>
+        <result column="FACTORY" property="factory"/>
+        <result column="MATERIAL_UNIT" property="materialUnit"/>
+        <result column="MATERIAL_NUM" property="materialNum"/>
+        <result column="UPPER_TYPE" property="upperType"/>
+        <result column="STORAGE_LOCATION" property="storageLocation"/>
+        <result column="UPPER_TIME" property="upperTime"/>
+        <result column="UPPER_NAME" property="upperName"/>
+        <result column="UPPER_ID" property="upperId"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="STATUS" property="status"/>
+        <result column="CARRIER_CODE" property="carrierCode"/>
+        <result column="CARRIER_ID" property="carrierId"/>
+        <result column="UPPER_TASK_CODE" property="upperTaskCode"/>
+        <result column="SUPPLIER_CODE" property="supplierCode"/>
+        <result column="SUPPLIER_NAME" property="supplierName"/>
+        <result column="BATCH_NO" property="batchNo"/>
+        <result column="ORDER_CODE" property="orderCode"/>
+        <result column="CUSTORMER" property="custormer"/>
+        <result column="CUSTOM_NAME" property="customName"/>
+        <result column="STATION_CODE" property="stationCode"/>
+        <result column="SOURCE_ID" property="sourceId"/>
+        <result column="BILL_TYPE" property="billType"/>
+    </resultMap>
+    <select id="getUpperFrameRecordById" resultMap="upperFrameRecord">
+        SELECT u.*,
+               case u.upper_task_type when 1 then  r.INSPECTION_POSITION_ID when 2 then tttd.INSPECTION_POSITION_ID end AS  "storageId",
+               trr.BILL_TYPE            AS "billType"
+        FROM w_upper_frame_record u
+                 LEFT JOIN t_inspection_task_detail r ON u.RECEIVE_DETAIL_ID = r.ID and u.upper_task_type = 1
+                 LEFT JOIN t_transfer_task_detail tttd ON u.RECEIVE_DETAIL_ID = tttd.ID and u.upper_task_type = 2
+                 LEFT JOIN t_inspection_task trr ON u.RECEIVE_RECORD_ID = trr.ID
+        WHERE u.BATCH_NO = #{batchNo}
+          AND u.UPPER_TYPE = #{inspectionStatus}
+          AND u.ID = #{upperId}
+    </select>
+
+    <update id="updateArrivalNoticeDetail">
+        UPDATE t_arrival_notice_detail
+        SET UPPER_STATUS = 2,
+            UPPER_NUM    =ifnull(UPPER_NUM, 0) + #{upperNum}
+        WHERE ID = (
+            SELECT ub.ARRIVAL_ID FROM  (
+                       SELECT a.ARRIVAL_ID
+                       FROM t_inspection_task_detail r
+                                LEFT JOIN t_receive_task_detail titd on r.RECEIVE_DETAIL_ID = titd.id
+                                LEFT JOIN t_arrival_notice_detail a ON titd.ARRIVAL_DETAIL_ID = a.ID
+                       WHERE r.ID = #{recevieDetailId}
+            ) ub
+
+        )
+    </update>
+
+    <select id="getArrivalNoticeDetailStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM t_arrival_notice_detail
+        WHERE ARRIVAL_ID = (
+            SELECT ub.ARRIVAL_ID FROM (
+                            SELECT a.ARRIVAL_ID
+                            FROM t_inspection_task_detail r
+                                     LEFT JOIN t_receive_task_detail titd on r.RECEIVE_DETAIL_ID = titd.id
+                                     LEFT JOIN t_arrival_notice_detail a ON titd.ARRIVAL_DETAIL_ID = a.ID
+                            WHERE r.ID = #{recevieDetailId}
+                            ) ub
+
+        )
+          AND UPPER_STATUS IS NULL
+    </select>
+
+    <update id="updateArrivalNotice">
+        UPDATE t_arrival_notice
+        SET UPPER_STATUS = #{upperStatus}
+        WHERE ID = (
+            SELECT ub.ARRIVAL_ID FROM (
+                            SELECT a.ARRIVAL_ID
+                            FROM t_inspection_task_detail r
+                                     LEFT JOIN t_receive_task_detail titd on r.RECEIVE_DETAIL_ID = titd.id
+                                     LEFT JOIN t_arrival_notice_detail a ON titd.ARRIVAL_DETAIL_ID = a.ID
+                            WHERE r.ID = #{recevieDetailId}
+                            ) ub
+
+        )
+    </update>
+
+    <select id="getMaterialStorageBinByData" parameterType="com.zkzn.les.wms.pojo.MaterialStorageBin"
+            resultType="com.zkzn.les.wms.pojo.MaterialStorageBin">
+        SELECT *
+        FROM t_material_storage_bin
+        WHERE MATERIAL_CODE = #{materialCode}
+          AND STORAGE_LOCATION = #{storageLocation}
+          AND STORAGE_ID = #{originalPositionId}
+          AND BATCH_NO = #{batchNo}
+          AND STOCK_STATUS = #{stockStatus}
+    </select>
+
+    <delete id="deleteUpperFrameRecord">
+        DELETE
+        FROM w_upper_frame_record
+        WHERE BATCH_NO = #{batchNo}
+          AND UPPER_TYPE = #{inspectionStatus}
+    </delete>
+
+    <delete id="deleteMaterialStorageBinById">
+        DELETE
+        FROM t_material_storage_bin
+        WHERE ID = #{materialStorageBinId}
+    </delete>
+
+    <update id="updateUpperFrameRecordById" parameterType="com.zkzn.les.wms.pojo.UpperFrameRecord">
+        UPDATE w_upper_frame_record
+        SET POSITION_CODE = #{positionCode},
+            POSITION_ID   = #{positionId},
+            MATERIAL_NUM  = #{materialNum},
+            STATUS        = #{status},
+            UPPER_TIME    = #{upperTime},
+            UPPER_NAME    = #{upperName},
+            UPPER_ID      = #{upperId}
+        WHERE ID = #{upperRecordId}
+    </update>
+
+    <update id="modifyMaterialStorageBin">
+        UPDATE t_material_storage_bin
+        <set>
+            <if test="enableCount != null">
+                ENABLE_COUNT = #{enableCount,jdbcType=DOUBLE},
+            </if>
+            <if test="inspectionCount != null">
+                INSPECTION_COUNT = #{inspectionCount,jdbcType=DOUBLE},
+            </if>
+            <if test="unenableCount != null">
+                UNENABLE_COUNT = #{unenableCount,jdbcType=DOUBLE},
+            </if>
+            <if test="positionCode != null and positionCode != ''">
+                POSITION_CODE = #{positionCode,jdbcType=VARCHAR},
+            </if>
+            <if test="storageId != null and storageId != ''">
+                STORAGE_ID = #{storageId,jdbcType=VARCHAR},
+            </if>
+            <if test="stockCount != null ">
+                STOCK_COUNT = #{stockCount,jdbcType=DOUBLE},
+            </if>
+        </set>
+        <where>
+            MATERIAL_CODE = #{materialCode} AND BATCH_NO = #{batchNo} AND STORAGE_ID = #{originalPositionId} and STOCK_STATUS = #{stockStatus}
+        </where>
+    </update>
+
+    <insert id="addSerialList" parameterType="java.util.List">
+        <foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+            INSERT INTO t_material_serial
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                ID,CREATER_ID,CREATE_TIME,CREATER_NAME,MATERIAL_CODE,BATCH_NO,SERIAL_NUM,RECEIVED_TASK_CODE,TASK_ID,TASK_TYPE,CARRIER_CODE
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                replace(uuid(),'-',''),#{item.createrId,jdbcType=VARCHAR},#{item.createTime,jdbcType=DATE},#{item.createrName,jdbcType=VARCHAR},
+                #{item.materialCode,jdbcType=VARCHAR},#{item.batchNo,jdbcType=VARCHAR},#{item.serialNum,jdbcType=VARCHAR},
+                #{item.receivedTaskCode,jdbcType=VARCHAR},#{item.taskId,jdbcType=VARCHAR},#{item.taskType,jdbcType=INTEGER},#{item.carrierCode,jdbcType=VARCHAR}
+            </trim>
+        </foreach>
+    </insert>
+
+    <insert id="addMaterialStorageBinList" parameterType="com.zkzn.les.wms.pojo.MaterialStorageBin">
+        <foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+            INSERT INTO t_material_storage_bin
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                ID,
+                <if test="item.positionCode != '' and item.positionCode != null">
+                    POSITION_CODE,
+                </if>
+                <if test="item.materialDesc != '' and item.materialDesc != null">
+                    MATERIAL_DESC,
+                </if>
+                <if test="item.storageId != '' and item.storageId != null">
+                    STORAGE_ID,
+                </if>
+                <if test="item.materialCode != '' and item.materialCode != null">
+                    MATERIAL_CODE,
+                </if>
+                <if test="item.materialUnit != '' and item.materialUnit != null">
+                    MATERIAL_UNIT,
+                </if>
+                <if test="item.stockCount != null">
+                    STOCK_COUNT,
+                </if>
+                <if test="item.enableCount != null">
+                    ENABLE_COUNT,
+                </if>
+                <if test="item.preUseCount != null">
+                    PRE_USE_COUNT,
+                </if>
+                <if test="item.supplierCode != null and item.supplierCode != ''">
+                    SUPPLIER_CODE,
+                </if>
+                <if test="item.supplierName != null and item.supplierName != ''">
+                    SUPPLIER_NAME,
+                </if>
+                <if test="item.receiveDate != null">
+                    RECEIVE_DATE,
+                </if>
+                <if test="item.batchNo != null and item.batchNo != ''">
+                    BATCH_NO,
+                </if>
+                <if test="item.storageLocation != null and item.storageLocation != ''">
+                    STORAGE_LOCATION,
+                </if>
+                <if test="item.factory != null and item.factory != ''">
+                    FACTORY,
+                </if>
+                <if test="item.warehouseCode != null and item.warehouseCode != ''">
+                    WAREHOUSE_CODE,
+                </if>
+                <if test="item.warehouseName != null and item.warehouseName != ''">
+                    WAREHOUSE_NAME,
+                </if>
+                <if test="item.orderCode != null and item.orderCode != ''">
+                    ORDER_CODE,
+                </if>
+                <if test="item.stockStatus != null">
+                    STOCK_STATUS,
+                </if>
+                <if test="item.stockStatus != null">
+                    STOCK_TYPE,
+                </if>
+                <if test="item.stationCode != null and item.stationCode != ''">
+                    STATION_CODE,
+                </if>
+                <if test="item.inspectionCount != null">
+                    INSPECTION_COUNT,
+                </if>
+                <if test="item.unenableCount != null">
+                    UNENABLE_COUNT,
+                </if>
+                <if test="item.createTime != null">
+                    CREATE_TIME,
+                </if>
+                <if test="item.unenableReason != null">
+                    UNENABLE_REASON
+                </if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                replace(uuid(),'-',''),
+                <if test="item.positionCode != '' and item.positionCode != null">
+                    #{item.positionCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialDesc != '' and item.materialDesc != null">
+                    #{item.materialDesc,jdbcType=VARCHAR},
+                </if>
+                <if test="item.storageId != '' and item.storageId != null">
+                    #{item.storageId,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialCode != '' and item.materialCode != null">
+                    #{item.materialCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.materialUnit != '' and item.materialUnit != null">
+                    #{item.materialUnit,jdbcType=VARCHAR},
+                </if>
+                <if test="item.stockCount != null">
+                    #{item.stockCount,jdbcType=DOUBLE},
+                </if>
+                <if test="item.enableCount != null">
+                    #{item.enableCount,jdbcType=DOUBLE},
+                </if>
+                <if test="item.preUseCount != null">
+                    #{item.preUseCount,jdbcType=DOUBLE},
+                </if>
+                <if test="item.supplierCode != null and item.supplierCode != ''">
+                    #{item.supplierCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.supplierName != null and item.supplierName != ''">
+                    #{item.supplierName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.receiveDate != null">
+                    #{item.receiveDate,jdbcType=DATE},
+                </if>
+                <if test="item.batchNo != null and item.batchNo != ''">
+                    #{item.batchNo,jdbcType=VARCHAR},
+                </if>
+                <if test="item.storageLocation != null and item.storageLocation != ''">
+                    #{item.storageLocation,jdbcType=VARCHAR},
+                </if>
+                <if test="item.factory != null and item.factory != ''">
+                    #{item.factory,jdbcType=VARCHAR},
+                </if>
+                <if test="item.warehouseCode != null and item.warehouseCode != ''">
+                    #{item.warehouseCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.warehouseName != null and item.warehouseName != ''">
+                    #{item.warehouseName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.orderCode != null and item.orderCode != ''">
+                    #{item.orderCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.stockStatus != null">
+                    #{item.stockStatus,jdbcType=INTEGER},
+                </if>
+                <if test="item.stockStatus != null">
+                    #{item.stockType,jdbcType=INTEGER},
+                </if>
+                <if test="item.stationCode != null and item.stationCode != ''">
+                    #{item.stationCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.inspectionCount != null">
+                    #{item.inspectionCount,jdbcType=DOUBLE},
+                </if>
+                <if test="item.unenableCount != null">
+                    #{item.unenableCount,jdbcType=DOUBLE},
+                </if>
+                <if test="item.createTime != null">
+                    #{item.createTime,jdbcType=DATE},
+                </if>
+                <if test="item.unenableReason != null">
+                    #{item.unenableReason,jdbcType=DOUBLE}
+                </if>
+            </trim>
+        </foreach>
+    </insert>
+    <select id="getUpperPositionById" resultType="com.zkzn.les.wms.upperFrame.pojo.UpperPositionPojo">
+        SELECT
+            r.upper_frame_id AS "upperFrameId",
+            r.storage_position_id AS "storagePositionId",
+            r.position_code AS "positionCode",
+            r.sum_count AS "sumCount",
+            r.material_unit AS "materialUnit",
+            r.position_status AS "positionStatus"
+        FROM
+            w_recommend_positions r
+        WHERE
+            r.upper_frame_id = #{upperId}
+    </select>
+    <select id="getPositionByPositionCode" resultType="com.zkzn.les.wms.upperFrame.pojo.VerifyPositionPojo" parameterType="com.zkzn.les.wms.upperFrame.pojo.VerifyPositionPojo">
+        SELECT
+            sp.storage_position_id AS "storagePositionId",
+            sp.position_code AS "positionCode",
+            msb.material_desc AS "materialDesc",
+            msb.client_name AS "clientName",
+            msb.batch_no AS "batchNo",
+            msb.stock_status AS "upperType",
+            (msb.stock_count+msb.frozen_count+msb.pre_use_count) AS "sumCount"
+        FROM
+            b_storage_position sp
+        LEFT JOIN s_material_storage_bin msb ON sp.storage_position_id = msb.storage_position_id
+        WHERE sp.position_code = #{positionCode} AND sp.warehouse_code = #{warehouseCode} AND sp.occupy_status = 1
+    </select>
+
+    <select id="verifyCar" resultType="com.zkzn.les.wms.upperFrame.pojo.VerifyPositionPojo" parameterType="com.zkzn.les.wms.upperFrame.pojo.VerifyPositionPojo">
+        SELECT
+            c.carrier_code AS "positionCarCode"
+        FROM
+            b_carrier c
+        WHERE c.carrier_code = #{positionCarCode} AND c.warehouse_code = #{warehouseCode}
+    </select>
+
+    <update id="updatePosition">
+        UPDATE b_storage_position SET occupy_status = #{occupyStatus} WHERE storage_position_id = #{storagePositionId}
+    </update>
+
+    <update id="updateUpperFrameRecord" parameterType="com.zkzn.les.wms.upperFrame.pojo.UpperFrameData">
+        UPDATE w_upper_frame_record
+        SET
+            upper_upper_time = #{upperUpperTime},
+            upper_upper_name = #{upperUpperName},
+            upper_user_id = #{upperUserId},
+            status = #{status}
+        WHERE upper_frame_id = #{upperFrameId}
+    </update>
+<!--    <insert id="addActualPosition" parameterType="java.util.List">-->
+<!--        <foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">-->
+<!--            INSERT INTO w_actual_position-->
+<!--            <trim prefix="(" suffix=")" suffixOverrides=",">-->
+<!--                upper_frame_id,position_code,-->
+<!--                upper_number,material_unit,create_time-->
+<!--            </trim>-->
+<!--            <trim prefix="values (" suffix=")" suffixOverrides=",">-->
+<!--                #{item.upperFrameId,jdbcType=INTEGER},#{item.positionCode,jdbcType=VARCHAR},-->
+<!--                #{item.upperNumber,jdbcType=DOUBLE},#{item.materialUnit,jdbcType=VARCHAR},sysdate()-->
+<!--            </trim>-->
+<!--        </foreach>-->
+<!--    </insert>-->
+    <insert id="addActualPosition">
+        insert into w_actual_position (upper_frame_id,position_code,position_car_code,upper_number,material_unit,create_time) VALUES
+        <foreach collection="upperPositionPojos" item="item" separator=",">
+            (#{item.upperFrameId},#{item.positionCode},#{item.positionCarCode},
+            #{item.upperNumber},#{item.materialUnit},sysdate())
+        </foreach>
+    </insert>
+</mapper>

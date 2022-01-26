@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport"
+		  content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+	<link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+	<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+	<title>新增货物信息</title>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<div class="layui-container" style="padding-top: 20px;">
+	<form class="layui-form" action="">
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label">物料名称</label>
+				<div class="layui-input-block">
+					<input type="text" name="materialDesc" id="materialDesc" lay-verify="materialDesc" autocomplete="off" placeholder="请输入物料名称" class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">出库数量</label>
+				<div class="layui-input-block">
+					<input type="text" name="sendNumber" id="sendNumber" lay-verify="sendNumber" autocomplete="off" placeholder="请输入到货数量" class="layui-input" >
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-inline">
+				<label class="layui-form-label">单位</label>
+				<div class="layui-input-block">
+					<input type="text" name="materialUnit" id="materialUnit" lay-verify="materialUnit" autocomplete="off" placeholder="请输入单位" class="layui-input" >
+				</div>
+			</div>
+			<div class="layui-inline">
+				<label class="layui-form-label">批次号</label>
+				<div class="layui-input-block">
+					<input type="text" name="batchNo" id="batchNo" lay-verify="batchNo" autocomplete="off" placeholder="请输入单位" class="layui-input" >
+				</div>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit="" lay-filter="roleSubit">立即提交</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+		<input type="text" hidden="true" name="orderTaskId" id="orderTaskId" />
+	</form>
+</div>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script type="text/html" id="bodyTpl"></script>
+<script type="text/javascript">
+	var contextPath = config.omsConfig.contextPath;
+	var $ = layui.$;
+	var element = layui.element;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var orderTaskId = parent.$("#orderTaskId").val();
+	function loadding(){
+		layui.use(['form', 'layedit'], function(){
+			//自定义验证规则
+			form.verify({
+				arrivalCode: function(value){
+					if(value.length < 1){
+						return '资源名称不能为空';
+					}
+					if(value.length > 32){
+						return '资源名称长度不能超过32';
+					}
+				}
+			});
+			//监听提交
+			form.on('submit(roleSubit)', function(data){
+				data.field.orderTaskId = orderTaskId;
+				console.log(data);
+				var option = {
+					url:contextPath+'stationOrder/orderTaskDetailAdd',
+					data:JSON.stringify(data.field),
+					type:'POST',
+					contentType:'application/json',
+					success:function(data){
+						if(data.code==0){
+							var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							parent.layer.close(index);  // 关闭layer
+							parent.table.reload('BOMDetailTabId');
+						}else{
+							layer.alert(data.msg);
+						}
+					},error:function(data){
+						layer.alert(data.msg)
+					}
+				}
+				$.ajax(option);
+				return false;
+			});
+		});
+	}
+</script>
+</body>
+</html>

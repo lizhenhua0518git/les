@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>增加调拨订单</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<style type="text/css">
+.layui-table-cell{
+    overflow: visible !important;
+}
+.layui-table-body{
+    overflow: visible !important;
+}
+.layui-table-box,layui-table-view{
+    overflow: visible !important;
+}
+</style>
+</head>
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+
+<div class="layui-fluid">
+<form class="layui-form" action="">
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">调出仓库</label>
+			 	<div class="layui-input-block">
+			        <select disabled id="outWarehouseCode" name="outWarehouseCode" lay-filter="outWarehouseCodeFilter">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">调出仓库库存地</label>
+			 	 <div class="layui-input-block">
+			        <select disabled id="outStorageLocation" name="outStorageLocation" lay-filter="outStorageLocationFilter">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">单据类型</label>
+			 	 <div class="layui-input-block">
+			        <select disabled id="billType">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">调入仓库</label>
+			 	 <div class="layui-input-block">
+			        <select disabled id="inWarehouseCode" lay-filter="inWarehouseCodeFilter">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">调入仓库库存地</label>
+			 	 <div class="layui-input-block">
+			        <select disabled id="inStorageLocation" lay-filter="inStorageLocationFilter">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<div class="layui-btn-container" style="text-align: left;">
+             	 	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="save" id="search" type="button">保存</button>
+			</div>
+		</div>
+	</div>
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			<label class="layui-form-label">库存状态</label>
+			 	 <div class="layui-input-block">
+			        <select disabled id="stockStatus">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">库存类型</label>
+			 	 <div class="layui-input-block">
+			        <select disabled id="stockType" lay-filter="stockTypeFilter">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+	</div>
+<input type="text" name="inWarehouseName" id="inWarehouseName" hidden="true">
+<input type="text" name="outWarehouseName" id="outWarehouseName" hidden="true">
+<input type="text" name="billName" id="billName" hidden="true">
+</form>
+</div>
+
+<div class="layui-fluid-table">
+<div class="layui-row layui-form" style="margin-bottom: 0">
+		<div class="layui-btn-container" style="text-align: left;">
+               <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>新增行</button>
+               <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除行</button>
+
+         </div>
+	</div>
+<table class="layui-hide" id="singleAllocateDetailTab" lay-filter="singleAllocateDetailTabF"></table>
+</div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script type="text/javascript">
+var table = layui.table;
+var element = layui.element;
+var contextPath = config.omsConfig.contextPath;
+var form = layui.form;
+var storage = window.localStorage;
+var token = storage.token;
+var layer = layui.layer;
+var chooseMaterialObj;
+var materialItem = 0;
+var dictItemValue;
+var factoryCodes = parent.factoryCodes;
+var oldData = parent.oldData;
+var deleteIds = new Array();
+var fistAdd = false;
+var active = {
+		add:function(type){
+			materialItem = 0;
+			var cacheTableValue = table.cache.singleAllocateDetailTabId;
+			var dataRowArray = new Array();
+			var newDataRow = {lesItemNo:materialItem,materialCode:"",materialName:"",materialNum:0,materialUnit:""
+					,supplierCode:"",supplierName:"",sellOrder:"",sellItem:"",customer:"",customerName:"",factory:""};
+			dataRowArray.push(newDataRow);
+			if(cacheTableValue!=null && cacheTableValue.length>0){
+				for(var i=0;i<cacheTableValue.length;i++){
+					dataRowArray.push(cacheTableValue[i]);
+					if(cacheTableValue[i].lesItemNo>materialItem && !fistAdd){
+						materialItem = cacheTableValue[i].lesItemNo;
+					}
+				}
+			}
+			materialItem = materialItem+1;
+			dataRowArray[0].lesItemNo = materialItem;
+			fistAdd = true;
+			table.reload('singleAllocateDetailTabId',{data:dataRowArray,url:''});
+		},
+		del:function(type){
+			var checkStatus = table.checkStatus('singleAllocateDetailTabId');
+			var oldDataDel = checkStatus.data;
+			if(oldDataDel.length<=0){
+				layer.alert('请选择要删除的行！',{icon: 2});
+				return ;
+			}
+			var cacheTableValue = table.cache.singleAllocateDetailTabId;
+			for(var i=0;i<oldDataDel.length;i++){
+				deleteIds.push(oldDataDel[i].id);
+				s:for(var j=0;j<cacheTableValue.length;j++){
+					if(oldDataDel[i].lesItemNo=cacheTableValue[j].lesItemNo){
+						cacheTableValue.splice(j+1,1);
+						break s;
+					}
+				}
+			}
+			table.reload('singleAllocateDetailTabId',{data:cacheTableValue,url:''});
+		},
+		save:function(type){
+			var outWarehouseCodeObj = $("#outWarehouseCode").find("option:selected");;
+			var outStorageLocationObj =$("#outStorageLocation").find("option:selected");;
+			var billTypeObj =$("#billType").find("option:selected");;
+			var inWarehouseCodeObj =$("#inWarehouseCode").find("option:selected");;
+			var inStorageLocationObj =$("#inStorageLocation").find("option:selected");;
+			var stockStatus =$("#stockStatus").val();
+			var stockType =$("#stockType").val();
+			var cacheTableValue = table.cache.singleAllocateDetailTabId;
+			var checkNames = null;
+			var flg = 0;
+			if(outWarehouseCodeObj.val()=='' || outStorageLocationObj.val()=='' || billTypeObj.val()=='' || inStorageLocationObj.val()==''
+					|| inWarehouseCodeObj.val()=='' || stockStatus=='' || stockType=='' ){
+				 flg = 0;
+			}
+
+			if(stockType=="1"){//寄售
+				checkNames = ["supplierCode","supplierName"]
+				flg = checkNeedWrite(cacheTableValue,checkNames);
+			}else if(stockType=="2"){//订单
+				checkNames = ["sellOrder","sellItem"]
+				flg = checkNeedWrite(cacheTableValue,checkNames);
+			}else if(stockType=="3"){//客户
+				checkNames = ["customer","customerName"]
+				flg = checkNeedWrite(cacheTableValue,checkNames);
+			}
+			checkNames = ["materialCode"]
+			flg = checkNeedWrite(cacheTableValue,checkNames);
+			if(flg==0){
+				layer.msg("请填将信息填写完整!");
+				return;
+			}else if(flg==1){
+				layer.msg("请输入正确的订单数量");
+				return;
+			}else if(flg==2){
+				layer.msg("请将列表数据补充完整");
+				return;
+			}
+			if(inWarehouseCodeObj.val()==outWarehouseCodeObj.val()){
+				layer.msg("相同仓库不能调拨");
+				return;
+			}
+			var params = {};
+			params.allocationType = parseInt(stockStatus);
+			params.inWarehouseName = inWarehouseCodeObj.text();
+			params.inWarehouseCode = inWarehouseCodeObj.val();
+			params.inStorageLocation = inStorageLocationObj.val();
+			params.inFactory = inStorageLocationObj.attr("factory");
+			params.inFactoryName = getFactoryName(factoryCodes,params.inFactory);
+			params.outWarehouseName = outWarehouseCodeObj.text();
+			params.outWarehouseCode = outWarehouseCodeObj.val();
+			params.outStorageLocation = outStorageLocationObj.val();
+			params.outFactory = outStorageLocationObj.attr("factory");
+			params.outFactoryName = getFactoryName(factoryCodes,params.outFactory);
+			params.billType = billTypeObj.val();
+			params.billName = billTypeObj.text();
+			params.status = 0;
+			params.stockCheckStatus = 0;
+			params.stockType = parseInt(stockType);
+			params.item = cacheTableValue;
+			params.id = oldData[0].id;
+			params.deleteIds = deleteIds;
+			saveSingleAllocate(params);
+
+		},
+		reset:function(type){
+			$("#outWarehouseCode").val("");
+			$("#outStorageLocation").val("");
+			$("#billType").val("");
+			$("#inWarehouseCode").val("");
+			$("#inStorageLocation").val("");
+			$("#stockStatus").val("");
+			$("#stockType").val("");
+		}
+};
+function saveSingleAllocate(data){
+	var option = {
+			url:contextPath+'singleAllocate/updateSingleAllocate',
+			data:JSON.stringify(data),
+			type:'POST',
+			contentType:'application/json',
+			dataType:'json',
+			success:function(res){
+				if(res.code==0){
+					var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+	    			parent.layer.close(index);  // 关闭layer
+					parent.table.reload('singleAllocateTabId');
+				}else{
+					layer.msg("保存失败");
+				}
+			},error:function(res){
+				layer.msg("保存失败");
+			}
+	};
+	$.ajax(option);
+}
+function loadding(){
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+  	});
+	//加载库存状态和库存类型
+	var dictTypes = ["stock_type","stock_status"]
+	var selectItems = ["stockType","stockStatus"]
+	var defaultValues = [oldData[0].stockType,oldData[0].allocationType]
+	dictItemValue = queryDictItems(dictTypes,selectItems,defaultValues);
+
+
+	initWarehouseSignSelect("outWarehouseCode",0,'');
+	//监听调入仓库
+	layui.form.on('select(inWarehouseCodeFilter)', function(data){
+		var obj = $("#inWarehouseCode").find("option:selected");
+		if(obj.val()==""){
+			return ;
+		}
+		var storageLocation = obj.attr("storagelocation");
+		var factory = obj.attr("factory");
+		var storageLocations = storageLocation.split(";");
+		var factorys = factory.split(";");
+		if(storageLocations && storageLocations.length>0){
+			$("#inStorageLocation").html("<option value=''>请选择</option>")
+			for(var i=0;i<storageLocations.length;i++){
+        		$("#inStorageLocation").append("<option value="+storageLocations[i]+" factory="+factorys[i]+"  >"+storageLocations[i]+"</option>");
+	    	}
+		}
+		var orgType = obj.attr("orgType");
+		if("3"==orgType){//调出仓库、调入仓库有一方为委外仓库 库存状态只能为非限制，库存类型只能为自有库存
+			$("#stockStatus").find("[value='1']").attr("disabled",true);
+			$("#stockType").find("[value='1']").attr("disabled",true);
+			$("#stockType").find("[value='2']").attr("disabled",true);
+			$("#stockType").find("[value='3']").attr("disabled",true);
+		}else if("2"==orgType){//调出仓库、调入仓库有一方为售后仓库 库存类型只能为自有库存
+			$("#stockStatus").find("[value='1']").removeAttr("disabled",true);
+			$("#stockType").find("[value='1']").attr("disabled",true);
+			$("#stockType").find("[value='2']").attr("disabled",true);
+			$("#stockType").find("[value='3']").attr("disabled",true);
+		}else{
+			$("#stockStatus").find("[value='1']").removeAttr("disabled",true);
+			$("#stockType").find("[value='1']").removeAttr("disabled",true);
+			$("#stockType").find("[value='2']").removeAttr("disabled",true);
+			$("#stockType").find("[value='3']").removeAttr("disabled",true);
+		}
+		form.render();
+
+	});
+	//监听调出仓库
+	layui.form.on('select(outWarehouseCodeFilter)', function(data){
+		var obj = $("#outWarehouseCode").find("option:selected");
+		if(obj.val()==""){
+			return ;
+		}
+		var storageLocation = obj.attr("storagelocation");
+		var factory = obj.attr("factory");
+		var storageLocations = storageLocation.split(";");
+		var factorys = factory.split(";");
+		if(storageLocations && storageLocations.length>0){
+			$("#outStorageLocation").html("<option value=''>请选择</option>")
+			for(var i=0;i<storageLocations.length;i++){
+        		$("#outStorageLocation").append("<option value="+storageLocations[i]+" factory="+factorys[i]+"  >"+storageLocations[i]+"</option>");
+	    	}
+		}
+		var orgType = obj.attr("orgType");
+		if("3"==orgType){//调出仓库、调入仓库有一方为委外仓库 库存状态只能为非限制，库存类型只能为自有库存
+			$("#stockStatus").find("[value='1']").attr("disabled",true);
+			$("#stockType").find("[value='1']").attr("disabled",true);
+			$("#stockType").find("[value='2']").attr("disabled",true);
+			$("#stockType").find("[value='3']").attr("disabled",true);
+		}else if("2"==orgType){//调出仓库、调入仓库有一方为售后仓库 库存类型只能为自有库存
+			$("#stockStatus").find("[value='1']").removeAttr("disabled",true);
+			$("#stockType").find("[value='1']").attr("disabled",true);
+			$("#stockType").find("[value='2']").attr("disabled",true);
+			$("#stockType").find("[value='3']").attr("disabled",true);
+		}else{
+			$("#stockStatus").find("[value='1']").removeAttr("disabled",true);
+			$("#stockType").find("[value='1']").removeAttr("disabled",true);
+			$("#stockType").find("[value='2']").removeAttr("disabled",true);
+			$("#stockType").find("[value='3']").removeAttr("disabled",true);
+		}
+		form.render();
+
+	});
+	//调出库存地点监听
+	layui.form.on('select(outStorageLocationFilter)',function(data){
+
+		var outObj = $("#outStorageLocation").find("option:selected");
+		var inObj = $("#inStorageLocation").find("option:selected");
+		if(outObj.val()=="" || inObj==""){
+			return ;
+		}
+		var inFactory = inObj.attr("factory");
+		var outFactory = outObj.attr("factory");
+		var inWarehouseObj = $("#inWarehouseCode").find("option:selected").attr("orgType");
+		var outWarehouseObj = $("#outWarehouseCode").find("option:selected").attr("orgType");
+		$("#stockStatus").val("");
+		if(inFactory && outFactory && inFactory!='' && outFactory!='' && inFactory==outFactory){//工厂相同，库存状态可以为非限制或者不合格，
+			$("#stockStatus").find("[value='1']").removeAttr("disabled");
+		}else if(inFactory && outFactory && inFactory!='' && outFactory!='' && inFactory!=outFactory){//工厂不同库存状态只能为非限制
+			$("#stockStatus").find("[value='1']").attr("disabled",true);
+		}
+		if(inWarehouseObj=="3" || outWarehouseObj=="3"){
+			$("#stockStatus").find("[value='1']").attr("disabled",true);
+		}
+		form.render();
+	});
+	//调入库存地点监听
+	layui.form.on('select(inStorageLocationFilter)',function(data){
+		var outObj = $("#outStorageLocation").find("option:selected");
+		var inObj = $("#inStorageLocation").find("option:selected");
+		if(outObj.val()=="" || inObj==""){
+			return ;
+		}
+		$("#stockStatus").val("");
+		var inFactory = inObj.attr("factory");
+		var outFactory = outObj.attr("factory");
+		if(inFactory && outFactory && inFactory!='' && outFactory!='' && inFactory==outFactory){//工厂相同，库存状态可以为非限制或者不合格，
+			$("#stockStatus").find("[value='1']").removeAttr("disabled");
+		}else if(inFactory && outFactory && inFactory!='' && outFactory!='' && inFactory!=outFactory){//工厂不同库存状态只能为非限制
+			$("#stockStatus").find("[value='1']").attr("disabled",true);
+		}
+		form.render();
+	});
+	//监听库存类型
+	layui.form.on('select(stockTypeFilter)',function(data){
+		var stockType = $("#stockType").find("option:selected").val();
+		var cols = null;
+		var cacheTableValue =   table.cache.singleAllocateDetailTabId;
+		if("0"==stockType){//自有库存
+			cols = [[
+					{type:'checkbox'},
+					{type:'numbers',title:'序号',width: 60},
+					{field:'lesItemNo',title:'行项目号'},
+					{field:'factory',title:'工厂'},
+					{field:'materialCode',title:'物料号',event:'materialCode',style:"cursor:pointer;"},
+					{field:'materialName', title: '物料名称'},
+					{field:'materialNum',title: '订单数量',edit: 'text'},
+					{field:'materialUnit', title: '单位'},
+					{field:'supplierCode', title: '供应商编码'},
+					{field:'supplierName', title: '供应商名称'},
+					{field:'sellOrder', title: '销售订单号'},
+					{field:'sellItem', title: '销售订单行项目号'},
+					{field:'customer', title: '客户编码'},
+					{field:'customerName', title: '客户名称'}
+			         ]];
+		}else if("1"==stockType){//寄售库存
+			cols = [[
+						{type:'checkbox'},
+						{type:'numbers',title:'序号',width: 60},
+						{field:'lesItemNo',title:'行项目号'},
+						{field:'factory',title:'工厂'},
+						{field:'materialCode',title:'物料号',event:'materialCode',style:"cursor:pointer;"},
+						{field:'materialName', title: '物料名称'},
+						{field:'materialNum',title: '订单数量',edit: 'text'},
+						{field:'materialUnit', title: '单位'},
+						{field:'supplierCode', title: '供应商编码',edit: 'text'},
+						{field:'supplierName', title: '供应商名称',edit: 'text'},
+						{field:'sellOrder', title: '销售订单号',edit:false},
+						{field:'sellItem', title: '销售订单行项目号',edit:false},
+						{field:'customer', title: '客户编码',edit:false},
+						{field:'customerName', title: '客户名称',edit:false}
+				         ]];
+		}else if("2"==stockType){//订单库存
+			cols = [[
+						{type:'checkbox'},
+						{type:'numbers',title:'序号',width: 60},
+						{field:'lesItemNo',title:'行项目号'},
+						{field:'factory',title:'工厂'},
+						{field:'materialCode',title:'物料号',event:'materialCode',style:"cursor:pointer;"},
+						{field:'materialName', title: '物料名称'},
+						{field:'materialNum',title: '订单数量',edit: 'text'},
+						{field:'materialUnit', title: '单位'},
+						{field:'supplierCode', title: '供应商编码',edit:false},
+						{field:'supplierName', title: '供应商名称',edit:false},
+						{field:'sellOrder', title: '销售订单号',edit: 'text'},
+						{field:'sellItem', title: '销售订单行项目号',edit: 'text'},
+						{field:'customer', title: '客户编码',edit:false},
+						{field:'customerName', title: '客户名称',edit:false}
+				         ]];
+		}else if("3"==stockType){//客户库存
+			cols = [[
+						{type:'checkbox'},
+						{type:'numbers',title:'序号',width: 60},
+						{field:'lesItemNo',title:'行项目号'},
+						{field:'factory',title:'工厂'},
+						{field:'materialCode',title:'物料号',event:'materialCode',style:"cursor:pointer;"},
+						{field:'materialName', title: '物料名称'},
+						{field:'materialNum',title: '订单数量',edit: 'text'},
+						{field:'materialUnit', title: '单位'},
+						{field:'supplierCode', title: '供应商编码',edit:false},
+						{field:'supplierName', title: '供应商名称',edit:false},
+						{field:'sellOrder', title: '销售订单号',edit:false},
+						{field:'sellItem', title: '销售订单行项目号',edit:false},
+						{field:'customer', title: '客户编码',edit: 'text'},
+						{field:'customerName', title: '客户名称',edit: 'text'}
+				         ]];
+		}
+		table.reload('singleAllocateDetailTabId',{
+				data:cacheTableValue,
+				cols:cols
+				,url:''
+			});
+	});
+
+	//加载单据类型
+	inintBillType();
+
+	table.render({
+		elem:'#singleAllocateDetailTab',
+		id:'singleAllocateDetailTabId',
+		url: contextPath +'singleAllocateDetail/listSingleAllocateDetail',
+		cols:[[
+		{type:'checkbox'},
+		{type:'numbers',title:'序号',width: 60},
+		{field:'lesItemNo',title:'行项目号',edit: 'text'},
+		{field:'factory',title:'工厂'},
+		{field:'materialCode',title:'物料号',event:'materialCode',style:"cursor:pointer;"},
+		{field:'materialName', title: '物料名称'},
+		{field:'materialNum',title: '订单数量',edit: 'text'},
+		{field:'materialUnit', title: '单位'},
+		/* {field:'stockStatus', title: '库存状态',templet:function (d){return loadStockStatus(d) } },
+		{field:'stockType', title: '库存类型',edit: 'text'}, */
+		{field:'supplierCode', title: '供应商编码'},
+		{field:'supplierName', title: '供应商名称'},
+		{field:'sellOrder', title: '销售订单号'},
+		{field:'sellItem', title: '销售订单行项目号'},
+		{field:'customer', title: '客户编码'},
+		{field:'customerName', title: '客户名称'}
+		]],
+		page: {theme: '#008155'},
+   		even:true,
+   		where:{
+   			parentId:oldData[0].id
+   		}
+   		/* done:function(res,page,count){//列表数据回调函数
+
+   		} */
+	});
+
+	//监听选择物料编码
+	table.on('tool(singleAllocateDetailTabF)',function(obj){
+		 var data = obj.data;
+		 if(data.event = "materialCode"){//点击物料编码的某一列
+			 chooseMaterialObj = null
+			 layer.open({
+			        type: 2
+			        ,title:'选择物料'
+			        ,area: ['100%', '400px']
+			        ,id: 'chooseMaterial' //防止重复弹出
+			        ,content: 'chooseMaterial.html'
+			        ,shade: 0 //不显示遮罩
+			        ,cancel:function(index, layero){
+			        	if(chooseMaterialObj!=null){
+			        		obj.update({
+								  materialCode: chooseMaterialObj.materialCode,
+								  materialName: chooseMaterialObj.materialDesc,
+								  factory: chooseMaterialObj.factory,
+								  materialUnit: chooseMaterialObj.materialUnit,
+						 	});
+
+			        	}
+			        	layer.closeAll();
+
+			        }
+			  });
+		}
+	});
+}
+
+
+/**
+ * 功能描述：单选下拉仓库
+ * @param warehouseSelectId 下拉框ID
+ * @param permission 1-权限控制 0-不控制
+ * @param selectValue  选中的值
+ * @returns
+ */
+function initWarehouseSignSelect(warehouseSelectId,permission,selectValue){
+	 var params={limit:0,sortColums:"org_code asc",permission:permission};
+	 var contextPath = config.basicInfoConfig.contextPath
+        var option = {
+                url:contextPath + 'orgnization/listWarehouse',
+                type:"post",
+                contentType: "application/json",
+				dataType:'json',
+				data:JSON.stringify(params),
+                success:function(result){
+                       if(result.code==0){
+                           var WarehouseCodes=result.data;
+                           warehouseSignSelect(WarehouseCodes,warehouseSelectId,oldData[0].outWarehouseCode);
+                           var obj = $("#outWarehouseCode").find("option:selected");
+                           var storageLocation = obj.attr("storagelocation");
+	                   		var factory = obj.attr("factory");
+	                   		var storageLocations = storageLocation.split(";");
+	                   		var factorys = factory.split(";");
+	                   		if(storageLocations && storageLocations.length>0){
+	                   			$("#outStorageLocation").html("<option value=''>请选择</option>")
+	                   			for(var i=0;i<storageLocations.length;i++){
+	                           		$("#outStorageLocation").append("<option value="+storageLocations[i]+" factory="+factorys[i]+"  >"+storageLocations[i]+"</option>");
+	                   	    	}
+	                   			$("#outStorageLocation").val(oldData[0].outStorageLocation);
+	                   		}
+                           warehouseSignSelect(WarehouseCodes,'inWarehouseCode',oldData[0].inWarehouseCode);
+                            var inObj = $("#inWarehouseCode").find("option:selected");
+	                   		var inStorageLocation = inObj.attr("storagelocation");
+	                   		var inFactory = inObj.attr("factory");
+	                   		var inStorageLocations = inStorageLocation.split(";");
+	                   		var inFactorys = inFactory.split(";");
+	                   		if(inStorageLocations && inStorageLocations.length>0){
+	                   			$("#inStorageLocation").html("<option value=''>请选择</option>")
+	                   			for(var i=0;i<inStorageLocations.length;i++){
+	                           		$("#inStorageLocation").append("<option value="+inStorageLocations[i]+" factory="+inFactorys[i]+"  >"+inStorageLocations[i]+"</option>");
+	                   	    	}
+	                   			$("#inStorageLocation").val(oldData[0].inStorageLocation);
+	                   		}
+	                   		form.render();
+                       }
+                }
+        }
+        $.ajax(option);
+}
+/**
+ * 功能描述：渲染单选下拉框
+ * @param WarehouseCodes 数据
+ * @param warehouseSelectId 下拉框ID
+ * @param selectValue  选中的值
+ * @returns
+ */
+function warehouseSignSelect(WarehouseCodes, warehouseSelectId,selectValue){
+    if(WarehouseCodes.wareHoseList.length>0){
+    	var currwareCode;
+    	var wareHoseList = WarehouseCodes.wareHoseList;
+        if($("#"+warehouseSelectId).find("option").length==1){
+        	for(var i=0;i<wareHoseList.length;i++){
+        		if(WarehouseCodes.currWareHose == wareHoseList[i].storageLocation){
+        			currwareCode = wareHoseList[i].orgCode;
+        		}
+        		$("#"+warehouseSelectId).append("<option value="+wareHoseList[i].orgCode+" orgType="+wareHoseList[i].orgType+" factory="+wareHoseList[i].factory+" sapStoragelocation="+wareHoseList[i].sapStorageLocation+"  storagelocation="+wareHoseList[i].storageLocation+"  orgcode="+wareHoseList[i].orgCode+" >"+wareHoseList[i].orgName+"</option>");
+	    	}
+        	$("#"+warehouseSelectId).val(selectValue);
+        	layui.form.render("select");
+        }
+
+    }
+}
+/**
+ * 加载单据类型
+ */
+function inintBillType(){
+	var contextPath = config.basicInfoConfig.contextPath
+    var option = {
+            url:contextPath + 'documentType/listByBusinessType?businessType=2&status=1',
+            type:"GET",
+            success:function(result){
+                   if(result.code==0){
+                       var documentType=result.data;
+                       for(var i=0;i<documentType.length;i++){
+                    	   $("#billType").append("<option value="+documentType[i].documentCode+"  >"+documentType[i].documentName+"</option>");
+                       }
+                       $("#billType").val(oldData[0].billType);
+                       form.render();
+                   }
+            }
+    }
+    $.ajax(option);
+}
+/**
+ * 验证数据必填
+ */
+function checkNeedWrite(data,checkNames){
+	var materialNum = null;
+	for(var i=0;i<data.length;i++){
+		materialNum = data[i].materialNum;
+		var regu = /^(\+)?\d+(\.\d+)?$/;
+		if(materialNum=="" || !regu.test(materialNum)){
+			return 1;
+		}
+		for(var j=0;j<checkNames.length;j++){
+			if(data[i][checkNames[j]] == ""){
+				return 2;
+			}
+		}
+	}
+	if(data.length==0){
+		return 0;
+	}
+}
+function getFactoryName(factoryCodes,facotry){
+	var resultStr = "";
+	for(var i=0;i<factoryCodes.length;i++){
+		if(facotry == factoryCodes[i].modelCode){
+			resultStr = factoryCodes[i].modelName;
+			break;
+		}
+	}
+	return resultStr;
+}
+/* function loadStockStatus(d){
+
+	return '<select  id="outStorageLocation" name="outStorageLocation"><option value="">请选择</option><option value="">2</option><option value="">1</option></select>';
+}
+function loadStockType(d){
+
+	return '<select  id="outStorageLocation" name="outStorageLocation"><option value="">请选择</option><option value="">2</option><option value="">1</option></select>';
+} */
+</script>
+</body>
+
+</html>

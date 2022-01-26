@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+    <title>物料到货时间偏差统计报表</title>
+</head>
+
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料编码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="materialCode" class="layui-input" placeholder="请输入物料编码">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="materialDesc" class="layui-input" placeholder="请输入物料名称">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">供应商</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="supplierName" class="layui-input" placeholder="请输入供应商名称">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">关键物料</label>
+                <div class="layui-input-inline">
+                    <select id="isKey">
+                        <option value="">请选择</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">送货单</label>
+                <div class="layui-input-inline layui-form">
+                    <input type="text" class="layui-input" id="arrivalCode" placeholder="请输入送货单号">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">到货时间范围</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="expectedArrivalTime" class="layui-input" placeholder="请选择到货时间范围">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">预计时间范围</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="actualArrivalTime" class="layui-input" placeholder="请选择预计时间范围">
+                </div>
+            </div>
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                {{# if(d.search==null || d.search=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button"><i
+                        class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i
+                        class="layui-icon  layui-icon-reset"></i>重置
+                </button>
+                {{# } }}
+
+                {{# if(d.export==null || d.export=="true"){ }}
+                <!--<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>-->
+                {{# } }}
+            </div>
+        </div>
+        <div class="layui-fluid-table">
+            <div class="layui-row layui-form">
+                <div class="layui-btn-container" style="text-align: left;">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+                </div>
+            </div>
+            <table class="layui-hide" id="materialArrivalTab" lay-filter="materialArrivalTabF"></table>
+        </div>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var laydate = layui.laydate;
+    var oldData;
+    var contextPath = config.mfcConfig.contextPath;
+    var active = {
+        search: function (othis) {
+            //物料编码
+            let materialCode = $('#materialCode').val();
+            //物料名称
+            let materialDesc =  $('#materialDesc').val();
+            //供应商
+            let supplierName = $('#supplierName').val();
+            //isKey 关键物料
+            let isKey = $('#isKey').val();
+            //送货单
+            let arrivalCode = $('#arrivalCode').val();
+            //预计到货时间
+            let expectedArrivalTime= $("#expectedArrivalTime").val();
+            //实际到货时间
+            let actualArrivalTime= $("#actualArrivalTime").val();
+
+            let params = {};
+            params.actualArrivalTimeStart = actualArrivalTime.split(' - ')[0];
+            params.actualArrivalTimeEnd = actualArrivalTime.split(' - ')[1];
+
+            params.materialCode = materialCode;
+            params.materialDesc = materialDesc;
+
+            params.supplierName = supplierName;
+            params.isKey = isKey;
+
+            params.arrivalCode=arrivalCode;
+            params.expectedArrivalTimeStart = expectedArrivalTime.split(' - ')[0];
+            params.expectedArrivalTimeEnd = expectedArrivalTime.split(' - ')[1];
+
+            //执行重载
+            table.reload('materialArrivalTabId', {
+                url: contextPath + 'arrivalNote/findDifferenceTime',
+                where: params,
+            });
+        },
+        reset: function (othis) {
+            $('#materialCode').val("");
+            $("#materialDesc").val("");
+            $('#supplierName').val("");
+            $('#isKey').val("");
+            $('#arrivalCode').val("");
+            $('#actualArrivalTime').val("");
+            $('#actualArrivalTime').val("");
+            form.render("select");
+        },export: function(othis) {
+            let  data = table.cache.materialArrivalTabId;
+            if(data.length > 0) {
+                //物料编码
+                let materialCode = $('#materialCode').val();
+                //物料名称
+                let materialDesc =  $('#materialDesc').val();
+                //供应商
+                let supplierName = $('#supplierName').val();
+                //isKey 关键物料
+                let isKey = $('#isKey').val();
+                //送货单
+                let arrivalCode = $('#arrivalCode').val();
+                //预计到货时间
+                let expectedArrivalTime= $("#expectedArrivalTime").val();
+                //实际到货时间
+                let actualArrivalTime= $("#actualArrivalTime").val();
+                let actualArrivalTimeStart = actualArrivalTime.split(' - ')[0];
+                let  actualArrivalTimeEnd = actualArrivalTime.split(' - ')[1];
+                let expectedArrivalTimeStart = expectedArrivalTime.split(' - ')[0];
+                let expectedArrivalTimeEnd = expectedArrivalTime.split(' - ')[1];
+                let token = window.localStorage.token;
+                let params = "";
+
+                params = params + "materialCode=" + materialCode + "&materialDesc=" + materialDesc + "&supplierName=" + supplierName +
+                    "&isKey=" + isKey +"&arrivalCode="  +arrivalCode +"&actualArrivalTimeStart="+actualArrivalTimeStart +
+                    "&actualArrivalTimeEnd="+actualArrivalTimeEnd+"&token=" + token +"&expectedArrivalTimeEnd="+expectedArrivalTimeEnd +"&expectedArrivalTimeStart="+expectedArrivalTimeStart;
+                window.open(contextPath + 'arrivalNote/findDifferenceTimeDownload?' + params);
+
+            } else {
+                layer.alert('导出失败！无数据', {
+                    icon: 2
+                });
+            }
+        }
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#materialArrivalTab',
+            id: 'materialArrivalTabId',
+            data:[],
+            url: contextPath + 'arrivalNote/findDifferenceTime',
+            cols: [[ {
+                type: 'numbers',
+                title: '序号'
+            },   {
+                field: 'materialCode',
+                title: '物料编码'
+            }, {
+                field: 'materialDesc',
+                title: '物料名称'
+            }, {
+                field: 'materialUnit',
+                title: '物料单位'
+            }, {
+                field: 'materialNum',
+                title: '物料数量'
+            }, {
+                field: 'receiveNum',
+                title: '实际到货数量'
+            }, {
+                field: 'supplierName',
+                title: '供应商'
+            }, {
+                field: 'isKey',
+                title: '是否关键物料'
+            }, {
+                field: 'expectedArrivalTime',
+                title: '预计到货时间'
+            }, {
+                field: 'actualArrivalTime',
+                title: '实际到货时间'
+            }, {
+                field: 'differenceTime',
+                title: '偏差情况'
+            }]],
+            page: {
+                theme: '#008155'
+            },
+            even: true,
+            where:{
+
+            },
+            done: function (res, page, count) {//列表数据回调函数
+
+            }
+        });
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+        //时间选择器
+        laydate.render({
+            elem: '#expectedArrivalTime',
+            type: 'date',
+            range: true,
+            trigger: 'click'
+        });
+        laydate.render({
+            elem: '#actualArrivalTime',
+            type: 'date',
+            range: true,
+            trigger: 'click'
+        });
+    }
+</script>
+</body>
+</html>

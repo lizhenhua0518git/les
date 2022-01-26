@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>盘点物料列表</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+	<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  type="text/css" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+
+<script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+	 <input type="text"  id="detailIds" hidden="true" />
+	 <input type="text"  id="userRole" hidden="true" />
+	 <input type="text"  id="stockTakePlanId" hidden="true" />
+	<div class="layui-row " style="width:height:8px;"></div>
+		<div class="layui-row layui-form">
+			<div class="layui-col-md2">
+                <label class="layui-form-label">计划编号:</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" name="stockTakePlanCode" id="stockTakePlanCode" placeholder="" autocomplete="off">
+                </div>
+            </div>
+
+		<div class="layui-col-md2">
+                <label class="layui-form-label">状态:</label>
+                 <div class="layui-input-block">
+                     <select name="status" id="status" xm-select="select3"
+						xm-select-show-count="1" xm-select-search="" autocomplete="off">
+                        <option value="">请选择</option>
+	                    <!-- <option value="0">已关闭</option>  -->
+	                    <option value="1">已删除 </option>
+	                    <option value="2">未开始</option>
+	                    <option value="3">等待盘点 </option>
+	                    <!-- <option value="4">挂起 </option> -->
+	                    <option value="5">盘点中</option>
+	                    <option value="6">审核中</option>
+	                    <option value="7">异常 </option>
+	                    <option value="8">复盘 </option>
+	                    <option value="9">审核超时 </option>
+                    </select>
+                </div>
+            </div>
+
+			<div class="layui-col-md2">
+				<label class="layui-form-label">仓库:</label>
+				<div class="layui-input-block layui-form">
+					<select id="warehouseName" name="warehouseName" xm-select="select4"
+						xm-select-show-count="1" xm-select-search="" autocomplete="off">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-col-md2">
+                <label class="layui-form-label">物料编号:</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" name="materialCode" id="materialCode" placeholder="" autocomplete="off">
+                </div>
+            </div>
+
+
+			  <div class="layui-col-md2">
+                <label class="layui-form-label">物料描述:</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" name="materialDesc" id="materialDesc" placeholder="" autocomplete="off">
+                </div>
+            </div>
+           <!--<div class="layui-col-md2">&nbsp;</div>-->
+			<div class="layui-col-md2">
+				<div class="layui-btn-container nav-" style="text-align: right;">
+					{{# if(d.search==null || d.search=="true"){ }}
+             	 		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              			<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon  layui-icon-reset"></i>重置</button>
+              		{{# } }}
+				</div>
+			</div>
+            <div class="layui-row layui-form">
+			<div class="layui-col-md7 date">
+            <div class="layui-col-md3">
+                <label class="layui-form-label">计划时间:</label>
+                <div class="layui-input-block">
+                      <input type="text" class="layui-input" name="planStartTime" id="planStartTime"  autocomplete="off">
+                </div>
+            </div>
+			<div class="layui-col-md3">
+               <label class="layui-form-label" style="width: 9%">至</label>
+                <div class="layui-input-block layui-form" style="margin-left: 26%">
+                     <input type="text" class="layui-input" name="planEndTime" id="planEndTime"  autocomplete="off">
+                </div>
+            </div>
+          </div>
+
+           <!--  <div class="layui-col-md2">
+                <label class="layui-form-label">物料编号:</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" name="materialCode" id="materialCode" placeholder="">
+                </div>
+            </div>
+
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料描述:</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" name="materialDesc" id="materialDesc" placeholder="">
+                </div>
+            </div> -->
+		  </div>
+		<!-- 按钮区域 -->
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+				<div class="layui-btn-container" style="text-align: left;">
+	               <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>
+	              <button class="layui-btn layui-btn-normal layui-btn-sm" id="goDown" data-method="goDown" type="button"><i class="layui-icon">&#xe61a;</i>下达</button>
+	           </div>
+		</div>
+	</div>
+</div>
+<table id="stockTakeDetail" lay-filter="stockTakeDetailTabF"></table>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script type="text/javascript">
+	layui.config({
+	    base: '/iles/pages/layui/lay/modules/' //此处路径请自行处理, 可以使用绝对路径
+	}).extend({
+	    formSelects: 'formSelects-v4'
+	});
+	var stockTakeDetailId;
+	var stockTakePlanId=parent.$("#pid").val();
+	var $ = layui.$;
+	var element = layui.element;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var laydate = layui.laydate;
+	var contextPath = config.wmsConfig.contextPath;
+	var active = {
+			search:function(othis){
+
+				var planStartTime =$('#planStartTime').val();
+				var planEndTime =$('#planEndTime').val();
+				if(planStartTime >planEndTime){
+					layer.alert('开始时间不能大于结束时间！',{icon: 2});
+                    return ;
+				}
+
+				var status = "";
+         		var statusArray = layui.formSelects.value('select3', 'val');
+         		for(var i=0;i<statusArray.length;i++){
+         			status +=statusArray[i]+","
+         		}
+         		if(status != ""){
+         			status = status.substring(0,status.length-1);
+         		}
+
+         		var warehouseName = "";
+         		var warehouseNameArray = layui.formSelects.value('select4', 'val');
+         		for(var i=0;i<warehouseNameArray.length;i++){
+         			warehouseName +=warehouseNameArray[i]+","
+         		}
+         		if(warehouseName != ""){
+         			warehouseName = warehouseName.substring(0,warehouseName.length-1);
+         		}
+				//执行重载
+				table.reload('stockTakeDetailTabId', {
+					where:{
+						planStartTime : $('#planStartTime').val(),
+						planEndTime : $('#planEndTime').val(),
+						stockTakePlanCode:$('#stockTakePlanCode').val(),
+						materialCode:$('#materialCode').val(),
+						materialDesc:$('#materialDesc').val(),
+						warehouseName:warehouseName,
+						status:status
+				  	}
+				});
+			},
+			reset:function(othis){
+				 $('#planStartTime').val('');
+                 $('#planEndTime').val('');
+                 $('#stockTakePlanCode').val('');
+                 $('#materialCode').val('');
+                 $('#materialDesc').val('');
+                 layui.formSelects.value('select4', []);
+                 layui.formSelects.value('select3', []);
+				form.render("select");
+			},
+				del:function(othis){
+					var checkStatus = table.checkStatus('stockTakeDetailTabId');
+      				var checkData = checkStatus.data;
+					if(checkData.length<=0){
+						layer.alert('请选择要删除的行！',{icon: 2});
+      					return ;
+					}
+					var id = '';
+					for(var i=0;i<checkData.length;i++){
+						if(checkData[i].stockTakeStatus > 4){
+							layer.alert('选中的记录包含了不能被删除状态！',{icon: 2});
+	                        return ;
+						}
+						id+=checkData[i].STOCK_TAKE_DETAIL_ID+",";
+					}
+					layer.confirm('确定删除盘点物料信息？', {icon: 3, title:'提示'}, function(index){
+			  			var option ={
+							url: contextPath+'stockTakeDetail/deletePlanDetail',
+							//type:'POST',
+							//contentType: "application/json",
+							//dataType:'json',
+							data:{status:1,id:id},
+							success:function(data){
+								if(data.code==0){
+									layer.msg("删除成功");
+									table.reload('stockTakeDetailTabId');//刷新列表
+								}
+							},error:function(data){
+								layer.alert(data.msg);
+							}
+						}
+						$.ajax(option);
+		  			  	layer.close(index);
+		  			});
+				},
+				goDown:function(othis){
+					var checkStatus = table.checkStatus('stockTakeDetailTabId');
+      				var checkData = checkStatus.data;
+					if(checkData.length<=0){
+						layer.alert('请选择要分配的行！',{icon: 2});
+      					return ;
+					}
+					var id = '';
+					for(var i=0;i<checkData.length;i++){
+						var userRole=checkData[i].userRole;
+						if(userRole < 6 || userRole >7){
+							layer.alert('您没有分配权限，请联系SAP管理工或者班组长操作！',{icon: 2});
+	                        return ;
+						}
+						$("#userRole").val(userRole);
+						if(checkData[i].stockTakeStatus > 3 || checkData[i].stockTakeStatus < 2){
+							layer.alert('选中的记录包含了不能被分配的状态！',{icon: 2});
+	                        return ;
+						}
+						id+=checkData[i].stockTakeDetailId+",";
+					}
+					$("#detailIds").val(id);
+					var userRole=$("#userRole").val();
+					if(userRole==6){
+						var taskNum=checkData[0].taskNum;
+						if(taskNum > checkData.length){
+							layer.alert('分配数量小于最低下达数'+taskNum+'！',{icon: 2});
+	                        return ;
+						}
+						layer.open({
+					    	type: 2,
+					        title:'分配盘点任务',
+					        maxmin:true,
+					        area: ['800px', '600px'],
+					        id: 'stockTakeDetailS', //防止重复弹出
+					        content: '/iles/pages/wms/store/stockTakeDeatilBegin.html',
+					        shade: 0, //不显示遮罩
+					        yes: function(){
+					          //layer.closeAll();
+					        }
+				     	});
+					}
+					if(userRole==7){
+						layer.open({
+					    	type: 2,
+					        title:'分配盘点任务',
+					        maxmin:true,
+					        area: ['800px', '600px'],
+					        id: 'stockTakeDetailS', //防止重复弹出
+					        content: '/iles/pages/wms/store/stockTakeDeatilBegin2.html',
+					        shade: 0, //不显示遮罩
+					        yes: function(){
+					          //layer.closeAll();
+					        }
+				     	});
+					}
+
+				},
+	};
+	function loadding (){
+		layui.use(['form','table','layer','laydate','formSelects'],function(){
+			var flag = 0; // 0 盘点人 1 复盘人
+			var userId='';
+			var userName='';
+			getWarehouse();
+			table.render({
+				elem:'#stockTakeDetail',
+				id:'stockTakeDetailTabId',
+		    	url:contextPath+'stockTakeDetail/queryDetailPc',
+		    	//method:'post',
+		    	where:{stockTakePlanId:stockTakePlanId},
+			    cols: [[
+					{type:'checkbox'},
+					{type:'numbers',title:'序号',width: 60},
+					{field:'stockTakePlanCode',title: '盘点计划编号', width:200},
+				    {field:'planStartTime',title: '盘点计划开始时间', width:200},
+				    {field:'planEndTime',title: '盘点计划结束时间', width:200},
+				    {field:'materialCode',title: '物料号', width:200},
+				    {field:'materialDesc',title: '物料描述', width:200},
+				    {field:'factory', title: '工厂', width:100},
+				    {field:'storageLocation', title: '库存地点',width:150},
+				    {field:'stockTakeStatus', title: '当前状态', width:150},
+				    {field:'allocationUser', title: '班组长', width:200},
+				    {field:'allocationUserSap', title: 'SAP管理工', width:200},
+				    {field:'performer', title: '操作工', width:200},
+				    {field:'confirmCount', title: '盘点最终数量', width:200},
+				    {field:'sapCount', title: 'SAP库存', width:200},
+				    {field:'isRepeat', title: '是否周期', width:200},
+				    {field:'stockTakeType', title: '盘点类型', width:200},
+				    {fixed:'right',align:'center',title:'操作', width:300,toolbar:'#toolBar'}
+			    	]],
+				page: {theme: '#008155'},
+				height: 'full-95',
+	    		even:true,
+	    		done:function(res,page,count){//列表数据回调函数
+	    			initTableDate(res.data) ;
+	    		}
+			});
+			//时间选择器
+		     laydate.render({
+		         elem: '#planStartTime',
+		         type: 'datetime',
+		         range: false
+		     });
+		     laydate.render({
+		         elem: '#planEndTime',
+		         type: 'datetime',
+		         range: false
+		     });
+			 table.on('tool(stockTakeDetailTabF)', function(obj){
+	              var eventName = obj.event;          //事件名称
+	              var clickObj = $(obj.tr[0]);        //当前对象tr
+	              var id=obj.data.stockTakeDetailId;
+	              if(eventName=="delete"){    //删除
+	            	  var status=obj.data.stockTakeStatus;
+	            	  if(status == 1){
+	                		layer.alert('对不起，该记录已经被删除！',{icon: 2});
+	                      return ;
+	                	}
+	              	  if(status > 4){
+	              		layer.alert('选中的记录包含了不能被删除状态！',{icon: 2});
+	                    return ;
+	              	  }
+	            	  layer.confirm('确定删除盘点物料信息？', {icon: 3, title:'提示'}, function(index){
+				  			var option ={
+								url:contextPath+'stockTakeDetail/deletePlanDetail',
+								data:{status:1,id:id},
+								success:function(data){
+									if(data.code==0){
+										layer.msg("删除成功");
+										table.reload('stockTakeDetailTabId');//刷新列表
+									}
+								},error:function(data){
+									layer.alert(data.msg);
+								}
+							}
+							$.ajax(option);
+			  			});
+	              }else if(eventName=="check"){//审核
+	            	  stockTakeDetailId = id;
+	              	  console.log(stockTakeDetailId);
+	            	  layer.open({
+					    	type: 2,
+					        title:'盘点审核',
+					        area: ['100%', '100%'],
+					        id: 'stockTakeDetailCheck', //防止重复弹出
+					        content: 'materialStockCheckInfo.html',
+					        shade: 0, //不显示遮罩
+					        yes: function(){
+					          //layer.closeAll();
+					        }
+				     	});
+	              }
+			  });
+			$('.layui-btn-container button').on('click', function(){
+			    var othis = $(this), method = othis.data('method');
+			    active[method] ? active[method].call(this, othis) : '';
+		  	});
+
+
+		});
+	}
+	//表格数据初始化
+    function initTableDate(data){
+
+        $("[data-field='stockTakeStatus']").children().each(function(){
+            if($(this).text()=='0'){
+                $(this).text('已关闭');
+            }else if($(this).text()=='1'){
+                $(this).text('已删除');
+            }else if($(this).text()=='2'){
+                $(this).text('未开始');
+            }else if($(this).text()=='3'){
+                $(this).text('等待盘点');
+            }else if($(this).text()=='4'){
+                $(this).text('挂起');
+            }else if($(this).text()=='5'){
+                $(this).text('盘点中');
+            }else if($(this).text()=='6'){
+                $(this).text('审核中');
+            }else if($(this).text()=='7'){
+                $(this).text('异常');
+            }else if($(this).text()=='8'){
+                $(this).text('复盘');
+            }else if($(this).text()=='9'){
+                $(this).text('审核超时');
+            }else if($(this).text()=='10'){
+                $(this).text('完成');
+            }
+        });
+    $("[data-field='isRepeat']").children().each(function(){
+        if($(this).text()=='0'){
+            $(this).text('否');
+        }
+        if($(this).text()=='1'){
+            $(this).text('是');
+        }
+    });
+
+    }
+
+    function getWarehouse(){//仓库
+    	$.ajax({
+    		url: config.basicInfoConfig.contextPath + 'orgnization/listWarehouse',
+    		type:"post",
+    		success:function(result){
+    			$('#warehouseName').html("");
+    			$('#warehouseName').append('<option value="">请选择</option>');
+          	  	var order = result.data.wareHoseList;
+    			if(order && order.length>0){
+    				var optionItem;
+    				var optoinArray = new Array();
+    				for(var i=0;i<order.length;i++){
+    				optionItem = {"name":""+order[i].orgName, "value":""+order[i].orgName};
+    				optoinArray.push(optionItem);
+    				}
+    				layui.formSelects.data('select4','local',{
+    					arr:optoinArray
+    				});
+    			}
+    		}
+    	});
+    }
+	</script>
+
+	<script type="text/html" id="toolBar">
+	{{# if(d.userRole < 8){ }}
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="delete">删除</a>
+		{{# if(d.stockTakeStatus==9 || d.stockTakeStatus==6){ }}
+		<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="check">审核</a>
+		{{# } }}
+	{{# } }}
+    </script>
+</body>
+</html>

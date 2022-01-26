@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>编辑下架规则</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<div class="layui-container" style="padding-top: 20px;">
+		<form class="layui-form" action=""  lay-filter="addLowerRuleForm">
+		<div class="layui-form-item">
+		
+		    <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 160px"><span style="color:red;">*</span>仓库:</label>
+                    <div class="layui-input-block" style="padding-left:80px;">
+                        <select id="warehouseCode" name="warehouseCode" lay-verify="required">
+							<option value="">请选择</option>
+						</select>
+                    </div>
+             </div>
+              <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 160px"><span style="color:red;">*</span>下架规则:</label>
+                    <div class="layui-input-block" style="padding-left:80px;">
+                        <select id="lowerRule" name="lowerRule" lay-verify="required">
+							<option value="">请选择</option>
+							<option value="0">任务数优先</option>
+							<option value="1">仓位库存优先</option>
+						</select>
+                    </div>
+              </div>
+         </div>
+         <div class="layui-form-item">
+                <div class="layui-inline"  >
+                    <label class="layui-form-label" style="width:160px" ><span style="color:red;">*</span>物料分类编码:</label>
+                    <div class="layui-input-block"  style="padding-left:80px;">
+                    	 <select id="status"  name="status" lay-verify="required">
+							<option value="">请选择</option>
+							<option value="0">禁用</option>
+							<option value="1">启用</option>
+						</select>
+                     </div>
+                 </div>
+          </div>
+          <div class="layui-form-item">
+			    <div class="layui-input-block" style="text-align: center;">
+			      <button class="layui-btn" lay-submit="" lay-filter="addLowerRuleSubit">保存</button>
+			     <button   class="layui-btn layui-btn-primary" onclick="clean()">重置</button>
+			    </div>
+			  </div>
+          <input id="id" name="id" hidden="true" disabled="disabled">
+		</form>
+	</div>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+	<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+	<script type="text/html" id="bodyTpl"></script>
+	<script type="text/javascript">
+	var contextPath = config.basicInfoConfig.contextPath;
+	var element = layui.element;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form
+	var oldData = parent.oldData;
+	function loadding(){
+		
+		 
+		 layui.use(['form', 'layedit'], function(){
+				  //监听提交
+				  form.on('submit(addLowerRuleSubit)', function(data){
+					data.field.warehouseName = $("#warehouseCode option:selected").text();
+					saveDict(data);
+					return false;
+				 });
+				 
+			});
+		 if(oldData && oldData.length>0){
+         	var formData =  eval('('+JSON.stringify(oldData[0])+')');
+            form.val('addLowerRuleForm',formData);
+            initWarehouseSignSelect("warehouseCode","0",formData.warehouseCode);
+         }
+	}
+
+		
+		function saveDict(data){
+			var option = {
+		    	url:contextPath+'lowerRule/updateLowerRule',
+		    	data:JSON.stringify(data.field),
+		    	type:'POST',
+		    	contentType:'application/json',
+		    	success:function(data){
+		    		if(data.code==0){
+		    			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+		    			parent.layer.close(index);  // 关闭layer
+		    			parent.table.reload('lowerRuleTabId');
+		    		}else{
+		    			layer.alert(data.data);
+		    		}
+		    	},error:function(data){
+		    		layer.alert(data.msg)
+		    	}
+		    }
+		    $.ajax(option); 
+		}
+		function clean(){
+			form.val('addLowerRuleForm',{});
+		}
+	</script>
+</body>
+</html>

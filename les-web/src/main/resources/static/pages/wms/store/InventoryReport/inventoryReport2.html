@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>盘点管理报表</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+
+<div class="layui-fluid">
+<form class="layui-form" action="" style="margin: 30px;" id="report2Form" enctype="multipart/form-data">
+	<div class="layui-row layui-form">
+	   <div class="layui-col-md2">
+	 	 <label class="layui-form-label">工厂:</label>
+	 	  <div class="layui-input-block">
+	      	<input type="text" id="factory" class="layui-input" autocomplete="off">
+	     </div>
+	   </div>
+	   <div class="layui-col-md3">
+	 	 <label class="layui-form-label">仓库名称:</label>
+	 	  <div class="layui-input-block layui-form" >
+	      	<select name="warehouseCode" id="warehouseCode" xm-select="select2" xm-select-show-count="1" xm-select-search=""  lay-verify="required" autocomplete="off">
+	      		<option value="">请选择</option>
+	      	</select>
+	     </div>
+	   </div>
+	    <div class="layui-col-md3">
+	 	 <label class="layui-form-label">查询时间:</label>
+	 	  <div class="layui-input-block">
+	      	<input type="text" id="date" class="layui-input" autocomplete="off">
+	     </div>
+	   </div>  
+		<div class="layui-col-md3">
+			<div class="layui-btn-container" style="text-align: right;">
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" lay-filter="search"  type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+ 				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+ 				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="export" type="button"  onclick="exportWord()"><i class="layui-icon-reset"></i>导出</button>
+			</div>
+		</div>
+	</div>
+	</form>
+</div> 
+
+<div style="width:98%;height:650px;border:10px solid #DDDDDD;">
+<div style="width:90%; margin-top: 20px;margin-left: 50px;" >
+	<div style="text-align:center;font-size: 36px; color:#333333; margin-top: 52px;">盘点管理报表</div>
+	<div style="margin-top: 32px;">
+		 <div style="display:inline;"><label style="font-size: 20px;color:#666666; ">工厂：</label><span style="wfont-size: 20px;color:#666666;" id="gc">-</span> </div> 
+	     <div style="display:inline;width:300px;margin-left: 300px;"><label style="font-size: 20px;color:#666666;">查询时间：</label><span style="width:200px;font-size:20px;"color:#666666; id="time">-</span> </div>
+	     <div style="display:inline;margin-left: 300px;"><label style="font-size: 20px;color:#666666;">账物相符率：</label><span style="width:200px;font-size:20px;"color:#666666; id="zwxfl">0%</span></div>
+	</div>
+	<div style="margin-top: 32px;">
+		<div><label style="font-size: 20px;color:#666666;">仓库名称：</label><span style="font-size: 20px;color:#666666;" id="kcdd">-</span></div></div>
+	<div style="margin-top: 32px;">
+		<div style="display:inline;"><label style="text-align:center;font-size: 20px;color:#666666;">盘点总笔数：</label><span style="font-size: 20px;color:#666666;" id="pdzbs">0 笔</span></div>
+		<div style="display:inline;margin-left: 600px;"><label style="font-size: 20px;color:#666666;">差异总笔数：</label><span style="font-size:20px;color:#666666;" id="cyzbs">0 笔</span></div>
+	</div>
+	<div style="margin-top: 32px;">
+		<div  style="display:inline;"><label style="font-size: 20px;color:#666666;">盘盈总笔数：</label><span style="font-size: 20px;color:#666666;" id="pyzbs">0 笔</span></div>
+		<div  style="display:inline;margin-left: 600px;"><label style="font-size: 20px;color:#666666;">盘盈总价值：</label><span style="font-size:20px;color:#666666;" id="pyzjz">0 元</span></div>
+	</div>
+	<div style="margin-top: 32px;">
+		<div  style="display:inline;"><label style="font-size: 20px;color:#666666; ">盘亏总笔数：</label><span style="font-size: 20px;color:#666666;" id="pkzbs">0 笔</span></div>
+		<div  style="display:inline;margin-left: 600px;"><label style="font-size: 20px;color:#666666;">盘亏总价值：</label><span style="font-size:20px;color:#666666;" id="pkzjz">0 元</span></div>
+	</div>
+</div>
+</div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script type="text/javascript">
+var $ = layui.$;
+var table = layui.table;
+var laydate = layui.laydate;
+var form = layui.form;
+layui.config({
+    base: '/iles/pages/layui/lay/modules/' //此处路径请自行处理, 可以使用绝对路径
+}).extend({
+    formSelects: 'formSelects-v4'
+});
+layui.use(['formSelects'],function(){ 
+
+});
+var active = {
+		search:function(othis){
+			
+			var factory = $('#factory').val();
+			if(factory==""){
+				layer.msg("请填写工厂！")
+				$('#factory').focus();
+				return;
+			}
+			var storageLocation = layui.formSelects.value('select2', 'storageLocation');
+			if(storageLocation==""){
+				layer.msg("请选择仓库！")
+				$('#warehouseCode').focus();
+				return ;
+			}
+			var dateTime = $('#date').val();
+			if(dateTime==""){
+				layer.msg("请选择查询时间！")
+				$('#date').focus();
+				return;
+			}
+			var dateTime = $('#date').val();
+			var startTime = "";
+			var endTime="";
+			if(dateTime.length>0){
+			  startTime = dateTime.substring(0,20);
+			  endTime =  dateTime.substring(22);
+			}
+			$.ajax({
+				type:"Post",
+				url: "${ctx}/stockTakeReport/queryInventoryReport",
+				data:{
+				  'type':0,
+			      'factory': factory,
+			      'storageLocation': JSON.stringify(storageLocation),
+			      'startTime':startTime,
+		      	  'endTime':endTime
+				},
+				dataType:"json",
+				success : function(res) {
+					if(res.code == 0){
+						var data = res.data;
+						$("#gc").html(data.gc);
+						$("#time").html(data.time);
+						$("#zwxfl").html(data.zwxfl);
+						$("#kcdd").html(data.kcdd);
+						$("#pdzbs").html(data.pdzbs+"笔");
+						$("#cyzbs").html(data.cyzbs+"笔");
+						$("#pyzbs").html(data.pyzbs+"笔");
+						$("#pyzjz").html(data.pyzjz+"元");
+						$("#pkzbs").html(data.pkzbs+"笔");
+						$("#pkzjz").html(data.pkzjz+"元");
+					}else{
+						$("#gc").html("-");
+						$("#time").html("00000000 00:00:00 - 00000000 00:00:00");
+						$("#zwxfl").html("0%");
+						$("#kcdd").html("-");
+						$("#pdzbs").html("0 笔");
+						$("#cyzbs").html("0 笔");
+						$("#pyzbs").html("0 笔");
+						$("#pyzjz").html("0 元");
+						$("#pkzbs").html("0 笔");
+						$("#pkzjz").html("0 元");
+					}
+					
+				}
+			});
+			
+			
+		},reset:function(othis){
+			$('#factory').val("");
+			$('#storageLocation').val("");
+			$('#dateTime').val("");
+			form.render("select");
+		}
+};
+function loadding(){
+	getWarehouse();
+	//日期范围
+	laydate.render({
+	  elem: '#dateTime'
+	  ,range: true
+	});
+
+	layui.use('laydate', function(){
+		var laydate = layui.laydate;
+		//时间选择器
+		  laydate.render({
+		    elem: '#date'
+		    ,type: 'datetime'
+		    ,range: true
+		  });
+	});	
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+	});
+}
+function getWarehouse(){//仓库
+	$.ajax({
+		url :  config.wmsConfig.contextPath+"orgination/listWarehouse",
+		type : "GET",
+		success : function(res) {
+			if (res.code == 0) {
+				$('#warehouseCode').html("");
+				$('#warehouseCode').append('<option value="">请选择</option>');
+				var data = res.data;
+				var wareHoseList = data.wareHoseList;
+				var optoinArray = new Array();
+				for (var i = 0; i < wareHoseList.length; i++) {
+					optoinArray.push({"name":""+wareHoseList[i].orgName, "value":""+wareHoseList[i].orgCode,"storageLocation":""+wareHoseList[i].storageLocation});
+				}
+				layui.formSelects.data('select2','local',{
+					arr:optoinArray
+				}); 
+			}
+		}
+	});
+}	
+function exportWord(){
+
+	var dateTime = $('#date').val();
+	var factory = $('#factory').val();
+	var storageLocations=[];
+	var storageLocation = layui.formSelects.value('select2', 'storageLocation');
+	if(storageLocation.length>0){
+		for(var i=0;i<storageLocation.length;i++){
+			var storageLocationStr=storageLocation[i].storageLocation;
+			var arr=storageLocationStr.split(';');
+			for(var y=0; y<arr.length;y++){
+				storageLocations.push(arr[y]);
+			}
+		}
+	}
+	var startTime = "";
+	var endTime="";
+	if(dateTime.length>0){
+	  startTime = dateTime.substring(0,19);
+	  endTime =  dateTime.substring(22);
+	}
+	if(factory==null||factory==""||dateTime==null||dateTime==""||storageLocation.length==0){
+		alert("检索条件不能为空！");
+		return;
+	}else{
+		window.open( config.wmsConfig.contextPath+'stockTakeReport/exoprtInventoryReport?startTime='+startTime+'&endTime='+endTime+'&storageLocation='+storageLocations+'&factory='+factory+'&type=1');
+	}
+}
+	
+</script>
+</body>
+</html>

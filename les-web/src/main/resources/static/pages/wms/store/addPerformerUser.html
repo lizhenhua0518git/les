@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户设置</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<style type="text/css">
+.layui-table-body{
+	overflow:hidden;
+}
+</style>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+			 	<label class="layui-form-label">用户姓名:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="userName_search" class="layui-input">
+			    </div>
+			</div>
+		</div>
+		<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+				<label class="layui-form-label">用户组织:</label>
+				<div class="layui-input-block">
+					<input type="text" id="orgId_search" class="layui-input">
+				</div>
+			</div>
+		</div>
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+			<div class="layui-col-md6">&nbsp;</div>
+			<div class="layui-col-md6">
+				<div class="layui-btn-container" style="text-align: right;">
+					  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search"><i class="layui-icon">&#xe615;</i>查询</button>
+					  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset"><i class="mine-icon">&#xe640;</i>重置</button>
+					  <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="save" type="button"><i class="mine-icon icon-add"></i>保存</button>
+				</div>
+			</div>
+		</div>
+	</div>
+<table id="userTab" lay-filter="userTabF"></table>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script type="text/javascript">
+	var $ = layui.$;
+	var element = layui.element;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var active = {
+			search:function(othis){
+				var userName = $('#userName_search');
+				var orgId = $('#orgId_search');
+			      //执行重载
+			      table.reload('userTabId', {
+			        where:{
+			           userName: userName.val()
+			           ,orgId:orgId.val()
+			        }
+			        ,page:{"curr":1}
+			      });
+			},reset:function(othis){
+				$('#userName_search').val("");
+				$('#orgId_search').val("");
+			},save:function(othis){
+				var checkStatus = table.checkStatus('userTabId');
+				var tableObj = checkStatus.data;
+				if(tableObj.length==0){
+					layer.alert('请选择人员！',{icon: 2});
+	                return;
+				}
+				parent.$("#performer").val(tableObj[0].userName) ;
+				parent.$("#performerId").val(tableObj[0].userId) ;
+				var index=parent.layer.getFrameIndex(window.name);
+				parent.layer.close(index);
+			}
+	//active
+	};
+	function loadding(){
+		table.render({
+			elem:'#userTab',
+			id:'userTabId',
+			url:config.basicInfoConfig.contextPath+'user/queryNoRoleUser',
+			where:{"roleId":''},
+			cols:[[
+			{type:'radio'},
+			{field:'userName',width:'40%',title:'用户姓名'},
+			{field:'orgId', width:'40%', title: '用户组织'},
+			]],
+			page: {theme: '#008155'},
+			request: {
+				  pageName: 'pageNumber' //页码的参数名称，默认：page
+				  ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+				},
+    		even:true
+		});
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+	}
+
+
+
+
+</script>
+</body>
+</html>

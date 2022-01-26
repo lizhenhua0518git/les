@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>数据字典</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css" />
+</head>
+<body id="bodyDiv">
+
+
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+
+	<script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">类型名称:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="dictTypeId_search" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">字典名称:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="itemName_search" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">字典值:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="itemValue_search" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md2">&nbsp;</div>
+			<div class="layui-col-md2">&nbsp;</div>
+			<div class="layui-col-md2">
+				<div class="layui-btn-container" style="text-align: left;">
+					{{# if(d.search==null || d.search=="true"){ }}
+             	 		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              			<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+              		{{# } }}
+				</div>
+			</div>
+	</div>
+</div>
+<div class="layui-fluid-table">
+<div class="layui-row layui-form" style="margin-bottom: 0">
+				<div class="layui-btn-container" style="text-align: left;">
+
+     				{{# if(d.add==null || d.add=="true"){ }}
+	      				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>增加</button>
+
+          			{{# } }}
+
+        			{{# if(d.edit==null || d.edit=="true"){ }}
+
+	    				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+
+        			{{# } }}
+
+        			{{# if(d.del==null || d.del=="true"){ }}
+	     				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>
+        			{{# } }}
+				</div>
+	</div>
+	<table id="dictItemsTab" lay-filter="dictItemsTabF"></table>
+</div>
+</script>
+	<script type="text/javascript">
+	 var contextPath = config.basicInfoConfig.contextPath;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var oldData;
+    function loadding(){
+		table.render({
+			elem:'#dictItemsTab',
+			id:'dictItemsTabId',
+			url:contextPath+'dictItems/',
+			cols:[[
+			{type:'checkbox'}
+			,{field:'dictTypeId',title:'字典类型名称'}
+			,{field:'itemName',title:'字典名称'}
+			,{field:'itemValue',title:'字典值'}
+			,{field:'itemDesc',title:'字典描述'}
+			,{field:'sortNo',title:'排序号'}
+			]],
+			page: {theme: '#008155'},
+    		even:true
+
+		});
+		var active = {
+				add:function(othis){
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'新增数据字典'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type
+				        ,id: 'dictItemAdd'+type //防止重复弹出
+				        ,content: 'addDictItems.html'
+				        ,shade: 0 //不显示遮罩
+			      	});
+				},
+				edit:function(othis){
+					var checkStatus = table.checkStatus('dictItemsTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要编辑的行！',{icon: 2});
+      					return ;
+					}else if(oldData.length >1){
+      					layer.alert('编辑不能超过多行！',{icon: 2});
+      					return ;
+      				}
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'编辑数据字典'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type
+				        ,id: 'dictItemEdit'+type //防止重复弹出
+				        ,content: 'editDictItems.html'
+				        ,shade: 0 //不显示遮罩
+				        ,yes: function(){
+				          layer.closeAll();
+				        }
+			     	 });
+				},del:function(othis){
+					var checkStatus = table.checkStatus('dictItemsTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要删除的行！',{icon: 2});
+      					return ;
+					}
+					var idarrys = new Array();
+					for(var i=0;i<oldData.length;i++){
+						idarrys.push(oldData[i].id);
+					}
+					layer.confirm('确定删除该条数据字典信息?', {icon: 3, title:'提示'}, function(index){
+			  			  //do something
+			  			  var option ={
+								url:contextPath+'dictItems/deleteDictItems',
+								type:'POST',
+								contentType: "application/json",
+								dataType:'json',
+								data:JSON.stringify(idarrys),
+								success:function(data){
+									if(data.code==0){
+										table.reload('dictItemsTabId');//刷新列表
+									}
+								},error:function(data){
+									layer.alert(data.msg);
+								}
+							}
+							$.ajax(option);
+			  			  layer.close(index);
+			  			});
+				},search:function(othis){
+					var dictTypeId = $('#dictTypeId_search');
+					var itemName =  $('#itemName_search');
+					var itemValue =  $('#itemValue_search');
+				      //执行重载
+				      table.reload('dictItemsTabId', {
+				        where:{
+				        	dictTypeId: dictTypeId.val()
+				        	,itemName:itemName.val()
+				        	,itemValue:itemValue.val()
+				        }
+				       ,page:{"curr":1}
+				      });
+				},reset:function(othis){
+					$('#dictTypeId_search').val("");
+					$('#itemName_search').val("");
+					$('#itemValue_search').val("");
+				} ,check:function(othis){
+					var checkStatus = table.checkStatus('dictItemsTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要查看的行！',{icon: 2});
+      					return ;
+					}else if(oldData.length >1){
+      					layer.alert('查看不能超过多行！',{icon: 2});
+      					return ;
+      				}
+					var type = othis.data('type');
+					layer.open({
+				        type: 2
+				        ,title:'查看数据字典'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type
+				        ,id: 'dictItemCheck'+type //防止重复弹出
+				        ,content: 'dictItemsInfo.html'
+				        ,shade: 0 //不显示遮罩
+				        ,yes: function(){
+				          layer.closeAll();
+				        }
+			     	 });
+				}
+
+
+
+		};
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		table.on('sort(dictItemsTabF)', function (obj) {
+			var sortColums;
+			if(obj.field=="dictTypeId"){
+				sortColums = "d.dict_name "+obj.type;
+			}
+			var dictTypeId = $('#dictTypeId_search');
+			var itemName =  $('#itemName_search');
+			var itemValue =  $('#itemValue_search');
+		      //执行重载
+		      table.reload('dictItemsTabId', {
+		        where:{
+		        	dictTypeId: dictTypeId.val()
+		        	,itemName:itemName.val()
+		        	,itemValue:itemValue.val()
+		        	,sortColums:sortColums
+		        }
+		       ,page:{"curr":1}
+		      });
+
+		});
+    }
+	</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.oms.dao.StationOrderDetailDao">
+	
+	<insert id="saveStationOrderDetail">
+		<foreach collection="list" open="begin" close=";end;" index="index" item="item" separator=";">
+			    insert into t_station_order_detail
+				<trim prefix="(" suffix=")" suffixOverrides=",">
+					<if test=" item.id !=null and ''!= item.id">id,</if>
+					<if test=" item.materialCode !=null and ''!= item.materialCode">material_code,</if>
+					<if test=" item.materialDesc !=null and ''!= item.materialDesc">material_desc,</if>
+					<if test=" item.materialUnit !=null and ''!= item.materialUnit">material_unit,</if>
+					<if test=" item.reserveCode !=null and ''!= item.reserveCode">reserve_code,</if>
+					<if test=" item.reserveRow !=null and ''!= item.reserveRow">reserve_row,</if>
+					<if test=" item.pickNum !=null ">pick_num,</if>
+					<if test=" item.specialType !=null and ''!= item.specialType">special_type,</if>
+					<if test=" item.specialCode !=null and ''!= item.specialCode">special_Code,</if>
+					<if test=" item.specialName !=null and ''!= item.specialName">special_Name,</if>
+					<if test=" item.stationLocation !=null and ''!= item.stationLocation">station_Location,</if>
+					<if test=" item.positionCode !=null and ''!= item.positionCode">position_Code,</if>
+					<if test=" item.storageBinId !=null and ''!= item.storageBinId">storage_Bin_Id,</if>
+					<if test=" item.storageId !=null and ''!= item.storageId">storage_Id,</if>
+					<if test=" item.createTime !=null ">create_time,</if>
+					<if test=" item.processDetialId !=null and ''!= item.processDetialId">process_Detial_Id,</if>
+					<if test=" item.status !=null ">status,</if>
+					<if test=" item.stationOrderId !=null and ''!= item.stationOrderId">station_Order_Id,</if>
+					<if test=" item.materialRow !=null and ''!= item.materialRow">MATERIAL_ROW,</if>
+			        <if test="item.sellOrder != null and '' != item.sellOrder">SELL_ORDER,</if>
+			        <if test="item.sellOrderItem != null and '' !=  item.sellOrderItem">SELL_ORDER_ITEM</if>
+				</trim>
+				<trim prefix="values (" suffix=")" suffixOverrides=",">
+					<if test=" item.id !=null and ''!= item.id">#{item.id},</if>
+					<if test=" item.materialCode !=null and ''!= item.materialCode">#{item.materialCode},</if>
+					<if test=" item.materialDesc !=null and ''!= item.materialDesc">#{item.materialDesc},</if>
+					<if test=" item.materialUnit !=null and ''!= item.materialUnit">#{item.materialUnit},</if>
+					<if test=" item.reserveCode !=null and ''!= item.reserveCode">#{item.reserveCode},</if>
+					<if test=" item.reserveRow !=null and ''!= item.reserveRow">#{item.reserveRow},</if>
+					<if test=" item.pickNum !=null ">#{item.pickNum},</if>
+					<if test=" item.specialType !=null and ''!= item.specialType">#{item.specialType},</if>
+					<if test=" item.specialCode !=null and ''!= item.specialCode">#{item.specialCode},</if>
+					<if test=" item.specialName !=null and ''!= item.specialName">#{item.specialName},</if>
+					<if test=" item.stationLocation !=null and ''!= item.stationLocation">#{item.stationLocation},</if>
+					<if test=" item.positionCode !=null and ''!= item.positionCode">#{item.positionCode},</if>
+					<if test=" item.storageBinId !=null and ''!= item.storageBinId">#{item.storageBinId},</if>
+					<if test=" item.storageId !=null and ''!= item.storageId">#{item.storageId},</if>
+					<if test=" item.createTime !=null ">#{item.createTime},</if>
+					<if test=" item.processDetialId !=null and ''!= item.processDetialId">#{item.processDetialId},</if>
+					<if test=" item.status !=null ">#{item.status},</if>
+					<if test=" item.stationOrderId !=null and ''!= item.stationOrderId">#{item.stationOrderId},</if>
+					<if test=" item.materialRow !=null and ''!= item.materialRow">#{item.materialRow},</if>
+			        <if test=" item.sellOrder != null and '' != item.sellOrder">#{item.sellOrder},</if>
+			        <if test=" item.sellOrderItem != null and '' != item.sellOrderItem">#{item.sellOrderItem}</if>
+				</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="saveStorageOrderDetail">
+		<foreach collection="list" open="begin" close=";end;" index="index"
+					item="item" separator=";">
+			    insert into t_storage_order_detail
+			    <trim prefix="(" suffix=")" suffixOverrides=",">
+			    	id,
+			    	<if test="item.positionCode !=null and ''!= item.positionCode">position_code,</if>
+			    	<if test="item.storageBinId !=null and ''!= item.storageBinId">storage_Bin_Id,</if>
+			    	<if test="item.storageId !=null and ''!= item.storageId">storage_Id,</if>
+			    	<if test="item.stationDetailId !=null and ''!= item.stationDetailId">station_Detail_Id,</if>
+			    	<if test="item.pickNum !=null ">pick_Num,</if>
+			    	<if test="item.createTime !=null ">create_time,</if>
+			    </trim>
+			    <trim prefix="values (" suffix=")" suffixOverrides=",">
+			    	 replace(uuid(),'-',''),
+			    	<if test="item.positionCode !=null and ''!= item.positionCode">#{item.positionCode},</if>
+			    	<if test="item.storageBinId !=null and ''!= item.storageBinId">#{item.storageBinId},</if>
+			    	<if test="item.storageId !=null and ''!= item.storageId">#{item.storageId},</if>
+			    	<if test="item.stationDetailId !=null and ''!= item.stationDetailId">#{item.stationDetailId},</if>
+			    	<if test="item.pickNum !=null ">#{item.pickNum},</if>
+			    	<if test="item.createTime !=null ">#{item.createTime},</if>
+			    </trim>
+		</foreach>
+	</insert>
+</mapper>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>选择物料</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+</head>
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">物料编码</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="materialCode_search" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">物料名称</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="materialDesc_search" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<div class="layui-btn-container" style="text-align: left;">
+				{{# if(d.search==null || d.search=="true"){ }}
+             	 	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+              	{{# } }}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="layui-fluid-table">
+	<table class="layui-hide" id="materialInfo" lay-filter="materialInfoF"></table>
+</div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script type="text/javascript">
+var contextPath = config.basicInfoConfig.contextPath;
+var table = layui.table;
+var active = {
+		search:function(){
+			var materialCode=$('#materialCode_search').val();
+			var materialDesc=$('#materialDesc_search').val();
+			var params={};
+			params.materialCode = materialCode;
+			params.materialDesc = materialDesc;
+			//执行重载
+	        table.reload('materialInfoId', {
+	         where:params,
+	         page:{"curr":1}
+	        });
+		},
+		reset:function(){
+			$('#materialCode_search').val("");
+			$('#materialDesc_search').val("");
+		}
+
+};
+function loadding(){
+	table.render({
+		elem:'#materialInfo',
+		id:'materialInfoId',
+		url: contextPath +'material/',
+		cols:[[
+		{type:'checkbox'},
+		{type:'numbers',title:'序号'},
+		{field:'materialCode',title:'物料编号'},
+		{field:'materialCodeOld',title:'旧物料号'},
+		{field:'materialDesc',width:150, title: '物料名称'},
+		{field:'materialUnit', title: '单位'},
+		 {field:'isKey', title: '关键组件'},
+		{field:'factory', title: '工厂'}
+		]],
+		page: {theme: '#008155'},
+   		even:true
+	});
+	$('.layui-btn-container button').on('click', function(){
+        var othis = $(this), method = othis.data('method');
+        active[method] ? active[method].call(this, othis) : '';
+	 });
+	//隐藏全选的复选框
+	$("input[lay-filter=layTableAllChoose]").parent().hide();
+	table.on('checkbox(materialInfoF)', function(obj){
+		 if(obj.checked){
+			 var data = obj.data;
+			 parent.chooseMaterialObj=data;
+			 parent.$(".layui-layer-close1").click();
+		 }
+	});
+}
+</script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.basicInfo.dao.CostCenterDao">
+    
+   
+  
+  <select id="listCostCenter" parameterType="com.zkzn.les.basicInfo.pojo.CostCenter" resultType="com.zkzn.les.basicInfo.pojo.CostCenter">
+   
+   select t.* from  t_cost_center t 
+   
+   <where>
+   
+   <if test="costCenterCode !=null and '' !=costCenterCode">
+    and t.cost_center_code like '%${costCenterCode}%'
+   
+   </if>
+   
+   <if test="costCenterDesc !=null and ''!=  costCenterDesc">
+    and t.cost_center_desc like '%${costCenterDesc}%'
+   
+   </if>
+   
+    <if test="costCenterType !=null and ''!= costCenterType">
+    and t.cost_center_type=#{costCenterType}
+   
+   </if>
+   </where>
+  
+  
+  </select>
+</mapper>

@@ -1,0 +1,118 @@
+html,body{
+    height: 100%;
+}
+.qrCode{
+    width: 100%;
+    min-width: 100%;
+}
+.qrCode .card{
+    background: #F2F2F2;
+    padding: 10px;
+}
+.qrCode .card1{
+    background: #F2F2F2;
+    padding: 10px;
+}
+.qrCode .card .cardHead{
+    text-align: center;
+    min-height: 10px;
+    line-height: 30px;
+}
+.qrCode .card1 .cardHead1{
+    text-align: center;
+    min-height: 10px;
+    line-height: 30px;
+}
+.qrCode .card .textHead{
+    font-size: 20px;
+    color: #333;
+    display: inline-block;
+    background-color: white;
+    padding: 0 50px;
+}
+
+.qrCode .card1 .textHead1{
+    font-size: 16px;
+    display: inline-block;
+    background-color: white;
+    padding: 0 40px;
+}
+.qrCode .card .cardBody{
+    padding: 20px 0;
+}
+.qrCode .card1 .cardBody1{
+    padding: 5px 0;
+}
+.qrCode .card .cardBody::after{
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.qrCode .card1 .cardBody1::after{
+    content: '';
+    display: block;
+    clear: both;
+}
+.qrCode .card .leftWrap{
+    margin-right: 220px;
+}
+
+.qrCode .card1 .leftWrap1{
+    margin-right: 38mm;
+}
+.qrCode .card1 .cardBody1 .rightWrap img{
+    width: 74mm;
+    height: 74mm;
+}
+.qrCode .card1 .leftWrap1 .layui-form-label{
+    width: 32px;
+    font-size: 16px;
+    line-height: 16px;
+}
+.qrCode .card1 .leftWrap1 .layui-input-block{
+    margin-left: 33px;
+}
+.qrCode .card1 .leftWrap1 .layui-input-block .layui-input{
+    padding-left: 2px;
+    line-height: 10px;
+    font-size: 16px;
+
+}
+.qrCode .card .rightWrap{
+    float: right;
+    padding-top: 20px;
+}
+.qrCode .card1 .rightWrap{
+    float: right;
+    padding-top: 20px;
+    width: 92mm;
+}
+.qrCode .card .leftWrap .layui-form{
+    display: inline-block;
+    width: 100%;
+}
+.qrCode .card1 .leftWrap1 .layui-form{
+    display: inline-block;
+    width: 80px;
+}
+.qrCode .card .layui-form-item{
+    background-color: white;
+
+}
+.qrCode .card1 .layui-form-item{
+    background-color: white;
+    margin-bottom: 24px;
+    width: 97px;
+}
+
+.qrCode .card .layui-input, .layui-select{
+    border: none;
+}
+.qrCode .card1 .layui-input, .layui-select{
+    border: none;
+}
+.qrCode .card1 .layui-input, .layui-select, .layui-textarea{
+    height: 15px;
+
+}

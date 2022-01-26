@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+ <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+ <link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<title>载具管理</title>
+</head>
+<body id="bodyDiv">
+
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">载具编码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="carrierCode" placeholder="请输入编码" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">载具名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="carrierName" placeholder="请输入名称" class="layui-input">
+                </div>
+            </div>
+        <div class="layui-col-md2">
+            <label class="layui-form-label">载具类型</label>
+            <div class="layui-input-inline">
+                <select  id="carrier_type" lay-filter="carrier_type" xm-select="carrierTypeSelect" xm-select-show-count="1">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-btn-container nav-" style="text-align: right;">
+            {{# if(d.search==null || d.search=="true"){ }}
+            <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+            <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon  layui-icon-reset"></i>重置</button>
+            {{# } }}
+        </div>
+    </div>
+    </div>
+        <div class="layui-fluid-table">
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+		<div class="layui-btn-container" style="text-align: left;">
+            {{# if(d.add==null || d.add=="true"){ }}
+            <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>新增</button>
+            {{# } }}
+            {{# if(d.edit==null || d.edit=="true"){ }}
+            <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>修改</button>
+            {{# } }}
+            {{# if(d.del==null || d.del=="true"){ }}
+            <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>
+            {{# } }}
+           </div>
+		</div>
+	</div>
+	<table id="carrierTab" lay-filter="carrierTabF"></table>
+</div>
+</script>
+<script type="text/javascript">
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var upload = layui.upload;
+	var oldData;
+	var contextPath = config.basicInfoConfig.contextPath;
+	function loadding(){
+		table.render({
+	        elem:'#carrierTab',
+	        id:'carrierTabId',
+	        url: contextPath + 'carrier/',
+	        cols:[[
+	        {type:'checkbox'},
+	        {type:'numbers',title:'序号',width: 80},
+	        {field:'carrierName',title:'载具名称'},
+	        {field:'carrierCode', width:'15%', title: '载具编码',sort:true},
+	        {field:'carrierTypeName',  title: '载具类型'},
+	        {field:'warehouseName', title: '所属仓库'},
+	        {field:'createrName',title:'创建人'},
+	        {field:'createTime', width:'10%', title: '创建时间',sort:true},
+            {field:'modifierName',title:'修改人'},
+            {field:'modifiedTime',title:'修改时间'}
+	        ]],
+	        page: {theme: '#008155'},
+	        height: 'full-110',
+	        even:true,
+	        done:function(res,page,count){//列表数据回调函数
+
+	        }
+	    });
+        $('.layui-btn-container button').on('click', function(){
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+        table.on('sort(carrierTabF)', function (obj) {
+            var sortColums;
+            if(obj.field=="carrierCode"){
+                sortColums = "carrier_code "+obj.type;
+            }else if(obj.field=="useStatus"){
+                sortColums = "use_status "+obj.type;
+            }else if(obj.field=="status"){
+                sortColums = "status "+obj.type;
+            }
+            var useStatus=$('#use_status').val();
+            var carrierCode=$('#carrier_code').val();
+            var carrierType = layui.formSelects.value('carrierTypeSelect', 'valueStr');
+            var warehouseCode=$('#warehouse_code').val();
+              //执行重载
+              table.reload('carrierTabId', {
+                where:{
+                    carrierType:carrierType,
+                    useStatus:useStatus,
+                    carrierCode:carrierCode,
+                    warehouseCode:warehouseCode,
+                    sortColums:sortColums,
+                }
+              });
+        });
+        //加载字典开始
+        var dictTypes = ["carrier_type","allocate_check_status"]
+        var selectItems = ["carrierTypeSelect","stockCheckStatusSelect"]
+        var defaultValues = [[],[]]
+        initDictItemMultiSelect(dictTypes,selectItems,defaultValues);
+        //加载字典结束
+
+        form.render("select");
+        }
+
+	upload.render({
+	  elem: '#import'
+	  ,url:  contextPath + 'carrier/importExcel' //必填项
+	  ,method: 'post'
+	  ,accept: 'file'
+	  ,exts:'xls'
+	  ,before: function(obj){
+		layer.load(); //上传loading
+	  }
+	  ,done: function(res, index, upload){
+		  if(res.code==0){
+			  layer.alert('载具导入成功！', {icon: 6});
+			  layer.closeAll('loading'); //关闭loading
+			  table.reload('carrierTabId', {
+			        page:{"curr":1}
+			      });
+		  }else{
+			  layer.alert('载具导入失败！', {icon: 5});
+			  layer.closeAll('loading'); //关闭loading
+		  }
+
+	  }
+	  ,error: function(index, upload){
+		  layer.alert('载具导入失败！', {icon: 5});
+		  layer.closeAll('loading'); //关闭loading
+	  }
+	});
+	var active = {
+        add:function(othis){
+            var type = othis.data('type');
+            layer.open({
+            type: 2
+            ,title:'新增载具信息'
+            ,maxmin:false
+            ,area: ['800px', '300px']
+            ,offset: type
+            ,id: 'carrierAdd'+type //防止重复弹出
+            ,content: 'addCarrier.html'
+            ,shade: [0.8, '#393D49']
+            ,yes: function(){
+              layer.closeAll();
+            }
+          });
+        },
+        edit:function(othis){
+            var checkStatus = table.checkStatus('carrierTabId');
+                oldData = checkStatus.data;
+            if(oldData.length<=0){
+                layer.alert('请选择要编辑的行！',{icon: 2});
+                    return ;
+            }else if(oldData.length >1){
+                    layer.alert('编辑不能超过多行！',{icon: 2});
+                    return ;
+                }
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                ,title:'编辑载具'
+                ,maxmin:false
+                ,area: ['800px', '300px']
+                ,offset: type
+                ,id: 'carrierEdit'+type //防止重复弹出
+                ,content: 'editCarrier.html'
+                ,shade: [0.8, '#393D49']
+                ,yes: function(){
+                  layer.closeAll();
+                }
+             });
+        },del:function(othis){
+            var checkStatus = table.checkStatus('carrierTabId');
+            oldData = checkStatus.data;
+            if(oldData.length<=0){
+                layer.alert('请选择要删除的行！',{icon: 2});
+                return ;
+            }
+            var idarrys = new Array();
+            for(var i=0;i<oldData.length;i++){
+                idarrys.push(oldData[i].carrierId);
+            }
+            layer.confirm('确定删除载具信息?', {icon: 3, title:'提示'}, function(index){
+                  //do something
+                  var option ={
+                        url:contextPath+'carrier/deleteCarrier',
+                        type:'POST',
+                        contentType: "application/json",
+                        dataType:'json',
+                        data:JSON.stringify(idarrys),
+                        success:function(data){
+                            if(data.code==0){
+                                table.reload('carrierTabId');//刷新列表
+                            }
+                        },error:function(data){
+                            layer.alert(data.msg);
+                        }
+                    }
+                  layui.$.ajax(option);
+                  layer.close(index);
+                });
+        },
+        search:function(othis){
+            var carrierCode=$('#carrierCode').val();
+            var carrierName=$('#carrierName').val();
+            var carrierType = layui.formSelects.value('carrierTypeSelect', 'valueStr');
+            //var useStatus=$('#use_status').val();
+            var params={};
+            params.carrierCode=carrierCode;
+            params.carrierName=carrierName;
+            params.carrierType=carrierType;
+            //params.useStatus=useStatus;
+            //params.warehouseCode=warehouseCode;
+            //执行重载
+            table.reload('carrierTabId', {
+                where:params,
+                page:{"curr":1}
+            });
+        },reset:function(othis){
+            $('#carrierCode').val("");
+            $('#carrierName').val("");
+            layui.formSelects.value('carrierTypeSelect', []);
+            form.render("select");
+        }
+
+	};
+
+
+
+
+
+</script>
+</body>
+</html>

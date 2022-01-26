@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>点收记录详情</title>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+</head>
+
+<script type="text/html" id="toolbar">
+
+</script>
+<body id="bodyDiv">
+
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料编码</label>
+                <div class="layui-input-block">
+                    <input type="text" id="materialDesc_search" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">载具号</label>
+                <div class="layui-input-block">
+                    <input type="text" id="carrierCode_search" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                {{# if(d.search==null || d.search=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+                {{# } }}
+            </div>
+        </div>
+    </div>
+    <div class="layui-fluid-table">
+        <table class="layui-hide" id="pointRecordDetailTab" lay-filter="pointRecordDetailTabF"></table>
+    </div>
+    <div id="receiveRecordId" type="hidden"></div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/urlParam.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    var table = layui.table;
+    var contextPath = config.wmsConfig.contextPath;
+    var form = layui.form;
+    var laydate = layui.laydate;
+    var receiveId = '';
+    var paramsMap = UrlParam.paramMap();
+    if (paramsMap && paramsMap.receiveId && paramsMap.receiveId.length > 0) {
+        receiveId = paramsMap.receiveId[0];
+    }
+    var active = {
+        search: function (othis) {
+            var carrierCode = $("#carrierCode_search").val();
+            var materialDesc = $("#materialDesc_search").val();
+            table.reload('pointRecordDetailTabId', {
+                where: {
+                    materialDesc: materialDesc,
+                    carrierCode: carrierCode
+                }
+            });
+        },
+        reset: function (othis) {
+            $("#carrierCode_search").val("");
+            $("#materialDesc_search").val("");
+        }
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#pointRecordDetailTab',
+            id: 'pointRecordDetailTabId',
+            url: contextPath + 'pcReceiveRecord/listPcReceiveDetailRecord',
+            cols: [[
+                {align: 'center', type: 'numbers', title: '序号', width: 60},
+                {align: 'center', field: 'warehouseName', title: '仓库名称', width: 150},
+                {align: 'center', field: 'arrivalCode', title: '任务号', width: 150},
+                {align: 'center', field: 'itemNo', title: '行项目号', width: 100},
+                {align: 'center', field: 'materialDesc', title: '货物名称', width: 150},
+                {align: 'center', field: 'actualNum', title: '到货数量', width: 100},
+                {align: 'center', field: 'receiveNum', title: '点收数量', width: 100},
+                {align: 'center', field: 'materialUnit', title: '单位', width: 100},
+                {align: 'center', field: 'pointerName', title: '点收人', width: 150},
+                {align: 'center', field: 'receiveTime', title: '点收时间', width: 150},
+                {align: 'center', field: 'areaCode', title: '点收区域', width: 120},
+                {align: 'center', field: 'carrierCode', title: '载具号', width: 120},
+                {align: 'center', field: 'carryNumber', title: '载具承载数量', width: 120},
+                {align: 'center', field: 'batchNo', title: '批次号', width: 150},
+                {align: 'center', field: 'receiveDetailStatus', title: '状态', width: 150, templet(d) {
+                        if (d.receiveDetailStatus == 20) {
+                            return '待点收';
+                        } else if (d.receiveDetailStatus == 30) {
+                            return '点收完成';
+                        }
+                    }
+                }
+            ]],
+            page: {theme: '#008155'},
+            even: true,
+            where: {
+                receiveTaskId: receiveId
+            }
+        });
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+    }
+</script>
+</body>
+
+</html>

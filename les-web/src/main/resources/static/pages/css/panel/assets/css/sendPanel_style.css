@@ -1,0 +1,108 @@
+@charset "utf-8";
+/* CSS Document */
+body {
+    font-family: "Microsoft YaHei", 'Open Sans', sans-serif;
+    background: #052655;
+	width:1280px;
+    margin:0 auto;
+	
+}
+.text-center {
+    text-align:center;
+}
+.clear{clear:both}
+
+/*===================WRAPPER===================*/
+
+#wrapper {
+    width: 1240px;
+    margin:0 auto;
+}
+.clear{ clear:both} 
+#page-wrapper {
+    position: relative;
+	color:#fff;
+}
+.row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+h1{
+    font-size:3em;
+    font-weight:700;
+	color:#d9d9d9;
+	text-align:center;
+	margin-top:20px;
+	margin-bottom:10px;
+}
+.grid-1 {
+    width:70px;
+	float:left;
+	margin-top:10px;
+}
+.grid-2 {
+	float:left;	
+}
+.grid-1 span{font-size:20px; color:#d9d9d9;}
+.zd{float:left}
+.text_111{font-size:22px; color:#d9d9d9;  text-align:left;}
+.text_111 span{ margin-left:83px}
+.xl{margin-top:23px; margin-left:50px}
+.text_222{font-size:24px; color:#d9d9d9; line-height:18px; text-align:center; margin-top:10px}
+.zdmc{float:left;}
+.zm{font-size:12px;}
+
+p {    text-align: left;line-height:30px;
+
+}
+
+.text_2222{font-size:24px; color:#d9d9d9; margin-top:80px}
+table{
+    width:100%;
+    text-align:center;
+    border: 1px solid #d9d9d9;
+}
+
+
+.table>tbody>tr>td, .table>tbody>tr>th{
+    font-size:32px;
+	font-weight:600;
+    padding: 1px;
+    vertical-align: middle;
+    border: 1px solid #d9d9d9;
+}
+
+
+tr, td, th {
+    font-size:20px;
+    text-align:center;
+	color:#d9d9d9;
+    border: 1px solid #d9d9d9;
+	border-collapse:collapse;
+}
+
+
+.col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.td_finsh{
+	background: green;
+}
+.td_ing{
+	background: orange;
+}
+.zz1_span{
+	position: absolute;
+    margin-top: 18px;
+    font-size: 1px;
+    margin-left: -9px;
+    background: green;
+    width: 10px;
+    height: 11px;
+    line-height: 8px;
+}
+

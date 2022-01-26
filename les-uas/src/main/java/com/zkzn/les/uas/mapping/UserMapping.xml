@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.uas.dao.UserDao">
+
+<resultMap type="com.zkzn.les.uas.pojo.User" id="BaseResultMap">
+	<result property="id" column="id"/>
+	<result property="userId"  column="user_id"/>
+	<result property="userName"  column="user_name"/>
+	<result property="phone" column="phone"/>
+	<result property="userPassword"  column="user_password"/>
+	<result property="avatar" column="avatar"/>
+	<result property="status" column="status"/>
+	<result property="orgId"  column="org_id"/>
+	<result property="orgCode" column="org_code" />
+	<result property="orgName" column="org_name"/>
+	<result property="lastLoginTime" column="last_login_time"/>
+	<result property="receiveStorageLocation" column="receive_storage_location"/>
+</resultMap>
+
+<!-- 所有满足条件的在用用户 -->
+<select id="getUser"  parameterType="com.zkzn.les.uas.pojo.User"  resultMap="BaseResultMap">
+select u.id,
+	   u.user_id,
+       u.user_name,
+       u.login_account,
+       u.user_password,
+       u.phone,
+       u.avatar,
+       u.org_id,
+       u.status
+
+  from t_user u
+  left join t_user_organization o
+    on o.user_id=u.id
+  <where>
+	  <if test="id != null and  '' != id">
+		  u.user_id = #{id}
+	  </if>
+	  <if test="phone !=null  and '' != phone">
+		  and u.phone = #{phone}
+	  </if>
+	  <if test="status !=null and '' != status">
+		  and u.status = #{status}
+	  </if>
+
+	  limit 1
+  </where>
+
+</select>
+
+<!-- 修改用户 -->
+
+<update id="updateUser" parameterType="com.zkzn.les.uas.pojo.User">
+	update t_user
+	<trim prefix="set" prefixOverrides=",">
+		<if test="userName !=null and ''!= userName">user_name=#{userName}</if>
+		<if test="userPassword !=null and ''!= userPassword">,user_password=#{userPassword}</if>
+		<if test="phone !=null and ''!= phone">,phone=#{phone}</if>
+		<if test="orgId !=null and ''!= orgId">,org_id=#{orgId}</if>
+		<if test="avatar !=null and ''!= avatar">,avatar=#{avatar}</if>
+		<if test="status !=null">,status=#{status}</if>
+		<if test="lastLoginTime !=null">,last_login_time=#{lastLoginTime}</if>
+		<if test="receiveStorageLocation !=null and ''!= receiveStorageLocation">,receive_storage_location=#{receiveStorageLocation}</if>
+	</trim>
+	where user_id =#{id}
+</update>
+
+<insert id="saveUser">
+	<selectKey keyProperty="id" keyColumn="id" order="BEFORE" resultType="java.lang.String">
+		select  replace(uuid(),'-','') from dual
+	</selectKey>
+	insert into t_user
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+		id,
+		<if test="userName !=null and ''!= userName">user_name,</if>
+		<if test="userPassword !=null and ''!= userPassword">user_password,</if>
+		<if test="phone !=null and ''!= phone">phone,</if>
+		<if test="orgId !=null and ''!= orgId">org_id,</if>
+		<if test="avatar !=null and ''!= avatar">avatar,</if>
+		<if test="status !=null and ''!= status">status,</if>
+		<if test="receiveStorageLocation !=null and ''!= receiveStorageLocation">receive_storage_location</if>
+	</trim>
+	<trim prefix="values (" suffix=")" suffixOverrides=",">
+		#{id, jdbcType=VARCHAR}
+		<if test="userName !=null and ''!= userName">,#{userName}</if>
+		<if test="userPassword !=null and ''!= userPassword">,#{userPassword}</if>
+		<if test="phone !=null and ''!= phone">,#{phone}</if>
+		<if test="orgId !=null and ''!= orgId">,#{orgId}</if>
+		<if test="avatar !=null and ''!= avatar">,#{avatar}</if>
+		<if test="status !=null">,#{status}</if>
+		<if test="receiveStorageLocation !=null and ''!= receiveStorageLocation">,#{receiveStorageLocation}</if>
+	</trim>
+</insert>
+
+<select id="listUserPage" resultMap="BaseResultMap">
+	select u.id,user_password,user_name,phone,o.ORG_NAME as org_id,u.status,
+	<!-- case when (avatar is not null and instr(avatar,'\',1,1)>0) then SUBSTRB(avatar,instr(avatar,'\',1,length(avatar)-length(replace(avatar,'\','')))+1,length(avatar)) end as -->
+	avatar,receive_storage_location from t_user u left join t_warehouse o on u.org_id=o.id  where 1=1
+	<if test="userName !=null and ''!= userName">and user_name like '%${userName}%'</if>
+	<if test="userPassword !=null and ''!= userPassword">and user_password=#{userPassword}</if>
+	<if test="phone !=null and ''!= phone">and phone=#{phone}</if>
+	<if test="orgId !=null and ''!= orgId">and (u.org_id=#{orgId} or o.org_name=#{orgId})</if>
+	<if test="avatar !=null and ''!= avatar">and avatar=#{avatar}</if>
+	<if test="status !=null">and u.status=#{status}</if>
+	<if test="sortColums !=null and  '' !=sortColums">order by ${sortColums}</if>
+</select>
+
+<select id="getUserById" resultMap="BaseResultMap">
+	select * from t_user where 1=1 and id=#{id}
+</select>
+
+<delete id="deleteUser">
+<if test="list.size()>0">
+	delete from t_user  where
+	<foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+		id=#{item}
+	</foreach>
+	</if>
+</delete>
+
+<select id="getUserByPhone" resultMap="BaseResultMap">
+	select * from t_user where 1=1 and phone=#{phoneNum} and status='1'
+	<if test="id !=null and ''!=id"> and id!=#{id}</if>
+</select>
+<select id="listHasRoleUser" resultMap="BaseResultMap">
+	select u.id,u.user_name,u.phone,u.avatar,u.status,o.org_name as org_id from t_user u
+	left join t_warehouse o on u.org_id=o.id  where exists (
+    select user_id from t_user_role  r where u.id=r.user_id and r.role_id='${roleId}')
+    <if test="user.userName !=null and ''!= user.userName">and user_name='${user.userName}'</if>
+    <if test="user.phone !=null and ''!= user.phone">and phone='${user.phone}'</if>
+	<if test="user.orgId !=null and ''!= user.orgId">and (u.org_id='${user.orgId}' or o.org_name='${user.orgId}')</if>
+	<if test="user.status !=null">and u.status='${user.status}'</if>
+
+</select>
+<select id="listNoRoleUser" resultMap="BaseResultMap">
+	select u.id,u.user_name,u.phone,u.avatar,u.status,o.org_name as org_id from t_user u
+	left join t_warehouse o on u.org_id=o.id  where not exists (
+    select user_id from t_user_role  r where u.id=r.user_id and r.role_id='${roleId}')
+    <if test="user.userName !=null and ''!= user.userName">and user_name='${user.userName}'</if>
+    <if test="user.phone !=null and ''!= user.phone">and phone='${user.phone}'</if>
+	<if test="user.orgId !=null and ''!= user.orgId">and (u.org_id='${user.orgId}' or o.org_name='${user.orgId}')</if>
+	<if test="user.status !=null">and u.status='${user.status}'</if>
+</select>
+<select id="getByUserName" resultMap="BaseResultMap">
+	select * from t_user where user_name=#{userName}
+</select>
+<select id="getUserByPhoneAndPwd" resultMap="BaseResultMap">
+	select * from t_user where PHONE=#{phone} and USER_PASSWORD=#{oldPassWord}
+</select>
+<select id="listHasPermissed" resultType="java.lang.String">
+ select api_path as "apiPath" from T_RESOURCE_API_ADRESS raa
+	where EXISTS (
+	select p.res_id from t_user u
+	left join t_user_role ur on ur.user_id=u.id
+	left join t_privilege p on p.ROLE_ID = ur.ROLE_ID
+	where u.id = #{userId} and raa.RESOURCE_ID = p.res_id
+	)
+</select>
+	<select id="getUserUrl" resultType="java.lang.String">
+		SELECT
+			raa.api_path
+		FROM
+			t_user_role ur
+			LEFT JOIN t_privilege p ON ur.role_id = p.role_id
+			INNER JOIN t_resource_api_adress raa ON raa.resource_id = p.res_id
+		WHERE ur.USER_ID = #{userId}
+		GROUP BY raa.api_path
+	</select>
+	<select id="initUserInfo" resultType="com.zkzn.les.uas.pojo.User">
+		SELECT
+			u.user_id AS "userId",
+			u.user_name AS "userName"
+		FROM
+			t_user u
+		LEFT JOIN t_user_organization uo ON u.ID = uo.USER_ID
+		LEFT JOIN t_warehouse w ON uo.WAREHOUSE_CODE = w.ORG_CODE
+		WHERE
+		<if test="warehouseCode !=null and warehouseCode != ''">
+			w.ORG_CODE in
+			<foreach item="item" index="index" collection="warehouseCode.split(';')" open="(" separator="," close=")">
+				'${item}'
+			</foreach>
+		</if>
+		GROUP BY u.user_id
+	</select>
+</mapper>

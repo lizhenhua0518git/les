@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.oms.dao.ProcessOrderDetailDao">
+
+	<insert id="saveLostOrderDetail">
+		<foreach collection="list" open="begin" close=";end;"
+			separator=";" index="index" item="item">
+			insert into t_process_order_detail
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				ID,
+				<if test="item.reserveCode != null and item.reserveCode != ''">reserve_code,</if>
+				<if test="item.reserveRow != null and item.reserveRow != ''">reserve_row,</if>
+				<if test="item.materialRow != null and item.materialRow != ''">material_row,</if>
+				<if test="item.materialCode != null and item.materialCode != ''">material_code,</if>
+				<if test="item.requiredNum != null and item.requiredNum != ''">required_num,</if>
+				<if test="item.itemUnit != null and item.itemUnit != ''">item_unit,</if>
+				<if test="item.recoilMaterialTab != null and item.recoilMaterialTab != ''">recoil_material_tab,</if>
+				<if test="item.bulkMaterialTab != null and item.bulkMaterialTab != ''">bulk_material_tab,</if>
+				<if test="item.specialCode != null and item.specialCode != ''">special_code,</if>
+				<if test="item.storageLocation != null and item.storageLocation != ''">storage_location,</if>
+				<if test="item.doneActiveNo != null and item.doneActiveNo != ''">done_active_no,</if>
+				<if test="item.stationCode != null and item.stationCode != ''">station_code,</if>
+				<if test="item.stationDesc != null and item.stationDesc != ''">station_desc,</if>
+				<if test="item.processOrderId != null and item.processOrderId != ''">process_order_id,</if>
+				<if test="item.orderId != null and item.orderId != ''">order_id,</if>
+				<if test="item.orderDetailId != null and item.orderDetailId != ''">order_detail_id,</if>
+				<if test="item.orderCode != null and item.orderCode != ''">order_code,</if>
+				<if test="item.factory != null and item.factory != ''">factory,</if>
+				<if test="item.status != null ">status,</if>
+				<if test="item.createTime != null ">CREATE_TIME,</if>
+			    <if test="item.specialType != null and '' != item.specialType">special_type</if>
+			</trim>
+			<trim prefix="values (" suffix=")" suffixOverrides=",">
+				 replace(uuid(),'-',''),
+				<if test="item.reserveCode != null and item.reserveCode != ''">#{item.reserveCode},</if>
+				<if test="item.reserveRow != null and item.reserveRow != ''">#{item.reserveRow},</if>
+				<if test="item.materialRow != null and item.materialRow != ''">#{item.materialRow},</if>
+				<if test="item.materialCode != null and item.materialCode != ''">#{item.materialCode},</if>
+				<if test="item.requiredNum != null and item.requiredNum != ''">#{item.requiredNum},</if>
+				<if test="item.itemUnit != null and item.itemUnit != ''">#{item.itemUnit},</if>
+				<if test="item.recoilMaterialTab != null and item.recoilMaterialTab != ''">#{item.recoilMaterialTab},</if>
+				<if test="item.bulkMaterialTab != null and item.bulkMaterialTab != ''">#{item.bulkMaterialTab},</if>
+				<if test="item.specialCode != null and item.specialCode != ''">#{item.specialCode},</if>
+				<if test="item.storageLocation != null and item.storageLocation != ''">#{item.storageLocation},</if>
+				<if test="item.doneActiveNo != null and item.doneActiveNo != ''">#{item.doneActiveNo},</if>
+				<if test="item.stationCode != null and item.stationCode != ''">#{item.stationCode},</if>
+				<if test="item.stationDesc != null and item.stationDesc != ''">#{item.stationDesc},</if>
+				<if test="item.processOrderId != null and item.processOrderId != ''">#{item.processOrderId},</if>
+				<if test="item.orderId != null and item.orderId != ''">#{item.orderId},</if>
+				<if test="item.orderDetailId != null and item.orderDetailId != ''">#{item.orderDetailId},</if>
+				<if test="item.orderCode != null and item.orderCode != ''">#{item.orderCode},</if>
+				<if test="item.factory != null and item.factory != ''">#{item.factory},</if>
+				<if test="item.status != null ">#{item.status},</if>
+				<if test="item.createTime != null ">#{item.createTime},</if>
+				<if test="item.specialType != null and '' != item.specialType">#{item.specialType}</if>
+			</trim>
+		</foreach>
+	</insert>
+
+	<update id="updateDecomposeProcessDetails">
+		<foreach collection="list" open="begin" close=";end;"
+			separator=";" index="index" item="item">
+			update t_process_order_detail
+			<trim prefix="set LEAVE_OVER=1," suffixOverrides=",">
+				<if test="item.pOrderUnsendCount !=null">
+					UNSEND_COUNT =${item.pOrderUnsendCount},
+				</if>
+				<if test="item.pOrderFinishedCount !=null">
+					FINISHED_COUNT=${item.pOrderFinishedCount},
+				</if>
+			</trim>
+			where id = '${item.pDetailId}'
+		</foreach>
+	</update>
+
+	<select id="listProcessOrderDetail" parameterType="com.zkzn.les.oms.pojo.ProcessOrderDetail"
+		resultType="com.zkzn.les.oms.pojo.ProcessOrderDetail">
+		select DISTINCT pod.ID, pod.RESERVE_CODE, pod.RESERVE_ROW, pod.MATERIAL_ROW, pod.MATERIAL_CODE,
+		pod.REQUIRED_NUM,
+		pod.ITEM_UNIT, pod.RECOIL_MATERIAL_TAB, pod.BULK_MATERIAL_TAB, pod.SPECIAL_TYPE,
+		pod.STORAGE_LOCATION,
+		pod.DONE_ACTIVE_NO, pod.STATION_CODE, pod.STATION_DESC, pod.PROCESS_ORDER_ID, pod.ORDER_ID, pod.CREATE_TIME,
+		pod.ORDER_CODE, pod.FACTORY, pod.STATUS, pod.ORDER_DETAIL_ID,pod.MATCH_NUM,pod.SURPLUS_NUM,pod.CALL_TIME,pod.CALL_NUM,fw.WAREHOUSE_NAME storage_location_name
+		from t_process_order_detail pod
+		left join t_factory_warehouse fw on pod.STORAGE_LOCATION=fw.STORAGE_LOCATION
+		
+		WHERE 1=1
+		<if
+			test="processOrderDetail.processOrderId !=null and ''!= processOrderDetail.processOrderId">and pod.PROCESS_ORDER_ID=#{processOrderDetail.processOrderId}</if>
+		<if
+			test="processOrderDetail.orderCode !=null and ''!= processOrderDetail.orderCode">and pod.ORDER_CODE like '%${processOrderDetail.orderCode}%'</if>
+		<if
+			test="processOrderDetail.reserveRow !=null and ''!= processOrderDetail.reserveRow">and pod.RESERVE_ROW=#{processOrderDetail.reserveRow}</if>
+		<if
+			test="processOrderDetail.materialRow !=null and ''!= processOrderDetail.materialRow">and pod.MATERIAL_ROW=#{processOrderDetail.materialRow}</if>
+		<if
+			test="processOrderDetail.materialCode !=null and ''!= processOrderDetail.materialCode">and pod.MATERIAL_CODE like '%${processOrderDetail.materialCode}%'
+		</if>
+		<if
+			test="processOrderDetail.reserveCode !=null and ''!= processOrderDetail.reserveCode">and pod.RESERVE_CODE like '%${processOrderDetail.reserveCode}%'
+		</if>
+		<if test="processOrderDetail.storageLocations !=null and processOrderDetail.storageLocations.size()>0">
+			<foreach collection="processOrderDetail.storageLocations" open="and fw.WAREHOUSE_CODE in ("
+				close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+		 <if test="processOrderDetail.stationCodes !=null and processOrderDetail.stationCodes.size()>0">
+                <foreach collection="processOrderDetail.stationCodes" open="and pod.STATION_CODE in ("
+                         close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+       	</if>
+
+       	order by pod.STATUS
+	</select>
+	
+	<select id="listOrderStock" resultType="java.util.Map">
+		select 
+		msb.ID as "msbId",
+		msb.POSITION_CODE as "positionCode",
+		msb.STORAGE_ID as "storageId",
+		msb.ENABLE_COUNT as "enableCount",
+		msb.STOCK_TYPE as "stockType",
+		po.ORDER_CODE as "orderCode",
+		po.VIN_CODE as "vinCode",
+		po.REQUIRED_TIME as "requiredTime",
+		po.WORKSHOP_CODE as "workshopCode",
+		po.LINE_CODE as "lineCode",
+		po.PRIORITY as "priority",
+		pod.RESERVE_CODE as "reserveCode",
+		pod.RESERVE_ROW as "reserveRow",
+		pod.MATERIAL_ROW as "materialRow",
+		pod.REQUIRED_NUM as "requiredNum",
+		pod.ITEM_UNIT as "itemUnit",
+		pod.SPECIAL_TYPE as "specialType",
+		pod.STORAGE_LOCATION as "storageLocation",
+		pod.STATION_CODE as "stationCode",
+		pod.STATION_DESC as "stationDesc",
+		po.SELL_ORDER as "sellOrder",
+		po.SELL_ORDER_ITEM as "sellOrderItem",
+		po.CUSTOM_CODE as "customCode",
+		po.CUSTOM_DESC as "customDesc",
+		pod.id as "podId",
+		po.id as "poid",
+		po.car_model as "carModel",
+		po.BUSINESS_TYPE as "businessType",
+		pod.MATERIAL_CODE as "materialCode",
+		po.FACTORY as "factory",
+		pod.STATION_DESC as "stationDesc",
+		mat.MATERIAL_DESC as "materialDesc"
+		from t_process_order_detail pod 
+		left join t_process_order po on po.id = pod.process_order_id
+		left join t_material_storage_bin msb on pod.storage_location = msb.storage_location AND po.sell_order = msb.order_coder AND po.sell_order_item = msb.sell_order_item
+		and pod.material_code=msb.material_code AND po.sell_order = msb.SELL_ORDER AND po.sell_order_item = msb.sell_order_item
+		left join t_material mat on mat.MATERIAL_CODE=pod.MATERIAL_CODE
+		where pod.SPECIAL_TYPE = 'E' and pod.STATUS = 0  and msb.ENABLE_COUNT <![CDATA[ > ]]>0 and msb.STOCK_TYPE=3 and msb.STOCK_STATUS=0
+		<if test="storageLocations !=null and storageLocations.length>0 ">t_process_order
+			<foreach collection="storageLocations" open="and pod.storage_location in ( " close=")" separator="," index="index" item="item">
+			  #{item}
+			</foreach>
+		</if>
+		<if test="ids!=null and ids.size()>0">
+			<foreach collection="ids" open="and po.id in ( " close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+		order by pod.id,msb.CREATE_TIME asc
+	</select>
+	
+	<select id="listCustomStock" resultType="java.util.Map">
+			select 
+			msb.ID as "msbId",
+			msb.POSITION_CODE as "positionCode",
+			msb.STORAGE_ID as "storageId",
+			msb.ENABLE_COUNT as "enableCount",
+			msb.STOCK_TYPE as "stockType",
+			po.ORDER_CODE as "orderCode",
+			po.VIN_CODE as "vinCode",
+			po.REQUIRED_TIME as "requiredTime",
+			po.WORKSHOP_CODE as "workshopCode",
+			po.LINE_CODE as "lineCode",
+			po.PRIORITY as "priority",
+			pod.RESERVE_CODE as "reserveCode",
+			pod.RESERVE_ROW as "reserveRow",
+			pod.MATERIAL_ROW as "materialRow",
+			pod.REQUIRED_NUM as "requiredNum",
+			pod.ITEM_UNIT as "itemUnit",
+			pod.SPECIAL_TYPE as "specialType",
+			pod.STORAGE_LOCATION as "storageLocation",
+			pod.STATION_CODE as "stationCode",
+			pod.STATION_DESC as "stationDesc",
+			po.SELL_ORDER as "sellOrder",
+			po.SELL_ORDER_ITEM as "sellOrderItem",
+			po.CUSTOM_CODE as "customCode",
+			po.CUSTOM_DESC as "customDesc",
+			pod.id as "podId",
+			po.id as "poid",
+			po.car_model as "carModel",
+			po.BUSINESS_TYPE as "businessType",
+			pod.MATERIAL_CODE as "materialCode",
+			po.FACTORY as "factory",
+			pod.STATION_DESC as "stationDesc",
+			mat.MATERIAL_DESC as "materialDesc"
+			from t_process_order_detail pod 
+			left join t_process_order po on po.id = pod.process_order_id
+			left join t_material_storage_bin msb on pod.storage_location = msb.storage_location 
+			and pod.material_code=msb.material_code and msb.CUSTOMER_CODE = po.CUSTOM_CODE 
+			left join t_material mat on mat.MATERIAL_CODE=pod.MATERIAL_CODE
+			where pod.SPECIAL_TYPE = 'B' and pod.STATUS in (0,1)  and msb.STOCK_TYPE=1 and msb.ENABLE_COUNT <![CDATA[ > ]]>  0 and msb.STOCK_STATUS=0
+			<if test="storageLocations !=null and storageLocations.length>0 ">
+				<foreach collection="storageLocations" open="and pod.storage_location in ( " close=")" separator="," index="index" item="item">
+				  #{item}
+				</foreach>
+			</if>
+			<if test="ids!=null and ids.size()>0">
+				<foreach collection="ids" open="and po.id in ( " close=")" separator="," index="index" item="item">
+					#{item}
+				</foreach>
+			</if>
+			order by pod.id,msb.CREATE_TIME asc
+	</select>
+
+	<select id="listNormalStock" resultType="java.util.Map">
+		select 
+			msb.ID as "msbId",
+			msb.POSITION_CODE as "positionCode",
+			msb.STORAGE_ID as "storageId",
+			msb.ENABLE_COUNT as "enableCount",
+			msb.STOCK_TYPE as "stockType",
+			po.ORDER_CODE as "orderCode",
+			po.VIN_CODE as "vinCode",
+			po.REQUIRED_TIME as "requiredTime",
+			po.WORKSHOP_CODE as "workshopCode",
+			po.LINE_CODE as "lineCode",
+			po.PRIORITY as "priority",
+			pod.RESERVE_CODE as "reserveCode",
+			pod.RESERVE_ROW as "reserveRow",
+			pod.MATERIAL_ROW as "materialRow",
+			pod.REQUIRED_NUM as "requiredNum",
+			pod.ITEM_UNIT as "itemUnit",
+			pod.SPECIAL_TYPE as "specialType",
+			pod.STORAGE_LOCATION as "storageLocation",
+			pod.STATION_CODE as "stationCode",
+			pod.STATION_DESC as "stationDesc",
+			pod.CALL_NUM as "callNum",
+			po.SELL_ORDER as "sellOrder",
+			po.SELL_ORDER_ITEM as "sellOrderItem",
+			po.CUSTOM_CODE as "customCode",
+			po.CUSTOM_DESC as "customDesc",
+			pod.id as "podId",
+			po.id as "poid",
+			po.car_model as "carModel",
+			po.BUSINESS_TYPE as "businessType",
+			pod.MATERIAL_CODE as "materialCode",
+			po.FACTORY as "factory",
+			pod.STATION_DESC as "stationDesc",
+			mat.MATERIAL_DESC as "materialDesc"
+		from t_process_order_detail pod 
+		left join t_process_order po on po.id = pod.process_order_id
+		left join t_material_storage_bin msb on pod.storage_location = msb.storage_location 
+		and pod.material_code=msb.material_code 
+		left join t_material mat on mat.MATERIAL_CODE=pod.MATERIAL_CODE
+		where pod.SPECIAL_TYPE is null and pod.STATUS in (0,1) and msb.ENABLE_COUNT <![CDATA[ > ]]> 0  and msb.STOCK_TYPE IS NULL and msb.STOCK_STATUS=0
+		<if test="storageLocations !=null and storageLocations.length>0 ">
+			<foreach collection="storageLocations" open="and pod.storage_location in ( " close=")" separator="," index="index" item="item">
+			  #{item}
+			</foreach>
+		</if>
+		<if test="ids!=null and ids.size()>0">
+			<foreach collection="ids" open="and po.id in ( " close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+		<if test="processIds!=null and processIds.size()>0">
+			<foreach collection="processIds" open="and pod.id in ( " close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+		order by pod.id,msb.CREATE_TIME asc
+	</select>
+
+	<select id="listOfProcessIdStock" resultType="java.util.Map">
+		select
+		msb.ID as "msbId",
+		msb.POSITION_CODE as "positionCode",
+		msb.STORAGE_ID as "storageId",
+		msb.ENABLE_COUNT as "enableCount",
+		msb.STOCK_TYPE as "stockType",
+		po.ORDER_CODE as "orderCode",
+		po.VIN_CODE as "vinCode",
+		po.REQUIRED_TIME as "requiredTime",
+		po.WORKSHOP_CODE as "workshopCode",
+		po.LINE_CODE as "lineCode",
+		po.PRIORITY as "priority",
+		pod.RESERVE_CODE as "reserveCode",
+		pod.RESERVE_ROW as "reserveRow",
+		pod.MATERIAL_ROW as "materialRow",
+		pod.REQUIRED_NUM as "requiredNum",
+		pod.ITEM_UNIT as "itemUnit",
+		pod.SPECIAL_TYPE as "specialType",
+		pod.STORAGE_LOCATION as "storageLocation",
+		pod.STATION_CODE as "stationCode",
+		pod.STATION_DESC as "stationDesc",
+		pod.CALL_NUM as "callNum",
+		po.SELL_ORDER as "sellOrder",
+		po.SELL_ORDER_ITEM as "sellOrderItem",
+		po.CUSTOM_CODE as "customCode",
+		po.CUSTOM_DESC as "customDesc",
+		pod.id as "podId",
+		po.id as "poid",
+		po.car_model as "carModel",
+		po.BUSINESS_TYPE as "businessType",
+		pod.MATERIAL_CODE as "materialCode",
+		po.FACTORY as "factory",
+		pod.STATION_DESC as "stationDesc",
+		mat.MATERIAL_DESC as "materialDesc"
+		from t_process_order_detail pod
+		left join t_process_order po on po.id = pod.process_order_id
+		left join t_material_storage_bin msb on pod.storage_location = msb.storage_location
+		and pod.material_code=msb.material_code
+		left join t_material mat on mat.MATERIAL_CODE=pod.MATERIAL_CODE
+		where pod.SPECIAL_TYPE is null and pod.STATUS in (0,1) and msb.ENABLE_COUNT <![CDATA[ > ]]> 0  and msb.STOCK_TYPE IS NULL and msb.STOCK_STATUS=0
+		<if test="list!=null and list.size()>0">
+			<foreach collection="list" open="and pod.id in ( " close=")" separator="," index="index" item="item">
+				#{item.id}
+			</foreach>
+		</if>
+		order by pod.id,msb.CREATE_TIME asc
+	</select>
+
+	<select id="listOfProcessIdStockByE" resultType="java.util.Map">
+		select
+		msb.ID as "msbId",
+		msb.POSITION_CODE as "positionCode",
+		msb.STORAGE_ID as "storageId",
+		msb.ENABLE_COUNT as "enableCount",
+		msb.STOCK_TYPE as "stockType",
+		po.ORDER_CODE as "orderCode",
+		po.VIN_CODE as "vinCode",
+		po.REQUIRED_TIME as "requiredTime",
+		po.WORKSHOP_CODE as "workshopCode",
+		po.LINE_CODE as "lineCode",
+		po.PRIORITY as "priority",
+		pod.RESERVE_CODE as "reserveCode",
+		pod.RESERVE_ROW as "reserveRow",
+		pod.MATERIAL_ROW as "materialRow",
+		pod.REQUIRED_NUM as "requiredNum",
+		pod.ITEM_UNIT as "itemUnit",
+		pod.SPECIAL_TYPE as "specialType",
+		pod.STORAGE_LOCATION as "storageLocation",
+		pod.STATION_CODE as "stationCode",
+		pod.STATION_DESC as "stationDesc",
+		pod.CALL_NUM as "callNum",
+		po.SELL_ORDER as "sellOrder",
+		po.SELL_ORDER_ITEM as "sellOrderItem",
+		po.CUSTOM_CODE as "customCode",
+		po.CUSTOM_DESC as "customDesc",
+		pod.id as "podId",
+		po.id as "poid",
+		po.car_model as "carModel",
+		po.BUSINESS_TYPE as "businessType",
+		pod.MATERIAL_CODE as "materialCode",
+		po.FACTORY as "factory",
+		pod.STATION_DESC as "stationDesc",
+		mat.MATERIAL_DESC as "materialDesc"
+		from t_process_order_detail pod
+		left join t_process_order po on po.id = pod.process_order_id
+		left join t_material_storage_bin msb on pod.storage_location = msb.storage_location
+		and pod.material_code=msb.material_code  AND po.sell_order = msb.SELL_ORDER AND po.sell_order_item = msb.sell_order_item
+		left join t_material mat on mat.MATERIAL_CODE=pod.MATERIAL_CODE
+		where pod.SPECIAL_TYPE = 'E' and pod.STATUS in (0,1) and msb.ENABLE_COUNT <![CDATA[ > ]]> 0  and msb.STOCK_TYPE = 3 and msb.STOCK_STATUS=0
+		<if test="list!=null and list.size()>0">
+			<foreach collection="list" open="and pod.id in ( " close=")" separator="," index="index" item="item">
+				#{item.id}
+			</foreach>
+		</if>
+		order by pod.id,msb.CREATE_TIME asc
+	</select>
+
+
+
+
+
+
+	<select id="listMatchProcessOrderDetail"
+		resultType="com.zkzn.les.oms.pojo.ProcessOrderDetail">
+		select DISTINCT pod.ID, 
+		pod.REQUIRED_NUM,pod.PROCESS_ORDER_ID, pod.ORDER_ID, pod.STATUS, pod.ORDER_DETAIL_ID,pod.MATCH_NUM,pod.SURPLUS_NUM,pod.CALL_TIME,pod.CALL_NUM
+		from t_process_order_detail pod
+		left join t_process_order po on po.id=pod.PROCESS_ORDER_ID
+		WHERE 1=1 and po.business_type='2'
+		<if test="ids!=null and ids.size()>0">
+			<foreach collection="ids" open="and pod.PROCESS_ORDER_ID in ( " close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+	<update id="updateStatus">
+		<foreach collection="list" open="begin" close=";end;" index="index" item="item" separator=";">
+			update t_process_order_detail set status=#{item.status},surplus_num=#{item.surplusNum},match_num=required_num-#{item.surplusNum} where id=#{item.id}
+		</foreach>
+	</update>
+	
+	<update id="updateStockNum">
+		<foreach collection="list" open="begin" close=";end;" index="index" item="item" separator=";">
+				update t_material_storage_bin set enable_count=enable_count-#{item.stockDisNum},pre_use_count=ifnull(pre_use_count,0)+#{item.stockDisNum} where id=#{item.id}
+		</foreach>
+	</update>
+
+	<update id="updateProcessOrderDetailCallInfo">
+		<foreach collection="processOrderDetailList" open="begin" close=";end;" index="index" item="item" separator=";">
+			update t_process_order_detail set CALL_NUM=#{item.callNum},CALL_TIME=#{item.callTime} where ORDER_CODE=#{item.orderCode} and MATERIAL_CODE=#{item.materialCode}
+		</foreach>
+	</update>
+</mapper>

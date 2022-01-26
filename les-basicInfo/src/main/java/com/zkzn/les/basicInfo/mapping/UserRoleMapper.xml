@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.dao.UserRoleDao">
+
+<insert id="saveUserRole" parameterType="java.util.List">
+<if test="list.size()>0">
+	insert into t_user_role (id,user_id,role_id) select  replace(uuid(),'-',''),a.* from(
+	<foreach collection="list" item="userRole" index="index" separator="UNION ALL">
+		SELECT #{userRole.userId},#{userRole.roleId} from dual
+	</foreach>
+	) a
+</if>
+</insert>
+<delete id="deleteUserRole">
+<if test="list.size()>0">
+	delete from t_user_role where
+	<foreach collection="list" item="userRole" index="index" open="(" separator="or" close=")">
+		user_id=#{userRole.userId} and role_id=#{userRole.roleId}
+	</foreach>
+</if>
+</delete>
+<select id="userRoleByroleId" resultMap="roleMap">
+	select * from t_user_role where role_id=#{roleId}
+</select>
+<select id="countUserRoleByRoleIds" resultType="java.lang.Integer">
+<if test="list.size()>0">
+	select count(0) from t_user_role where
+	<foreach collection="list" item="roleId" index="index" open="(" separator="or" close=")">
+		role_id=#{roleId}
+	</foreach>
+</if>
+</select>
+<resultMap type="com.zkzn.les.basicInfo.pojo.UserRole" id="roleMap">
+	<result property="roleId" column="role_id" />
+	<result property="userId" column="user_id" />
+</resultMap>
+</mapper>

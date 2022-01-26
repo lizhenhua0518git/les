@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.carrier.dao.CarrierDao">
+
+    <select id="listCarrierByCarrier" parameterType="com.zkzn.les.basicInfo.carrier.pojo.CarrierPojo" resultType="com.zkzn.les.basicInfo.carrier.pojo.CarrierPojo">
+        SELECT
+            c.carrier_id AS "carrierId",
+            c.carrier_name AS "carrierName",
+            c.carrier_code AS "carrierCode",
+            c.carrier_type AS "carrierType",
+            c.warehouse_code AS "warehouseCode",
+            c.use_status AS "useStatus",
+            w.org_name AS "warehouseName",
+            c.creater_time AS "createTime",
+            c.creater_name AS "createrName",
+            c.modifier_time AS "modifierTime",
+            c.modifier_name AS "modifierName",
+            i.ITEM_NAME AS "carrierTypeName"
+        FROM
+            b_carrier c
+        LEFT JOIN t_warehouse w ON c.warehouse_code = w.org_code
+        LEFT JOIN t_dict_items i ON i.item_value = c.carrier_type
+        LEFT JOIN t_dict d ON d.id = i.dict_type_id
+        WHERE
+        d.dict_type = 'carrier_type'
+        <if test="carrierCode !=null  and ''!=carrierCode">and c.carrier_code like '%${carrierCode}%'</if>
+        <if test="carrierName !=null  and ''!=carrierName">and c.carrier_name like '%${carrierName}%'</if>
+        <if test="carrierType !=null and carrierType != ''">
+            and c.carrier_type in
+            <foreach item="item" index="index" collection="carrierType.split(';')" open="(" separator="," close=")">
+                '${item}'
+            </foreach>
+        </if>
+        <if test="warehouseCode !=null and warehouseCode != ''">
+            and c.warehouse_code in
+            <foreach item="item" index="index" collection="warehouseCode.split(';')" open="(" separator="," close=")">
+                '${item}'
+            </foreach>
+        </if>
+        ORDER BY c.creater_time DESC
+    </select>
+
+    <insert id="saveCarrier" parameterType="com.zkzn.les.basicInfo.carrier.pojo.CarrierPojo">
+        insert into b_carrier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="carrierCode !=null  and ''!=carrierCode">carrier_code,</if>
+            <if test="carrierName !=null and ''!= carrierName">carrier_name,</if>
+            <if test="carrierType !=null  and ''!=carrierType">carrier_type,</if>
+            <if test="warehouseCode !=null  and ''!= warehouseCode">warehouse_code,</if>
+            <if test="createTime !=null ">creater_time,</if>
+            <if test="createrId !=null and ''!= createrId">creater_id,</if>
+            <if test="createrName !=null and ''!= createrName">creater_name,</if>
+            <if test="useStatus !=null">use_status</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="carrierCode !=null  and ''!=carrierCode">#{carrierCode},</if>
+            <if test="carrierName !=null and ''!= carrierName">#{carrierName},</if>
+            <if test="carrierType !=null  and ''!=carrierType">#{carrierType},</if>
+            <if test="warehouseCode !=null  and ''!= warehouseCode">#{warehouseCode},</if>
+            <if test="createTime !=null ">#{createTime},</if>
+            <if test="createrId !=null and ''!= createrId">#{createrId},</if>
+            <if test="createrName !=null and ''!= createrName">#{createrName},</if>
+            <if test="useStatus !=null">#{useStatus}</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteCarrier">
+        <if test="list.size()>0">
+            delete from b_carrier where
+            <foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+                carrier_id = #{item}
+            </foreach>
+        </if>
+    </delete>
+
+    <update id="updateCarrier">
+        update b_carrier
+        <trim prefix="set" prefixOverrides=",">
+            <if test="carrierCode !=null and ''!= carrierCode">,carrier_code = #{carrierCode}</if>
+            <if test="carrierName !=null and ''!= carrierName">,carrier_name=#{carrierName}</if>
+            <if test="carrierType !=null and ''!= carrierType">,carrier_type=#{carrierType}</if>
+            <if test="warehouseCode !=null and ''!= warehouseCode">,warehouse_code=#{warehouseCode}</if>
+            <if test="modifierId !=null and '' != modifierId">,modifier_id=#{modifierId}</if>
+            <if test="modifierName !=null and '' != modifierName">,modifier_name=#{modifierName}</if>
+            <if test="modifiedTime !=null">,modifier_time=#{modifiedTime}</if>
+        </trim>
+        where carrier_id=#{carrierId}
+    </update>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <update id="changeStatus">
+    <if test="ids.size()>0">
+       update t_carrier
+        <trim prefix="set" prefixOverrides=",">
+        <if  test="remark !=null and ''!= remark">,remark=#{remark}</if>
+        <if test="status !=null">,status=#{status}</if>
+        <if test="modifierId !=null and '' != modifierId">,modifier_id=#{modifierId}</if>
+        <if test="modifierName !=null and '' != modifierName">,modifier_name=#{modifierName}</if>
+        <if test="modifiedTime !=null">,modified_time=#{modifiedTime}</if>
+       </trim>
+       where
+        <foreach collection="ids" item="item" index="index" open="(" separator="or" close=")">
+            id=#{item}
+        </foreach>
+    </if>
+    </update>
+
+	<select id="listCarrier" resultType="com.zkzn.les.basicInfo.pojo.Carrier">
+		select * from t_carrier where status=#{status} and use_status=#{useStatus} and carrier_type=#{carrierType} and WAREHOUSE_CODE in
+		<foreach collection="storageList" item="item" index="index" separator="," open="(" close=")">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+	</select>
+
+	<update id="updateUseStatusByCode">
+	<if test="list.size()>0">
+	<foreach collection="list" item="item" index="index"  separator=";" open="begin"  close=";end;"  >
+		update t_carrier set use_status=#{item.useStatus} where CARRIER_CODE=#{item.carrierCode}
+	</foreach>
+	</if>
+</update>
+	<update id="updateUseStatusByIds">
+		update t_carrier
+		<trim prefix="set" prefixOverrides=",">
+	        <if  test="remark !=null and ''!= remark">,remark=#{remark}</if>
+	        <if test="status !=null">,status=#{status}</if>
+	        <if test="useStatus !=null">,use_status=#{useStatus}</if>
+	        <if test="modifierId !=null and '' != modifierId">,modifier_id=#{modifierId}</if>
+        <if test="modifierName !=null and '' != modifierName">,modifier_name=#{modifierName}</if>
+        <if test="modifiedTime !=null">,modified_time=#{modifiedTime}</if>
+       	</trim>
+		<where>
+			<if test="carrierId!=null and ''!= carrierId"> and id=#{carrierId}</if>
+			<if test="carrierIds!=null">
+				<foreach collection="carrierIds" item="item" index="index" separator="," open="and id in (" close=")">
+					#{item,jdbcType=VARCHAR}
+				</foreach>
+			</if>
+		</where>
+	</update>
+
+
+	<select id="listCarrierInfo" resultType="com.zkzn.les.basicInfo.pojo.Carrier">
+		select * from t_carrier
+		<where>
+			 <if test="carrierId!=null and ''!= carrierId">and id=#{carrierId}</if>
+			 <if test="carrierCode !=null  and ''!=carrierCode">and carrier_code =#{carrierCode}</if>
+			 <if test="carrierName !=null  and ''!=carrierName">and carrier_name =#{carrierName}</if>
+			 <if test="carrierType !=null  and ''!=carrierType">and carrier_type =#{carrierType}</if>
+			 <if test="status !=null  ">and status =#{status}</if>
+			 <if test="useStatus !=null  ">and use_status =#{useStatus}</if>
+			 <if test="warehouseCode !=null  and ''!= warehouseCode">and warehouse_code =#{warehouseCode}</if>
+			 <if test="storageList !=null">
+				 <foreach collection="storageList" item="item" index="index" separator="," open="and WAREHOUSE_CODE in(" close=")">
+					#{item,jdbcType=VARCHAR}
+				 </foreach>
+			 </if>
+			 <if test="carrierCodes !=null">
+			 	<foreach collection="carrierCodes" item="item" index="index" separator="," open="and carrier_code in(" close=")">
+					#{item,jdbcType=VARCHAR}
+				 </foreach>
+			 </if>
+			 <if test="carrierIds !=null">
+			 	<foreach collection="carrierIds" item="item" index="index" separator="," open="and id in(" close=")">
+					#{item,jdbcType=VARCHAR}
+				 </foreach>
+			 </if>
+		</where>
+	</select>
+
+    <select id="checkCarrierByCode" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM b_carrier WHERE carrier_code = #{carrierCode} AND warehouse_code = #{warehouse}
+    </select>
+
+    <select id="listCarrierCreater" resultType="java.util.Map">
+    	select u.id as "id",u.user_name as "userName" from t_carrier c left join t_user u on c.creater_id=u.id
+		where c.creater_id is not null
+    </select>
+</mapper>

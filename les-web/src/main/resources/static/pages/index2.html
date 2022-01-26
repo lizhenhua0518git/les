@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>iles主页框架</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<link rel="stylesheet" href="pages/layui/css/layui.css"  media="all">
+		<link rel="stylesheet" href="pages/css/index.css"  media="all">
+	</head>
+	<body class="layui-layout-body">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header" style="background-image: url(pages/img/bg_header.png); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;">
+				<div class="layui-logo" style="background-image: url(pages/img/bg_logo.png); background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%; color: #fff; font-family:'黑体'; font-size: 18px;">
+					<p style="line-height: 50px;">物流执行系统</p>
+				</div>
+				<!-- 头部区域（可配合layui已有的水平导航） -->
+			    <ul class="layui-nav layui-layout-right"  lay-filter="layadmin-layout-right" style="text-align: right;">
+			      <li class="layui-nav-item"> <a href="javascript:;" data-item="msg" onclick="showMsgTab()">消息<span class="layui-badge" id="msgCount">0</span></a></li>
+		    	  <li class="layui-nav-item"> <a href="javascript:;">换肤</a>
+		    	  	 <dl class="layui-nav-child">			         
+			          <dd><a href="" data-item="skin-orange"><span class="layui-badge layui-bg-orange" style="margin-left: -20px;">橙</span>&nbsp;</a></dd>
+			          <dd><a href="" data-item="skin-green"><span class="layui-badge layui-bg-green" style="margin-left: -20px;">绿</span>&nbsp;</a></dd>
+			          <dd><a href="" data-item="skin-cyan"><span class="layui-badge layui-bg-cyan" style="margin-left: -20px;">青</span>&nbsp;</a></dd>
+			          <dd><a href="" data-item="skin-blue"><span class="layui-badge layui-bg-blue" style="margin-left: -20px;">蓝</span>&nbsp;</a></dd>
+			          <dd><a href="" data-item="skin-black"><span class="layui-badge layui-bg-black" style="margin-left: -20px;">黑</span>&nbsp;</a></dd>
+			          <dd><a href="" data-item="skin-gray"><span class="layui-badge layui-bg-gray" style="margin-left: -20px;">灰</span>&nbsp;</a></dd>
+			        </dl>
+		    	  </li>
+			  <!-- <li class="layui-nav-item" >
+			      	<a href="javascript:;">屏幕模式</a>
+			        <dl class="layui-nav-child">
+			          <dd><a href="javascript:;" ="screen-full" style="text-align: center;">
+			          	全屏</a></dd>
+		          	<dd><a href="javascript:;" data-item="screen-high-header" style="text-align: center;">
+			          	正常</a></dd>
+			          <dd><a href="javascript:;" data-item="screen-low-header" style="text-align: center;">
+			          	简易</a></dd>
+			        </dl>			      	
+			      </li> -->
+			      <li class="layui-nav-item">
+			        <a href="javascript:;">
+			          <img id="userImage" src="pages/img/boy.png" style="width:20px; height: 20px;">
+			          	<#if currUser?? && currUser.userName??>
+			          		${currUser.userName}
+			          	</#if>
+			        <span class="layui-nav-more"></span></a>
+			        <dl class="layui-nav-child">
+			          <dd><a href="#" style="text-align: center;">个人中心</a></dd>
+			          <dd><a href="#" style="text-align: center;cursor:pointer;" id="changePassWord">修改密码</a></dd>
+			          <dd><a href="#" style="text-align: center;" onclick="logout();">退出登录</a></dd>
+			        </dl>
+			      </li>
+			    </ul>
+			</div>
+			<div class="layui-header" style="padding: 0;z-index: 999;">
+				<ul class="layui-nav" style="text-align: center; background-color:#1373bb;">
+					<li class="layui-nav-item layui-mid-title"><a>入库管理</a>
+					  <dl class="layui-nav-child">
+			            <dd><a href="javascript:;" data-url="pages/receive.html" data-id="1" data-title="收货管理"><img src="pages/img/收货.png" class="layui-nav-img">收货管理</a></dd>
+			            <dd><a href="javascript:;" data-url="pages/upload.html" data-id="2" data-title="上架管理"><img src="pages/img/上架.png" class="layui-nav-img">上架管理</a></dd>
+			          </dl>
+					</li>
+					<li class="layui-nav-item layui-mid-title"><a>库内管理</a></li>
+					<li class="layui-nav-item layui-mid-title"><a>出库管理</a></li>
+					<li class="layui-nav-item layui-mid-title"><a>运营监控</a></li>
+					<li class="layui-nav-item layui-mid-title"><a>运营调度</a></li>
+					<li class="layui-nav-item layui-mid-title"><a>运营决策</a></li>
+					<li class="layui-nav-item layui-mid-title"><a>消息中心</a></li>
+					<li class="layui-nav-item layui-mid-title"><a>订单中心</a></li>
+				</ul>
+			</div>
+			<div class="layui-side">
+				<div class="layui-side-scroll">
+					<div class="layui-card">
+				        <div class="layui-card-header" style="padding-left: 50px; background-color: #f5f5f5;">系统导航<i class="layui-icon" id="left_bar_hidden" style="font-size: 16px; position: absolute; right: 15px;">&#xe668;</i></div>
+			        </div>
+			      <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+			      <ul class="layui-nav layui-nav-tree" id="nav-bar-side">
+			      
+			      </ul>
+			    </div>
+			</div>
+			<div class="layui-body">
+				<div class="layui-tab layui-tab-card"  lay-allowclose="true" lay-filter="layout-tabs">
+					<ul class="layui-tab-title" >
+					</ul>
+					<ul class="rightmenu">
+			            <li data-type="closethis">关闭当前</li>
+			            <li data-type="closeall">关闭所有</li>
+			        </ul>
+					<div class="layui-tab-content">
+					</div>
+				</div>
+			</div>
+			<div class="layui-side-narrow" style="display: none;">
+				<div class="layui-card">
+			        <div class="layui-card-header" style="background-color: #f5f5f5;"><i class="layui-icon" id="left_bar_show" style="font-size: 16px; position: absolute; right:5px;">&#xe66b;</i></div>
+		        	<div class="layui-card-body" style="background-color: #f5f5f5;">&nbsp;</div>
+				</div>
+			</div>
+		</div>	
+		<script src="pages/layui/layui.all.js" charset="UTF-8"></script>
+		<script src="pages/js/fullScreen.js"></script>
+		<script>
+		//JavaScript代码区域
+		var $ = layui.$;
+		var element = layui.element;	
+		var layer = layui.layer;
+		
+		$(function(){
+			$(document).bind("contextmenu",function(e){   
+		          return false;   
+		    });
+			element.render('nav','layadmin-layout-right');
+			listMenus();
+			loadMsgCount();
+			<#if currUser?? && currUser.avatar??>
+				var avatar = loadIcon("${currUser.avatar}");
+				$("#userImage").attr("src",avatar);
+			</#if>
+		});
+		
+		//左侧导航栏展开收缩开始
+		var i = 0 ;
+		$(".layui-card-header").click(function (){
+	  		if(i==0){
+	  			$(".layui-side").animate({width:'toggle'});
+	  			$(".layui-side-narrow").animate({width:'toggle'});
+	  			$(".layui-body").animate({left:'28px'});
+	  			$(".layui-card-body").css({"position":"absolute","top":"43px","left":"0","bottom":"0","right":"0"});
+	  			i++;
+	  		}else{
+				$(".layui-side").animate({width:'toggle'});
+				$(".layui-side-narrow").animate({width:'toggle'});
+				$(".layui-body").animate({left:'200px'});
+				i--;
+			}
+	  	});
+	  	//左侧导航栏展开收缩结束
+	  	
+	  	
+	  	//全屏、正常、简易屏幕切换 开始
+		$(".layui-nav-child a").click(function(){
+			var node = $(this);
+			if(!node.attr("data-item"))
+				return;
+			switch (node.attr("data-item")){
+				case 'screen-full':
+					toFullScreen();
+					break;
+				case 'screen-high-header':
+					highHeaderScreen();
+					break;
+				case 'screen-low-header':
+					lowHeaderScreen();
+					break;
+				default:
+					return;
+			}
+		});
+		//全屏、正常、简易屏幕切换 结束
+		
+		function toFullScreen() {
+                $(".layui-header").hide();
+                $(".layui-layout-admin .layui-side").css("top","0");
+                $(".layui-layout-admin .layui-body").css("top","0");
+                $("#left_bar_show").click();
+                fullScreen();
+            }
+            
+            function highHeaderScreen(){
+                $(".p-second").show();
+                $(".layui-nav .layui-layout-left").css("height","80px");
+                $(".layui-layout-left .layui-nav-item:first").css("line-height","80px");
+                $(".layui-header").css("height","80px");
+                $(".layui-layout-admin .layui-side").css("top","80px");
+                $(".layui-layout-admin .layui-body").css("top","70px");
+            }
+            
+            function lowHeaderScreen(){
+                $(".p-second").hide();
+                $(".layui-header").css("height","50px");
+                $(".layui-layout-left .layui-nav-item:first").css("line-height","50px");
+                $(".layui-layout-admin .layui-side").css("top","50px");
+                $(".layui-layout-admin .layui-body").css("top","40px");
+            }
+            
+		//登出 开始
+		function logout(){
+			$.ajax({
+				 url:'logout'
+				,async:false
+			    ,type:"GET"
+			    ,dataType:'json'
+			    ,success:function(result){
+			    	if(result.code==0){
+			    		var url = "/iles/";
+						window.location.href=url;
+						window.event.returnValue=false; 
+			    	}
+			    }
+			});
+		}
+	  //登出 结束
+		
+		//获取左侧导航菜单 开始
+		function listMenus(){
+			$.ajax({
+				 url:'resource/getResoureList'
+			    ,dataType: "json"
+			    ,type:"GET"
+				,success:addMenu
+			});
+		}
+		//获取左侧导航菜单  结束
+		//加载菜单图片 开始
+		function loadIcon(fileName){
+			var result = "";
+			var option = {
+	   				 url:'/iles/imgToBase64Servlet?fileName='+fileName,
+	   				 type:'GET',
+	   				 async:false,
+	   				 success:function(res){
+	   					if(res.code==0){
+	   						result= "data:image/png;base64,"+res.data;
+	   					}else{
+	   						return "";
+	   					}
+	   				 }
+		   		};
+		   		$.ajax(option); 
+			return result;
+		}
+		//加载菜单图片 结束
+		//附加左侧导航菜单 开始
+		function addMenu(result){
+			var html = '';
+			var data = $.parseJSON(result.data);
+			$.each(data,function(i,item){
+				html +='<dl>';
+				html +=' <dt class="layui-nav-item " style="border-bottom: 1px solid #e5e5e5;">'
+				html +='<a href="javascript:;">';
+				if(item.icon){
+					html +='<img src="'+loadIcon(item.icon)+'" class="layui-nav-img">';
+				}
+				html +=item.title ;
+				if(item.children !== undefined && item.children.length > 0){ 
+					html +='<span class="layui-nav-more"></span>';
+				}
+				html +='</a>';
+				html +='</dt>'
+				 if(item.children !== undefined && item.children.length > 0){  
+		                $.each(item.children,function(j,item2){ 
+		                	html +='<dd class="layui-nav-child">';
+		                	html +='<a href="javascript:;" data-url="';
+		                	html += item2.url;
+		                	html += '" data-id="';
+		                	html += item2.id;
+		                	html +='", data-title="';
+		                	html += item2.title;
+		                	html += '">';
+		                	if(item2.icon){
+		                		html +='<img src="'+loadIcon(item2.icon)+'" class="layui-nav-img">';
+		                	}
+		                	html += item2.title;
+		                	html +='</a>';
+		                	html +='</dd>';
+		                });
+				 }
+				html +='</dl>';
+			});
+			 $('#nav-bar-side').html(html);   
+		}
+		//附加左侧导航菜单 结束
+		var active;
+		layui.use(['element','jquery','layer'],function(){
+			
+			//左侧导航菜单点击事件开始
+			$(document).on('click','.layui-side-scroll ul dt',function(){
+				$(this).hasClass('layui-nav-itemed')?$(this).removeClass('layui-nav-itemed'):$(this).addClass('layui-nav-itemed');
+				$(this).parent().siblings().children().removeClass('layui-nav-itemed');
+			    $(this).parent().siblings().find('dd').hide();
+			    var dd = $(this).parent().find('dd');
+			    dd.hasClass('layui-bg-light-gray')?dd.removeClass('layui-bg-light-gray'):dd.addClass('layui-bg-light-gray');
+			    dd.toggle();  
+			});  
+			
+			$(document).on('click','.layui-side-scroll dd',function(){
+				$(this).removeClass('layui-bg-light-gray').addClass('layui-bg-green');
+				$(this).find('a').addClass('layui-font-white');
+				$(this).siblings('dd').removeClass('layui-bg-green').addClass('layui-bg-light-gray');
+				$(this).siblings('dd').find('a').removeClass('layui-font-white');
+			});
+			
+			$(document).on('click','.layui-side-scroll  ul  a',function(){
+	            var dataid = $(this);
+	            if(!dataid.attr("data-url")){
+	            	return ;
+	            }
+	            if ($(".layui-tab-title li[lay-id]").length <= 0) {
+	                active.tabAdd(dataid.attr("data-url"), dataid.attr("data-id"),dataid.attr("data-title"));
+	            } else {
+	                var isData = false;
+	                $.each($(".layui-tab-title li[lay-id]"), function () {
+	                    if ($(this).attr("lay-id") == dataid.attr("data-id")) {
+	                        isData = true;
+	                    }
+	                })
+	                if (isData == false) {
+	                    active.tabAdd(dataid.attr("data-url"), dataid.attr("data-id"),dataid.attr("data-title"));
+	                }
+	            }
+	            active.tabChange(dataid.attr("data-id"));
+			});
+			
+			//左侧导航菜单点击事件结束
+			
+			//tab右键开始
+			 function customRightClick(id) {
+				 $('.layui-tab-title li').on('contextmenu', function () { return false; });
+	             $('.layui-tab-title,.layui-tab-title li').click(function () {
+	                $('.rightmenu').hide();
+	            });
+	            //桌面点击右击 
+	            $('.layui-tab-title li').on('contextmenu', function (e) {
+	                var popupmenu = $(".rightmenu");
+	                popupmenu.find("li").attr("data-id",id);
+	                l = ($(document).width() - e.clientX-200) < popupmenu.width() ? (e.clientX-200 - popupmenu.width()) : e.clientX-200;
+	                t = ($(document).height() - e.clientY-80) < popupmenu.height() ? (e.clientY-80 - popupmenu.height()) : e.clientY-80;
+	                popupmenu.css({ left: l, top: t }).show();
+	                //alert("右键菜单")
+	                return false;
+	            });
+			} 
+			 //tab右键结束
+			 
+			 //右键功能开始
+			 $(".rightmenu li").click(function () {
+	            if ($(this).attr("data-type") == "closethis") {
+	                active.tabDelete($(this).attr("data-id"))
+	            } else if ($(this).attr("data-type") == "closeall") {
+	                var tabtitle = $(".layui-tab-title li");
+	                var ids = new Array();
+	                $.each(tabtitle, function (i) {
+	                    ids[i] = $(this).attr("lay-id");
+	                })	 
+	                active.tabDeleteAll(ids);
+	            }
+	            $('.rightmenu').hide();
+             })
+			 //右键功能结束
+			  
+			//tab选项卡增删切换事件开始
+			 active = {
+				tabAdd: function (url, id,title) {
+                //新增一个Tab项
+                element.tabAdd('layout-tabs', {
+                    title: title
+                  , content: '<iframe data-frameid="'+id+'" frameborder="0" name="content" scrolling="yes" width="100%" src="' + url + '"></iframe>'
+                  , id: id 
+                })
+                customRightClick(id);//绑定右键菜单
+                frameWH();//计算框架高度
+           		}
+          		, tabChange: function (id) {
+	              //切换到指定Tab项
+	              element.tabChange('layout-tabs', id); //切换到：用户管理
+	              $("iframe[data-frameid='"+id+"']").attr("src",$("iframe[data-frameid='"+id+"']").attr("src"))//切换后刷新框架
+	          	}
+	            , tabDelete: function (id) {
+	                element.tabDelete("layout-tabs", id);//删除
+	            }
+	            , tabDeleteAll: function (ids) {//删除所有
+	                $.each(ids, function (i,item) {
+	                    element.tabDelete("layout-tabs", item);
+	                })
+	            }
+			}
+			//tab选项卡增删切换事件结束
+			function frameWH() {
+				//header 50; tab-title 41
+	            var h = $(window).height() -50 -41 -50 -10-5;
+	            $("iframe").css("height",h+"px");
+	        }
+	 
+	        $(window).resize(function () {
+	            frameWH();
+	        })
+			
+		});
+		//接收websocket推送的消息开始
+		var websocket = null;
+		var host = document.location.host;
+		var userId = "${userId}";
+		var tNum=1;
+		var layArray = new Array();
+		if("WebSocket" in window){
+			console.log("host:"+host);
+			websocket = new WebSocket("ws://"+host+"/iles/websocket/"+userId);
+			websocket.onopen = function(){
+				console.log("websocket 连接成功");
+			}
+			websocket.onerror = function(){
+				console.log("websocket 连接错误");
+			}
+			websocket.onmessage = function(event){
+				var temp = eval('('+event.data+')');
+				var msgCount = $("#msgCount").text();
+				$("#msgCount").text(parseInt(msgCount)+1);
+				showMsgContent(temp.title,temp.content);
+			}
+			websocket.colse = function(){
+				console.log("websocket 关闭");
+			}
+			
+		}else{
+			layer.msg("当前浏览器不支持websocket！无法接收消息")
+		}
+		window.onbeforeunload = function(event){
+			if(websocket!=null)
+				websocket.close();
+		}
+		function showMsgContent(titleStr,messageContent){
+			layer.open({
+		        type: 1
+		        ,title:titleStr
+		        ,offset:'rb'//具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+		        ,id: 'rabitMq'+tNum //防止重复弹出
+		        ,content: '<div style="padding: 20px 50px;width:250px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden">'+messageContent+'</div>'
+		        ,shade: 0 //不显示遮罩
+		        ,btn: ['查看消息']
+		        ,btnAlign: 'r' //按钮居中
+		        ,tipsMore: true
+		        ,yes: function(){
+		        	showMsgTab();
+		       		layer.closeAll();
+		        }
+		      });
+			tNum++;
+		}
+		function showMsgTab(){
+			var isData = false;
+			var msgManageObj = $("#nav-bar-side").find("[data-title='消息日志管理']");
+			var dataId = msgManageObj.attr("data-id");
+			if(dataId && dataId.length>0){
+			 $.each($(".layui-tab-title li[lay-id]"), function () {
+	                if ($(this).attr("lay-id") == dataId) {
+	                    isData = true;
+	                }
+	            })
+	            if (isData == false) {
+	            	active.tabAdd("pages/message/msgLog.html",dataId,"消息日志管理");
+	            }
+	       		active.tabChange(dataId);
+			}
+		}
+		//接收websocket推送的消息结束
+		//获取消息数量开始
+		function loadMsgCount(){
+			var option={
+					url:"msgLog/queryMsgConut?userId=${userId}&isreaded=0",
+					type:"GET",
+					dataType: "json",
+					success:function(res){
+						if(res.code==0)
+							$("#msgCount").text(res.data);
+					}
+			};
+			$.ajax(option);
+		}
+		//获取消息数量结束
+		
+		//修改用户密码
+		$("#changePassWord").click(function(){
+			layer.open({
+		    	type: 2,	//0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+		        title:"修改密码",
+		        offset:'auto',//具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+		        id: 'changePass', //防止重复弹出
+		        area: ['650px', '350px'],
+		        content: 'iles/pages/user/changePassWord.html',
+		        shade: 0,//不显示遮罩
+		        yes: function(){
+		       		layer.closeAll();
+		        }
+			});
+		})
+		</script>
+	</body>
+</html>

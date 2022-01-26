@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>集配清单打印</title>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" media="print" />
+		<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+	<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+	<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+	<link rel="stylesheet" href="listPrint.css" media="print">
+<style type="text/css">
+.text-c td {
+    padding: 0px 0px;
+    font-size: 10px;
+}
+.text-c th {
+    padding: 0px 0px;
+    font-size: 10px;
+}
+</style>
+</head>
+<body>
+
+<div id="bodyDiv">
+
+</div>
+</body>
+
+
+<!--/请在上方写此页面业务相关的脚本-->
+<script src="/iles/pages/lib/jquery-qrcode-0.14.0/jquery.min.js"></script>
+<script type="text/javascript">var jquery$ = $;</script>
+<script src="/iles/pages/lib/jquery-barcode/jquery-migrate-1.2.1.min.js"></script>
+<script src="/iles/pages/lib/jquery-barcode/jquery.jqprint-0.3.js"></script>
+<script src="/iles/pages/lib/jquery-barcode/jquery-barcode.js"></script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/layui/lay/modules/layer.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+
+<script type="text/html" id="bodyTpl">
+<div class="layui-fluid" style="padding-top: 20px;">
+<div class="layui-row layui-form">
+	<div class="layui-col-md2">
+      	<label class="layui-form-label">派工日期</label>
+	      <div class="layui-input-block">
+	        	<input type="text" class="layui-input" id="dateTime">
+	      </div>
+    </div>
+     <div class="layui-col-md2">
+	 	<label class="layui-form-label">派工时间:</label>
+		<div class="layui-input-block layui-form">
+		      <select  id="activeTime" xm-select="select1">
+		        <option value="">请选择</option>
+		      </select>
+		</div>
+	</div>
+    <div class="layui-col-md2">
+	 	<label class="layui-form-label">波次号:</label>
+		<div class="layui-input-block">
+	        	<input type="text" class="layui-input" id="waveCode">
+	    </div>
+	 </div>
+	 <div class="layui-col-md2">
+		<label class="layui-form-label">集配单号:</label>
+		<div class="layui-input-block">
+	        	<input type="text" class="layui-input" id="orders" >
+	    </div>
+	</div>
+</div>
+<div class="layui-row layui-form" style="padding-top: 6px;">
+	<div class="layui-col-md2">
+	  <label class="layui-form-label">打印状态</label>
+      <div class="layui-input-block layui-form">
+        	<select id="printStatus" >
+        		<option value="">选择打印状态</option>
+        		<option value="1">已打印</option>
+        		<option value="0">未打印</option>
+        	</select>
+      </div>
+	</div>
+	<div class="layui-col-md2">
+		<label class="layui-form-label">工位:</label>
+		 <div class="layui-input-block">
+		    <input type="text" class="layui-input" id="stationcode" name="stationcode">
+		</div>
+	</div>
+</div>
+<div class="layui-row layui-form">
+		<div class="layui-btn-container">
+			{{# if(d.search==null || d.search=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+			{{# } }}
+			{{# if(d.print==null || d.print=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="print" type="button"><i class="mine-icon icon-print"></i>打印</button>
+			{{# } }}		
+		</div>
+</div>
+</div>
+<table class="layui-hide"  lay-even  id="listPrintTab" lay-filter="listPrintTabF"></table>
+
+<!--打印内容-->
+<div>
+	<div id="div2">
+
+	</div>
+</div>
+</script>
+<script type="text/javascript">
+//全局定义一次, 加载formSelects
+layui.config({
+    base: '/iles/pages/layui/lay/modules/' //此处路径请自行处理, 可以使用绝对路径
+}).extend({
+    formSelects: 'formSelects-v4'
+});
+var table = layui.table;
+var form = layui.form;
+var layer = layui.layer;
+var myDate = new Date();
+var dateString = myDate.toLocaleDateString();
+var contextPath = config.wmsConfig.contextPath;
+var formSelects;
+if(myDate.getMonth()+1<10){
+	dateString = dateString.replace("/","-0");
+}else{
+	dateString = dateString.replace("/","-");
+}
+if(myDate.getDate()<10){
+	dateString = dateString.replace("/","-0");
+}else{
+	dateString = dateString.replace("/","-");
+}
+var startTime=dateString+" 00:00:00";
+var endTime=dateString+" 23:59:59";
+var laydate = layui.laydate;
+var id_list = "";
+layui.use(['formSelects'],function(){
+	formSelects = layui.formSelects;
+});
+var active = {
+		search:function(othis){
+		      //执行重载
+		      var dateTime = $("#dateTime").val();
+		      var activeDate = dateTime;
+			  var activeTime = $("#activeTime").val();
+		      var waveCode = $("#waveCode").val();
+		      var orders = $("#orders").val();
+		      var printStatus = $("#printStatus").val();
+		      var stationcode = $("#stationcode").val();
+		      var activeTimeArray = layui.formSelects.value('select1', 'val');
+		      for(var i=0;i<activeTimeArray.length;i++){
+		    	  activeTime = activeTime+activeTimeArray[i]+";"
+		      }
+		      table.reload('listPrintTabId', {
+		        where:{
+		        	activeDate:activeDate
+		        	,activeTime: activeTime
+		        	,waveId:waveCode
+		        	,assembleOrderCode: orders
+		        	,printStatus:printStatus
+		        	,stationcode:stationcode
+		        }
+		      });
+		},reset:function(othis){
+			$('#dateTime').val("");
+			$("#activeTime").val("");
+			$('#waveCode').val("");
+			$("#orders").val("");
+			$("#printStatus").val("");
+			$("#stationcode").val("");
+			$("#orderCode").val("");
+			layui.formSelects.value('select1', []); 
+			form.render("select");
+		},print:function(othis){
+			var list = table.checkStatus('listPrintTabId');
+			oldData = list.data;
+			var length = oldData.length;
+			if(length==0){
+				layer.alert('请选择要打印的数据！',{icon: 2});
+				return false;
+			}
+			var id_list = new Array();
+			for(var i=0;i<oldData.length;i++){
+				id_list.push(oldData[i].id);
+			}
+			$("#div2").show();
+			$.ajax({
+    	        url:contextPath+"outBoundPlanManger/listOrderPrintDetail",
+    	        type: "post",
+    	        async: false,
+    	        contentType:'application/json',
+    	        data: JSON.stringify(id_list),
+    	        success: function (result) {
+    	            if (result.code == 0) {
+    					var order_list = result.data;
+    					var curUserName = "";
+    					if(order_list.length>0){
+    						curUserName = order_list[0].currUserName;
+    					}
+    					for(var z=0; z<order_list.length; z++){
+    						var order_info=order_list[z];
+    						var str ="";
+    						if(order_info.type==0){
+    							str = "<div>\n" +
+    							"<div class=\"page-container\">\n" +
+    							"        <div id=barcode_"+z+"  style=\"position:absolute;padding:37px;\"></div><div style=\"margin-left: 40%;  font-size: 20px; font-weight: bold\">拣配配送清单(节拍化)<span style=\"font-size: 80px;margin-left: 20%;font-weight:normal;\">"+(order_info.waveOldNum==null?"":order_info.waveOldNum) +"</span></div>\n" +
+    							"        <div>\n" +
+    							"            <div style=\"float: left; width: 20%; margin-left: 3%;line-height: 15px;\">\n" +
+    							"                <span>单据号:</span>\n" +
+    							"                <span>" +
+    											(order_info.assembleOrderCode==null?"":order_info.assembleOrderCode) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 15%\">\n" +
+    							"                <span>车号代码:</span>\n" +
+    							"                <span>" +
+    											(order_info.carCode==null?"":order_info.carCode) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>工序订单:</span>\n" +
+    							"                <span>" +
+    											(order_info.orderCode==null?"":order_info.orderCode) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>工位:</span>\n" +
+    							"                <span>" +
+    											(order_info.stationCode==null?"":order_info.stationCode) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							
+    							"\n" +
+    							"            <div style=\"float: left; width: 20%\">\n" +
+    							"                <span>配餐时间:</span>\n" +
+    							"                <span>" +
+    											(order_info.pz_time==null?"":order_info.pz_time) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"        <br>\n" +
+    							"\n" +
+    							"        <div>\n" +
+    							"            <div style=\"float: left; width: 20%; margin-left: 3%;line-height: 15px;\">\n" +
+    							"                <span>分厂/产线:</span>\n" +
+    							"                <span>" +
+    											(order_info.subCode==null?"":order_info.subCode) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 15%\">\n" +
+    							"                <span>库存地点:</span>\n" +
+    							"                <span>" +
+    											(order_info.storageLocation==null?"":order_info.storageLocation) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>配送台位:</span>\n" +
+    							"                <span>" +
+    											( order_info.deliverPlatform=="null"?"": order_info.deliverPlatform) +
+    											"<!--接口没有数据-->\n"+
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"         </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>工装:</span>\n" +
+    							"                <span>" +
+    											(order_info.carrierCode==null?"地堆":order_info.carrierCode) +
+    											"<!--接口没有数据-->\n"+
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 20%\">\n" +
+    							"                <span>配送时间:</span>\n" +
+    							"                <span>" +
+    												(order_info.ps_time==null?"":order_info.ps_time)  +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"         </div>\n" +
+    							"\n" +
+    							"        <br>\n" +
+    							"\n" +
+    							"        <div>\n" +
+    							"            <div style=\"float: left; width: 52%; margin-left: 3%;line-height: 15px;\">\n" +
+    							"                <span>订单工序/描述:</span>\n" +
+    							"<span>" +
+    											(order_info.processDesc==null?"":order_info.processDesc) +
+    											"</span>"+
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>拣配区域:</span>\n" +
+    							"                <span>" +
+    											(order_info.carArea==null?"":order_info.carArea) +
+    											"</span>\n" +
+    											"<!--接口没有数据-->\n"+
+    							"            </div>\n" +
+    							"\n" +		
+    							"            <div style=\"float: left; width: 20%\">\n" +
+    							"                <span>需求日期:</span>\n" +
+    							"                <span>" +
+    										(order_info.required_date==null?"":order_info.required_date) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"        </div>\n" +
+    							"\n" +
+    							"        <br>\n" +
+    							"\n" +
+    							"        <table class=\"layui-table\"\n" +
+    							"               id=\"tabCount\" style=\"margin-top: 1%; width:97%; margin-left: 3%; font-size:5px;\">\n" +
+    							"            <thead>\n" +
+    							"                <tr class=\"text-c\">\n" +
+    							"                    <th width='5%'>序号</th>\n" +
+    							"                    <th width='10%'>物料号</th>\n" +
+    							"                    <th  width='15%'>物料描述</th>\n" +
+    							"                    <th width='5%'>需求数量</th>\n" +
+    							"                    <th width='5%'>未清数量</th>\n" +
+    							"                    <th width='10%'>仓位</th>\n" +
+    							"                    <th width='5%'>拣配数量</th>\n" +
+    							"                    <th width='10%'>批次</th>\n" +
+    							"                    <th width='10%'>物料凭证</th>\n" +
+    							"                    <th width='5%'>行项</th>\n" +
+    							"                    <th >工序短文本</th>\n" +
+    							"                </tr>\n" +
+    							"            </thead>\n" +
+    							"            <tbody>\n";
+    		
+    							for (var i = 0; i < order_info["list"].length; i++) {
+    								var order_sub_info = order_info["list"][i];
+    								str = str +
+    									"                <tr class=\"text-c\">\n" +
+    									"                    <td width='5%'>" +
+    									(i + 1).toString() +
+    									"</td>\n" +
+    									"                    <td width='10%'>" +
+    									(order_sub_info.materialCode==null?"":order_sub_info.materialCode) +
+    									"</td>\n" +
+    									"                    <td style=\"width='15%';overflow: hidden;\">" +
+    									(order_sub_info.materialDesc==null?"":order_sub_info.materialDesc) +
+    									"</td>\n" +
+    									"                    <td width='5%'>" +
+    									(order_sub_info.requiredCount==null?"":order_sub_info.requiredCount) +
+    									"</td>\n" +
+    									"                    <td width='5%'>" +
+    									(order_sub_info.unsendCount==null?"":order_sub_info.unsendCount) +
+    									
+    									"</td>\n" +
+    									"                    <td width='10%'>" +
+    									(order_sub_info.positionName==null?"":order_sub_info.positionName) +
+    									"</td>\n" +
+    									"                    <td width='5%'>" +
+    									(order_sub_info.enableCount==null?"":order_sub_info.enableCount) +"&nbsp;"+(order_sub_info.materialUnit!='null'?order_sub_info.materialUnit:'')+
+    									"</td>\n" +
+    									"                    <td width='10%'>" +
+    									 (order_sub_info.batchNum==null?"":order_sub_info.batchNum) +
+    									"</td>\n" +
+    									"                    <td width='10%'>" +
+    									(order_sub_info.voucherCode==null?"":order_sub_info.voucherCode) +
+    									"</td>\n" +
+    									"                    <td width='5%'>" +
+    									(order_sub_info.voucherLineNum==null?"":order_sub_info.voucherLineNum) +
+    									"</td>\n" +
+    									"                    <td>" +
+    									(order_sub_info.ltxa1==null?"":order_sub_info.ltxa1) +
+    									"</td>\n" +
+    									"                </tr>\n" +
+    									"\n";
+    							}
+
+    							str = str +
+    									"            </tbody>\n" +
+    									"        </table>\n" +
+    								"        <div style=\"margin-top: 2%\">\n" +
+    								"            <div style=\"float: left; margin-left: 5%\">\n" +
+    								"                <span>打印人:"+curUserName+"</span>\n" +
+    								"                <span> " +
+    								"" +
+    								"<!--接口没有数据-->\n" +
+    								"</span>\n" +
+    								"            </div>\n" +
+    								"\n" +
+    								"            <div style=\"float: left; margin-left: 12%\">\n" +
+    								"                <span>物流员:</span>\n" +
+    								"                <span>" +
+    								"" +
+    								"<!--接口没有数据-->\n" +
+    								"</span>\n" +
+    								"            </div>\n" +
+    								"\n" +
+    								"            <div style=\"float: left; margin-left: 12%\">\n" +
+    								"                <span>创建日期:</span>\n" +
+    								"                <span>" +
+    								(order_info.print_time==null?"":order_info.print_time) +
+    								"" +
+    								"<!--接口没有数据-->\n" +
+    								"</span>\n" +
+    								"            </div>\n" +
+    								"\n" +
+    								"            <div style=\"float: left; margin-left: 12%\">\n" +
+    								"                <span>接收人:</span>\n" +
+    								"                <span>" +
+    								"" +
+    								"<!--接口没有数据-->\n" +
+    								"</span>\n" +
+    								"            </div>\n" +
+    								"        </div>\n" +
+    								"    </div>" +
+    								"    </div>";
+
+    							if (z == 0) {
+    								// 第一页
+    								// 清空打印内容
+    								$("#div2").empty();
+
+    							} else {
+    								// 分页
+    								var str = "<DIV STYLE=\"page-break-before:always\">\n" + str + "</DIV>"
+    							}
+    						}else if (order_info.type==1){
+    							str = "<div>\n" +
+    							"<div class=\"page-container\">\n" +
+    							"        <div id=barcode_"+z+"  style=\"position:absolute;padding:37px;\"></div><div style=\"margin-left: 40%; font-size: 20px; font-weight: bold\">拣配配送清单(非节拍化)<span style=\"font-size: 80px;margin-left: 20%;font-weight:normal;\">"+(order_info.waveOldNum==null?"":order_info.waveOldNum) +"</span></div>\n" +
+    							"        <div style=\"margin-top: 2%\">\n" +
+    							"            <div style=\"float: left; width: 20%; margin-left: 3%;line-height: 15px;\">\n" +
+    							"                <span>单据号:</span>\n" +
+    							"                <span>" +
+    											(order_info.assembleOrderCode==null?"":order_info.assembleOrderCode) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 15%\">\n" +
+    							"                <span>车号代码:</span>\n" +
+    							"                <span>" +
+    											(order_info.sernr==null?"":order_info.sernr) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>工序订单:</span>\n" +
+    							"                <span>" +
+    											(order_info.aufnr==null?"":order_info.aufnr) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>工位:</span>\n" +
+    							"                <span>" +
+    											(order_info.stationCode==null?"":order_info.stationCode) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							
+    							"\n" +
+    							"            <div style=\"float: left; width: 20%\">\n" +
+    							"                <span>收货工厂:</span>\n" +
+    							"                <span>" +
+    											(order_info.umwrk==null?"":order_info.umwrk) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"        <br>\n" +
+    							"\n" +
+    							"        <div>\n" +
+    							"            <div style=\"float: left; width: 20%; margin-left: 3%;line-height: 15px;\">\n" +
+    							"                <span>分厂/产线:</span>\n" +
+    							"                <span>" +
+    											(order_info.subCode==null?"":order_info.subCode) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 15%\">\n" +
+    							"                <span>库存地点:</span>\n" +
+    							"                <span>" +
+    											(order_info.storageLocation==null?"":order_info.storageLocation) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>配送台位:</span>\n" +
+    							"                <span>" +
+    											( order_info.ablad=="null"?"": order_info.ablad) +
+    											"<!--接口没有数据-->\n"+
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"         </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>工装:</span>\n" +
+    							"                <span>" +
+    											(order_info.carrierCode==null?"地堆":order_info.carrierCode) +
+    											"<!--接口没有数据-->\n"+
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 20%\">\n" +
+    							"                <span>收货库存地点:</span>\n" +
+    							"                <span>" +
+    												(order_info.umlgo==null?"":order_info.umlgo)  +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"         </div>\n" +
+    							"\n" +
+    							"        <br>\n" +
+    							"\n" +
+    							"        <div>\n" +
+    							"            <div style=\"float: left; width: 52%; margin-left: 3%;line-height: 15px;\">\n" +
+    							"                <span>订单工序/描述:</span>\n" +
+    							"<span>" +
+    											(order_info.matnr==null?"":order_info.matnr) +
+    											"</span>"+
+    							"            </div>\n" +
+    							"\n" +
+    							"            <div style=\"float: left; width: 17%\">\n" +
+    							"                <span>拣配区域:</span>\n" +
+    							"                <span>" +
+    											(order_info.carArea==null?"":order_info.carArea) +
+    											"</span>\n" +
+    											"<!--接口没有数据-->\n"+
+    							"            </div>\n" +
+    							"\n" +		
+    							"            <div style=\"float: left; width: 20%\">\n" +
+    							"                <span>需求日期:</span>\n" +
+    							"                <span>" +
+    										(order_info.required_date==null?"":order_info.required_date) +
+    											"</span>\n" +
+    							"            </div>\n" +
+    							"\n" +
+    							"        </div>\n" +
+    							"\n" +
+    							"        <br>\n" +
+    							"\n" +
+    							"        <table class=\"layui-table\"\n" +
+    							"               id=\"tabCount\" style=\"margin-top: 1%; width:90%; margin-left: 3%; font-size:5px;\">\n" +
+    							"            <thead>\n" +
+    							"                <tr class=\"text-c\">\n" +
+    							"                   <th width='5%'>序号</th>\n" +
+    							"                    <th width='10%'>物料号</th>\n" +
+    							"                    <th  width='15%'>物料描述</th>\n" +
+    							"                    <th width='5%'>需求数量</th>\n" +
+    							"                    <th width='5%'>未清数量</th>\n" +
+    							"                    <th width='10%'>仓位</th>\n" +
+    							"                    <th width='5%'>拣配数量</th>\n" +
+    							"                    <th width='10%'>批次</th>\n" +
+    							"                    <th width='10%'>物料凭证</th>\n" +
+    							"                    <th width='5%'>行项</th>\n" +
+    							"                    <th >工序短文本</th>\n" +
+    							"                </tr>\n" +
+    							"            </thead>\n" +
+    							"            <tbody>\n";
+    		
+    							for (var i = 0; i < order_info["list"].length; i++) {
+    								var order_sub_info = order_info["list"][i];
+    								str = str +
+    									"                <tr class=\"text-c\">\n" +
+    									"                    <td width='5%'>" +
+    									(i + 1).toString() +
+    									"</td>\n" +
+    									"                    <td width='10%'>" +
+    									(order_sub_info.materialCode==null?"":order_sub_info.materialCode) +
+    									"</td>\n" +
+    									"                    <td style=\"width='15%';overflow: hidden;\">" +
+    									(order_sub_info.materialDesc==null?"":order_sub_info.materialDesc) +
+    									"</td>\n" +
+    									"                    <td width='5%'>" +
+    									(order_sub_info.requiredCount==null?"":order_sub_info.requiredCount) +
+    									"</td>\n" +
+    									"                    <td width='5%'>" +
+    									(order_sub_info.unsendCount==null?"":order_sub_info.unsendCount) +
+    									
+    									"</td>\n" +
+    									"                    <td width='10%'>" +
+    									(order_sub_info.positionName==null?"":order_sub_info.positionName) +
+    									"</td>\n" +
+    									"                    <td width='5%'>" +
+    									(order_sub_info.enableCount==null?"":order_sub_info.enableCount) +"&nbsp;"+(order_sub_info.materialUnit!='null'?order_sub_info.materialUnit:'')+
+    									"</td>\n" +
+    									"                    <td width='10%'>" +
+    									 (order_sub_info.batchNum==null?"":order_sub_info.batchNum) +
+    									"</td>\n" +
+    									"                    <td width='10%'>" +
+    									(order_sub_info.voucherCode==null?"":order_sub_info.voucherCode) +
+    									"</td>\n" +
+    									"                    <td width='5%'>" +
+    									(order_sub_info.voucherLineNum==null?"":order_sub_info.voucherLineNum) +
+    									"</td>\n" +
+    									"                    <td>" +
+    									(order_sub_info.ltxa1==null?"":order_sub_info.ltxa1) +
+    									"</td>\n" +
+    									"                </tr>\n" +
+    									"\n";
+    							}
+
+    							str = str +
+    									"            </tbody>\n" +
+    									"        </table>\n" +
+    								"        <div style=\"margin-top: 2%\">\n" +
+    								"            <div style=\"float: left; margin-left: 5%\">\n" +
+    								"                <span>打印人:"+curUserName+"</span>\n" +
+    								"                <span> " +
+    								"" +
+    								"<!--接口没有数据-->\n" +
+    								"</span>\n" +
+    								"            </div>\n" +
+    								"\n" +
+    								"            <div style=\"float: left; margin-left: 12%\">\n" +
+    								"                <span>物流员:</span>\n" +
+    								"                <span>" +
+    								"" +
+    								"<!--接口没有数据-->\n" +
+    								"</span>\n" +
+    								"            </div>\n" +
+    								"\n" +
+    								"            <div style=\"float: left; margin-left: 12%\">\n" +
+    								"                <span>创建日期:</span>\n" +
+    								"                <span>" +
+    								(order_info.print_time==null?"":order_info.print_time) +
+    								"" +
+    								"<!--接口没有数据-->\n" +
+    								"</span>\n" +
+    								"            </div>\n" +
+    								"\n" +
+    								"            <div style=\"float: left; margin-left: 12%\">\n" +
+    								"                <span>接收人:</span>\n" +
+    								"                <span>" +
+    								"" +
+    								"<!--接口没有数据-->\n" +
+    								"</span>\n" +
+    								"            </div>\n" +
+    								"        </div>\n" +
+    								"    </div>" +
+    								"    </div>";
+
+    							if (z == 0) {
+    								// 第一页
+    								// 清空打印内容
+    								$("#div2").empty();
+
+    							} else {
+    								// 分页
+    								var str = "<DIV STYLE=\"page-break-before:always\">\n" + str + "</DIV>"
+    							}
+    						}
+    						
+    							// 添加打印内容
+    							$("#div2").append(str);
+    							jquery$('#barcode_'+z).empty().barcode(order_info.assembleOrderCode, "code128",{//code128为条形码样式
+			        				output:'css',
+			        				color: '#000000', 
+			        				barWidth: 1,        //单条条码宽度
+			        		        barHeight: 50,     //单体条码高度
+			        				addQuietZone: false,
+			        				showHRI:false
+			        			}); 
+    							$('#barcode_'+z).css("padding","37px")
+    					}
+ 							//	打印
+ 							jquery$("#div2").jqprint();
+ 							$("#div2").hide();
+
+    	            } else {
+    	                layer.msg(result.msg, {icon: 5, time: 1000})
+    	            }
+    	        }
+    	    });
+		}
+};
+function loadding(){
+	//日期范围
+	laydate.render({
+	  elem: '#dateTime'
+	  ,type:'date'
+	   ,done: function(value, date, endDate){
+		  var beginTime = value.substring(0,10);
+		  var endTime = value.substring(13);
+		  $.ajax({
+		        url:contextPath+'outBoundPlanManger/queryActiveTime?queryDate='+value,
+		        type:'GET',
+		        success:function(res){
+		      	  var order = res.data;
+		      	  if(order && order.length>0){
+		      		 var optionItem;
+		    		 var optoinArray = new Array();
+		    		 for(var i=0;i<order.length;i++){
+		    			 optionItem = {"name": ""+order[i].activeTime, "value": ""+order[i].activeTime };
+		    			 optoinArray.push(optionItem);
+		    		 }
+		    		 layui.formSelects.data('select1', 'local', {
+		    			 arr:optoinArray
+		    	     });  
+		      	  }
+		        }
+		        
+		    })
+	     
+	  } 
+	});
+	table.render({
+		elem:"#listPrintTab",
+		id:"listPrintTabId",
+		url:contextPath+"outBoundPlanManger/listAssemblePrintData",
+		cols:[[
+		     {type:'checkbox'},
+		     {type:'numbers',title:'序号',width: 60},
+		     {field:'tab',title:'工位',width:180},
+		     {field:'assembleordercode',title:'集配单据号',width:150},
+		     {field:'processordercode',title:'工序订单号',width:150},
+		     {field:'processmaterialcode',title:'工序物料号',width:150},
+		     {field:'ischecked',title:'是否复核完成',width:120},
+		     {field:'processmaterialdesc',title:'工序物料描述',width:200}
+		     ]],
+		 height: '500',
+		 width : '100%',
+		 where:{
+			 activeDate:dateString
+		 },
+		 even:true
+	});
+
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+	});
+	form.render('select');
+	//initwaveCode();
+}
+function initwaveCode(){
+	 $.ajax({
+       url:contextPath+'outBoundPlanManger/queryActiveWave',
+       dataType:'JSON',
+       success:function(res){
+     	  var order = res.data;
+     	/*   $('#orders').html("");
+ 		  $('#orders').append('<option value="">请选择</option>'); */
+ 		  if(res.code==0){
+ 			if(order){
+ 			  for(var i=0;i<order.waveCode.length;i++){
+				  $("#waveCode").append("<option value="+order.waveCode[i]+">"+order.waveCode[i]+"</option>");
+ 			  }
+ 			for(var i=0;i<order.assembleOrderCode.length;i++){
+				  $("#orders").append("<option value="+order.assembleOrderCode[i]+">"+order.assembleOrderCode[i]+"</option>");
+			  }
+ 			  form.render('select');
+   	   }
+ 		  }
+       }
+       
+   });
+}
+
+
+</script>
+</html>

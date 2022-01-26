@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="Content-Type" content="charset=UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+	<title>盘点任务列表</title>
+</head>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库名称</label>
+                <div class="layui-input-inline">
+                    <select id="warehouseCode" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">盘点日期</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="inventoryDates" placeholder="请选择盘点日期">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">盘点类型</label>
+                <div class="layui-input-inline">
+                    <select id="inventoryType" xm-select="inventoryTypeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                        <option value="0">全部盘点</option>
+                        <option value="5">指定盘点</option>
+                        <option value="10">二次盘点</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">执行状态</label>
+                <div class="layui-input-inline">
+                    <select id="taskStatus" xm-select="taskStatusSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                        <option value="-5">待发布</option>
+                        <option value="0">待盘点</option>
+                        <option value="5">盘点中</option>
+                        <option value="10">已完成</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">盘点结果</label>
+                <div class="layui-input-inline">
+                    <select id="taskResult" xm-select="taskResultSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                        <option value="0">正常</option>
+                        <option value="5">异常</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button">
+                    <i class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i
+                        class="layui-icon layui-icon-reset"></i>重置
+                </button>
+            </div>
+
+        </div>
+    </div>
+	<div class="layui-fluid-table">
+        <div class="layui-row layui-form">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="publish" id="publish" type="button" title="发布"><i class="layui-icon layui-icon-release"></i>发布</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="new" id="new" type="button" title="新建"><i class="layui-icon layui-icon-add-circle"></i>新建</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="modify" id="modify" type="button" title="修改"><i class="layui-icon layui-icon-edit"></i>修改</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="delete" id="delete" type="button" title="删除"><i class="layui-icon layui-icon-delete"></i>删除</button>
+            </div>
+        </div>
+		<table id="taskTab" lay-filter="taskTabF"></table>
+	</div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/commonUtil.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<!--<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>-->
+
+<script type="text/javascript">
+    var wmsContextPath = config.wmsConfig.contextPath;
+	var table = layui.table;
+	var form= layui.form;
+    var laydate = layui.laydate;
+    var oldData;
+    var active = {
+        /** 搜索 */
+        search: function (othis) {
+            let startTime;
+            let endTime;
+            let inventoryDateArr = $('#inventoryDates').val().split(" - ");
+
+            let warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+
+            if (!isBlankStr(inventoryDateArr)){
+                startTime = inventoryDateArr[0] != undefined ? inventoryDateArr[0] : '';
+                endTime = inventoryDateArr[1] != undefined ? inventoryDateArr[1] : '';
+            }
+            let inventoryType = $('#inventoryType').val() != '' ? $('#inventoryType').val() : '';
+            let taskStatus = $('#taskStatus').val() != '' ? $('#taskStatus').val() : '';
+            let taskResult = $('#taskResult').val() != '' ? $('#taskResult').val() : '';
+
+            //执行重载
+            table.reload('taskTabId', {
+                where: {
+                    warehouseCode:warehouseCode,
+                    startTime:startTime,
+                    endTime:endTime,
+                    inventoryType:inventoryType,
+                    taskStatus:taskStatus,
+                    taskResult:taskResult
+                },
+                page: {"curr": 1}
+            });
+        },
+        /** 重置 */
+        reset: function (othis) {
+            layui.formSelects.value('warehouseCodeSelect', []);//仓库编号
+            let inventoryDateArr = $('#inventoryDates').val("");
+            form.render();
+        },
+        /** 发布 */
+        publish: function (othis) {
+            let task = table.checkStatus('taskTabId').data;
+            if (task == null || task.length === 0) {
+                layer.alert('请选择要发布的盘点任务信息！', {icon: 2});
+                return;
+            }
+            var list = new Array();
+            for (let i = 0; i < task.length; i++) {
+                if (task[i].taskStatus != -5) {
+                    layer.alert(' 序号为' + (i + 1) + '的任务已发布', {icon: 2});
+                    return;
+                }
+                list.push( task[i].id);
+            }
+            console.log(">>>>>发布list:",list);
+            layer.confirm('是否执行发布操作?', {icon: 3, title: '提示'}, function (index) {
+                var option = {
+                    url: wmsContextPath + 'inventoryTaskPC/inventoryTaskRelease',
+                    type: 'POST',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify(list),
+                    success: function (data) {
+                        if (data.code == 0) {
+                            layer.alert("执行成功");
+                            layer.close(index);
+                            table.reload('taskTabId');
+                        }else {
+                            console.log(">>>>data",data);
+                            layer.alert("执行失败");
+                        }
+                    }, error: function (data) {
+                        layer.alert(data.msg);
+                    }
+                };
+                $.ajax(option);
+            });
+        },
+        /** 新建 */
+        new: function (othis) {
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                , title: '新增盘点任务'
+                , maxmin: false
+                , area: ['1500px', '600px']
+                , offset: type
+                , id: 'task_new' + type //防止重复弹出
+                , content: '/iles/pages/wms/inventory/stocking/job/createTask.html'
+                , shade: [0.8, '#393D49'] //显示遮罩
+                , yes: function () {
+                    layer.closeAll();
+                }
+            });
+        },
+        /** 修改 */
+        modify: function (othis) {
+            let task = table.checkStatus('taskTabId').data;
+
+            if (task.length <= 0) {
+                layer.alert('请选择要编辑的行！', {icon: 2});
+                return;
+            } else if (task.length > 1) {
+                layer.alert('编辑不能超过多行！', {icon: 2});
+                return;
+            }
+            oldData = task[0];
+            if (oldData.taskStatus>=0){
+                layer.alert('任务状态错误:该盘点任务不可编辑', {icon: 2});
+                return;
+            }
+            console.log("修改>>>",oldData);
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                , title: '编辑任务'
+                , maxmin: false
+                , area: ['1500px', '600px']
+                , offset: type
+                , id: 'task_modify' + type //防止重复弹出
+                , content: '/iles/pages/wms/inventory/stocking/job/updateTask.html'
+                , shade: [0.8, '#393D49'] //显示遮罩
+                , yes: function () {
+                    layer.closeAll();
+                }
+            });
+        },
+        /** 删除 */
+        delete: function (othis) {
+            let task = table.checkStatus('taskTabId').data;
+            if (task == null || task.length === 0) {
+                layer.alert('请选择要删除的盘点任务信息！', {icon: 2});
+                return;
+            }
+            var list = new Array();
+            for (let i = 0; i < task.length; i++) {
+                if (task[i].taskStatus >= 5) {
+                    layer.alert('序号为' + (i + 1) + '的任务 正在盘点(盘点完成),不可删除', {icon: 2});
+                    return;
+                }
+                list.push(task[i].id);
+            }
+            console.log(">>>>>删除list:", list);
+            layer.confirm('是否删除所选的记录?', {icon: 3, title: '提示'}, function (index) {
+                var option = {
+                    url: wmsContextPath + 'inventoryTaskPC/inventoryTaskStrikeOut',
+                    type: 'POST',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify(list),
+                    success: function (data) {
+                        if (data.code == 0) {
+                            layer.alert("执行成功");
+                            table.reload('taskTabId');
+                        } else {
+                            console.log(">>>>data", data);
+                            layer.alert("执行失败");
+                        }
+                    }, error: function (data) {
+                        layer.alert(data.msg);
+                    }
+                };
+                $.ajax(option);
+                layer.close(index);
+            });
+        },
+    };
+
+	function loadding() {
+		table.render({
+			elem: '#taskTab',
+			id: 'taskTabId',
+			url: wmsContextPath + 'inventoryTaskPC/pageResult',
+			cols: [[
+                {type: 'checkbox',fixed:'left'},
+				{type:'numbers',title:'序号',fixed: 'left'},
+				{field: 'taskCode', width: 140, title: '任务号'},
+				{field: 'warehouseName', width: 140, title: '所属仓库'},
+				{field: 'inventoryType', width: 100, title: '盘点类型',
+					templet(d){
+                        let type = d.inventoryType;
+                        if(type==0){
+							return '全部盘点';
+						}else if(type==5){
+							return '指定盘点';
+						}else if(type==10){
+							return '二次盘点';
+						}else{
+							return '-';
+						}}
+                },
+                {field: 'duringTime', width: 180, title: '盘点开始日期-结束日期',
+                    templet(d){
+                        return d.startTime +' - '+d.endTime;
+                    }},
+                {field: 'inventoryStoragePositionNum', width: 100, title: '仓位数量'},
+                {field: 'staffs', width: 140, title: '盘点人员',
+                    templet(d){
+                        let staffs = d.staffs;
+                        let staffsStr_1 = '';
+                        for (let staff of staffs) {
+                            if (staff.staffProperty == 1){
+                                staffsStr_1 += staff.staffName + ',';
+                            }
+                        }
+                        return  staffsStr_1.substring(0,staffsStr_1.length-1);
+                    }
+                },
+                {field: 'staffs', width: 140, title: '监盘人员',
+                    templet(d){
+                        let staffs = d.staffs;
+                        let staffsStr_2 = '';
+                        for (let staff of staffs) {
+                            if (staff.staffProperty == 5){
+                                staffsStr_2 += staff.staffName + ',';
+                            }
+                        }
+                        return staffsStr_2.substring(0,staffsStr_2.length-1);
+                    }
+                },
+
+                {field: 'createrName', width: 140, title: '创建人'},
+                {field: 'createTime', width: 150, title: '创建时间'},
+
+                {field: 'modifiedTime', width: 150, title: '执行时间'},
+
+				{align:'center',field: 'taskResult', width: 130, title: '盘点结果',
+                    templet(d){
+                        let result = d.taskResult;
+                        let status = d.taskStatus;
+                        if(result==0&&status==10){
+                            return '正常';
+                        }else if(result==5&&status==10){
+                            return '异常';
+                        }else{
+                            return '-';
+                        }}
+                },
+                {field: 'taskStatus', width: 140, title: '执行状态',align:'center',fixed: 'right',
+                    templet(d){
+                        let status = d.taskStatus;
+                        if(status==-5){
+                            return '待发布';
+                        }else if(status==0){
+                            return '待盘点';
+                        }else if(status==5){
+                            return '盘点中';
+                        }else if(status==10){
+                            return '已完成';
+                        }else{
+                            return '-';
+                        }}
+                },
+				{align:'center',title: '操作',toolbar:'#toolBar',width:185,fixed: 'right'}
+
+			]],
+			page: {theme: '#008155'},
+			height: 'full-95',
+			even: true,
+			done: function (res, page, count) {//列表数据回调函数
+
+			}
+		});
+
+		//监听工具条
+        table.on('tool(taskTabF)', function (obj) {
+            var eventName = obj.event;
+            var clickObj = obj.data;
+            console.log("clickObj", clickObj);
+
+            /** 任务详情 */
+            if (eventName == "detail") {//详情
+                oldData = obj.data;
+                layer.open({
+                    type: 2
+                    , title: '盘点任务详情'
+                    , maxmin: true
+                    , area: ['1000px', '700px']
+                    , offset: 2
+                    , id: 'taskTabFDetail' + 2 //防止重复弹出
+                    , content: 'detailTask.html'
+                    , shade: [0.8, '#fff'] //显示遮罩
+                    , yes: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+            /** 任务撤销 */
+            if (eventName == "revoke") {
+                let vo = {"id":clickObj.id}
+                layer.confirm('是否撤销所选的任务?', {icon: 3, title: '提示'}, function (index) {
+                    var option = {
+                        url: wmsContextPath + 'inventoryTaskPC/inventoryTaskCancellation',
+                        type: 'POST',
+                        contentType: "application/json",
+                        dataType: 'json',
+                        data: JSON.stringify(vo),
+                        success: function (data) {
+                            if (data.code == 0) {
+                                layer.alert("执行成功");
+                                table.reload('taskTabId');
+                            } else {
+                                console.log(">>>>data", data);
+                                layer.alert("执行失败");
+                            }
+                        }, error: function (data) {
+                            layer.alert(data.msg);
+                        }
+                    };
+                    $.ajax(option);
+                    layer.close(index);
+                });
+            }
+            /** 任务复盘 */
+            if (eventName == "replay") {
+                let vo = {"id":clickObj.id}
+                layer.confirm('是否复盘所选的任务?', {icon: 3, title: '提示'}, function (index) {
+                    var option = {
+                        url: wmsContextPath + 'inventoryTaskPC/inventoryTaskReplay',
+                        type: 'POST',
+                        contentType: "application/json",
+                        dataType: 'json',
+                        data: JSON.stringify(vo),
+                        success: function (data) {
+                            if (data.code == 0) {
+                                layer.alert("执行成功");
+                                table.reload('taskTabId');
+                            } else {
+                                console.log(">>>>data", data);
+                                layer.alert("执行失败");
+                            }
+                        }, error: function (data) {
+                            layer.alert(data.msg);
+                        }
+                    };
+                    $.ajax(option);
+                    layer.close(index);
+                });
+            }
+            /** 任务损益信息 */
+            if (eventName == "gainsLosses") {
+                oldData = obj.data;
+                layer.open({
+                    type: 2
+                    , title: '盘点任务损益信息'
+                    , maxmin: true
+                    , area: ['1000px', '700px']
+                    , offset: 2
+                    , id: 'taskTabF_LG' + 2 //防止重复弹出
+                    , content: '/iles/pages/wms/inventory/stocking/lossGain/detailLG.html'
+                    , shade: [0.8, '#fff'] //显示遮罩
+                    , yes: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+        laydate.render({
+            elem: '#inventoryDates'
+            ,type: 'date'
+            ,trigger: 'click'
+            ,range: true
+        });
+        initWarehouseMultiSelect("warehouseCode","warehouseCodeSelect","1",'');
+
+		form.render();
+	}
+</script>
+<script type="text/html" id="toolBar">
+	<a class="layui-btn layui-btn-xs" lay-event="detail" title="查看任务详情">查看</a>
+    {{#  if(d.taskStatus == 0){ }}
+        <a class="layui-btn layui-btn-xs" lay-event="revoke" title="盘点任务撤销">撤销</a>
+    {{#  } }}
+
+    {{#  if(d.taskStatus == 10  ){ }}
+        {{#  if(d.levelTask < 2 && d.checkStatus != 5 ){ }}
+            <a class="layui-btn layui-btn-xs" lay-event="replay" title="异常仓位复盘">复盘</a>
+        {{#  } }}
+
+        <a class="layui-btn layui-btn-xs" lay-event="gainsLosses" title="盘点损益详情">损益</a>
+    {{#  } }}
+	</script>
+</html>

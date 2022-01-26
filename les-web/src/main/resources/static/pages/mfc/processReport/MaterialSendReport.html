@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+    <title>出库任务进度统计报表</title>
+</head>
+
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">生产订单号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="orderCode" class="layui-input" placeholder="请输入生产订单号">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">任务编号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="taskNum" class="layui-input" placeholder="请输入物料名称">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">配送人</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="handlerName" class="layui-input" placeholder="请输入供应商名称">
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">开始时间</label>
+                <div class="layui-input-inline layui-form">
+                    <input type="text" class="layui-input" id="sendStartTime" placeholder="请选择开始时间">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">结束时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="sendEndTime" class="layui-input" placeholder="请选择结束时间">
+                </div>
+            </div>
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                {{# if(d.search==null || d.search=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button"><i
+                        class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i
+                        class="layui-icon  layui-icon-reset"></i>重置
+                </button>
+                {{# } }}
+
+                {{# if(d.export==null || d.export=="true"){ }}
+                <!--<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>-->
+                {{# } }}
+            </div>
+        </div>
+        <div class="layui-fluid-table">
+            <div class="layui-row layui-form">
+                <div class="layui-btn-container" style="text-align: left;">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+                </div>
+            </div>
+            <table class="layui-hide" id="materialSendTab" lay-filter="materialSendTabF"></table>
+        </div>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var laydate = layui.laydate;
+    var oldData;
+    var contextPath = config.mfcConfig.contextPath;
+    var active = {
+        search: function (othis) {
+            //生产订单号
+            let orderCode = $('#orderCode').val();
+            //任务编码
+            let taskNum =  $('#taskNum').val();
+            //配送人
+            let handlerName = $('#handlerName').val();
+            //开始时间
+            let sendStartTime= $("#sendStartTime").val();
+            //结束时间
+            let sendEndTime= $("#sendEndTime").val();
+            let params = {};
+            params.orderCode = orderCode;
+            params.taskNum = taskNum;
+            params.handlerName = handlerName;
+            params.sendStartTimeStart = sendStartTime.split(' - ')[0];
+            params.sendStartTimeEnd = sendStartTime.split(' - ')[1];
+            params.sendEndTimeStart = sendEndTime.split(' - ')[0];
+            params.sendEndTimeEnd = sendEndTime.split(' - ')[1];
+            //执行重载
+            table.reload('materialArrivalTabId', {
+                url: contextPath + 'materialOut/materialSendReport',
+                where: params,
+            });
+        },
+        reset: function (othis) {
+            $('#orderCode').val("");
+            $("#taskNum").val("");
+            $('#handlerName').val("");
+            $('#sendStartTime').val("");
+            $('#sendEndTime').val("");
+            form.render("select");
+        },export: function(othis) {
+            let  data = table.cache.materialArrivalTabId;
+            if(data.length > 0) {
+                //生产订单号
+                let orderCode = $('#orderCode').val();
+                //任务编码
+                let taskNum =  $('#taskNum').val();
+                //配送人
+                let handlerName = $('#handlerName').val();
+                //开始时间
+                let sendStartTime= $("#sendStartTime").val();
+                //结束时间
+                let sendEndTime= $("#sendEndTime").val();
+                let sendEndTimeStart = sendEndTime.split(' - ')[0];
+                let sendEndTimeEnd = sendEndTime.split(' - ')[1];
+                let sendStartTimeStart = sendStartTime.split(' - ')[0];
+                let sendStartTimeEnd = sendStartTime.split(' - ')[1];
+                let token = window.localStorage.token;
+                let params = "";
+
+                params = params + "orderCode=" + orderCode + "&taskNum=" + taskNum + "&handlerName=" + handlerName +
+                    "&sendEndTimeStart=" + sendEndTimeStart +"&sendEndTimeEnd="  +sendEndTimeEnd +"&sendStartTimeStart="+sendStartTimeStart +
+                    "&sendStartTimeEnd="+sendStartTimeEnd+"&token=" + token;
+                window.open(contextPath + 'materialOut/materialSendReportDownLoad?' + params);
+            } else {
+                layer.alert('导出失败！无数据', {
+                    icon: 2
+                });
+            }
+        }
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#materialSendTab',
+            id: 'materialSendTabId',
+            data:[],
+            url: contextPath + 'materialOut/materialSendReport',
+            cols: [[ {
+                type: 'numbers',
+                title: '序号'
+            },   {
+                field: 'orderCode',
+                title: '生产订单号'
+            }, {
+                field: 'taskNum',
+                title: '任务编码'
+            }, {
+                field: 'orderName',
+                title: '订单名称'
+            },{
+                field: 'vehicleDesc',
+                title: '销售订单名称'
+            }, {
+                field: 'workshopName',
+                title: '车间名称'
+            }, {
+                field: 'lineName',
+                title: '产线名称'
+            }, {
+                field: 'stationName',
+                title: '工位名称'
+            }, {
+                field: 'sendName',
+                title: '配送人名称'
+            },{
+                field: 'handlerName',
+                title: '交接人名称'
+            }, {
+                field: 'sendStartTime',
+                title: '配送开始时间'
+            }, {
+                field: 'sendEndTime',
+                title: '配送结束时间'
+            }, {
+                field: 'status',
+                title: '配送状态'
+            },{
+                field: 'sendDifferenceTime',
+                title: '配送耗时'
+            }]],
+            page: {
+                theme: '#008155'
+            },
+            even: true,
+            where:{
+
+            },
+            done: function (res, page, count) {//列表数据回调函数
+
+            }
+        });
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+        //时间选择器
+        laydate.render({
+            elem: '#sendStartTime',
+            type: 'date',
+            range: true,
+            trigger: 'click'
+        });
+        laydate.render({
+            elem: '#sendEndTime',
+            type: 'date',
+            range: true,
+            trigger: 'click'
+        });
+    }
+</script>
+</body>
+</html>

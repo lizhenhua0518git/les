@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.zkzn.les.basicInfo.dao.OutsideApiLogDao">
+
+	<select id="listOutsideApiLog" resultType="com.zkzn.les.basicInfo.pojo.OutsideApiLog">
+		select request_url,request_param as request_param_byte,take_time,create_time,souce_of_system,result_info as result_info_byte
+		 from t_outside_api_log 
+		<where>
+			<if test="requestUrl !=null and ''!= requestUrl">and request_url like '%${requestUrl}%'</if>
+			<if test="souceOfSystem !=null and ''!= souceOfSystem">and souce_of_system like '%${souceOfSystem}%'</if>
+			<if test="createTimeStart !=null and ''!= createTimeStart and createTimeEnd !=null and ''!= createTimeEnd">
+				and create_time between str_to_date(#{createTimeStart},' %Y-%m-%d %H:%i:%s')
+				 and str_to_date(#{createTimeEnd},' %Y-%m-%d %H:%i:%s')
+			</if>
+		</where>
+	</select>
+	
+</mapper>

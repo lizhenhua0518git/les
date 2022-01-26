@@ -1,0 +1,79 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.dao.DictItemsDao">
+
+
+    <insert id="saveDictItems" parameterType="com.zkzn.les.basicInfo.pojo.DictItems">
+		<selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+			select replace(uuid(),'-','') from dual
+		</selectKey>
+		insert into t_dict_items 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+		 id,
+		 <if test="dictTypeId !=null and ''!= dictTypeId">dict_type_id,</if>
+		 <if test="itemName !=null and ''!= itemName">item_name,</if>
+		 <if test="itemValue !=null and ''!= itemValue">item_value,</if>
+         <if  test="itemDesc !=null and ''!= itemDesc">item_desc,</if>
+		 <if test="sortNo !=null ">sort_no</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			<if test="dictTypeId !=null and ''!= dictTypeId">#{dictTypeId},</if>
+			 <if test="itemName !=null and ''!= itemName">#{itemName},</if>
+			 <if test="itemValue !=null and ''!= itemValue">#{itemValue},</if>
+			<if  test="itemDesc !=null and ''!= itemDesc">#{itemDesc},</if>
+			 <if test="sortNo !=null ">#{sortNo}</if>
+		</trim>
+	</insert>
+	<delete id="deleteDictItems">
+	<if test="list.size()>0">
+		delete from t_dict_items where 
+		<foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+			id=#{item}
+		</foreach>
+	</if>
+	</delete>
+	<update id="updateDictItems" parameterType="com.zkzn.les.basicInfo.pojo.DictItems">
+		update t_dict_items 
+		<trim prefix="set" prefixOverrides=",">
+			<if test="dictTypeId !=null and ''!= dictTypeId">dict_type_id=#{dictTypeId}</if>
+			 <if test="itemName !=null and ''!= itemName">,item_name=#{itemName}</if>
+			 <if test="itemValue !=null and ''!= itemValue">,item_value=#{itemValue}</if>
+			<if test="itemDesc !=null and ''!= itemDesc">,item_desc=#{itemDesc}</if>
+			 <if test="sortNo !=null ">,sort_no=#{sortNo}</if>
+		</trim>
+		where id=#{id}
+	</update>
+	
+	<select id="listDictItemsList" parameterType="com.zkzn.les.basicInfo.pojo.DictItems" resultMap="dictItemsMap">
+		select i.id,i.item_name,i.item_value,i.item_desc,  i.sort_no,d.dict_name as dict_type_id
+		from t_dict_items i left join t_dict d on i.dict_type_id=d.id where 1=1
+		<if test="dictTypeId !=null and ''!= dictTypeId">and (dict_type_id=#{dictTypeId} or dict_name like '%${dictTypeId}%')</if>
+		<if test="itemName !=null and ''!= itemName">and item_name  like '%${itemName}%'</if>
+		<if test="itemValue !=null and ''!= itemValue">and item_value=#{itemValue}</if>
+		<if test="sortNo !=null ">and sort_no=#{sortNo}</if>
+		order by 
+
+		i.create_time desc,i.sort_no ASC
+	</select>
+	<select id="getDictItemsById" resultMap="dictItemsMap">
+		select * from t_dict_items where id=#{id}
+	</select>
+	<select id="listDictItemsByType"   resultMap="dictItemsMap">
+		<if test="list.size()>0">
+		select i.id,i.item_name,i.item_value,d.dict_type as dict_type_id from t_dict_items i left join t_dict d on d.id=i.dict_type_id where 
+		<foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+			d.dict_type=#{item}
+		</foreach>
+		order by sort_no ASC
+		</if>
+	</select>
+	 <select id="getDictItemByName" resultMap="dictItemsMap">
+        select * from t_dict_items where item_name=#{itemName}
+        and dict_type_id=(select id from t_dict where dict_name=#{dictName})
+    </select>
+	<resultMap type="com.zkzn.les.basicInfo.pojo.DictItems"  id="dictItemsMap">
+	   <result property="itemName" column="item_name" />
+	   <result property="itemValue" column="item_value" />
+	   <result property="dictTypeId" column="dict_type_id" />
+	</resultMap>
+</mapper>

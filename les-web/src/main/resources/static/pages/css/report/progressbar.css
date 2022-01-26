@@ -1,0 +1,17 @@
+
+
+.tit{margin-left: 20px; padding-top: 6px;}
+.tit h1{width: 140px; height: 50px; line-height: 50px; text-align: center; color: white; font-weight: normal; font-size: 18px; background-color: #d23535; border-top-right-radius: 32px;}
+
+main{width: 700px; margin-left: 20px; padding-bottom: 50px;}
+main h1{font-size: 16px; font-weight: bolder; color: #585858; line-height: 40px; padding-top: 10px;}
+section{border: 1px solid #e6e6e6; background-color: white; padding-bottom: 25px;}
+
+.customBarBox{height: 20px; margin-top: 40px; margin-right: 50px;}
+.customBarBox label{float: left; width: 110px; padding-right: 10px; line-height: 20px; text-align: right;}
+.customBarBox .layui-progress{height:100%;position: relative; margin-left: 120px; border-radius: 0; cursor: pointer;}
+.customBarBox .layui-progress > span{position: absolute; top: -20px; left: 0; right: 0; bottom: 0; margin: auto; text-align: center;}
+.customBarBox .layui-progress span.total{top: 0; right: -30px; text-align: right; line-height: 20px;}
+.customBarBox .layui-progress .layui-progress-bar{height:100%; border-radius: 0;}
+.tip-class{}
+.tip-class.layui-layer-tips .layui-layer-content{color:#333; box-shadow: 1px 1px 10px #3f3f3f; max-width: 120px;}

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.wms.upperFrame.dao.UpperFrameRecordDao">
+    <resultMap id="BaseResultMap" type="com.zkzn.les.wms.upperFrame.pojo.UpperFrameRecord">
+        <id column="ID" jdbcType="VARCHAR" property="id"/>
+        <result column="RECEIVE_RECORD_ID" jdbcType="VARCHAR" property="receiveRecordId"/>
+        <result column="RECEVIE_DETAIL_ID" jdbcType="VARCHAR" property="recevieDetailId"/>
+        <result column="RECOMMENDED_POSITION_ID" jdbcType="VARCHAR" property="recommendedPositionId"/>
+        <result column="RECOMMENDED_POSITION_CODE" jdbcType="VARCHAR" property="recommendedPositionCode"/>
+        <result column="POSITION_CODE" jdbcType="VARCHAR" property="positionCode"/>
+        <result column="POSITION_ID" jdbcType="VARCHAR" property="positionId"/>
+        <result column="MATERIAL_CODE" jdbcType="VARCHAR" property="materialCode"/>
+        <result column="FACTORY" jdbcType="VARCHAR" property="factory"/>
+        <result column="MATERIAL_UNIT" jdbcType="VARCHAR" property="materialUnit"/>
+        <result column="MATERIAL_NUM" jdbcType="NUMERIC" property="materialNum"/>
+        <result column="UPPER_TYPE" jdbcType="NUMERIC" property="upperType"/>
+        <result column="STORAGE_LOCATION" jdbcType="VARCHAR" property="storageLocation"/>
+        <result column="UPPER_TIME" jdbcType="TIMESTAMP" property="upperTime"/>
+        <result column="UPPER_NAME" jdbcType="VARCHAR" property="upperName"/>
+        <result column="UPPER_ID" jdbcType="VARCHAR" property="upperId"/>
+        <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="STATUS" jdbcType="NUMERIC" property="status"/>
+        <result column="CARRIER_CODE" jdbcType="VARCHAR" property="carrierCode"/>
+        <result column="CARRIER_ID" jdbcType="VARCHAR" property="carrierId"/>
+        <result column="UPPER_TASK_CODE" jdbcType="VARCHAR" property="upperTaskCode"/>
+        <result column="SUPPLIER_CODE" jdbcType="VARCHAR" property="supplierCode"/>
+        <result column="SUPPLIER_NAME" jdbcType="VARCHAR" property="supplierName"/>
+        <result column="BATCH_NO" jdbcType="VARCHAR" property="batchNo"/>
+        <result column="ORDER_CODE" jdbcType="VARCHAR" property="orderCode"/>
+        <result column="CUSTORMER" jdbcType="VARCHAR" property="custormer"/>
+        <result column="CUSTOM_NAME" jdbcType="VARCHAR" property="customName"/>
+        <result column="STATION_CODE" jdbcType="VARCHAR" property="stationCode"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from w_upper_frame_record
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+    <insert id="insert" parameterType="com.zkzn.les.wms.upperFrame.pojo.UpperFrameRecord">
+    insert into w_upper_frame_record (ID, RECEIVE_RECORD_ID, RECEVIE_DETAIL_ID,
+      RECOMMENDED_POSITION_ID, RECOMMENDED_POSITION_CODE,
+      POSITION_CODE, POSITION_ID, MATERIAL_CODE,
+      FACTORY, MATERIAL_UNIT, MATERIAL_NUM,
+      UPPER_TYPE, STORAGE_LOCATION, UPPER_TIME,
+      UPPER_NAME, UPPER_ID, CREATE_TIME,
+      STATUS, CARRIER_CODE, CARRIER_ID,
+      UPPER_TASK_CODE, SUPPLIER_CODE, SUPPLIER_NAME,
+      BATCH_NO, ORDER_CODE, CUSTORMER, UPPER_ORIGIN,
+      CUSTOM_NAME, STATION_CODE)
+    values (#{id,jdbcType=VARCHAR}, #{receiveRecordId,jdbcType=VARCHAR}, #{recevieDetailId,jdbcType=VARCHAR},
+      #{recommendedPositionId,jdbcType=VARCHAR}, #{recommendedPositionCode,jdbcType=VARCHAR},
+      #{positionCode,jdbcType=VARCHAR}, #{positionId,jdbcType=VARCHAR}, #{materialCode,jdbcType=VARCHAR},
+      #{factory,jdbcType=VARCHAR}, #{materialUnit,jdbcType=VARCHAR}, #{materialNum,jdbcType=NUMERIC},
+      #{upperType,jdbcType=NUMERIC}, #{storageLocation,jdbcType=VARCHAR}, #{upperTime,jdbcType=TIMESTAMP},
+      #{upperName,jdbcType=VARCHAR}, #{upperId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+      #{status,jdbcType=NUMERIC}, #{carrierCode,jdbcType=VARCHAR}, #{carrierId,jdbcType=VARCHAR},
+      #{upperTaskCode,jdbcType=VARCHAR}, #{supplierCode,jdbcType=VARCHAR}, #{supplierName,jdbcType=VARCHAR},
+      #{batchNo,jdbcType=VARCHAR}, #{orderCode,jdbcType=VARCHAR}, #{custormer,jdbcType=VARCHAR},
+      #{upperOrigin,jdbcType=INTEGER},#{customName,jdbcType=VARCHAR}, #{stationCode,jdbcType=VARCHAR})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com.zkzn.les.wms.upperFrame.pojo.UpperFrameRecord">
+    update w_upper_frame_record
+    set RECEIVE_RECORD_ID = #{receiveRecordId,jdbcType=VARCHAR},
+      RECEVIE_DETAIL_ID = #{recevieDetailId,jdbcType=VARCHAR},
+      RECOMMENDED_POSITION_ID = #{recommendedPositionId,jdbcType=VARCHAR},
+      RECOMMENDED_POSITION_CODE = #{recommendedPositionCode,jdbcType=VARCHAR},
+      POSITION_CODE = #{positionCode,jdbcType=VARCHAR},
+      POSITION_ID = #{positionId,jdbcType=VARCHAR},
+      MATERIAL_CODE = #{materialCode,jdbcType=VARCHAR},
+      FACTORY = #{factory,jdbcType=VARCHAR},
+      MATERIAL_UNIT = #{materialUnit,jdbcType=VARCHAR},
+      MATERIAL_NUM = #{materialNum,jdbcType=NUMERIC},
+      UPPER_TYPE = #{upperType,jdbcType=NUMERIC},
+      STORAGE_LOCATION = #{storageLocation,jdbcType=VARCHAR},
+      UPPER_TIME = #{upperTime,jdbcType=TIMESTAMP},
+      UPPER_NAME = #{upperName,jdbcType=VARCHAR},
+      UPPER_ID = #{upperId,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      `STATUS` = #{status,jdbcType=NUMERIC},
+      CARRIER_CODE = #{carrierCode,jdbcType=VARCHAR},
+      CARRIER_ID = #{carrierId,jdbcType=VARCHAR},
+      UPPER_TASK_CODE = #{upperTaskCode,jdbcType=VARCHAR},
+      SUPPLIER_CODE = #{supplierCode,jdbcType=VARCHAR},
+      SUPPLIER_NAME = #{supplierName,jdbcType=VARCHAR},
+      BATCH_NO = #{batchNo,jdbcType=VARCHAR},
+      ORDER_CODE = #{orderCode,jdbcType=VARCHAR},
+      CUSTORMER = #{custormer,jdbcType=VARCHAR},
+      CUSTOM_NAME = #{customName,jdbcType=VARCHAR},
+      STATION_CODE = #{stationCode,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select ID, RECEIVE_RECORD_ID, RECEVIE_DETAIL_ID, RECOMMENDED_POSITION_ID, RECOMMENDED_POSITION_CODE,
+    POSITION_CODE, POSITION_ID, MATERIAL_CODE, FACTORY, MATERIAL_UNIT, MATERIAL_NUM,
+    UPPER_TYPE, STORAGE_LOCATION, UPPER_TIME, UPPER_NAME, UPPER_ID, CREATE_TIME, `STATUS`,
+    CARRIER_CODE, CARRIER_ID, UPPER_TASK_CODE, SUPPLIER_CODE, SUPPLIER_NAME, BATCH_NO,
+    ORDER_CODE, CUSTORMER, CUSTOM_NAME, STATION_CODE
+    from w_upper_frame_record
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select ID, RECEIVE_RECORD_ID, RECEVIE_DETAIL_ID, RECOMMENDED_POSITION_ID, RECOMMENDED_POSITION_CODE,
+    POSITION_CODE, POSITION_ID, MATERIAL_CODE, FACTORY, MATERIAL_UNIT, MATERIAL_NUM,
+    UPPER_TYPE, STORAGE_LOCATION, UPPER_TIME, UPPER_NAME, UPPER_ID, CREATE_TIME, `STATUS`,
+    CARRIER_CODE, CARRIER_ID, UPPER_TASK_CODE, SUPPLIER_CODE, SUPPLIER_NAME, BATCH_NO,
+    ORDER_CODE, CUSTORMER, CUSTOM_NAME, STATION_CODE
+    from w_upper_frame_record
+  </select>
+
+    <select id="listUpperFrameRecord" parameterType="com.zkzn.les.wms.upperFrame.pojo.UpperFrameRecord"
+            resultType="com.zkzn.les.wms.upperFrame.pojo.UpperFrameRecord">
+        SELECT
+            ufr.upper_frame_id AS "upperFrameId",
+            ufr.receive_task_id AS "receiveTaskId",
+            ufr.receive_detail_id AS "receiveDetailId",
+            ufr.material_desc AS "materialDesc",
+            ufr.material_unit AS "materialUnit",
+            ufr.material_num AS "materialNum",
+            ap.position_code AS "positionCode",
+            ap.upper_number AS "upperNumber",
+            ufr.upper_type AS "upperType",
+            ufr.upper_upper_time AS "upperUpperTime",
+            ufr.upper_upper_name AS "upperUpperName",
+            ufr.create_time AS "createTime",
+            ufr.status,
+            ufr.carrier_code AS "carrierCode",
+            ufr.upper_task_code AS "upperTaskCode",
+            ufr.client_name AS "clientName",
+            ufr.client_manage_id AS "clientManageId",
+            ufr.batch_no AS "batchNo",
+            ufr.upper_origin AS "upperOrigin",
+            ufr.warehouse_name AS "warehouseName"
+        FROM
+        w_upper_frame_record ufr
+        LEFT JOIN w_actual_position ap ON ufr.upper_frame_id = ap.upper_frame_id
+        WHERE 1=1
+        <if test="upperFrameRecord.warehouseCode != null and '' != upperFrameRecord.warehouseCode">
+            <foreach collection="upperFrameRecord.warehouseCode.split(';')" open="and ufr.warehouse_code in (" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="upperFrameRecord.upperTaskCode !=null and ''!= upperFrameRecord.upperTaskCode">
+            and ufr.upper_task_code =#{upperFrameRecord.upperTaskCode}
+        </if>
+        <if test="upperFrameRecord.upperTimeStr != null and '' != upperFrameRecord.upperTimeStr">
+            AND ufr.upper_upper_time between
+            str_to_date(#{upperFrameRecord.startUpperTime}, '%Y-%m-%d') and
+            str_to_date(#{upperFrameRecord.endUpperTime}, '%Y-%m-%d')
+        </if>
+        <if test="upperFrameRecord.upperType != null and '' != upperFrameRecord.upperType">
+            <foreach collection="upperFrameRecord.upperType.split(';')" open="and ufr.upper_type in (" close=")"
+                     separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="upperFrameRecord.positionCode !=null and ''!= upperFrameRecord.positionCode">
+            and ap.position_code like '%${upperFrameRecord.positionCode}%'
+        </if>
+        <if test="upperFrameRecord.materialDesc !=null and ''!= upperFrameRecord.materialDesc">
+            and ufr.material_desc like '%${upperFrameRecord.materialDesc}%'
+        </if>
+        <if test="upperFrameRecord.status != null and '' != upperFrameRecord.status">
+            <foreach collection="upperFrameRecord.status.split(';')" open="and ufr.status in (" close=")" separator=","
+                     index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>

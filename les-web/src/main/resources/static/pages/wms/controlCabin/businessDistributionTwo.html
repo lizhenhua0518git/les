@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Access-Control-Allow-Origin" content="*" />
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-COMPATIBLE" content="IE=edge,chrome=1"/>
+<title>progressView</title>
+<link rel="stylesheet" href="${ctx}/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="css/progressView.css">
+</head>
+
+<body>
+<div class="progressTop">
+	<div class="dateChoose">
+		<div class="_inline">
+			<label>需求日期</label>
+			<inpush type="text" name="" id="requiredTime">
+		</div>
+		<div class="_inline ml60">
+			<label>派工日期</label>
+			<inpush type="text" name="" id="activateTime">
+		</div>
+	</div>
+	<div class="buttonGroup">
+		<button>查询</button>
+		<button>重置</button>
+		 
+	</div>
+</div>
+<div class="container mt50 ml50 mr50">
+	<div class="tit">各仓库数据情况</div>
+	<ul class="section" id="warehouse">
+		
+		 
+	</ul>
+</div>
+
+<script src="${ctx}/pages/js/jquery-3.3.1.min.js"></script>
+<script src="js/resetFontSize.js"></script>
+  <script src="${ctx}/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script>
+var ctx ='${ctx}';
+
+
+layui.use(['element','laydate'],function(){
+	
+	var laydate = layui.laydate;
+	
+	//日期控件
+	laydate.render({
+		elem:"#requiredTime",
+		  
+		 
+	});
+	laydate.render({
+		elem:"#activateTime",
+		  
+	
+	});
+	 
+	
+})
+</script>
+<script src="js/echarts.js"></script>
+<script>
+	
+	 $(function(){
+		 queryBusinessDistributionData();
+	 })
+	
+	function queryBusinessDistributionData(){
+		var element = layui.element;
+		var requiredTime =$("#requiredTime").val();
+		var activeTime =$("#activeTime").val();
+		var option ={
+		           url:ctx+'/businessDistributionPlanBoard/queryBusinessDistributionData',
+		           type:'POST',
+		           data:{"activeTime":activeTime,"requiredTime":requiredTime},
+		           dataType:'json',
+		           success:function(data){
+		               if(data.code==0){
+		            	var resultData = data.data;
+		            	var warehouseHtml ='';
+		            	 var orgnizationList = resultData.orgnizationList;
+		            	  
+		            	  var sendRhythmDataMap = resultData.sendRhythmDataMap;
+		            	  var sendUnrhythmDataMap = resultData.sendUnrhythmDataMap;
+		            	  var handoverRhythmDataMap = resultData.handoverRhythmDataMap;
+		            	  var handoverUnrhythmDataMap = resultData.handoverUnrhythmDataMap;
+		            	for(var i=0;i<orgnizationList.length;i++){
+		            		 var orgnization = orgnizationList[i];
+		            		  var warehouseCode =  orgnization.orgCode;
+		            		  
+		            		 warehouseHtml =warehouseHtml+'<li>'
+		        			+'<div>'
+		        			+'<div class="chart" id="'+warehouseCode+'"></div>'
+		        			+'</div>'
+		        			+'</li>	';
+		            	}
+		            	
+		            	$("#warehouse").html(warehouseHtml);
+		            	for(var i=0;i<orgnizationList.length;i++){
+		            		 var orgnization = orgnizationList[i];
+		            		  var warehouseCode =  orgnization.orgCode;
+		            		  var warehouseName = orgnization.orgName;
+		            		  
+		            		  var sendRhythmDataList = sendRhythmDataMap[warehouseCode];
+		            		  var sendUnrhythmDataList = sendUnrhythmDataMap[warehouseCode];
+		            		  var handoverRhythmDataList = handoverRhythmDataMap[warehouseCode];
+		            		  var handoverUnrhythmDataList = handoverUnrhythmDataMap[warehouseCode];
+		            		  
+		            		  var finishArray = new Array();
+		            		  finishArray.push(sendRhythmDataList[1]);
+		            		  finishArray.push(sendUnrhythmDataList[1]);
+		            		  finishArray.push(handoverRhythmDataList[1]);
+		            		  finishArray.push(handoverRhythmDataList[1]);
+		            		  var unfinishArray = new Array();
+		            		  unfinishArray.push(Number(sendRhythmDataList[0])-Number(sendRhythmDataList[1]));
+		            		  unfinishArray.push(Number(sendUnrhythmDataList[0])-Number(sendUnrhythmDataList[1]));
+		            		  unfinishArray.push(Number(handoverRhythmDataList[0])-Number(handoverRhythmDataList[1]));
+		            		  unfinishArray.push(Number(handoverRhythmDataList[0])-Number(handoverRhythmDataList[1]));
+		            		  drawBar(warehouseCode,warehouseName,finishArray,unfinishArray);
+		            	}
+		            	
+		            	 
+		            	
+		               }
+		           },error:function(data){
+		               layer.alert(data.msg);
+		           }
+		}
+		 $.ajax(option);
+	}
+	
+	function drawBar(id,name,finishArray,unfinishArray){
+		var bar = document.getElementById(id);
+		var option = {
+			title:{
+				text: name,
+				textStyle:{
+					color: "#89bef3",
+					fontSize:20,
+				},
+				left:"center",
+				top:"5%"
+			},
+			color: ['#2cc0f7', '#ee8a62'],
+			legend: {
+				bottom:"1%",
+				itemHeight:25,
+				textStyle:{
+					color:"#89bef3",
+					fontSize:16
+				},
+				data: ['完成', '未完成']
+			},
+			grid: {
+				top:'20%',
+				bottom:'22%'
+			},
+			xAxis: {
+				type: 'category',
+				axisLine:{show:false},
+				axisTick: {show: false},
+				axisLabel: {color:"#89bef3",fontSize:16},
+				data: ['节拍送达', '非节拍送达', '节拍交接', '非节拍交接']
+			},
+			yAxis: {
+				type: 'value',
+				axisLine:{show:false},
+				axisLabel: {color:"#89bef3",fontSize:16},
+				splitLine:{
+					lineStyle:{
+						color:"#295288",
+
+					}
+				}
+			},
+			series: [
+				{
+					name: '完成',
+					type: 'bar',
+					barWidth:30,
+					barGap: "20%",
+					itemStyle:{
+						barBorderRadius:[5,5,0,0]
+					},
+					data: finishArray
+				},
+				{
+					name: '未完成',
+					type: 'bar',
+					barWidth:30,
+					itemStyle:{
+						barBorderRadius:[5,5,0,0]
+					},
+					data: unfinishArray
+				}
+			]
+		};
+		echarts.init(bar).setOption(option);
+	}
+	
+	
+</script>
+</body>
+</html>

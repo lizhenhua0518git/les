@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.oms.dao.PurchaseBillDetailDao">
+  <resultMap id="BaseResultMap" type="com.zkzn.les.oms.pojo.PurchaseBillDetail">
+    <result column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="ORDER_CODE" jdbcType="VARCHAR" property="orderCode" />
+    <result column="PARENT_ID" jdbcType="VARCHAR" property="parentId" />
+    <result column="ITEM_NO" jdbcType="VARCHAR" property="itemNo" />
+    <result column="ITEM_TYPE" jdbcType="VARCHAR" property="itemType" />
+    <result column="SUBJECT_TYPE" jdbcType="VARCHAR" property="subjectType" />
+    <result column="MATERIAL_CODE" jdbcType="VARCHAR" property="materialCode" />
+    <result column="FACTORY" jdbcType="VARCHAR" property="factory" />
+    <result column="STORAGE_LOCATION" jdbcType="VARCHAR" property="storageLocation" />
+    <result column="MATERIAL_NUM" jdbcType="NUMERIC" property="materialNum" />
+    <result column="MATERIAL_UNIT" jdbcType="VARCHAR" property="materialUnit" />
+    <result column="IS_RETURN" jdbcType="VARCHAR" property="isReturn" />
+    <result column="IS_FREE" jdbcType="VARCHAR" property="isFree" />
+    <result column="DELIVERY_DATE" jdbcType="VARCHAR" property="deliveryDate" />
+    <result column="BILL_DATE" jdbcType="VARCHAR" property="billDate" />
+    <result column="SALES_ORDER_CODE" jdbcType="VARCHAR" property="salesOrderCode" />
+    <result column="SALES_ORDER_ITEM" jdbcType="VARCHAR" property="salesOrderItem" />
+    <result column="ELIKZ" jdbcType="VARCHAR" property="elikz" />
+    <result column="UEBTO" jdbcType="NUMERIC" property="uebto" />
+    <result column="UNTTO" jdbcType="NUMERIC" property="untto" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <insert id="insert" parameterType="com.zkzn.les.oms.pojo.PurchaseBillDetail">
+    insert into t_purchase_bill_detail (ID, ORDER_CODE, PARENT_ID,
+      ITEM_NO, ITEM_TYPE, SUBJECT_TYPE, 
+      MATERIAL_CODE, FACTORY, STORAGE_LOCATION, 
+      MATERIAL_NUM, MATERIAL_UNIT, IS_RETURN, 
+      IS_FREE, DELIVERY_DATE, BILL_DATE, 
+      SALES_ORDER_CODE, SALES_ORDER_ITEM, ELIKZ, 
+      UEBTO, UNTTO, CREATE_TIME
+      )
+    values (#{id,jdbcType=VARCHAR}, #{orderCode,jdbcType=VARCHAR}, #{parentId,jdbcType=VARCHAR}, 
+      #{itemNo,jdbcType=VARCHAR}, #{itemType,jdbcType=VARCHAR}, #{subjectType,jdbcType=VARCHAR}, 
+      #{materialCode,jdbcType=VARCHAR}, #{factory,jdbcType=VARCHAR}, #{storageLocation,jdbcType=VARCHAR}, 
+      #{materialNum,jdbcType=NUMERIC}, #{materialUnit,jdbcType=VARCHAR}, #{isReturn,jdbcType=VARCHAR}, 
+      #{isFree,jdbcType=VARCHAR}, #{deliveryDate,jdbcType=VARCHAR}, #{billDate,jdbcType=VARCHAR}, 
+      #{salesOrderCode,jdbcType=VARCHAR}, #{salesOrderItem,jdbcType=VARCHAR}, #{elikz,jdbcType=VARCHAR}, 
+      #{uebto,jdbcType=NUMERIC}, #{untto,jdbcType=NUMERIC}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <!-- 下发量累加 -->
+  <update id="updateBatchDetails">
+    <if test="detailList.size()>0">
+      <foreach collection="detailList" item="item" index="index"  separator=";" open="begin "  close=";end;">
+        update t_purchase_bill_detail
+        <trim prefix="set" suffixOverrides=",">
+          <if test="item.currentIssuedAmount !=null"> ISSUED_AMOUNT=ISSUED_AMOUNT+#{item.currentIssuedAmount,jdbcType=DOUBLE},</if>
+        </trim>
+        where ID =#{item.id,jdbcType=VARCHAR}
+      </foreach>
+    </if>
+  </update>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select ID, ORDER_CODE, PARENT_ID, ITEM_NO, ITEM_TYPE, SUBJECT_TYPE, MATERIAL_CODE, 
+    FACTORY, STORAGE_LOCATION, MATERIAL_NUM, MATERIAL_UNIT, IS_RETURN, IS_FREE, DELIVERY_DATE, 
+    BILL_DATE, SALES_ORDER_CODE, SALES_ORDER_ITEM, ELIKZ, UEBTO, UNTTO, CREATE_TIME
+    from t_purchase_bill_detail
+  </select>
+  <select id="listPurchaseBillDetail" parameterType="com.zkzn.les.oms.pojo.PurchaseBillDetail"
+          resultType="com.zkzn.les.oms.pojo.PurchaseBillDetail">
+    select pbd.ID,pbd.ORDER_CODE,pbd.PARENT_ID,pbd.ITEM_NO,pbd.ITEM_TYPE,pbd.SUBJECT_TYPE,pbd.MATERIAL_CODE,pbd.FACTORY,
+           pbd.STORAGE_LOCATION,pbd.MATERIAL_NUM,m.MATERIAL_UNIT,pbd.IS_RETURN,pbd.IS_FREE,pbd.DELIVERY_DATE,pbd.BILL_DATE,
+           pbd.SALES_ORDER_CODE,pbd.SALES_ORDER_ITEM,pbd.ELIKZ,pbd.UEBTO,pbd.UNTTO,pbd.CREATE_TIME,pbd.ISSUED_AMOUNT,pb.ORDER_TYPE,pb.SUPPLIER_CODE,
+           pb.SUPPLIER_NAME,fw.WAREHOUSE_CODE as "warehouseCode",fw.WAREHOUSE_NAME,m.MATERIAL_DESC
+    from t_purchase_bill_detail pbd
+    left join t_purchase_bill pb ON pbd.ORDER_CODE = pb.ORDER_CODE
+    left join t_factory_warehouse fw on fw.STORAGE_LOCATION = pbd.STORAGE_LOCATION
+    left join t_material m on m.MATERIAL_CODE = pbd.MATERIAL_CODE
+    WHERE 1 = 1
+    <if test="purchaseBillDetail.parentId !=null and ''!= purchaseBillDetail.parentId">
+        and pbd.PARENT_ID =#{purchaseBillDetail.parentId}
+    </if>
+
+    <if test="purchaseBillDetail.orderCode !=null and ''!= purchaseBillDetail.orderCode">
+        and pb.ORDER_CODE = #{purchaseBillDetail.orderCode}
+    </if>
+    <if test="purchaseBillDetail.supplierName !=null and ''!= purchaseBillDetail.supplierName">and pb.SUPPLIER_NAME like
+      '%${purchaseBillDetail.supplierName}%'
+    </if>
+    <if test="purchaseBillDetail.orderType != null and '' != purchaseBillDetail.orderType">
+      <foreach collection="purchaseBillDetail.orderType.split(';')" open="and pb.ORDER_TYPE in (" close=")" separator="," index="index" item="item">
+        #{item}
+      </foreach>
+    </if>
+    <if
+            test="purchaseBillDetail.requiredTimeStr != null and '' != purchaseBillDetail.requiredTimeStr">
+      AND pb.CREATE_TIME between
+      str_to_date(#{purchaseBillDetail.startRequiredTime}, '%Y-%m-%d') and
+      str_to_date(#{purchaseBillDetail.endRequiredTime}, '%Y-%m-%d')
+    </if>
+    <if test="purchaseBillDetail.materialCode !=null and ''!= purchaseBillDetail.materialCode">and pbd.MATERIAL_CODE like
+      '%${purchaseBillDetail.materialCode}%'
+    </if>
+    <if test="purchaseBillDetail.elikz != null and '' != purchaseBillDetail.elikz">
+      <foreach collection="purchaseBillDetail.elikz.split(';')" open="and pbd.elikz in (" close=")" separator="," index="index" item="item">
+        #{item}
+      </foreach>
+    </if>
+    <if test="purchaseBillDetail.salesOrderCode !=null and ''!= purchaseBillDetail.salesOrderCode">and pbd.SALES_ORDER_CODE like
+      '%${purchaseBillDetail.salesOrderCode}%'
+    </if>
+  </select>
+  <select id="listPurchaseBillDetailTH" parameterType="com.zkzn.les.oms.pojo.PurchaseBillRefund"
+          resultType="com.zkzn.les.oms.pojo.PurchaseBillRefund">
+    select pbd.ID, pbd.ORDER_CODE, pbd.PARENT_ID, pbd.ITEM_NO, pbd.ITEM_TYPE, pbd.SUBJECT_TYPE, pbd.MATERIAL_CODE,
+    pbd.FACTORY, pbd.STORAGE_LOCATION, pbd.MATERIAL_NUM, pbd.MATERIAL_UNIT, pbd.IS_RETURN, pbd.IS_FREE, pbd.DELIVERY_DATE,
+    pbd.BILL_DATE, pbd.SALES_ORDER_CODE, pbd.SALES_ORDER_ITEM, pbd.ELIKZ, pbd.UEBTO, pbd.UNTTO, pbd.CREATE_TIME,pb.ORDER_TYPE, pb.SUPPLIER_CODE, pb.SUPPLIER_NAME,
+    fw.WAREHOUSE_NAME,m.MATERIAL_DESC,sod.POSITION_CODE,sod.MODIFIER_NAME,sod.MODIFIED_TIME
+    from t_purchase_bill_detail pbd
+    left join t_purchase_bill pb on pbd.parent_id=pb.id
+    left join t_factory_warehouse fw on fw.STORAGE_LOCATION=pbd.STORAGE_LOCATION
+    left join t_material m on m.MATERIAL_CODE=pbd.MATERIAL_CODE
+    left join t_station_order_detail sod on sod.PROCESS_DETIAL_ID=pbd.id
+    WHERE 1=1
+    <if test="purchaseBillRefund.id !=null and ''!= purchaseBillRefund.id">
+      and pbd.id =#{purchaseBillRefund.id}
+    </if>
+
+    <if test="purchaseBillRefund.orderCode !=null and ''!= purchaseBillRefund.orderCode">and pb.ORDER_CODE like
+      '%${purchaseBillRefund.orderCode}%'
+    </if>
+    <if test="purchaseBillRefund.supplierName !=null and ''!= purchaseBillRefund.supplierName">and pb.SUPPLIER_NAME like
+      '%${purchaseBillRefund.supplierName}%'
+    </if>
+    <if test="purchaseBillRefund.orderType != null and '' != purchaseBillRefund.orderType">
+      <foreach collection="purchaseBillRefund.orderType.split(';')" open="and pb.ORDER_TYPE in (" close=")" separator="," index="index" item="item">
+        #{item}
+      </foreach>
+    </if>
+    <if
+            test="purchaseBillRefund.requiredTimeStr != null and '' != purchaseBillRefund.requiredTimeStr">
+      AND pb.CREATE_TIME between
+      str_to_date(#{purchaseBillRefund.startRequiredTime}, '%Y-%m-%d') and
+      str_to_date(#{purchaseBillRefund.endRequiredTime}, '%Y-%m-%d')
+    </if>
+    <if test="purchaseBillRefund.materialCode !=null and ''!= purchaseBillRefund.materialCode">and pbd.MATERIAL_CODE like
+      '%${purchaseBillRefund.materialCode}%'
+    </if>
+    <if test="purchaseBillRefund.elikz != null and '' != purchaseBillRefund.elikz">
+      <foreach collection="purchaseBillRefund.elikz.split(';')" open="and pbd.elikz in (" close=")" separator="," index="index" item="item">
+        #{item}
+      </foreach>
+    </if>
+    <if test="purchaseBillRefund.salesOrderCode !=null and ''!= purchaseBillRefund.salesOrderCode">and pbd.SALES_ORDER_CODE like
+      '%${purchaseBillRefund.salesOrderCode}%'
+    </if>
+  </select>
+
+  <insert id="saveArrMain" parameterType="com.zkzn.les.common.pojo.ArrivalNoticePojo">
+    <!--	<selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+            select  replace(uuid(),'-','') as id from dual
+        </selectKey>-->
+    INSERT INTO t_arrival_notice
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      ID,
+      ARRIVAL_CODE,
+      BILL_NAME,
+      BILL_TYPE,
+      CREATE_TIME,
+      EXPECTED_ARRIVAL_DATE,
+      FACTORY,
+      ORDER_CODE,
+      PURCHASE_CODE,
+      QUEUE_STATUS,
+      RECEIVED_STATUS,
+      SHIPPER_CODE,
+      SHIPPER_NAME,
+      STORAGE_LOCATION,
+      UPLOAD_STATUS,
+      WAREHOUSE_CODE,
+      WAREHOUSE_NAME,
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+      #{id},
+      #{arrivalCode},
+      #{billName},
+      #{billType},
+      #{createTime},
+      #{expectedArrivalDate},
+      #{factory},
+      #{orderCode},
+      #{purchaseCode},
+      #{queueStatus},
+      #{receivedStatus},
+      #{shipperCode},
+      #{shipperName},
+      #{storageLocation},
+      #{uploadStatus},
+      #{warehouseCode},
+      #{warehouseName},
+
+    </trim>
+  </insert>
+
+  <!-- 插入全部字段 -->
+  <insert id="saveRecMain" parameterType="com.zkzn.les.common.pojo.ReceiveRecord">
+    <selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+      select  replace(uuid(),'-','') from dual
+    </selectKey>
+    INSERT INTO T_RECEIVE_RECORD
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      ID,
+      BILL_CODE,
+      BILL_NAME,
+      BILL_TYPE,
+      CREATE_TIME,
+      FACTORY,
+      ORDER_CODE,
+      RECEIVED_TASK_CODE,
+      STATUS,
+      STORAGE_LOCATION,
+      SUPPLIER_CODE,
+      SUPPLIER_NAME,
+      WAREHOUSE_CODE,
+      WAREHOUSE_NAME,
+      SOURCE_ID,
+    </trim>
+    <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+      #{id},
+      #{billCode},
+      #{billName},
+      #{billType},
+      #{createTime},
+      #{factory},
+      #{orderCode},
+      #{receivedTaskCode},
+      #{status},
+      #{storageLocation},
+      #{supplierCode},
+      #{supplierName},
+      #{warehouseCode},
+      #{warehouseName},
+      #{sourceId},
+    </trim>
+  </insert>
+
+  <!-- 插入全部字段 -->
+  <insert id="saveArrDetailList" parameterType="java.util.List">
+    INSERT INTO t_arrival_notice_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      ID,
+      ARRIVAL_COUNT,
+      ARRIVAL_ID,
+      ARRIVAL_ITEM_NO,
+      CREATE_TIME,
+      FACTORY,
+      INSPECTION_STATUS,
+      MATERIAL_CODE,
+      MATERIAL_DESC,
+      MATERIL_UNIT,
+      ORDER_CODE,
+      ORDER_ITEM,
+      PURCHASE_CODE,
+      PURCHASE_ITEM,
+      RECEIVED_STATUS,
+      STORAGE_LOCATION,
+      SUPPLIER_CODE,
+      SUPPLIER_NAME,
+      UPPER_STATUS,
+    </trim>
+    <foreach collection="list" item="item" index="index" separator="UNION">
+      SELECT
+      <trim suffixOverrides=",">
+        #{item.id},
+        #{item.arrivalCount},
+        #{item.arrivalId},
+        #{item.arrivalItemNo},
+        #{item.createTime},
+        #{item.factory},
+        #{item.inspectionStatus},
+        #{item.materialCode},
+        #{item.materialDesc},
+        #{item.materilUnit},
+        #{item.orderCode},
+        #{item.orderItem},
+        #{item.purchaseCode},
+        #{item.purchaseItem},
+        #{item.receivedStatus},
+        #{item.storageLocation},
+        #{item.supplierCode},
+        #{item.supplierName},
+        #{item.upperStatus},
+      </trim>
+      from dual
+    </foreach>
+  </insert>
+
+
+
+  <insert id="saveRecDetailList" parameterType="java.util.List">
+    INSERT INTO T_RECEIVE_DETAIL_RECORD
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      ID,
+      CREATE_TIME,
+      FACTORY,
+      ITEM_NO,
+      MATERIAL_CODE,
+      MATERIAL_DESC,
+      MATERIAL_UNIT,
+      ORDER_ITEM_NO,
+      RECEIVE_ID,
+      RECEIVE_NUM,
+      RECEIVED_TASK_CODE,
+      SOURCE_ID,
+      STATUS,
+      STORAGE_LOCATION,
+      SAP_ITEM_NO
+    </trim>
+    <foreach collection="list" item="item" index="index" separator="UNION">
+      SELECT
+      <trim suffixOverrides=",">
+         replace(uuid(),'-',''),
+        #{item.createTime},
+        #{item.factory},
+        #{item.itemNo},
+        #{item.materialCode},
+        #{item.materialDesc},
+        #{item.materialUnit},
+        #{item.orderItemNo},
+        #{item.receiveId},
+        #{item.receiveNum},
+        #{item.receivedTaskCode},
+        #{item.sourceId},
+        #{item.status},
+        #{item.storageLocation},
+        #{item.sapItemNo},
+      </trim>
+      from dual
+    </foreach>
+  </insert>
+
+
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.basicInfo.dao.ResourceApiAdressDao">
+  <resultMap id="BaseResultMap" type="com.zkzn.les.basicInfo.pojo.ResourceApiAdress">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="API_PATH" jdbcType="VARCHAR" property="apiPath" />
+    <result column="RESOURCE_ID" jdbcType="VARCHAR" property="resourceId" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="CREATER_ID" jdbcType="VARCHAR" property="createrId" />
+    <result column="CREATER_NAME" jdbcType="VARCHAR" property="createrName" />
+    <result column="MODIFIED_TIME" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="MODIFIER_ID" jdbcType="VARCHAR" property="modifierId" />
+    <result column="MODIFIER_NAME" jdbcType="VARCHAR" property="modifierName" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from T_RESOURCE_API_ADRESS
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.zkzn.les.basicInfo.pojo.ResourceApiAdress">
+    insert into T_RESOURCE_API_ADRESS (ID, API_PATH, RESOURCE_ID, 
+      CREATE_TIME, CREATER_ID, CREATER_NAME, 
+      MODIFIED_TIME, MODIFIER_ID, MODIFIER_NAME, 
+      REMARK)
+    values (#{id,jdbcType=VARCHAR}, #{apiPath,jdbcType=VARCHAR}, #{resourceId,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createrId,jdbcType=VARCHAR}, #{createrName,jdbcType=VARCHAR}, 
+      #{modifiedTime,jdbcType=TIMESTAMP}, #{modifierId,jdbcType=VARCHAR}, #{modifierName,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.zkzn.les.basicInfo.pojo.ResourceApiAdress">
+    update T_RESOURCE_API_ADRESS
+    set API_PATH = #{apiPath,jdbcType=VARCHAR},
+      RESOURCE_ID = #{resourceId,jdbcType=VARCHAR},
+      CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
+      CREATER_ID = #{createrId,jdbcType=VARCHAR},
+      CREATER_NAME = #{createrName,jdbcType=VARCHAR},
+      MODIFIED_TIME = #{modifiedTime,jdbcType=TIMESTAMP},
+      MODIFIER_ID = #{modifierId,jdbcType=VARCHAR},
+      MODIFIER_NAME = #{modifierName,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select ID, API_PATH, RESOURCE_ID, CREATE_TIME, CREATER_ID, CREATER_NAME, MODIFIED_TIME, 
+    MODIFIER_ID, MODIFIER_NAME, REMARK
+    from T_RESOURCE_API_ADRESS
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select ID, API_PATH, RESOURCE_ID, CREATE_TIME, CREATER_ID, CREATER_NAME, MODIFIED_TIME, 
+    MODIFIER_ID, MODIFIER_NAME, REMARK
+    from T_RESOURCE_API_ADRESS
+  </select>
+  <select id="listResourceApiAddressPage" parameterType="com.zkzn.les.basicInfo.pojo.ResourceApiAdress" resultMap="BaseResultMap">
+    select ID, API_PATH, RESOURCE_ID, CREATE_TIME, CREATER_ID, CREATER_NAME, MODIFIED_TIME, 
+    MODIFIER_ID, MODIFIER_NAME, REMARK
+    from T_RESOURCE_API_ADRESS
+    where 1=1
+    <if test="resourceId !=null and '' !=resourceId">and RESOURCE_ID=#{resourceId}</if>
+  </select>
+  <insert id="saveResourceApiAdresss">
+		<foreach collection="list" open="begin" close=";end;" index="index" item="item" separator=";">
+			insert into T_RESOURCE_API_ADRESS
+			<trim prefix="(" suffix=")" prefixOverrides=",">
+				id
+				<if test="item.apiPath !=null and ''!= item.apiPath">,API_PATH</if>
+				<if test="item.resourceId !=null and ''!= item.resourceId">,RESOURCE_ID</if>
+				<if test="item.remark !=null and ''!= item.remark">,REMARK</if>
+				<if test="item.createrId !=null and ''!= item.createrId">,creater_Id</if>
+				<if test="item.createrName !=null and ''!= item.createrName">,creater_Name</if>
+				<if test="item.createTime !=null ">,create_Time</if>
+			</trim>
+			<trim prefix="values (" suffix=")" prefixOverrides=",">
+				 replace(uuid(),'-','')
+				<if test="item.apiPath !=null and ''!= item.apiPath">,#{item.apiPath}</if>
+				<if test="item.resourceId !=null and ''!= item.resourceId">,#{item.resourceId}</if>
+				<if test="item.remark !=null and ''!= item.remark">,#{item.remark}</if>
+				<if test="item.createrId !=null and ''!= item.createrId">,#{item.createrId}</if>
+				<if test="item.createrName !=null and ''!= item.createrName">,#{item.createrName}</if>
+				<if test="item.createTime !=null ">,#{item.createTime}</if>
+			</trim>
+		</foreach>
+	</insert>
+	<update id="updateResourceApiAdresss">
+		<foreach collection="list" open="begin" close=";end;" index="index" item="item" separator=";">
+			update T_RESOURCE_API_ADRESS  
+			<trim prefix="set" prefixOverrides=",">
+				<if test="item.apiPath !=null and ''!= item.apiPath">,API_PATH=#{item.apiPath}</if>
+				<if test="item.resourceId !=null and ''!= item.resourceId">,RESOURCE_ID=#{item.resourceId}</if>
+				<if test="item.remark !=null and ''!= item.remark">,REMARK=#{item.remark}</if>
+				<if test="item.modifierId !=null and ''!= item.modifierId">,modifier_Id=#{item.modifierId}</if>
+				<if test="item.modifierName !=null and ''!= item.modifierName">,modifier_Name=#{item.modifierName}</if>
+				<if test="item.modifiedTime !=null ">,modified_Time=#{item.modifiedTime}</if>
+			</trim>
+			where RESOURCE_ID = #{item.resourceId}
+		</foreach>
+	</update>
+	<delete id="deleteResourceApiAdress">
+		delete from T_RESOURCE_API_ADRESS where id in
+		<foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

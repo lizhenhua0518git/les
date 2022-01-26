@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.dao.OverstorageStrategyDao">
+   
+   <resultMap id="overstorageStrategy" type="com.zkzn.les.basicInfo.pojo.OverstorageStrategy">
+       <result column="bound_count" property="boundCount"/>
+        <result column="material_code" property="materialCode"/>
+        <result column="material_desc" property="materialDesc"/>
+        <result column="factory" property="factory"/>
+        <result column="purchase_type" property="purchaseType"/>
+        <result column="storage_location" property="storageLocation"/>
+        <result column="material_unit" property="materialUnit"/>
+       <result property="warehouseCode"  column="WAREHOUSE_CODE"/>
+	   <result property="warehouseName"  column="WAREHOUSE_NAME"/>
+    </resultMap>
+    
+     <sql id="Base_Column_List" >
+        material_code,material_desc,factory,purchase_type,storage_location,material_unit,bound_count
+       </sql>
+    
+   
+    
+    
+    <select id="list" parameterType="com.zkzn.les.basicInfo.pojo.OverstorageStrategy" resultMap="overstorageStrategy">
+       select
+
+		 m.material_code,
+		 m.material_desc,
+		 m.factory,
+		 m.purchase_type,
+		 m.storage_location,
+		 m.material_unit,
+		 m.bound_count,
+		 fw.warehouse_code,
+		 fw.warehouse_name
+		  from t_material m
+		
+		  left join (   select w.warehouse_code,
+		          w.warehouse_name,
+		          w.factory_code,
+		          w.storage_location
+		     from t_factory_warehouse w
+		    where w.status = 1
+		      and w.warehouse_code is not null
+		) fw
+		    on fw.factory_code = m.factory
+		   and fw.storage_location = m.storage_location
+
+         where  m.status=1
+          <if test="warehouseCode != null and warehouseCode != ''">
+				and fw.WAREHOUSE_CODE =#{warehouseCode}
+			</if>
+        <if test="materialCode !=null and ''!= materialCode">and m.material_code like '%${materialCode}%'</if>
+        <if test="materialDesc !=null and ''!= materialDesc">and m.material_desc like '%${materialDesc}%'</if>
+        <if test="storageLocation !=null and ''!= storageLocation">and m.storage_location=#{storageLocation}</if>
+        <if test="factory !=null and ''!= factory">and m.factory=#{factory}</if>
+        <if test="purchaseType !=null and ''!= purchaseType">and m.purchase_type=#{purchaseType}</if>
+         <if test="boundCountIsNull !=null and ''!= boundCountIsNull">and m.bound_count is null</if>
+       
+        <if test="sortColums ==null or  '' ==sortColums">order by ifnull(m.bound_count,0) desc </if>
+        <if test="sortColums !=null and  '' !=sortColums">order by ${sortColums}</if>
+    </select>
+    
+    <update id="editBoundCount" parameterType="java.util.List">
+	<if test="list.size()>0">
+     <foreach collection="list" item="item" index="index" separator=";" open="begin"  close=";end;" >
+        update t_material
+        
+        set  bound_count= #{item.boundCount} 
+        
+        where  material_code =#{item.materialCode}  and  factory=#{item.factory} and storage_location=#{item.storageLocation}
+    </foreach>
+	</if>
+ </update>
+ 
+ <!-- 查询要导出的数据的条数 -->
+   <select id="queryCount" parameterType="com.zkzn.les.basicInfo.pojo.OverstorageStrategy" resultType="int">
+        select
+        
+        count(*)
+       
+        from t_material m  where  m.status=1
+        <if test="materialCode !=null and ''!= materialCode">and m.material_code like '%${materialCode}%'</if>
+        <if test="materialDesc !=null and ''!= materialDesc">and m.material_desc like '%${materialDesc}%'</if>
+        <if test="storageLocation !=null and ''!= storageLocation">and m.storage_location=#{storageLocation}</if>
+        <if test="factory !=null and ''!= factory">and m.factory=#{factory}</if>
+        <if test="purchaseType !=null and ''!= purchaseType">and m.purchase_type=#{purchaseType}</if>
+         <if test="boundCountIsNull !=null and ''!= boundCountIsNull">and m.bound_count is null</if>
+
+    </select>
+</mapper>

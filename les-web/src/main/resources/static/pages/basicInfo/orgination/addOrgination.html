@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>新增组织结构</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+
+<script src="/iles/pages/js/fullScreen.js"></script>
+</head>
+<body>
+ <div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+<div class="layui-container" style="padding-top: 20px;">
+	<form class="layui-form" action="">
+		<div class="layui-form-item">
+			<div class="layui-inline">
+			    <label class="layui-form-label">组织编号</label>
+			    <div class="layui-input-block">
+			      <input type="text" name="orgCode" lay-verify="orgCode" autocomplete="off" placeholder="请输入组织编号" class="layui-input">
+			    </div>
+		 	</div>
+		 </div>
+		 <div class="layui-form-item">
+			 <div class="layui-inline">
+				    <label class="layui-form-label">组织名称</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="orgName" lay-verify="orgName" autocomplete="off" placeholder="请输入组织名称" class="layui-input">
+				    </div>
+			 </div>
+		 </div>
+		 <div class="layui-form-item">
+			 <div class="layui-inline">
+				    <label class="layui-form-label">上级组织</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="parentName" onclick="chooseParentOrg()" id="parentName" placeholder="点击选择上级组织名称" class="layui-input" readonly="readonly">
+				    </div>
+			 </div>
+		 </div>
+		 <div class="layui-form-item">
+			 <div class="layui-inline">
+				    <label class="layui-form-label">组织类型</label>
+				    <div class="layui-input-block">
+			      		<select name="orgType" id="orgType">
+					        <option value=""></option>
+					      </select>
+			         </div>
+			 </div>
+		 </div>
+		  <div class="layui-form-item">
+			 <div class="layui-inline">
+				    <label class="layui-form-label">状态</label>
+				     <div class="layui-input-block">
+			      		<select name="status" id="status">
+					        <option value=""></option>
+					      </select>
+			         </div>
+			 </div>
+		 </div>
+		 <div class="layui-form-item">
+		    <div class="layui-input-block">
+		      <button class="layui-btn"  lay-submit="" lay-filter="orgsubit">立即提交</button>
+		      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		    </div>
+		  </div>
+		  <input id="parentId" name="parentId" hidden="true"/>
+	</form>
+</div>
+</script>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+	<script type="text/javascript">
+		var contextPath = config.basicInfoConfig.contextPath;
+		var element = layui.element;	
+		var layer = layui.layer;
+		var oldData = parent.oldData;
+		var dictItems = parent.dictItems;
+		var form = layui.form
+		function loadding(){
+			//自定义验证规则
+			  form.verify({
+				  orgCode: function(value){
+			      if(value.length < 1){
+			        return '组织编号不能为空';
+			      }
+			    }
+			    ,orgName: function(value){
+				      if(value.length < 1){
+					        return '组织名称不能为空';
+					      }
+					    }
+			  });
+			  
+			  //监听提交
+			  form.on('submit(orgsubit)', function(data){
+			    var option = {
+			    	url:contextPath+'orgnization/saveOrgination',
+			    	data:JSON.stringify(data.field),
+			    	type:'POST',
+			    	contentType:'application/json',
+			    	success:function(data){
+			    		if(data.code==0){
+			    			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			    			parent.layer.close(index);  // 关闭layer
+			    			parent.treeGrid.reload('orgTabId');
+			    		}
+			    	},error:function(data){
+			    		layer.alert(data.msg)
+			    	}
+			    }
+			    $.ajax(option);
+			    return false;
+			  });
+		     if(dictItems && dictItems.length>0){
+				 defulatSelect(dictItems);
+			 }else{
+				 queryDictItem(); 
+			 }
+		 	if(oldData && oldData.length>0){//表单赋上级资源信息
+			   	 if(oldData[0].id.length>0){
+			   		var option  = {
+							url:contextPath+'orgnization/getOrgination?id='+oldData[0].id,
+							type:'GET',
+							contentType:'application/json',
+							success:function(data){
+								if(data.code==0 && data.data!=null){
+									$("#parentName").val(data.data.orgName);
+									$("#parentId").val(data.data.id);
+									return false;
+								}
+							}
+					};
+					$.ajax(option);	
+			   	 }
+			}
+		}
+		  
+	 	function chooseParentOrg(){
+	 		layer.open({
+		        type: 2
+		        ,title:'选择父节点'
+		        ,maxmin:true
+		        ,area: ['400px', '300px']
+		        ,id: 'orgnizationchose' //防止重复弹出
+		        ,content: 'chooseOrgination.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+		   });
+	 	}
+	 	
+		 function queryDictItem(){
+			  var dictType = new Array();
+			  dictType.push("org_type");
+  			  dictType.push("enable");
+				//查询字典
+				var option={
+						url:contextPath+'dictItems/queryDictItemByTypes',
+						type:'POST',
+						dataType:'json',
+						contentType: "application/json",
+						data:JSON.stringify(dictType),
+						success:function(res){
+							if(res.code==0){
+								dictItems = res.data
+								defulatSelect(res.data);
+							}
+						}
+	  			};
+				$.ajax(option);
+		  }
+		  function defulatSelect(dictItems){
+			  if(dictItems && dictItems.length>0){
+				  for(var i=0;i<dictItems.length;i++){
+					  if(dictItems[i].dictTypeId=="enable"){
+						  $("#status").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+					  }else if(dictItems[i].dictTypeId=="org_type"){
+						  $("#orgType").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+					  }
+				  }
+				  $("#status").val("1");
+				  $("#orgType").get(0).selectedIndex=1;
+				  form.render('select');
+			  }
+		  }
+	</script>
+</body>
+</html>

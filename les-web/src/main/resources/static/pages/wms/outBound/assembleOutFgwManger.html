@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/tableFilter.css"  type="text/css" />
+<title>配送计划执行物料明细表(非工位制)</title>
+<style> .layui-layer-content{background: linear-gradient(#001a47,#022558);}</style>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/layui/lay/modules/layer.js" charset="UTF-8"></script>
+<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js"></script>
+<script type="text/html" id="indexTpl"> {{d.LAY_TABLE_INDEX+1}} </script>
+<script type="text/html" id="bodyTpl">
+<!--<div class="layui-collapse">
+<div class="layui-colla-item">
+	<h2 class="layui-colla-title">检索信息</h2>
+	<div class="layui-colla-content">  -->
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+		 <div class="layui-col-md3">
+                <label class="layui-form-label">仓库:</label>
+                 <div class="layui-input-block">
+					<select id="warehouseCode" xm-select="select1" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+                </div>
+     	</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">订单号:</label>
+			<div class="layui-input-block">
+				<input type="text" id="orderCode" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">预留号:</label>
+			<div class="layui-input-block">
+				<input type="text" id="rsnum" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">物料编码:</label>
+			<div class="layui-input-block">
+				<input type="text" id="materialCode" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">凭证号:</label>
+			<div class="layui-input-block">
+				<input type="text" id="voucherCode" class="layui-input">
+			</div>
+		</div>
+	</div>
+	<div class="layui-row layui-form" style="padding-top: 7px;">
+		<div class="layui-col-md3">
+			<label class="layui-form-label">载具号:</label>
+			<div class="layui-input-block">
+				<input type="text" id="carrierCode" class="layui-input">
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">凭证日期:</label>
+			<div class="layui-input-block">
+				<input type="text" id="requiredTime" class="layui-input"
+					placeholder="yyyy-MM-dd">
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">派工日期:</label>
+			<div class="layui-input-block">
+				<input type="text" id="activeTime" class="layui-input"
+					placeholder="yyyy-MM-dd">
+			</div>
+		</div>
+
+		<div class="layui-col-md2">
+			<label class="layui-form-label">任务状态:</label>
+			<div class="layui-input-block">
+				<select id="planState">
+					<option value="">请选择状态</option>
+					<option value="0" endValue="0">未分匹</option>
+					<option value="30" endValue="30">待下架</option>
+					<option value="33"  endValue="33">待集配</option>
+					<option value="42"  endValue="42">待编组</option>
+					<option value="50"  endValue="50">待发货</option>
+					<option value="60"  endValue="60">已发货未送达</option>
+					<option value="70"  endValue="72">送达未交接</option>
+					<option value="80"  endValue="80">交接完成</option>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="layui-row layui-form">
+		<div class="layui-col-md3 layui-btn-container">
+				{{# if(d.search==null || d.search=="true"){ }}
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+				{{# } }}
+				{{# if(d.export==null || d.export=="true"){ }}
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+				{{# } }}
+		</div>
+	</div>
+</div>
+<!--	</div>
+	</div>
+	</div> -->
+
+<table id="distributionTaskDetailUnStationTab" lay-filter="distributionTaskDetailUnStationTabF"></table>
+</script>
+<script type="text/javascript">
+    var storage = window.localStorage;
+    var token = storage.token;
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var contextPath = config.wmsConfig.contextPath;
+    var form = layui.form;
+    var formSelects = layui.formSelects;
+    var tableFilter = layui.tableFilter;
+    var oldData;
+    var myDate=new Date();
+    var curDateStr=getFormatDate(myDate);
+    var  tableFilterIns;
+    layui.use(['formSelects'],function(){
+    	formSelects = layui.formSelects;
+    });
+	var active = {
+
+            search:function(othis){
+            	form.render("select");
+                form.render("checkbox");
+                var materialCode=$.trim($('#materialCode').val());
+                var orderCode=$.trim($('#orderCode').val());
+                var voucherCode = $.trim($('#voucherCode').val());
+                var carrierCode = $.trim($('#carrierCode').val());
+                var requiredTime = $("#requiredTime").val();
+                var activeTime = $('#activeTime').val();
+                var rsnum = $("#rsnum").val();
+                var planStateValue = $("#planState").find("option:selected").attr("value");
+                var planStateEndValue = $("#planState").find("option:selected").attr("endValue");
+                var requiredStartTime="";
+				var requiredEndTime="";
+				var storageLocation = layui.formSelects.value('select1', 'storagelocationStr');
+				if(requiredTime && requiredTime.length>0){
+					requiredStartTime = requiredTime.substring(0,10);
+					requiredEndTime = requiredTime.substring(13);
+				}else{
+					requiredStartTime=curDateStr;
+		        	requiredEndTime=curDateStr;
+				}
+				var activeStartTime="";
+				var activeEndTime="";
+				if(activeTime && activeTime.length>0){
+					activeStartTime = activeTime.substring(0,10);
+					activeEndTime = activeTime.substring(13);
+				}
+                var params={};
+                params.planStateValue = planStateValue;
+                params.planStateEndValue = planStateEndValue;
+                params.materialCode=materialCode;
+                params.orderCode=orderCode;
+ 				params.storageLocation = storageLocation;
+                params.carrierCode=carrierCode;
+                params.voucherCode=voucherCode;
+                params.requiredStartTime=requiredStartTime;
+                params.requiredEndTime=requiredEndTime;
+                params.activeStartTime=activeStartTime;
+                params.activeEndTime=activeEndTime;
+                params.rsnum = rsnum;
+                  //执行重载
+                  table.reload('distributionTaskDetailUnStationId', {
+                    where:params,
+                    page:{"curr":1}
+                  });
+            },reset:function(othis){
+                $('#materialCode').val("");
+                $('#orderCode').val("");
+                $('#voucherCode').val("");
+                $('#requiredTime').val("");
+                $('#activeTime').val("");
+                $('#carrierCode').val("");
+                $("#planState").val("");
+                $("#rsnum").val("");
+                layui.formSelects.value('select1', []);
+                form.render("select");
+                form.render("checkbox");
+            },
+            export:function(othis){
+            	 var materialCode=$.trim($('#materialCode').val());
+                 var orderCode=$.trim($('#orderCode').val());
+                 var voucherCode = $.trim($('#voucherCode').val());
+                 var carrierCode = $.trim($('#carrierCode').val());
+                 var requiredTime = $("#requiredTime").val();
+                 var activeTime = $('#activeTime').val();
+                 var rsnum = $("#rsnum").val();
+                 var planStateValue = $("#planState").find("option:selected").attr("value");
+                 var planStateEndValue = $("#planState").find("option:selected").attr("endValue");
+                 var requiredStartTime="";
+ 				 var requiredEndTime="";
+ 				 var storageLocation = layui.formSelects.value('select1', 'storagelocationStr');
+ 				 if(requiredTime && requiredTime.length>0){
+ 					requiredStartTime = requiredTime.substring(0,10);
+ 					requiredEndTime = requiredTime.substring(13);
+ 				 }else{
+ 					requiredStartTime=curDateStr;
+ 		        	requiredEndTime=curDateStr;
+ 				 }
+ 				 var activeStartTime="";
+ 				 var activeEndTime="";
+ 				 if(activeTime && activeTime.length>0){
+ 					activeStartTime = activeTime.substring(0,10);
+ 					activeEndTime = activeTime.substring(13);
+ 				 }
+                var params = "token="+token+"&materialCode="+materialCode+"&orderCode="+orderCode+"&carrierCode"+carrierCode
+                +"&planStateValue="+planStateValue+"&requiredStartTime="+requiredStartTime+"&requiredEndTime="+requiredEndTime
+                +"&voucherCode="+voucherCode+"&activeStartTime="+activeStartTime+"&activeEndTime="+activeEndTime+"&rsnum="+rsnum+"&planStateEndValue="+planStateEndValue+"&storageLocation="+storageLocation ;
+
+                window.open(contextPath+"outBoundPlanManger/exportDistributionTaskDetailUnStation?"+params);
+            }
+
+    };
+
+    function loadding(){
+    	//日期范围
+        layui.use('laydate', function(){
+        	var laydate = layui.laydate;
+        	laydate.render({
+        	    elem: '#requiredTime',
+        	    range: true
+        	});
+        	laydate.render({
+        	    elem: '#activeTime',
+        	    range: true
+        	});
+
+        });
+
+        table.render({
+            elem:'#distributionTaskDetailUnStationTab',
+            id:'distributionTaskDetailUnStationId',
+            url:contextPath+'outBoundPlanManger/queryDistributionTaskDetailUnStation',
+            headers:{"Authorization": 'Bearer '+token},
+            limits:[10, 50, 100, 200, 500],
+            limit:10,
+            cols:[[
+            {type:'numbers',title:'序号',width: 60},
+            {field:'warehouseCode', title: '仓库编码' , width:100},
+			{field:'warehouseName', title: '仓库名称' , width:100},
+            {field:'storageLocation', width:100, title: '库存地点'},
+            {field:'jobNode', width:100, title: '任务状态'},
+            {field:'voucherDate', width:130, title: '凭证日期'},
+            {field:'requiredTime', width:130, title: '需求日期'},
+            {field:'activeTime', width:130, title: '派工日期'},
+            {field:'voucherCode', width:120, title: '凭证号'},
+            {field:'materialCode', width:150, title: '物料编号'},
+            {field:'materialDesc', width:150, title: '物料描述'},
+            {field:'finishedCount', width:100, title: '实发数量'},
+            {field:'materialUnit', width:100, title: '物料单位'},
+            {field:'assembleOrderCode', width:170, title: '集配单据号'},
+            {field:'orderCode', width:100, title: '订单号'},
+            {field:'rsnum', width:100, title: '预留号'},
+            {field:'carCode', width:100, title: '车号代码'},
+            {field:'carrierCode', width:130, title: '载具'},
+            {field:'sendUname', width:100, title: '需求用户'},
+            {field:'stationAreaCode', width:120, title: '送达工位'},
+            {field:'deliveryDate', width:130, title: '送达日期'},
+            {field:'deliveryTime', width:130, title: '送达时间'},
+            {field:'deliveryUname', width:100, title: '送达人'},
+            {field:'handoverDate', width:130, title: '交接日期'},
+            {field:'handoverTime', width:130, title: '交接时间'},
+            {field:'handoveruname', width:100, title: '交接人'},
+            {field:'lowerFrameTime', width:130, title: '下架时间'},
+            {field:'lowerFrameUname', width:100, title: '下架操作人'},
+            {field:'assembleTime', width:130, title: '集配时间'},
+            {field:'assembleUname', width:100, title: '集配人'},
+            {field:'wbsCode', width:100, title: 'WBS元素号'},
+            {field:'bwart', width:100, title: '移动类型'},
+            {field:'sapUserName', width:100, title: 'SAP管理工'},
+
+
+
+            ]],
+            page:{theme: '#008155'},
+            height: '478px',
+            where:{
+            	requiredStartTime:curDateStr,
+            	requiredEndTime:curDateStr,
+            },
+            done:function(res,page,count){//列表数据回调函数
+            	//initTableDate(res.data);
+            	tableFilterIns = tableFilter.render({
+
+                    'elem' : '#distributionTaskDetailUnStationTab',//table的选择器
+                    'mode' : 'local',//过滤模式
+                    'id':'distributionTaskDetailUnStationId',
+                    'filters' : [
+                    			{field:'warehouseName',name:'仓库名称',type:'checkbox'},
+                    			{field:'storageLocation',name:'库存地点',type:'checkbox'},
+                    			{field:'sendUname',name:'需求用户',type:'checkbox'}
+                    			],//过滤项配置
+                    'done': function(filters){
+
+                    }
+                });
+            }
+        });
+        $('.layui-btn-container button').on('click', function(){
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+        initWarehouseMultiSelect("warehouseCode","select1","0",null);
+        element.init();
+    }
+
+
+  //表格数据初始化
+    function initTableDate(data){
+
+    	$("[data-field='jobNode']").children().each(function(){
+        	if($(this).text()=='-1'){
+                $(this).text('未分匹');
+            }else if($(this).text()=='30'){
+                $(this).text('待派工');
+            }else if($(this).text()=='31'){
+                $(this).text('待下架');
+            }
+            else if($(this).text()=='33'){
+                $(this).text('待集配');
+            }
+            else if($(this).text()=='35'){
+                $(this).text('待审核');
+            }
+            else if($(this).text()=='40'){
+                $(this).text('待移库');
+            }
+            else if($(this).text()=='42'){
+                $(this).text('待编组');
+            }
+            else if($(this).text()=='50'){
+                $(this).text('待发货');
+            }
+            else if($(this).text()=='60'){
+                $(this).text('待缓冲卸货');
+            }
+            else if($(this).text()=='61'){
+                $(this).text('待缓冲复核');
+            }
+            else if($(this).text()=='62'){
+                $(this).text('待缓冲发货');
+            }
+            else if($(this).text()=='71'){
+                $(this).text('送达完成');
+            }
+            else if($(this).text()=='80'){
+                $(this).text('交接完成');
+            }
+        });
+
+        $("[data-field='orderCode']").children().each(function(){
+            if($(this).text()=='/'){
+                $(this).text('');
+            }
+        });
+    }
+
+
+    function dateFtt(fmt,date)
+	{ //author: meizz
+	  var o = {
+	    "M+" : date.getMonth()+1,                 //月份
+	    "d+" : date.getDate(),                    //日
+	    "h+" : date.getHours(),                   //小时
+	    "m+" : date.getMinutes(),                 //分
+	    "s+" : date.getSeconds(),                 //秒
+	    "q+" : Math.floor((date.getMonth()+3)/3), //季度
+	    "S"  : date.getMilliseconds()             //毫秒
+	  };
+	  if(/(y+)/.test(fmt))
+	    fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));
+	  for(var k in o)
+	    if(new RegExp("("+ k +")").test(fmt))
+	  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+	  return fmt;
+	}
+
+
+  //格式化日期
+    function getFormatDate(date){
+    	var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        return currentdate;
+    }
+
+</script>
+</body>
+</html>

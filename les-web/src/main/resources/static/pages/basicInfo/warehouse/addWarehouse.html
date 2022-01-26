@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>新增仓库信息</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<div class="layui-container" style="padding-top: 20px;">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+				<div class="layui-inline">
+				    <label class="layui-form-label layui-required">仓库编码:</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="orgCode" id="orgCode" lay-verify="orgCode" autocomplete="off" placeholder="请输入仓库编码" class="layui-input">
+				    </div>
+			 	</div>
+			 	<div class="layui-inline">
+				    <label class="layui-form-label layui-required">仓库名称:</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="orgName" id="orgName" lay-verify="orgName" autocomplete="off" placeholder="请输入仓库名称" class="layui-input" >
+				    </div>
+			 	</div>
+			 </div>
+
+			 <div class="layui-form-item">
+			 <div class="layui-inline">
+				    <label class="layui-form-label layui-required">仓库类型:</label>
+				    <div class="layui-input-block">
+				    <select     name="orgType" id="orgType" lay-verify="orgType"  lay-filter="orgType"  >
+				    <option value="">请选择</option>
+				    </select>
+				    </div>
+			 	</div>
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">仓库地址:</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="orgAddress" id="orgAddress"   autocomplete="off" placeholder="请输入仓库地址" class="layui-input">
+				    </div>
+			 	</div>
+			 </div>
+			 <div class="layui-form-item">
+				<div class="layui-inline">
+				    <label class="layui-form-label">联系人:</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="contacts" id="contacts"   autocomplete="off" placeholder="请输联系人" class="layui-input">
+				    </div>
+			 	</div>
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">联系方式:</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="phone" id="phone" autocomplete="off" placeholder="请输联系方式 " class="layui-input" >
+				    </div>
+			 	</div>
+			 </div>
+
+			  <div id="showChooseSupplier" class="layui-form-item" style="display:none;">
+				<div class="layui-inline">
+				    <label class="layui-form-label layui-required">供货商:</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="supplierName" id="supplierName" readonly="readonly"  lay-verify="supplierName" placeholder="请选择供货商" onclick="chooseSupplier()" class="layui-input">
+				     <input type="hidden" name="supplierCode" id="supplierCode"  class="layui-input" >
+				    </div>
+			 	</div>
+
+			 </div>
+
+			 <div class="layui-form-item">
+                <div class="layui-btn-container" style="text-align: center;">
+                  <button class="layui-btn" lay-submit="" lay-filter="warehouseSubmit">立即提交</button>
+               <button type="reset" class="layui-btn layui-btn-primary"><i class="layui-icon  layui-icon-reset"></i>重置</button>
+                </div>
+              </div>
+
+		</form>
+	</div>
+
+  <script type="text/html" id="bodyTpl">
+  </script>
+	<script type="text/javascript">
+    function loadding(){
+
+    	queryDictItem('warehouse_type','orgType','');
+	layui.use(['form','table','layer'],function(){
+		var $ = layui.$;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form
+		var oldData = parent.oldData;
+		var contextPath = config.basicInfoConfig.contextPath;
+
+
+
+
+		layui.use(['form', 'layedit'], function(){
+			form.verify({
+				orgCode: function(value){
+				      if(value.length < 1){
+				        return '仓库编码不能为空';
+				      }
+				      if(value.length>32)
+				    	  return '仓库编码超长，不能超过32个字符';
+				}
+				,orgName:function(value){
+					 if(value.length < 1){
+					        return '仓库名称不能为空';
+					      }
+					      if(value.length>64)
+					    	  return '仓库名称超长，不能超过64个字符';
+				},supplierName:function(value){
+					  var orgType =  $('#orgType').val();
+					  if(orgType=="3"){
+
+						 if(value =="" || value ==null ){
+							 return '请选择供货商';
+						 }
+					 }
+				},orgType:function(value){
+					console.log("value",value)
+					 if(value=="请选择"||value==""){
+					        return '请选择仓库类型';
+					 }
+
+
+
+
+				}
+
+			  });
+			  //监听提交
+			  form.on('submit(warehouseSubmit)', function(data){
+				saveDict(data);
+				return false;
+			 });
+			//监听重置
+			  form.on('submit(reset)', function(data){
+			     $("#orgCode").val("");
+		         $("#orgName").val("");
+		         $("#orgType").val("");
+		         $("#orgAddress").val("");
+		         $("#contacts").val("");
+		         $("#phone").val("");
+		         $('#supplierCode').val("");
+			     $('#supplierName').val("");
+	                return false;
+	             });
+			  form.render("select");
+
+
+		});
+
+		function saveDict(data){
+			var option = {
+		    	url: contextPath+ 'warehouse/saveWarehouse',
+		    	data:JSON.stringify(data.field),
+		    	type:'POST',
+		    	contentType:'application/json',
+		    	success:function(data){
+		    		if(data.code==0){
+		    			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+		    			parent.layer.close(index);  // 关闭layer
+		    			parent.parentId = "";
+		    			parent.table.reload('warehouseTabId');
+		    		}else{
+		    			layer.alert(data.data);
+		    		}
+		    	},error:function(data){
+		    		layer.alert(data.msg);
+		    	}
+		    }
+			layui.$.ajax(option);
+		}
+
+		form.on('select(orgType)', function(data){
+			  var orgType=data.value;
+
+				if(orgType=="3"){
+					$("#showChooseSupplier").show();
+				}else{
+					$("#showChooseSupplier").hide();
+					$('#supplierCode').val("");
+					$('#supplierName').val("");
+				}
+		 });
+	})
+
+
+
+    };
+	  // 选择供货商
+		function chooseSupplier(){
+			layer.open({
+		        type: 2
+		        ,title:'选择供货商'
+		        ,maxmin:true
+		        ,area: ['400px', '300px']
+		        ,id: 'supplierChose' //防止重复弹出
+		        ,content: 'choseSupplier.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+		   });
+		}
+
+	</script>
+</body>
+</html>

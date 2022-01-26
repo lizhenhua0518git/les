@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.stock.dao.SCheckInventoryDetailDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zkzn.les.stock.pojo.SCheckInventoryDetail">
+        <id column="detail_id" property="detailId"/>
+        <result column="task_id" property="taskId"/>
+        <result column="storage_bin_id" property="storageBinId"/>
+        <result column="check_count" property="checkCount"/>
+        <result column="stock_count" property="stockCount"/>
+        <result column="handled_by" property="handledBy"/>
+        <result column="handled_time" property="handledTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        detail_id, task_id, storage_bin_id, check_count, stock_count, handled_by, handled_time
+    </sql>
+
+    <insert id="insertBatch">
+        INSERT INTO s_check_inventory_detail (task_id,storage_bin_id, check_count, stock_count, handled_by, handled_time)values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (
+            #{item.taskId},
+            #{item.storageBinId},
+            #{item.checkCount},
+            #{item.stockCount},
+            #{item.handledBy},
+            #{item.handledTime}
+            )
+        </foreach>
+    </insert>
+    <update id="updateBatch">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update s_check_inventory_detail
+            <set>
+                task_id = #{item.taskId},
+                storage_bin_id = #{item.storageBinId},
+                check_count = #{item.checkCount},
+                stock_count = #{item.stockCount},
+                handled_by = #{item.handledBy},
+                handled_time = #{item.handledTime}
+            </set>
+            where detail_id = ${item.detailId}
+        </foreach>
+    </update>
+    <update id="acceptTheProfitAndLoss" parameterType="com.zkzn.les.stock.pojo.SCheckInventoryTask">
+        update s_material_storage_bin smtb,s_check_inventory_detail scid
+        set smtb.check_count = 0.00,
+        smtb.stock_count = scid.check_count
+        where smtb.storage_bin_id = scid.storage_bin_id
+        and scid.task_id = #{taskId}
+        and smtb.warehouse_code = #{warehouseCode}
+        and smtb.client_name = #{clientName}
+    </update>
+    <update id="updateNotCountedStock" parameterType="com.zkzn.les.stock.pojo.SCheckInventoryTask">
+        update s_material_storage_bin
+        set stock_count = check_count,check_count = 0.00
+        where check_count > 0.00
+        and warehouse_code = #{warehouseCode}
+        and client_name = #{clientName}
+    </update>
+    <update id="updateClientCloses" parameterType="com.zkzn.les.stock.pojo.SCheckInventoryTask">
+        update s_material_storage_bin smtb,s_check_inventory_detail scid
+        set smtb.check_count = 0.00,
+        smtb.stock_count = scid.check_count
+        where smtb.storage_bin_id = scid.storage_bin_id
+        and scid.check_count > scid.check_count
+        and scid.task_id = #{taskId}
+        and smtb.warehouse_code = #{warehouseCode};
+    </update>
+
+</mapper>

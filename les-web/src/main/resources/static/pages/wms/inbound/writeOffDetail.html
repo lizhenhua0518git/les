@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/css/style.min.css">
+    <title>质检入库冲销详情</title>
+</head>
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">冲销操作人</label>
+                <div class="layui-input-block">
+                    <input type="text" id="writeOffUser" class="layui-input" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">冲销操作时间</label>
+                <div class="layui-input-block">
+                    <input type="text" id="writeOffTime" class="layui-input" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">冲销理由</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入冲销理由" class="layui-textarea" id="writeOffReason" readonly></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <input id="detailId" name="detailId" value="" type="hidden">
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  lay-submit=""  lay-filter="cancel" id="cancel">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/jstree.min.js"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+
+<script type="text/javascript">
+    var contextPath = config.basicInfoConfig.contextPath;
+    var element = layui.element;
+    var layer = layui.layer;
+    var oldData = parent.oldData;
+
+    var contextPath = config.wmsConfig.contextPath;
+    var form = layui.form;
+    //加载数据
+    document.getElementById("detailId").value=oldData.detailId;
+    document.getElementById("writeOffUser").value=oldData.writeOffUser;
+    document.getElementById("writeOffTime").value=oldData.writeOffTime;
+    document.getElementById("writeOffReason").value=oldData.writeOffReason;
+    //监听取消
+    form.on('submit(cancel)', function(){
+        cancel();
+        return false;
+    });
+
+    //取消按钮
+    function cancel() {
+        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+        parent.layer.close(index);  // 关闭layer
+        parent.table.reload();
+    }
+</script>
+</body>
+</html>

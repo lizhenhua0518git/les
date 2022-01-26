@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.dao.WorkAreaDao">
+
+	<insert id="saveWorkArea" parameterType="com.zkzn.les.basicInfo.pojo.WorkArea">
+		<selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+			select  replace(uuid(),'-','') from dual
+		</selectKey>
+		insert into t_area
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			id,
+			<if test="workAreaCode !=null and ''!= workAreaCode">AREA_CODE,</if>
+			<if test="workAreaName !=null and ''!= workAreaName">AREA_NAME,</if>
+			<if test="areaType !=null and ''!= areaType">AREA_TYPE,</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">WAREHOUSE,</if>
+			<if test="createrId !=null and '' != createrId">CREATER_ID,</if>
+			<if test="createTime !=null">CREATE_TIME,</if>
+			<if test="createrName !=null and '' != createrName">CREATER_NAME</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			<if test="workAreaCode !=null and ''!= workAreaCode">#{workAreaCode},</if>
+			<if test="workAreaName !=null and ''!= workAreaName">#{workAreaName},</if>
+			<if test="areaType !=null and ''!= areaType">#{areaType},</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">#{warehouseCode},</if>
+			<if test="createrId !=null and '' != createrId">#{createrId},</if>
+			<if test="createTime !=null">#{createTime},</if>
+			<if test="createrName !=null and '' != createrName">#{createrName}</if>
+		 
+		</trim>
+	</insert>
+
+	<delete id="deleteWorkArea">
+	<if test="list.size()>0">
+		delete from t_area where
+		<foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+			id=#{item}
+		</foreach>
+	</if>
+	</delete>
+	
+	<update id="updateWorkArea">
+		update t_area
+		<trim prefix="set" prefixOverrides=",">
+			<if test="workAreaName !=null and ''!= workAreaName">,AREA_NAME=#{workAreaName}</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">,WAREHOUSE=#{warehouseCode}</if>
+			<if test="modifierId !=null and ''!= modifierId">,MODIFIER_ID=#{modifierId}</if>
+			<if test="modifierName !=null and ''!= modifierName">,MODIFIER_NAME=#{modifierName}</if>
+			<if test="modifiedTime !=null">,MODIFIED_TIME=#{modifiedTime}</if>
+		</trim>
+		where id=#{id}
+	</update>
+
+	<select id="getWorkAreaByCodeList" resultType="java.util.Map">
+		SELECT
+			AREA_CODE AS "workAreaCode",
+			ID AS "id"
+		FROM t_area WHERE AREA_TYPE = 'ZYQ'
+		<foreach collection="list" open="AND AREA_CODE IN (" close=")" separator="," index="index" item="item">
+			#{item}
+		</foreach>
+	</select>
+
+	<update id="updateStoragePositionList">
+		<foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+			update t_storage_position
+			<trim prefix="set" prefixOverrides=",">
+				<if test="item.areaId !=null and ''!= item.areaId">,AREA_ID = #{item.areaId,jdbcType=VARCHAR}</if>
+			</trim>
+			where POSITION_CODE=#{item.positionCode,jdbcType=VARCHAR} AND  WAREHOUSE = #{item.warehouseCode,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+	
+	<select id="listWorkArea" parameterType="com.zkzn.les.basicInfo.pojo.WorkArea" resultType="com.zkzn.les.basicInfo.pojo.WorkArea">
+	SELECT
+		a.id AS "id",
+		w.ORG_CODE AS "warehouseCode",
+		w.ORG_NAME AS "warehouseName",
+		a.AREA_CODE AS "workAreaCode",
+		a.AREA_NAME AS "workAreaName",
+		a.CREATER_NAME AS "createrName",
+		a.CREATE_TIME AS "createTime"
+	FROM t_area a
+	LEFT JOIN t_warehouse w ON a.WAREHOUSE = w.ORG_CODE
+	WHERE AREA_TYPE = 'ZYQ'
+	<if test="warehouseCode != null and '' != warehouseCode">
+		<foreach collection="warehouseCode.split(';')" open="and w.ORG_CODE in (" close=")" separator="," index="index" item="item">
+			#{item}
+		</foreach>
+	</if>
+		<if test="workAreaCode !=null and ''!= workAreaCode"> AND a.AREA_CODE = #{workAreaCode}</if>
+		<if test="workAreaName !=null and ''!= workAreaName"> AND a.AREA_NAME = #{workAreaName}</if>
+	ORDER BY a.CREATE_TIME DESC
+	</select>
+
+	<select id="queryWorkAreaByWareHouseCode" parameterType="com.zkzn.les.basicInfo.pojo.WorkArea" resultType="com.zkzn.les.basicInfo.pojo.WorkArea">
+		select a.*  from t_work_area  a where a.status =1
+		<if test="workAreaCode !=null and ''!= workAreaCode">and a.work_area_code like upper('%${workAreaCode}%')</if>
+		<if test="workAreaName !=null and ''!= workAreaName">and a.work_area_name like '%${workAreaName}%'</if>
+		<if test="warehouseCode !=null and ''!= warehouseCode">and a.warehouse_code=#{warehouseCode}</if>
+		<if test="warehouseCode ==null or ''== warehouseCode">and a.warehouse_code IS NULL </if>
+		order by a.create_time desc
+	</select>
+	 
+
+	<select id="getWorkAreaByCode"  resultType="com.zkzn.les.basicInfo.pojo.WorkArea">
+		select * from t_work_area where  work_area_code=#{workAreaCode} and warehouse_code=#{warehouseCode} and status=1
+	</select>
+	
+	<update id="updateWorkAreaByList">
+		<foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+			update t_work_area
+			<trim prefix="set" prefixOverrides=",">
+				<if test="item.workAreaCode !=null and ''!= item.workAreaCode">,work_area_code = #{item.workAreaCode}</if>
+				<if test="item.workAreaName !=null and ''!= item.workAreaName">,work_area_name=#{item.workAreaName}</if>
+				 
+				<if test="item.warehouseCode !=null and ''!= item.warehouseCode">,warehouse_code=#{item.warehouseCode}</if>
+			   <if test="item.warehouseName !=null and ''!= item.warehouseName">,warehouse_name=#{item.warehouseName}</if>
+			</trim>
+			where id=#{item.id}
+		</foreach>
+	</update>
+	<insert id="saveWorkAreaBatch">
+		<foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+			insert into t_work_area (ID,work_area_code,work_area_name, warehouse_code,warehouse_name) select  replace(uuid(),'-',''),'${item.workAreaCode}','${item.workAreaName}','${item.warehouseCode}','${item.warehouseName}' from dual
+		</foreach>
+	</insert>
+	
+	 
+    
+</mapper>

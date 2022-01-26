@@ -1,0 +1,105 @@
+/**
+* 自定义基础样式表
+* @author	GaoYuan
+* @date		2019.05.09
+*/
+
+@import "base.css";
+
+.ml60{margin-left: 0.6rem;}
+.mt50{margin-top: 0.5rem;}
+.ml50{margin-left: 0.5rem;}
+.mr50{margin-right: 0.5rem;}
+.mt30{margin-top: 0.3rem;}
+.ml20{margin-left: 0.2rem;}
+.mr20{margin-right: 0.2rem;}
+
+html{background: linear-gradient(#001a47,#022558); min-height: 100%;}
+body{min-height: 100%; color: #c0dcfe;}
+.progressTop{margin: 0 0.5rem; padding-top: 0.3rem; font-size: 0.3rem; overflow: hidden;}
+.dateChoose{float: left;}
+.dateChoose ._inline{display: inline-block;}
+.dateChoose ._inline input{box-sizing: border-box; width: 2.6rem; height: 0.5rem; line-height: 0.5rem; padding:0 0.15rem; border: 1px solid #2a69c7; border-radius: 5px; color: #c0dcfe;}
+.buttonGroup{float: right;}
+.buttonGroup button{height: 0.46rem; padding: 0 0.3rem; background-color: #1f4e94; border: 1px solid #2a69c7; border-radius: 5px; color: #c0dcfe; font-size: 0.24rem; cursor: pointer;}
+
+.container{overflow: hidden; position: relative;}
+.container .tit{margin-bottom: 0.25rem; font-size: 0.24rem; line-height: 0.32rem;}
+.container .tit::before{content: "\e715"; font-family: "layui-icon"; margin-right: 0.2em;}
+
+ul.section{width: 19.5rem; overflow: hidden; background:radial-gradient(#043991 5%,transparent 70%, transparent);}
+ul.section > li{float: left; box-sizing: border-box; width: 5.86rem; height: 4rem; padding: 2px; background: radial-gradient(rgba(25,59,106,0.6) 78%,rgba(38,105,168,1)); margin-right: 0.3rem; margin-bottom: 0.3rem;}
+ul.section > li > div{height: 100%; background: rgba(25,59,106,1); box-sizing: border-box; position: relative;}
+ul.section > li .desc{position: absolute; top: 0.2rem; left: 0.3rem;}
+ul.section > li .desc h1{font-size: 0.2rem; font-weight: normal; color: #89bef3;}
+ul.section > li .desc p{font-size: 0.3rem; color: #c0dcfe;}
+ul.section > li .chart{position: absolute; width: 100%; height: 100%;}
+ul.section > li .minValue{position: absolute; left: 2rem; bottom: 0.4rem; font-size: 0.24rem; color: #c0dcfe;}
+ul.section > li .maxValue{position: absolute; right: 2rem; bottom: 0.4rem; font-size: 0.24rem; color: #c0dcfe;}
+
+ul.section2{margin-left: 80px;}
+ul.section2 > li{margin-right: 0.2rem; margin-bottom: 0.2rem; height: auto; min-height: 5.03rem;}
+ul.percentInfo{position: absolute; bottom: calc(50% + 0.2rem); left: 0; width: 80px;}
+ul.percentInfo.percentInfo2{bottom: 0.2rem;}
+ul.percentInfo li{text-align: center; color: white; padding: 3px 0;}
+ul.percentInfo li:nth-child(1){padding: 20px 0; background-color: #2ec9cf;}
+ul.percentInfo li:nth-child(2){background-color: #f3b131;}
+ul.percentInfo li:nth-child(3){background-color: #ee7f52;}
+ul.percentInfo li:nth-child(4){background-color: #f15a5a;}
+ul.percentInfo li:nth-child(5){background-color: #9b6ef6;}
+ul.percentInfo li:nth-child(6){background-color: #4b9bec;}
+ul.percentInfo li p{font-size: 16px;}
+ul.percentInfo li span{font-size: 20px; font-weight: bold;}
+
+ul.asTable{padding: 0.15rem 0.15rem;}
+ul.asTable li{margin-top: 0.15rem; display: flex; font-size: 0.14rem; text-align: center;}
+ul.asTable li:nth-child(1){margin-top: 0;}
+ul.asTable li:nth-child(1) > div{color: #89bef3;}
+ul.asTable li:nth-child(1) > div:nth-child(1){font-size: 0.2rem; text-align: left;}
+ul.asTable li > div:nth-child(1){flex-grow:1;}
+ul.asTable li > div:nth-child(2){width: 80px;}
+ul.asTable li > div:nth-child(3){width: 80px;}
+ul.asTable li > div:nth-child(4){width: 80px;}
+ul.asTable li > div:nth-child(1) label{float: left; text-align: right; width: 110px; line-height: 22px;}
+
+.customBar{margin-left: 120px; margin-right: 10px; overflow: hidden;}
+.customBar .layui-progress{height: 0.22rem; border-radius: 3px; background-color: #1f4e94; border: 1px solid #2a69c7; box-sizing: border-box;}
+.customBar .layui-progress .layui-progress-bar{height: 0.22rem; border-radius: 3px; background-color: #2cc0f7; margin: -1px 0 0 -1px;}
+
+
+
+
+
+.customBorder{box-sizing: border-box; height: 8.2rem; padding: 2px; background: radial-gradient(rgba(25,59,106,0.6) 78%,rgba(38,105,168,1)); margin-bottom: 0.4rem;}
+.customBorder > div{height: 100%; background: rgba(25,59,106,1); box-sizing: border-box; position: relative;}
+.customBorder .progressBox{width: 10.3rem; margin: 0 auto; position: relative;}
+.customBorder .progressBox h1{font-size: 0.24rem; text-align: center; padding-top: 0.4rem; margin-bottom: 0.8rem;}
+.customBorder .progressBox .progressBar{margin-top: 0.6rem; position: relative; z-index: 1;}
+.customBorder .progressBox .progressBar label{float: left; width: 2rem; text-align: right; font-size: 0.24rem; line-height: 0.36rem;}
+.customBorder .progressBox .progressBar > div{margin-left: 2.2rem; overflow: hidden;}
+.customBorder .progressBox .layui-progress{height: 0.36rem; border-radius: 5px; background-color: transparent;}
+.customBorder .progressBox .layui-progress .layui-progress-bar{height: 100%; border-radius: 5px;}
+
+.progressBox .progressBar:nth-child(1) .layui-progress-bar{background-color:#4b9bec;}
+.progressBox .progressBar:nth-child(2) .layui-progress-bar{background-color:#2ec9cf;}
+.progressBox .progressBar:nth-child(3) .layui-progress-bar{background-color:#eabc2e;}
+.progressBox .progressBar:nth-child(4) .layui-progress-bar{background-color:#ee8a62;}
+.progressBox .progressBar:nth-child(5) .layui-progress-bar{background-color:#9b6ef6;}
+.progressBox .progressBar:nth-child(6) .layui-progress-bar{background-color:#f06161;}
+
+.progressBox > p{margin-top: 0.4rem; font-size: 0.24rem; margin-left: 2.2rem; text-align: center;}
+.progressBox > p span{float: left;}
+.progressBox > p span + span{float: none;}
+.progressBox > p span + span + span{float: right; margin-right: -1.5em;}
+
+.progressBox .gline{position: absolute; right: 0; top: 1.2rem; width: auto; height: 6rem; }
+.progressBox .gline div{position: absolute; width: 1px; height: 100%; border-left: 1px dashed; border-color: rgba(80,129,188,0.4); z-index: 0;}
+.progressBox .gline div::before{content: "g3"; position: absolute; top: -0.4rem; left: -0.1rem; font-size: 0.24rem;}
+.progressBox .gline div + div{right: 1.1rem;}
+.progressBox .gline div + div::before{content: "g2"}
+.progressBox .gline div + div + div{right:2.2rem;}
+.progressBox .gline div + div + div::before{content: "g1"}
+
+
+
+

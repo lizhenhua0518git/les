@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.panel.dao.StationPanelDao">
+
+    <select id="listStationPanel" resultType="java.util.Map">
+
+  select t.order_code "orderCode",
+       t.id "id",
+        case t.status
+         when 5 then
+          '待拣配'
+         when 10 then
+          '待出库'
+          when 15 then
+          '待送达'
+          when 20 then
+          '待交接'
+       end as "statusStr",
+       ac.task_number "taskNumber",
+       ifnull(ac.send_time, sysdate) "sendTime",
+       ifnull(ac.create_time,sysdate) "createTime",
+       u.user_name "userName"
+  from t_station_order t
+
+  join t_assemble_carrier ac
+    on ac.station_order_id = t.id
+  left join t_user u on u.id =ac.sender_id
+
+
+ where t.status in('5','10','15','20')
+
+
+    </select>
+
+
+    <select id="listCurrentDayInfo" resultType="java.util.Map">
+
+    select sum(d.pick_num) "pickNum",
+       count(distinct t.station_code) "stationCodeNum",
+       t.status "status"
+  from t_station_order t
+
+  left join t_station_order_detail d
+    on t.id = d.station_order_id
+
+ where date_format(t.create_time, '%Y-%m-%d') = #{currentDay} and  t.status <![CDATA[ > ]]>5
+
+  group by t.status
+
+    </select>
+
+</mapper>

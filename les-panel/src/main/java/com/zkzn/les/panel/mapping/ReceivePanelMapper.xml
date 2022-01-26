@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.panel.dao.ReceivePanelDao">
+
+    <select id="listReceivePanel" resultType="java.util.Map">
+  select trr.supplier_name as "supplierName",
+       trr.id "id",
+        ifnull(rtr.receive_start_time,sysdate) "startTime",
+        ifnull(rtr.receive_end_time,sysdate) "endTime",
+       case trr.status
+         when 15 then
+          '待收货'
+         when 20 then
+          '收货中'
+       end as "statusStr"
+  from t_receive_record trr
+  left join t_receive_time_record rtr
+    on rtr.receive_id = trr.id
+
+ where trr.status in (15,20) and trr.bill_type=3
+ and date_format(trr.create_time, '%Y-%m-%d')=date_format(sysdate, '%Y-%m-%d')
+
+ order  by trr.create_time desc
+    </select>
+
+
+
+
+    <select id="listReceivePanelDetail" resultType="java.util.Map">
+        select
+        tdr.receive_id "receiveId",
+        tdr.status "status",
+        ifnull(tdr.pointer_name,' ') "pointerName"
+
+        from t_receive_detail_record tdr
+   where tdr.status >0
+
+
+        <if test="null != idList and idList.size >0">
+            <foreach collection="idList" open="  and tdr.receive_id in  (" close=")" index="index" item="item" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+</mapper>

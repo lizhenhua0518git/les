@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>作业时长标准配置</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/tableFilter.css"  type="text/css" />
+</head>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+
+   <script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+	
+	<script type="text/html" id="bodyTpl">
+     <div class="layui-container" style="padding-top: 20px;">
+		<div>
+		<p style="margin:0;text-align:center;color:#333;font-weight:700;font-size:18px;">收货基础策略</p>
+		</div>
+		<form class="layui-form" action="" lay-filter="basicCreceiptStrategyForm">
+		
+		 <div>
+		 <label  style="text-align:left;font-size: 20px;">
+             <h3>配置数据:</h3>
+            </label>
+		 </div>
+		<br/>
+		<br/>
+		<br/>
+			<div class="layui-form-item">
+			 	<div class="layui-inline">
+			 	<label class="layui-form-label"></label>
+				    <label class="layui-form-label">普通物料</label>
+				    
+			 	</div>
+			 	<div class="layui-inline">
+			 	<label class="layui-form-label"></label>
+			 	<label class="layui-form-label"></label>
+                    <label class="layui-form-label">紧急物料</label>
+                    
+                </div>
+			 	 
+			</div>
+			<div class="layui-form-item">
+                 
+                <div class="layui-inline">
+                 
+                    <label class="layui-form-label" style="width: 135px">
+                    <span style="color:red">*</span> 平均标准卸货时长:</label>
+                  
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="unloadValueOne" id="unloadValueOne" lay-verify="unloadValueOne" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                <label>(分钟)</label>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">
+                    </label>
+                    <div class="layui-input-block">
+                       
+                    </div>
+                </div>
+                
+            </div>
+        
+            <div class="layui-form-item">
+                 
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">
+                    <span style="color:red">*</span> 平均标准点收时长:</label>
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="timeValueOne" id="timeValueOne" lay-verify="timeValueOne" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                <label>(分钟)</label>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="timeValueTwo" id="timeValueTwo" lay-verify="timeValueTwo" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                <label>(分钟)</label>
+            </div>
+            
+            
+            <div class="layui-form-item">
+                 
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">
+                    <span style="color:red">*</span> 平均标准质检时长:</label>
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="qualityValueOne" id="qualityValueOne" lay-verify="qualityValueOne" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                 <label>(分钟)</label>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="qualityValueTwo" id="qualityValueTwo" lay-verify="qualityValueTwo" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                 <label>(分钟)</label>
+            </div>
+        
+        <div class="layui-form-item">
+                 
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">
+                    <span style="color:red">*</span> 平均标准转储时长:</label>
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="dumpValueOne" id="dumpValueOne" lay-verify="dumpValueOne" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                 <label>(分钟)</label>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="dumpValueTwo" id="dumpValueTwo" lay-verify="dumpValueTwo" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                 <label>(分钟)</label>
+            </div>
+            
+               <div class="layui-form-item">
+                 
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">
+                    <span style="color:red">*</span> 平均标准上架时长:</label>
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="upFrameValueOne" id="upFrameValueOne" lay-verify="upFrameValueOne" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                 <label>(分钟)</label>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 135px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <div class="layui-input-block" style="padding-left:60px;">
+                      <input type="text" name="upFrameValueTwo" id="upFrameValueTwo" lay-verify="upFrameValueTwo" autocomplete="off"   class="layui-input" >
+                    </div>
+                </div>
+                 <label>(分钟)</label>
+            </div>
+			
+			 <div class="layui-form-item">
+			    <div class="layui-input-block" style="padding-left:340px;">
+			      <button class="layui-btn" lay-submit="" lay-filter="basicCreceiptStrategySubit">保存</button>
+			     
+			    </div>
+			  </div>
+			 
+		</form>
+	</div>
+    </script>
+	<script type="text/javascript">
+	 var contextPath = config.basicInfoConfig.contextPath;
+	  var form = layui.form
+	 function loadding(){
+		 queryBasicCreceiptStrategy();
+		 
+		 
+			layui.use(['form', 'layedit'], function(){
+				form.verify({
+					 
+					 
+					unloadValueOne(value){
+						 if(value.length < 1){
+						        return '平均标准卸货时长不能为空';
+						 }
+						 var reg = /^\d+$/; // 非负整数
+						 
+						 if(!reg.test(value)){
+							 return '平均标准卸货时长值为非负整数';
+						 }
+					},timeValueOne(value){
+	                    if(value.length < 1){
+	                        return '平均标准点收时长不能为空';
+	                 }
+	                 var reg = /^\d+$/; // 非负整数
+	                 
+	                 if(!reg.test(value)){
+	                     return '平均标准点收时长值为非负整数';
+	                 }
+		            },qualityValueOne(value){
+		                if(value.length < 1){
+		                    return '平均标准质检时长不能为空';
+		             }
+		             var reg = /^\d+$/; // 非负整数
+		             
+		             if(!reg.test(value)){
+		                 return '平均标准质检时长值为非负整数';
+		             }
+			        },dumpValueOne(value){
+			            if(value.length < 1){
+			                return '平均标准转储时长不能为空';
+			         }
+			         var reg = /^\d+$/; // 非负整数
+			         
+			         if(!reg.test(value)){
+			             return '平均标准转储时长值为非负整数';
+			         }
+				     },upFrameValueOne(value){
+				            if(value.length < 1){
+				                return '平均标准上架时长不能为空';
+				         }
+				         var reg = /^\d+$/; // 非负整数
+				         
+				         if(!reg.test(value)){
+				             return '平均标准上架时长值为非负整数';
+				         }
+					     },timeValueTwo(value){
+		                    if(value.length < 1){
+		                        return '平均标准点收时长不能为空';
+		                   }
+		                 var reg = /^\d+$/; // 非负整数
+		                 
+		                 if(!reg.test(value)){
+		                     return '平均标准点收时长值为非负整数';
+		                 }
+		                },qualityValueTwo(value){
+		                    if(value.length < 1){
+		                        return '平均标准质检时长不能为空';
+		                 }
+		                 var reg = /^\d+$/; // 非负整数
+		                 
+		                 if(!reg.test(value)){
+		                     return '平均标准质检时长值为非负整数';
+		                 }
+		                },dumpValueTwo(value){
+		                    if(value.length < 1){
+		                        return '平均标准转储时长不能为空';
+		                 }
+		                 var reg = /^\d+$/; // 非负整数
+		                 
+		                 if(!reg.test(value)){
+		                     return '平均标准转储时长值为非负整数';
+		                 }
+		                 } ,upFrameValueTwo(value){
+					            if(value.length < 1){
+					                return '平均标准上架时长不能为空';
+					         }
+					         var reg = /^\d+$/; // 非负整数
+					         
+					         if(!reg.test(value)){
+					             return '平均标准上架时长值为非负整数';
+					         }
+						     } 
+					 
+					 
+					
+				  });
+				  //监听提交
+				  form.on('submit(basicCreceiptStrategySubit)', function(data){
+					saveDict(data);
+					return false;
+				 });
+			});
+	 }
+		 
+			
+		function saveDict(data){
+			var option = {
+		    	url:contextPath+'basicCreceiptStrategy/save',
+		    	data:JSON.stringify(data.field),
+		    	type:'POST',
+		    	contentType:'application/json',
+		    	success:function(data){
+		    		if(data.code==0){
+		    			layer.alert(data.msg);
+		    		}else{
+		    			layer.alert(data.msg);
+		    		}
+		    	},error:function(data){
+		    		layer.alert(data.msg)
+		    	}
+		    }
+		    $.ajax(option); 
+		}
+	
+		
+		function queryBasicCreceiptStrategy(){
+            var option = {
+                url:contextPath+'basicCreceiptStrategy/list',
+                type:'POST',
+                success:function(data){
+                    if(data.code==0){
+                    	var formData =data.data;
+                        form.val('basicCreceiptStrategyForm',formData);
+                    }else{
+                        layer.alert(data.msg);
+                    }
+                },error:function(data){
+                    layer.alert(data.msg)
+                }
+            }
+            $.ajax(option); 
+        }
+ 
+	</script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.arrivalNotice.dao.ArrivalNoticeDao">
+
+    <select id="listArrivalNotice" parameterType="com.zkzn.les.wms.arrivalNotice.pojo.ArrivalNoticePojo" resultType="com.zkzn.les.wms.arrivalNotice.pojo.ArrivalNoticePojo">
+        SELECT
+            tan.arrival_notice_id AS "arrivalNoticeId",
+            tan.arrival_code AS "arrivalCode",
+            tan.warehouse_name AS "warehouseName",
+            tan.warehouse_code AS "warehouseCode",
+            tan.bill_type AS "billType",
+            tan.bill_name AS "billName",
+            tan.received_status AS "receivedStatus",
+            CASE WHEN tan.received_status IS NULL THEN '待收货' WHEN tan.received_status = 0 THEN '待收货'
+            WHEN tan.received_status = 1 THEN '收货中'
+            WHEN tan.received_status = 2 THEN '收货完成' END AS "receivedName",
+            tan.upper_status AS "upperStatus",
+            CASE WHEN tan.upper_status IS NULL THEN '待上架' WHEN tan.upper_status = 0 THEN '待上架'
+            WHEN tan.upper_status = 1 THEN '上架中'
+            WHEN tan.upper_status = 2 THEN '上架完成' END AS "upperName",
+            tan.client_name AS "clientName",
+            tan.arrival_time AS "arrivalTime",
+            tan.responsible AS "responsible",
+            tan.car_code AS "carCode",
+            tan.create_time AS "createTime"
+        FROM w_arrival_notice tan
+        <where>
+            1=1
+            <if test="issueStatus != null">
+                AND issue_status = 0
+            </if>
+            <if test="warehouseCode != null and '' != warehouseCode">
+                <foreach collection="warehouseCode.split(';')" open="and tan.warehouse_code in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="arrivalCode != null and '' != arrivalCode">
+                AND tan.arrival_code like '%${arrivalCode}%'
+            </if>
+            <if test="clientName != null and '' != clientName">
+                <foreach collection="clientName.split(';')" open="and tan.client_manage_id in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="billName != null and '' != billName">
+                <foreach collection="billName.split(';')" open="and tan.BILL_TYPE in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="receivedStatus != null ">
+                <if test="receivedStatus == 0">
+                    and (tan.RECEIVED_STATUS IS NULL OR tan.RECEIVED_STATUS = 0)
+                </if>
+                <if test="receivedStatus != 0">
+                    and tan.RECEIVED_STATUS  = #{receivedStatus}
+                </if>
+            </if>
+            <if test="upperStatus != null ">
+                <if test="upperStatus == 0">
+                    and (tan.UPPER_STATUS IS NULL OR tan.UPPER_STATUS = 0)
+                </if>
+                <if test="upperStatus != 0">
+                    and tan.UPPER_STATUS in (#{upperStatus})
+                </if>
+            </if>
+            <if test="createStr != null and '' != createStr">
+                AND date_format(tan.CREATE_TIME, '%Y-%m-%d') <![CDATA[ >= ]]> #{startCreate} AND date_format(tan.CREATE_TIME, '%Y-%m-%d') <![CDATA[ <= ]]> #{endCreate}
+            </if>
+            ORDER BY tan.create_time DESC
+        </where>
+    </select>
+
+    <select id="arrivalNoticeDetailList" parameterType="com.zkzn.les.wms.arrivalNotice.pojo.ArrivalNoticeDetailPojo" resultType="com.zkzn.les.wms.arrivalNotice.pojo.ArrivalNoticeDetailPojo">
+        SELECT
+            tan.warehouse_name AS "warehouseName",
+            tan.arrival_code AS "arrivalCode",
+            tan.client_name AS "clientName",
+            tan.bill_name AS "billName",
+            tand.arrival_item_no AS "arrivalItemNo",
+            tand.material_desc AS "materialDesc",
+            tand.material_unit AS "materialUnit",
+            tand.arrival_count AS "arrivalCount",
+            tand.receive_num AS "receiveNum",
+            tand.upper_num AS "upperNum",
+            tand.received_status AS "receivedStatus",
+            CASE WHEN tand.received_status IS NULL THEN '待收货' WHEN tand.received_status = 0 THEN '待收货'
+            WHEN tand.received_status = 1 THEN '部分收货'
+            WHEN tand.received_status = 2 THEN '收货完成' END AS "receivedName",
+            tand.upper_status AS "upperStatus",
+            CASE WHEN tand.upper_status = 0 THEN '待上架' WHEN tand.upper_status IS NULL THEN '待上架'
+            WHEN tand.upper_status = 1 THEN '部分上架'
+            WHEN tand.upper_status = 2 THEN '上架完成' END AS "upperName",
+            tand.create_time AS "createTime",
+            tand.arrival_detail_id AS "arrivalDetailId"
+        FROM w_arrival_notice_detail tand
+        LEFT JOIN w_arrival_notice tan ON tand.arrival_notice_id = tan.arrival_notice_id
+        <where>
+            tand.arrival_notice_id = #{arrivalNoticeId}
+            <if test="materialDesc != null and materialDesc != ''">
+                and tand.material_desc  like '%${materialDesc}%'
+            </if>
+        </where>
+    </select>
+
+    <update id="updateArrivalNoticeDetail" parameterType="com.zkzn.les.wms.arrivalNotice.pojo.ArrivalNoticeDetailPojo">
+        UPDATE w_arrival_notice_detail
+        SET PRODUCE_BATCH_NO = #{produceBatchNo},PRODUCE_TIME = #{produceTime} WHERE ID = #{id}
+    </update>
+
+    <insert id="arriveNoticeAdd" parameterType="com.zkzn.les.wms.arrivalNotice.pojo.ArrivalNoticePojo">
+        insert into w_arrival_notice (
+            arrival_code,warehouse_name,warehouse_code,
+            bill_type,bill_name,received_status,
+            upper_status,client_name,client_manage_id,
+            operate_user_id,operate_user_name,
+            responsible,car_code,issue_status,
+            create_time,create_user_id,create_name)
+        values (
+            #{arrivalCode,jdbcType=VARCHAR},#{warehouseName,jdbcType=VARCHAR},#{warehouseCode,jdbcType=VARCHAR},
+            #{billType,jdbcType=INTEGER},#{billName,jdbcType=VARCHAR},#{receivedStatus,jdbcType=INTEGER},
+            #{upperStatus,jdbcType=INTEGER}, #{clientName,jdbcType=VARCHAR},#{clientManageId,jdbcType=INTEGER},
+            #{operateUserId,jdbcType=INTEGER},#{operateUserName,jdbcType=VARCHAR},
+            #{responsible,jdbcType=VARCHAR}, #{carCode,jdbcType=VARCHAR},0,
+            sysdate(),#{createUserId,jdbcType=INTEGER}, #{createName,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteArriveNotice">
+        DELETE FROM w_arrival_notice WHERE arrival_notice_id IN
+        <foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteArriveDetail">
+        DELETE FROM w_arrival_notice_detail WHERE arrival_notice_id IN
+        <foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <update id="issueArriveNotice">
+        UPDATE w_arrival_notice SET issue_status = 1 WHERE arrival_notice_id IN
+        <foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <select id="getAddReceiveData" resultType="com.zkzn.les.wms.arrivalNotice.pojo.AddReceiveDataPojo">
+        SELECT
+            tand.arrival_notice_id AS "arrivalNoticeId",
+            tan.arrival_code AS "arrivalCode",
+            tan.warehouse_name AS "warehouseName",
+            tan.warehouse_code AS "warehouseCode",
+            tan.bill_type AS "billType",
+            tan.bill_name AS "billName",
+            tan.client_name AS "clientName",
+            tan.client_manage_id AS "clientManageId",
+            tan.operate_user_id AS "operateUserId",
+            tan.operate_user_name AS "operateUserName",
+            tand.arrival_detail_id AS "arrivalDetailId",
+            tand.material_desc AS "materialDesc",
+            tand.material_unit AS "materialUnit",
+            tand.arrival_count AS "actualNum"
+        FROM w_arrival_notice_detail tand
+        LEFT JOIN w_arrival_notice tan ON tand.arrival_notice_id = tan.arrival_notice_id
+        WHERE tand.arrival_notice_id = #{arrivalNoticeId} AND tan.issue_status = 0
+    </select>
+
+    <insert id="arriveDetailAdd" parameterType="com.zkzn.les.wms.arrivalNotice.pojo.ArrivalNoticeDetailPojo">
+        insert into w_arrival_notice_detail (
+            arrival_notice_id,material_desc,material_unit,
+            arrival_count,received_status,upper_status,
+            create_time,create_user_id,create_name)
+        values (
+            #{arrivalNoticeId,jdbcType=INTEGER},#{materialDesc,jdbcType=VARCHAR},#{materialUnit,jdbcType=VARCHAR},
+            #{arrivalCount,jdbcType=DOUBLE},0,0,
+            #{createTime,jdbcType=TIMESTAMP},#{createUserId,jdbcType=INTEGER}, #{createName,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteDetailByIds">
+        DELETE FROM w_arrival_notice_detail WHERE arrival_detail_id IN
+        <foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="getUserInfoById" resultType="com.zkzn.les.wms.arrivalNotice.pojo.UserInfoPojo">
+        SELECT
+            u.user_id AS "userId",
+            u.user_name AS "userName"
+        FROM
+            b_client_manage c
+            LEFT JOIN t_user u ON c.operate_user_id = u.user_id
+        WHERE c.client_manage_id = #{clientManageId}
+        GROUP BY u.user_id
+    </select>
+</mapper>

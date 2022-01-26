@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>消息类型</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/tableFilter.css"  type="text/css" />
+</head>
+<body>
+  <div id="bodyDiv">
+
+</div>
+
+	 <script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+	<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+ <script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+			 	<label class="layui-form-label">类型名称:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="msgTypeName_search" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md3">
+			 	<label class="layui-form-label">状态:</label>
+				<div class="layui-input-block layui-form">
+				      <select  id="status_search">
+				        <option value="">请选择</option>
+				      </select>
+				</div>
+			</div>
+			<div class="layui-col-md2">
+			<div class="layui-btn-container" style="text-align: right;">
+				{{# if(d.search==null || d.search=="true"){ }}
+             	 	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+              	{{# } }}
+			</div>
+		</div>
+
+		</div>
+		<div class="layui-row layui-form" style="margin-top: 10px">
+
+			<div class="layui-col-md6">
+				<div class="layui-btn-container" style="text-align: left;">
+				 {{# if(d.search==null || d.search=="true"){ }}
+		 <!--<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+		 <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>-->
+	     {{# } }}
+         {{# if(d.add==null || d.add=="true"){ }}
+	      <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>增加</button>
+
+          {{# } }}
+
+        {{# if(d.edit==null || d.edit=="true"){ }}
+
+	    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+
+        {{# } }}
+
+        {{# if(d.del==null || d.del=="true"){ }}
+	     <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>
+        {{# } }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<table id="messageTypeTab" lay-filter="messageTypeTabF"></table>
+</script>
+
+	<script type="text/javascript">
+	 var contextPath = config.basicInfoConfig.contextPath;
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var oldData;
+   function loadding(){
+		table.render({
+			elem:'#messageTypeTab',
+			id:'messageTypeTabId',
+			url:contextPath+'messageType/listMessageTypeList',
+			cols:[[
+			{type:'checkbox'}
+			,{field:'msgTypeName',title:'类型名称',sort:true}
+			,{field:'routeKey',title:'routekey'}
+			,{field:'status',title:'状态',sort:true}
+			]],
+			page: {theme: '#008155'},
+			height: 'full-95',
+    		even:true,
+    		done:function(res,page,count){//列表数据回调函数
+    			//状态数据处理
+    			var dictType = new Array();
+    			dictType.push("enable");
+    			//查询字典
+    			var option={
+    					url:contextPath+'dictItems/listDictItemByTypes',
+    					type:'POST',
+    					dataType:'json',
+    					contentType: "application/json",
+    					data:JSON.stringify(dictType),
+    					success:function(res){
+    						if(res.code==0){
+    							dictItems = res.data
+    							//列表中的状态赋值
+    							changeItemName(res.data);
+    							//搜索框的状态赋值
+    							defulatSelect(dictItems);
+    						}
+    					}
+	    			};
+    			$.ajax(option);
+    		}
+		});
+		var active = {
+				add:function(othis){
+					var type = othis.data('type');
+		  			layer.open({
+			        type: 2
+			        ,title:'新增消息类型'
+			        ,maxmin:true
+			        ,area: ['800px', '450px']
+			        ,offset: type
+			        ,id: 'msgadd'+type //防止重复弹出
+			        ,content: 'addMessageType.html'
+			        ,shade: 0 //不显示遮罩
+			        ,yes: function(){
+			          layer.closeAll();
+			        }
+			      });
+				},
+				edit:function(othis){
+					var checkStatus = table.checkStatus('messageTypeTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要编辑的行！',{icon: 2});
+      					return ;
+					}else if(oldData.length >1){
+      					layer.alert('编辑不能超过多行！',{icon: 2});
+      					return ;
+      				}
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'编辑消息类型'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type
+				        ,id: 'userEdit'+type //防止重复弹出
+				        ,content: 'editMessageType.html'
+				        ,shade: 0 //不显示遮罩
+				        ,yes: function(){
+				          layer.closeAll();
+				        }
+			     	 });
+				},del:function(othis){
+					var checkStatus = table.checkStatus('messageTypeTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要删除的行！',{icon: 2});
+      					return ;
+					}
+					var idarrys = new Array();
+					for(var i=0;i<oldData.length;i++){
+						idarrys.push(oldData[i].id);
+					}
+					layer.confirm('确定删除该条消息类型?', {icon: 3, title:'提示'}, function(index){
+			  			  //do something
+			  			  var option ={
+								url:contextPath+'messageType/deleteMessageType',
+								type:'POST',
+								contentType: "application/json",
+								dataType:'json',
+								data:JSON.stringify(idarrys),
+								success:function(data){
+									if(data.code==0){
+										layer.msg("删除成功");
+										table.reload('messageTypeTabId');//刷新列表
+									}
+								},error:function(data){
+									layer.alert(data.msg);
+								}
+							}
+							$.ajax(option);
+			  			  layer.close(index);
+			  			});
+				},search:function(othis){
+					var msgTypeName = $('#msgTypeName_search');
+					var status = $('#status_search');
+				      //执行重载
+				      table.reload('messageTypeTabId', {
+				        where:{
+				        	msgTypeName: msgTypeName.val()
+					       ,status:status.val()
+				        }
+				        ,page:{"curr":1}
+				      });
+				},reset:function(othis){
+					$('#msgTypeName_search').val("");
+					$('#status_search').val("");
+					form.render("select");
+				}
+
+
+
+		};
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		table.on('sort(messageTypeTabF)', function (obj) {
+			var sortColums;
+			if(obj.field=="msgTypeName"){
+				sortColums = "msg_type_name "+obj.type;
+			}else if(obj.field=="status"){
+				sortColums = "status "+obj.type;
+			}
+			var msgTypeName = $('#msgTypeName_search');
+			var status = $('#status_search');
+		      //执行重载
+		      table.reload('messageTypeTabId', {
+		        where:{
+		        	msgTypeName: msgTypeName.val()
+		           ,status:status.val()
+		           ,sortColums:sortColums
+		        }
+		        ,page:{"curr":1}
+		      });
+		});
+
+   }
+		function changeItemName(data){
+    		//状态数据处理
+    		$("[data-field='status']").children().each(function(){
+    			for(var i=0;i<data.length;i++){
+    				if(data[i].dictTypeId=="enable" && data[i].itemValue==$(this).text().trim()){
+    					$(this).text(data[i].itemName);
+    				}
+    			}
+    		});
+		}
+		function defulatSelect(dictItems){
+			if(dictItems && dictItems.length>0){
+				if($("#status_search").find("option").length==1){
+				  for(var i=0;i<dictItems.length;i++){
+					   if(dictItems[i].dictTypeId=="enable"){
+						  $("#status_search").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+					  }
+				  }
+				  form.render('select');
+			  }
+			}
+		}
+	</script>
+</body>
+</html>

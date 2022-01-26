@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css"
+          type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+    <title>物料入库日报</title>
+</head>
+
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="materialDesc" class="layui-input" placeholder="请输入物料名称">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料编码</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="materialCode" class="layui-input" placeholder="请输入物料编码">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库</label>
+                <div class="layui-input-inline">
+                    <select id="warehouseCode_search" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">采购单号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="purchaseCode" class="layui-input" placeholder="请输入采购单号">
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">到货日期</label>
+                <div class="layui-input-inline layui-form">
+                    <input type="text" class="layui-input" id="arrivalDate" placeholder="请选择到货时间">
+                </div>
+            </div>
+
+            <div class="layui-col-md2">
+                <label class="layui-form-label">供应商名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="shipperName" class="layui-input" placeholder="请输入供应商名称">
+                </div>
+            </div>
+
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                {{# if(d.search==null || d.search=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button"><i
+                        class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i
+                        class="layui-icon  layui-icon-reset"></i>重置
+                </button>
+                {{# } }}
+
+<!--                {{# if(d.export==null || d.export=="true"){ }}-->
+<!--                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>-->
+<!--                {{# } }}-->
+            </div>
+        </div>
+        <div class="layui-fluid-table">
+            <div class="layui-row layui-form">
+                <div class="layui-btn-container" style="text-align: left;">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+                </div>
+            </div>
+            <table class="layui-hide" id="materialInputDailyTab" lay-filter="materialInputDailyTabF"></table>
+        </div>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var laydate = layui.laydate;
+    var oldData;
+    var contextPath = config.mfcConfig.contextPath;
+    var active = {
+        search: function (othis) {
+            //物料编码
+            var materialCode = $('#materialCode').val();
+            //物料名称
+            var materialDesc =  $('#materialDesc').val();
+            //到货时间
+            var startTime = $('#arrivalDate').val();
+            //仓库
+            var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+            //采购单号
+            var purchaseCode = $('#purchaseCode').val();
+            //供应商名称
+            var shipperName = $('#shipperName').val();
+            //请求参数封装
+            var params = {};
+            params.materialCode = materialCode;
+            params.materialDesc = materialDesc;
+            params.startTime = startTime;
+            params.purchaseCode =purchaseCode ;
+            params.shipperName = shipperName;
+            params.warehouseCode=warehouseCode;
+            //执行重载
+            table.reload('materialInputDailyTabId', {
+                url: contextPath + 'saleOrderStorageReport/materialInputDailyReport',
+                where: params,
+            });
+        },
+        reset: function (othis) {
+            $('#materialCode').val("");
+            $('#materialDesc').val("");
+            $('#arrivalDate').val("");
+            $('#purchaseCode').val("");
+            $('#shipperName').val("");
+            layui.formSelects.value('warehouseCodeSelect', []);
+            form.render("select");
+        },export: function(othis) {
+            let  data = table.cache.materialInputDailyTabId;
+            if(data.length > 0) {
+                //物料编码
+                var materialCode = $('#materialCode').val();
+                //物料名称
+                var materialDesc =  $('#materialDesc').val();
+                //到货时间
+                var startTime = $('#arrivalDate').val();
+                //仓库
+                var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+                //采购单号
+                var purchaseCode = $('#purchaseCode').val();
+                //供应商名称
+                var shipperName = $('#shipperName').val();
+
+                let token = window.localStorage.token;
+                let params = "";
+                params = params + "materialCode=" + materialCode + "&materialDesc=" + materialDesc + "&startTime=" + startTime +
+                    "&warehouseCode=" + warehouseCode +"&purchaseCode="  +purchaseCode +"&shipperName="+shipperName + "&token=" + token;
+                window.open(contextPath + 'saleOrderStorageReport/materialInputDailyReportDownLoad?' + params);
+            } else {
+                layer.alert('导出失败！无数据', {
+                    icon: 2
+                });
+            }
+        }
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#materialInputDailyTab',
+            id: 'materialInputDailyTabId',
+            data:[],
+            cols: [[ {
+                type: 'numbers',
+                title: '序号'
+            },   {
+                field: 'materialCode',
+                title: '物料编码'
+            }, {
+                field: 'materialDesc',
+                title: '物料名称'
+            }, {
+                field: 'qualifiedNum',
+                title: '非限制数量'
+            }, {
+                field: 'unqualifiedNum',
+                title: '采购冻结数量'
+            }, {
+                field: 'materialUnit',
+                title: '单位'
+            }, {
+                field: 'wareHouseName',
+                title: '仓库'
+            }, {
+                field: 'batchNo',
+                title: '批次号'
+            }, {
+                field: 'purchaseCode',
+                title: '采购单号'
+            }, {
+                field: 'arrivalCode',
+                title: '到货通知单号'
+            }, {
+                field: 'shipperName',
+                title: '供应商名称'
+            }, {
+                field: 'shipperCode',
+                title: '供应商代码'
+            }, {
+                field: 'actualArrivalTime',
+                title: '到货时间'
+            }]],
+            page: {
+                theme: '#008155'
+            },
+            even: true,
+            done: function (res, page, count) {//列表数据回调函数
+
+            }
+        });
+        initWarehouseMultiSelect("warehouseCode_search", "warehouseCodeSelect", 1, '');
+        //initStorageLocationMultiSelect("warehouseCode_search", "warehouseCodeSelect", 1, '');
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+        //时间选择器
+        laydate.render({
+            elem: '#arrivalDate',
+            type: 'date',
+            range: false,
+            trigger: 'click'
+        });
+    }
+</script>
+</body>
+</html>

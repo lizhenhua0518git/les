@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.dao.AdmissionTaskDao">
+    <select id="listAdmissionTasks" resultType="com.zkzn.les.wms.pojo.admission.AdmissionTask">
+        SELECT ID,
+               DRIVER_NAME DRIVER_PHONE,
+               IN_FACTORY_TIME,
+               CAR_CODE,
+               CAR_TYPE,
+               OUT_FACTORY_TIME,
+               ARRIVAL_NOTICE_ID,
+               CREATE_TIME,
+               TOTAL_TIME,
+               UPLOAD_PLAT_CODE,
+               ADMISSION_STATUS,
+               UPLOAD_FINISH_TIME,
+               QUEUE_CODE,
+               EMERGENCY_STATUE,
+               STATUS,
+               UPLOAD_PLAT_ID
+        FROM t_admission_task
+        <where>
+            <if test="requestMap.admissionId != null and '' != requestMap.admissionId">
+                id = #{requestMap.admissionId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="saveAdmissionTaskInfo">
+        insert into t_admission_task (DRIVER_NAME, DRIVER_PHONE,
+                                      IN_FACTORY_TIME, CAR_CODE, CAR_TYPE,
+                                      OUT_FACTORY_TIME, ARRIVAL_NOTICE_ID,
+                                      TOTAL_TIME, UPLOAD_PLAT_CODE,
+                                      UPLOAD_FINISH_TIME, EMERGENCY_STATUE,UPLOAD_PLAT_ID,QUEUE_CODE,UPLOAD_PLAT_NAME)
+        values (#{driverName,jdbcType=VARCHAR}, #{driverPhone,jdbcType=VARCHAR},
+                #{inFactoryTime,jdbcType=TIMESTAMP}, #{carCode,jdbcType=VARCHAR}, #{carType,jdbcType=VARCHAR},
+                #{outFactoryTime,jdbcType=TIMESTAMP}, #{arrivalNoticeId,jdbcType=VARCHAR},
+                #{totalTime,jdbcType=NUMERIC}, #{uploadPlatCode,jdbcType=VARCHAR},
+                #{uploadFinishTime,jdbcType=TIMESTAMP}, #{emergencyStatus,jdbcType=NUMERIC},#{uploadPlatId,jdbcType=VARCHAR},#{queueCode,jdbcType=VARCHAR},#{uploadPlatName,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="modifyAdmissionInfo" parameterType="java.util.Map">
+        update t_admission_task
+        <set>
+            <if test="inFactoryTime != null">
+                IN_FACTORY_TIME = #{inFactoryTime},
+            </if>
+
+            <if test="outFactoryTime != null ">
+                OUT_FACTORY_TIME = #{outFactoryTime},
+            </if>
+
+            <if test="uploadPlatCode != null and '' != uploadPlatCode">
+                UPLOAD_PLAT_CODE = #{uploadPlatCode,jdbcType=VARCHAR},
+            </if>
+            <if test="admissionStatus != null">
+                ADMISSION_STATUS = #{admissionStatus},
+            </if>
+            <if test="status != null">
+                STATUS = #{status,jdbcType=NUMERIC},
+            </if>
+            <if test="uploadFinishTime != null">
+                UPLOAD_FINISH_TIME = #{uploadFinishTime},
+            </if>
+            <if test="totalTime != null">
+                TOTAL_TIME = #{totalTime}
+            </if>
+        </set>
+        WHERE ID = #{admissionId}
+    </update>
+</mapper>

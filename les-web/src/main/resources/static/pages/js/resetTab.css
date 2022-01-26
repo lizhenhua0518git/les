@@ -1,0 +1,15 @@
+/**
+* 重置tab切换标签样式
+* @author	GaoYuan
+* @date		2019.06.24
+*/
+
+.layui-body{}
+.layui-body .layui-tab{}
+.layui-body .layui-tab .layui-tab-title{height: 52px; font-size: 12px; color: white;}
+.layui-body .layui-tab .layui-tab-title li{ line-height: 52px; background-color: #d23535; border: 1px solid #e8e8e8;}
+.layui-body .layui-tab .layui-tab-title li:last-child{padding-right: 40px; border-top-right-radius: 50px 40px;}
+.layui-body .layui-tab .layui-tab-title li::before{content: ""; display: inline-block; width: 36px; height: 36px; overflow: hidden; vertical-align: middle; margin-right: 2px;}
+.layui-body .layui-tab .layui-tab-title li.layui-this{color: #ffde00;}
+.layui-body .layui-tab .layui-tab-title li.layui-this:after{display: none;}
+.layui-body .layui-tab .layui-tab-title li .layui-tab-close{display: none;}

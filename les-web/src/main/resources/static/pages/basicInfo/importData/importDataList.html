@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<#assign  AthemTag= newTag("authorityTag")/>
+	<#assign  athemTag= AthemTag()/>
+	<meta charset="UTF-8">
+	<title>数据导入</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<script src="${ctx}/pages/js/jquery-3.3.1.min.js"></script>
+	<script src="${ctx}/pages/js/printer/jquery-migrate-1.2.1.min.js"></script>
+	<script src="${ctx}/pages/js/printer/jquery.jqprint-0.3.js"></script>
+	<style>
+        tr{line-height:50px; }
+        .button{
+        	background-color: orange; 
+			border: none;
+			color: white;
+			padding: 8px 25px;
+			text-align: center;
+			text-decoration: none;
+			display: inline-block;
+			font-size: 16px;
+			margin: 4px 2px;
+			cursor: pointer;
+        }
+	</style>
+</head>
+<body>
+	<#if athemTag.loginFlag=="true" && athemTag.menuFlag=="true">
+	<div class="layui-container" style="padding-top: 20px;">
+		<div>
+			<p style="margin:0;text-align:center;font-weight:700;font-size:30px;">数据导入</p>
+		</div>
+		<p style="margin-left: 25px; color:red; font-weight:700">注意：Excel中涉及时间的数据，请右键单元格，设置单元格格式，自定义，类型栏输入  yyyy-m-d h:mm:ss，除了时间其它请输入纯数字。</p>
+		<br/>
+		<div class="bottom">
+		    <table style="width:98%; text-align:center; margin-left:20px" id="strategyTable">
+	      		<!-- <tr>
+	      			<th style="width:15%; text-align:left">出入库量统计</th>
+	      			<td><button id="exportCrkltj" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importCrkltjExcel" type="button">上传模版数据</button></td>
+	      		</tr> -->
+	      		<!-- <tr>
+	      			<th style="width:15%; text-align:left">仓位使用率统计</th>
+	      			<td><button id="exportCwsyltj" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importCwsyltjExcel" type="button">上传模版数据</button></td>
+	      		</tr>
+	      		<tr>
+	      			<th style="width:15%; text-align:left">载具使用率统计</th>
+	      			<td><button id="exportZjsyltj" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importZjsyltjExcel" type="button">上传模版数据</button></td>
+	      		</tr> -->
+	      		<!-- <tr>
+	      			<th style="width:15%; text-align:left">仓库结构详情</th>
+	      			<td><button id="exportCkjgxq" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importCkjgxqExcel" type="button">上传模版数据</button></td>
+	      		</tr> -->
+	      		<tr>
+	      			<th style="width:15%; text-align:left">库存资金占用</th>
+	      			<td><button id="exportKczjzy" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importKczjzyExcel" type="button">上传模版数据</button></td>
+	      		</tr>
+	      		<!-- <tr>
+	      			<th style="width:15%; text-align:left">库存资金占用明细</th>
+	      			<td><button id="exportKczjzyDetail" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importKczjzyDetailExcel" type="button">上传模版数据</button></td>
+	      		</tr> -->
+	      		<tr>
+	      			<th style="width:15%; text-align:left">账物相符率</th>
+	      			<td><button id="exportZwxfl" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importZwxflExcel" type="button">上传模版数据</button></td>
+	      		</tr>
+	      		<tr>
+	      			<th style="width:15%; text-align:left">库存准确率</th>
+			<!--	<td><button id="exportKcwhl" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td> -->
+	      			<td><button id="exportKczql" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importKczqlExcel" type="button">上传模版数据</button></td>
+	      		</tr>
+	      	<!-- 	<tr>
+	      			<th style="width:15%; text-align:left">库存完好率明细</th>
+	      			<td><button id="exportKcwhlDetail" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importKcwhlDetailExcel" type="button">上传模版数据</button></td>
+	      		</tr> -->
+	      		<tr>
+	      			<th style="width:15%; text-align:left">库存周转天数</th>
+	      			<td><button id="exportKczzts" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importKczztsExcel" type="button">上传模版数据</button></td>
+	      		</tr>
+	      		<tr>
+	      			<th style="width:15%; text-align:left">人员使用情况</th>
+	      			<td><button id="exportRysyqk" class="export" type="button" style="display:block;margin:0 auto"><b>导出模版</b></button></td>
+	      			<td><button class="layui-btn layui-btn-normal layui-btn-sm upload" data-method="import" id="importRysyqkExcel" type="button">上传模版数据</button></td>
+	      		</tr>
+		    </table>
+		</div>
+	</div>
+	
+	<script src="${ctx}/pages/js/jquery-3.3.1.min.js" charset="UTF-8"></script>
+	<script src="${ctx}/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var upload = layui.upload;
+		var oldData;
+		
+		//导出模版
+		$(function(){
+			$(".export").click(function(){
+				window.open("${ctx}/importData/exportExcel?type="+$(this).attr("id"));
+			});
+		})
+	
+		//出入库量统计模版数据
+		upload.render({
+			elem: '#importCrkltjExcel',
+			url: '${ctx}/importData/importCrkltjExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('出入库量统计模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('出入库量统计模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('出入库量统计模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		
+		//仓位使用率统计模版数据
+		upload.render({
+			elem: '#importCwsyltjExcel',
+			url: '${ctx}/importData/importCwsyltjExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('仓位使用率统计模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('仓位使用率统计模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('仓位使用率统计模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		
+		//载具使用率统计模版数据
+		upload.render({
+			elem: '#importZjsyltjExcel',
+			url: '${ctx}/importData/importZjsyltjExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('载具使用率统计模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('载具使用率统计模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('载具使用率统计模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		
+		//库存资金占用模版数据
+		upload.render({
+			elem: '#importKczjzyExcel',
+			url: '${ctx}/importData/importKczjzyExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('库存资金占用模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('库存资金占用模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('库存资金占用模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		
+		//库存资金占用明细模版数据
+		upload.render({
+			elem: '#importKczjzyDetailExcel',
+			url: '${ctx}/importData/importKczjzyDetailExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('库存资金占用明细模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('库存资金占用明细模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('库存资金占用明细模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		
+		//账物相符率模版数据
+		upload.render({
+			elem: '#importZwxflExcel',
+			url: '${ctx}/importData/importZwxflExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('账物相符率模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('账物相符率模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('账物相符率模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		});
+		//人员使用情况导入
+		upload.render({
+			elem: '#importRysyqkExcel',
+			url: '${ctx}/importData/importRysyqkExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('人员使用情况模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('人员使用情况模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('人员使用情况模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		});
+		
+		//库存准确率模版数据
+		upload.render({
+			elem: '#importKczqlExcel',
+			url: '${ctx}/importData/importKczqlExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('库存完好率模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('库存完好率模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('库存完好率模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		//库存周转天数
+		upload.render({
+			elem: '#importKczztsExcel',
+			url: '${ctx}/importData/importKczztsExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('库存周转天数模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('库存周转天数模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('库存周转天数模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		upload.render({
+			elem: '#importKcwhlExcel',
+			url: '${ctx}/importData/importKcwhlExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('库存完好率模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('库存完好率模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('库存完好率模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		
+		//库存完好率明细模版数据
+		upload.render({
+			elem: '#importKcwhlDetailExcel',
+			url: '${ctx}/importData/importKcwhlDetailExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('库存完好率明细模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('库存完好率明细模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('库存完好率明细模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		
+		//仓库结构详情模版数据
+		upload.render({
+			elem: '#importCkjgxqExcel',
+			url: '${ctx}/importData/importCkjgxqExcel', //必填项
+			method: 'post',
+			accept: 'file',
+			exts:'xls',
+			before: function(obj){ 
+				layer.load(); //上传loading
+		  	},
+			done: function(res, index, upload){
+	  			if(res.code==0){
+			  		layer.alert('仓库结构详情模版数据导入成功！', {icon: 6});
+				  	layer.closeAll('loading'); //关闭loading
+		  		}else{
+				  	layer.alert('仓库结构详情模版数据导入失败！', {icon: 5});
+				  	layer.closeAll('loading'); //关闭loading
+			  	}
+			},
+		  	error: function(index, upload){
+		  		layer.alert('仓库结构详情模版数据导入失败！', {icon: 5});
+			  	layer.closeAll('loading'); //关闭loading
+		  	}
+		}); 
+		
+	</script>
+	<#else>
+		<div class="layui-col-md6" style="width:100%">
+	    	<div class="layui-card">
+	        	<div class="layui-card-header"></div>
+	        	<div class="layui-card-body" style="left:40%">无访问权限，请联系管理员获取权限</div>
+	      	</div>
+	    </div>
+		<div></div>
+	</#if> 
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <title>点收记录管理</title>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+</head>
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="showDetail">查看</a>
+</script>
+<script type="text/html" id="statusTmp">
+    {{# if(d.receiveStatus==15){ }}
+    待收货
+    {{# }else if (d.receiveStatus==20 || d.receiveStatus==45){ }}
+    部分收货
+    {{# }else if (d.receiveStatus>=25&&d.receiveStatus<=40){ }}
+    收货完成
+    {{# } }}
+</script>
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库</label>
+                <div class="layui-input-block">
+                    <select id="warehouseCode_search" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">送货单号</label>
+                <div class="layui-input-block">
+                    <input type="text" id="arrivalCode" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">客户名称</label>
+                <div class="layui-input-inline">
+                    <select id="clientName" xm-select="clientManageSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">单据类型</label>
+                <div class="layui-input-block">
+                    <select id="billType_search" xm-select="billNameSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">收货状态</label>
+                <div class="layui-input-block">
+                    <select id="status_search" xm-select="statusSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">收货开始时间</label>
+                <div class="layui-input-block">
+                    <input type="text" id="receivedStartTime_search" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">收货结束时间</label>
+                <div class="layui-input-block">
+                    <input type="text" id="receivedEndTime_search" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                {{# if(d.search==null || d.search=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+                {{# } }}
+            </div>
+        </div>
+    </div>
+    <div class="layui-fluid-table">
+        <table class="layui-hide" id="pointRecordTab" lay-filter="pointRecordTabF"></table>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/clientManage.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    var table = layui.table;
+    var contextPath = config.wmsConfig.contextPath;
+    var form = layui.form;
+    var laydate = layui.laydate;
+    //全部状态 ：  15-待收货  20-点收中  30-收货完成
+    var active = {
+        search: function (othis) {
+            var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+            var clientManageId = layui.formSelects.value('clientManageSelect', 'valueStr');
+            var billType = layui.formSelects.value('billNameSelect', 'valueStr');
+            var receiveStatus = layui.formSelects.value('statusSelect', 'valueStr');
+            var arrivalCode = $("#arrivalCode").val();
+            var receivedStartTime = $("#receivedStartTime_search").val();
+            var receivedEndTime = $("#receivedEndTime_search").val();
+            var startTimeBeginStr = '';
+            var startTimeEndStr = '';
+            var endTimeBeginStr = '';
+            var endTimeEndStr = '';
+            if (receivedStartTime && receivedStartTime.length > 0) {
+                startTimeBeginStr = receivedStartTime.substring(0, 19);
+                startTimeEndStr = receivedStartTime.substring(22);
+            }
+            if (receivedEndTime && receivedEndTime.length > 0) {
+                endTimeBeginStr = receivedEndTime.substring(0, 19);
+                endTimeEndStr = receivedEndTime.substring(22);
+            }
+            table.reload('pointRecordTabId', {
+                where: {
+                    warehouseCode: warehouseCode,
+                    arrivalCode: arrivalCode,
+                    billType: billType,
+                    clientName:clientManageId,
+                    receiveStatus: receiveStatus,
+                    startTimeBeginStr: startTimeBeginStr,
+                    startTimeEndStr: startTimeEndStr,
+                    endTimeBeginStr: endTimeBeginStr,
+                    endTimeEndStr: endTimeEndStr
+                }
+            });
+        },
+        reset: function (othis) {
+            layui.formSelects.value('warehouseCodeSelect', []);
+            layui.formSelects.value('clientManageSelect', []);
+            layui.formSelects.value('statusSelect', []);
+            layui.formSelects.value('billNameSelect', []);
+            $("#arrivalCode").val("");
+            $("#receivedStartTime_search").val("");
+            $("#receivedEndTime_search").val("");
+            form.render("select");
+        },
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#pointRecordTab',
+            id: 'pointRecordTabId',
+            url: contextPath + 'pcReceiveRecord/listPcReceiveRecord',
+            cols: [[
+                {type: 'numbers', title: '序号', width: 60},
+                {field: 'arrivalCode', title: '送货单号'},
+                {field: 'warehouseCode', title: '仓库编码',align:'center'},
+                {field: 'warehouseName', title: '仓库名称',align:'center'},
+                {field: 'billName', title: '单据类型名称',align:'center'},
+                {field: 'clientName', width: 200, title: '客户名称',align:'center'},
+                {field: 'receiveStatus', title: '收货状态', templet: "#statusTmp"},
+                {field: 'receiveStartTime', title: '收货开始时间',align:'center'},
+                {field: 'receiveEndTime', title: '收货结束时间',align:'center'},
+                {field: 'updateName', title: '操作人',align:'center'},
+                {align: 'center', title: '操作', toolbar: "#toolbar"}
+            ]],
+            page: {theme: '#008155'},
+            even: true
+        });
+        //创建时间区间
+        laydate.render({
+            elem: '#receivedStartTime_search',
+            range: true,
+            trigger: 'click',
+            type: 'datetime'
+        });
+        laydate.render({
+            elem: '#receivedEndTime_search',
+            range: true,
+            trigger: 'click',
+            type: 'datetime'
+        });
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+        initWarehouseMultiSelect("warehouseCode_search", "warehouseCodeSelect", 1, '');
+        initDictItemList("billNameSelect",[],'receive_document_type');
+        initClientManageList("clientManageSelect",[]);
+        initStatus();
+        form.render("select");
+
+        table.on('tool(pointRecordTabF)', function (obj) {
+            var eventName = obj.event;
+            var data = obj.data;
+            var id = "pointRecordDetail";
+            var url = "wms/inbound/pointRecordDetail.html?receiveId=" + data.receiveTaskId;
+            var currHeight = parent.$(document).height();
+            if (eventName == "showDetail") {
+                parent.element.tabDelete('indexTab', id);
+                parent.element.tabAdd('indexTab', {
+                    title: "点收记录明细",
+                    content: ' <iframe id="' + id + '" frameborder="0"  src="' + url + '" width="100%" height="' + currHeight + 'px"></iframe>',
+                    id: id //实际使用一般是规定好的id，这里以时间戳模拟下
+                });
+                parent.element.tabChange('indexTab', id); //切换到：用户管理
+            }
+        });
+    }
+
+    function initStatus() {
+        var optoinArray = [{name: '待点收', value: '15'}, {name: '部分收货	', value: '20;25'}, {name: '收货完成', value: '30'},{name: '移库完成', value: '35'}];
+        layui.formSelects.data("statusSelect", 'local', {
+            arr: optoinArray
+        });
+    }
+</script>
+</body>
+
+</html>

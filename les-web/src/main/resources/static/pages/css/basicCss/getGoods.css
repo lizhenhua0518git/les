@@ -1,0 +1,227 @@
+.common{
+font-size: 16px;
+padding: 10px; 
+border-width: 0px; 
+border-style: solid; 
+line-height: 23px; 
+font-weight: bold; 
+font-style: normal;
+cursor: pointer;
+}
+.dayDiv{
+width: 33px; 
+height: 23px; 
+margin-top: 5px;
+}
+.inputDiv{
+width: 40px; 
+height: 30px;
+font-size: 14px; 
+margin-left: 60px;
+margin-top: 0px;
+}
+.buttonDiv{
+width: 60px; 
+height: 10px; 
+font-size: 14px; 
+text-align: center;
+font-weight: normal;
+border-width: 1px;
+align-items: center;
+-webkit-box-align: center;
+-ms-flex-align: center;
+margin-left: 200px;
+margin-top: 10px;
+background: white;
+-webkit-box-pack: center;
+-ms-flex-pack: center;
+justify-content: center;
+color: #101010;
+overflow: hidden;
+border-color: #bbb;  
+cursor: pointer;
+}
+.backDiv{
+font-size: 14px;
+width: 54px;
+margin-left: 140px;
+margin-top:-82px;
+}
+.text{
+width: 100%;
+white-space: pre-wrap;
+word-break: break-word;
+word-wrap: break-word;	
+}
+.label{
+color: #101010;
+overflow: visible;
+background: transparent;
+border-color: #bbb;
+display: flex;
+white-space: nowrap;
+}
+.label p{
+    white-space: nowrap;
+}
+.widget{
+ cursor: default;
+ 
+}
+.fatherDiv{
+  display: flex;
+}
+
+.circle {
+width: 85px;  
+height:85px;  
+border-radius: 50%;  
+border: 5px solid #ffffff;
+background-color:#8df043; 
+display: inline-block;
+box-sizing: border-box;
+text-align: center;  
+font-weight: normal; 
+font-style: normal;
+font-size: 18px; 
+padding-top: 30px;
+}
+ .circle1,.circle2{
+width: 90px;  
+height:90px;  
+border-radius: 100%;  
+display: inline-block;
+box-sizing: border-box;
+cursor: pointer;
+}
+.circle1 {
+	 
+border: 3px solid #8df043; 
+     
+ }
+ .circle2 {
+ border: 3px solid #259b24; 
+     
+ }
+
+.rateText{
+width: 90px;
+margin-top:0px;
+font-weight: normal;
+} 
+.hr{
+background: transparent;
+padding: 5px 0;
+border-color: #bbb;
+border-width: 0;
+}
+.hr span{
+height: 100%;
+display: block;
+border-top-width: 1px;
+border-bottom-width: 0;
+border-left-width: 0;
+border-right-width: 0;
+border-style: inherit;
+border-color: inherit;
+min-height: 1px;
+}
+.slantLine1{
+width: 134px; 
+height: 10px; 
+transform: rotate(319deg);
+border-style: dotted; 
+font-weight: normal; 
+font-style: normal;
+}   
+.slantLine2{
+width: 134px; 
+height: 10px; 
+transform: rotate(42deg);
+border-style: dotted; 
+font-weight: normal; 
+font-style: normal;
+margin-top:100px;
+}
+.ve{
+background: transparent;
+padding: 0 5px;
+border-color: #bbb;
+border-width: 0;
+ 
+}
+.ve span {
+width: 100%;
+height: 100%;
+display: block;
+border-left-width: 1px;
+border-bottom-width: 0px;
+border-top-width: 0px;
+border-right-width: 0;
+border-style: inherit;
+border-color: inherit;
+min-width: 1px;
+} 
+.verticalLine{
+width: 10px; 
+height: 150px; 
+border-style: solid; 
+font-weight: normal; 
+font-style: normal;
+   } 
+.module1,.module2,
+.module3,.module4
+{
+width: 140px;
+height: 37px;
+font-size: 16px; 
+padding: 0px; 
+color:#ffffff;
+border-width: 1px; 
+border-style: solid; 
+text-align: center; 
+font-weight: normal; 
+font-style: normal;
+margin-top: -10px;
+cursor: pointer;
+
+}
+.module1{
+	
+background-color:#8bc34a; 
+	
+}
+
+.module2{ 
+background-color: #009688; 
+margin-top: 5px;
+	
+}
+.module3{ 
+background-color: #ff9800; 
+margin-top: 5px;
+}
+.module4{ 
+background-color: #1f7dd9; 
+margin-top: 5px;
+}
+
+.stock{
+width: 114px; 
+height: 22px;  
+font-size: 14px; 
+border-width: 0px; 
+border-style: solid; 
+font-weight: bold; 
+font-style: normal; 
+margin: 0px 0px 0px 8px;
+cursor: pointer;
+    
+}
+.stock p{
+text-decoration: underline;
+}
+.current{
+background-color: #0000ff; 	
+}
+

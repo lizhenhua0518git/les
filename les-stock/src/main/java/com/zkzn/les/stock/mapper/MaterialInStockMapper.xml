@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.stock.dao.MaterialInStockDao">
+    <insert id="addMaterialInStockList">
+        <if test="list.size() > 0">
+            <foreach collection="list" item="item" index="index" separator=";">
+                INSERT INTO s_material_in_stock
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="item.materialDesc !=null and '' !=item.materialDesc">material_desc</if>
+                    <if test="item.materialUnit !=null and '' !=item.materialUnit">,material_unit</if>
+                    <if test="item.clientName !=null and '' !=item.clientName">,client_name</if>
+                    <if test="item.batchNo !=null and '' !=item.batchNo">,batch_no</if>
+                    <if test="item.warehouseCode !=null">,warehouse_code</if>
+                    <if test="item.warehouseName !=null and '' !=item.warehouseName">,warehouse_name</if>
+                    <if test="item.qualifiedType !=null or item.qualifiedType == 0">,qualified_type</if>
+                    <if test="item.unlimitedNumber !=null and '' !=item.unlimitedNumber">,unlimited_number</if>
+                    ,create_time
+                </trim>
+                <trim prefix="values (" suffix=")" suffixOverrides=",">
+                    <if test="item.materialDesc !=null and '' !=item.materialDesc">#{item.materialDesc}</if>
+                    <if test="item.materialUnit !=null and '' !=item.materialUnit">,#{item.materialUnit}</if>
+                    <if test="item.clientName !=null and '' !=item.clientName">,#{item.clientName}</if>
+                    <if test="item.batchNo !=null and '' !=item.batchNo">,#{item.batchNo}</if>
+                    <if test="item.warehouseCode !=null">,#{item.warehouseCode}</if>
+                    <if test="item.warehouseName !=null and '' !=item.warehouseName">,#{item.warehouseName}</if>
+                    <if test="item.qualifiedType !=null or item.qualifiedType == 0">,#{item.qualifiedType}</if>
+                    <if test="item.unlimitedNumber !=null and '' !=item.unlimitedNumber">,#{item.unlimitedNumber}</if>
+                    ,sysdate()
+                </trim>
+            </foreach>
+        </if>
+    </insert>
+
+    <select id="getMaterialInStock" resultType="java.lang.Integer">
+        SELECT
+            material_in_stock_id
+        FROM s_material_in_stock
+        WHERE material_desc = #{materialDesc} AND client_name = #{clientName} AND IF(batch_no is NULL,"",batch_no) = #{batchNo}
+        AND warehouse_code = #{warehouseCode} AND qualified_type = #{qualifiedType}
+    </select>
+
+    <update id="updateMaterialInStock">
+        UPDATE s_material_in_stock SET unlimited_number = unlimited_number + #{unlimitedNumber} WHERE material_in_stock_id = #{materialInStockId}
+    </update>
+    <insert id="addMaterialStorageBin">
+        insert into s_material_storage_bin (storage_position_id,material_desc,material_unit,stock_count
+        ,frozen_count,pre_use_count,batch_no,position_car_code,warehouse_code,warehouse_name,client_name,stock_status,create_time) VALUES
+        <foreach collection="addList" item="item" separator=",">
+            (#{item.storagePositionId},#{item.materialDesc},#{item.materialUnit},#{item.upperNumber},0
+            ,0,#{item.batchNo},#{item.positionCarCode},#{item.warehouseCode},#{item.warehouseName},#{item.clientName}
+            ,#{item.upperType},sysdate())
+        </foreach>
+    </insert>
+<!--    <insert id="addMaterialStorageBin">-->
+<!--        <foreach collection="addList" item="item" index="index" separator=";">-->
+<!--            INSERT INTO s_material_storage_bin-->
+<!--            <trim prefix="(" suffix=")" suffixOverrides=",">storagePositionId-->
+<!--                <if test="item.storagePositionId !=null">storage_position_id</if>-->
+<!--                <if test="item.materialDesc !=null and '' !=item.materialDesc">,material_desc</if>-->
+<!--                <if test="item.materialUnit !=null and '' !=item.materialUnit">,material_unit</if>-->
+<!--                <if test="item.stockCount !=null">,stock_count</if>-->
+<!--                ,frozen_count-->
+<!--                ,pre_use_count-->
+<!--                <if test="item.batchNo !=null and '' != item.batchNo">,batch_no</if>-->
+<!--                <if test="item.warehouseCode !=null and '' !=item.warehouseCode">,warehouse_code</if>-->
+<!--                <if test="item.warehouseName !=null and '' !=item.warehouseName">,warehouse_name</if>-->
+<!--                <if test="item.clientName !=null and '' !=item.clientName">,client_name</if>-->
+<!--                <if test="item.stockStatus !=null">,stock_status</if>-->
+<!--                ,create_time-->
+<!--            </trim>-->
+<!--            <trim prefix="values (" suffix=")" suffixOverrides=",">-->
+<!--                <if test="item.storagePositionId !=null">#{storagePositionId}</if>-->
+<!--                <if test="item.materialDesc !=null and '' !=item.materialDesc">,#{materialDesc}</if>-->
+<!--                <if test="item.materialUnit !=null and '' !=item.materialUnit">,#{materialUnit}</if>-->
+<!--                <if test="item.stockCount !=null">,#{stockCount}</if>-->
+<!--                ,0-->
+<!--                ,0-->
+<!--                <if test="item.batchNo !=null and '' != item.batchNo">,#{batchNo}</if>-->
+<!--                <if test="item.warehouseCode !=null and '' !=item.warehouseCode">,#{warehouseCode}</if>-->
+<!--                <if test="item.warehouseName !=null and '' !=item.warehouseName">,#{warehouseName}</if>-->
+<!--                <if test="item.clientName !=null and '' !=item.clientName">,#{clientName}</if>-->
+<!--                <if test="item.stockStatus !=null">,#{stockStatus}</if>-->
+<!--                ,sysdate()-->
+<!--            </trim>-->
+<!--        </foreach>-->
+<!--    </insert>-->
+    <update id="updateMaterialStorageBin" parameterType="java.util.List">
+            UPDATE s_material_storage_bin
+            SET stock_count= stock_count+#{upperNumber}
+            where storage_position_id=#{storagePositionId} AND material_desc = #{materialDesc}
+            AND IF(batch_no is NULL,"",batch_no) = IF(#{batchNo} is NULL,"",#{batchNo}) AND client_name = #{clientName} AND stock_status = #{upperType}
+            AND warehouse_code = #{warehouseCode}
+    </update>
+    <update id="minusStorageBinStock">
+        UPDATE s_material_storage_bin
+        SET pre_use_count=pre_use_count-#{shipmentCount}
+        where storage_position_id=#{storagePositionId} AND material_desc = #{materialDesc}
+        AND IF(batch_no is NULL,"",batch_no) = #{batchNo} AND client_name = #{clientName} AND stock_status = #{stockStatus}
+        AND warehouse_code = #{warehouseCode}
+    </update>
+
+    <update id="reducesMaterialInStock">
+        UPDATE s_material_in_stock
+        <trim prefix="set" suffixOverrides=",">
+            unlimited_number=unlimited_number-#{shipmentCount}
+        </trim>
+        where material_desc = #{materialDesc} AND IF(batch_no is NULL,"",batch_no) = #{batchNo}
+        AND client_name = #{clientName} AND qualified_type = #{stockStatus}
+        AND warehouse_code = #{warehouseCode}
+    </update>
+
+    <update id="storeBinStockStatusChange">
+        UPDATE s_material_storage_bin
+        SET stock_count=#{stockCount},frozen_count=#{frozenCount}
+        where storage_bin_id=#{storageBinId}
+    </update>
+
+    <select id="getPositionData" parameterType="com.zkzn.les.stock.pojo.MaterialStorageBin" resultType="java.util.Map">
+        SELECT
+            s.storage_position_id AS "storagePositionId",
+            msb.storage_bin_id AS "storageBinId",
+            msb.stock_count AS "stockCount"
+        FROM
+            b_storage_position s
+            LEFT JOIN s_material_storage_bin msb ON s.storage_position_id = msb.storage_position_id
+        WHERE
+            s.position_code = #{positionCode} AND s.warehouse_code = #{warehouseCode}
+            AND msb.material_desc = #{materialDesc} AND msb.position_car_code = #{positionCarCode}
+            AND IF(msb.batch_no is NULL,"",msb.batch_no) = #{batchNo} AND msb.client_name = #{clientName}
+            AND msb.stock_status = #{stockStatus}
+    </select>
+
+    <select id="getPositionCode" parameterType="com.zkzn.les.stock.pojo.MaterialStorageBin" resultType="java.lang.Integer">
+        SELECT storage_position_id FROM b_storage_position WHERE position_code = #{positionCode} AND warehouse_code = #{warehouseCode}
+    </select>
+
+    <select id="getCarCode" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM b_carrier WHERE carrier_code = #{positionCarCode} AND warehouse_code = #{warehouseCode}
+    </select>
+
+    <update id="updateMaterialStorageBinById">
+        UPDATE s_material_storage_bin SET stock_count = #{stockCount} WHERE storage_bin_id = #{storageBinId}
+    </update>
+
+    <insert id="addMaterialStorageBinPojo" parameterType="com.zkzn.les.stock.pojo.MaterialStorageBin">
+        insert into s_material_storage_bin (
+            storage_position_id,material_desc,material_unit,
+            stock_count,frozen_count,pre_use_count,
+            batch_no,position_car_code,warehouse_code,warehouse_name,
+            client_name,stock_status,create_time)
+        VALUES(
+            #{storagePositionId},#{materialDesc},#{materialUnit},
+            #{stockCount},0,0,
+            #{batchNo},#{positionCarCode},#{warehouseCode},#{warehouseName},
+            #{clientName},#{stockStatus},sysdate())
+    </insert>
+
+    <delete id="deleteMaterialStorageBinById">
+        DELETE FROM s_material_storage_bin WHERE storage_bin_id = #{storageBinId}
+    </delete>
+</mapper>

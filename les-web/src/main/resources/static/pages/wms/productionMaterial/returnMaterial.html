@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<title>生产退料(合格品退库)</title>
+</head>
+<script type="text/html" id="toolbar">
+	<a class="layui-btn layui-btn-xs" lay-event="showDetail">详情</a>
+</script>
+<body id="bodyDiv">
+	<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid" >
+        <div class="layui-row layui-form">
+			<div class="layui-col-md2">
+                <label class="layui-form-label">订单号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="orderCode_search" class="layui-input" placeholder="请输入生产订单号">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="materialCode_search" class="layui-input" placeholder="请输入物料号">
+                </div>
+            </div>
+			<div class="layui-col-md2" >
+				<label class="layui-form-label" style="width: 100px;">点收任务是否派发</label>
+				<div class="layui-input-inline">
+					<select  id="taskDispatch" lay-filter="taskDispatch" xm-select="taskDispatch" xm-select-show-count="1">
+						<option value="">请选择</option>
+						<option value="0">未派发</option>
+						<option value="1">已派发</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="layui-row layui-form">
+			<div class="layui-col-md2">
+				<label class="layui-form-label">条件搜索</label>
+				<div class="layui-input-inline">
+					<!--仓库不与车间产线工位关联-->
+					<select  id="storageLocation_search" lay-filter="storageLocationFilter" xm-select="storageLocationSelect" xm-select-show-count="1">
+						<option value="">请选择仓库</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select  id="workshopCode_search"  xm-select="workshopCode_search" xm-select-show-count="1" >
+						<option value="">请选择车间</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select  id="lineCode_search"  xm-select="lineCode_search" xm-select-show-count="1">
+						<option value="">请选择产线</option>
+					</select>
+				</div>
+				<div class="layui-input-inline">
+					<select id="stationCode_search"  xm-select="stationCode_search" xm-select-show-count="1">
+						<option value="">请选择工位</option>
+					</select>
+				</div>
+			</div>
+
+<!--			<div class="layui-col-md2">-->
+<!--				<label class="layui-form-label">车间</label>-->
+<!--				<div class="layui-input-inline">-->
+<!--					<select  id="workshopCode_search"  xm-select="workshopCode_search" xm-select-show-count="1" >-->
+<!--						<option value="">请选择</option>-->
+<!--					</select>-->
+<!--				</div>-->
+<!--			</div>-->
+
+<!--			<div class="layui-col-md2">-->
+<!--				<label class="layui-form-label">产线</label>-->
+<!--				<div class="layui-input-inline">-->
+<!--					<select  id="lineCode_search"  xm-select="lineCode_search" xm-select-show-count="1">-->
+<!--						<option value="">请选择</option>-->
+<!--					</select>-->
+<!--				</div>-->
+<!--			</div>-->
+<!--			<div class="layui-col-md2">-->
+<!--				<label class="layui-form-label">工位</label>-->
+<!--				<div class="layui-input-inline">-->
+<!--					<select  id="stationCode_search"  xm-select="stationCodeSelect" xm-select-show-count="1">-->
+<!--						<option value="">请选择</option>-->
+<!--					</select>-->
+<!--				</div>-->
+<!--			</div>-->
+
+
+			<div class="layui-btn-container nav-" style="text-align: right;">
+				{{# if(d.search==null || d.search=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon  mine-icon layui-icon-syncronize"></i>重置</button>
+				{{# } }}
+			</div>
+		</div>
+    </div>
+    <div class="layui-fluid-table">
+        <div class="layui-row layui-form">
+            <div class="layui-btn-container">
+				{{# if(d.match==null || d.match=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="dispatchPointTask" type="button"><i class="layui-icon layui-icon-add-circle"></i>点收任务派发</button>
+            	{{# } }}
+			</div>
+        </div>
+        <table class="layui-hide" id="abnormalMaterialWorkshopBLTab" lay-filter="abnormalMaterialWorkshopBLTabF"></table>
+    </div>
+</script>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var laydate = layui.laydate;
+		var oldData;
+		var wmsContextPath = config.wmsConfig.contextPath;
+		var active = {
+			search : function(othis) {
+				var orderCode = $('#orderCode_search').val();
+				var taskDispatch = $('#taskDispatch').val();
+				var workshopCode = layui.formSelects.value('workshopCode_search', 'valueStr');
+				var lineCode = layui.formSelects.value('lineCode_search', 'valueStr');
+				var stationCode = layui.formSelects.value('stationCodeSelect', 'valueStr');
+				var materialCode = $('#materialCode_search').val();
+				var storageLocation = layui.formSelects.value('storageLocationSelect', 'valueStr');
+				var status = layui.formSelects.value('statusSelect', 'valueStr');
+
+				var params = {};
+				params.taskDispatch = taskDispatch;
+				params.orderCode = orderCode;
+				params.workShopCode = workshopCode;
+				params.lineCode = lineCode;
+				params.stationCode = stationCode;
+				params.materialCode = materialCode;
+				params.warehouseCodes = storageLocation;
+				//执行重载
+				table.reload('abnormalMaterialWorkshopBLTabId', {
+					where : params,
+				});
+			},
+			reset : function(othis) {
+				$('#orderCode_search').val("");
+				layui.formSelects.value('workshopCode_search', []);
+				layui.formSelects.value('lineCode_search', []);
+				layui.formSelects.value('stationCodeSelect', []);
+				layui.formSelects.value('stationCode_search', []);
+				$('#materialCode_search').val("");
+				$('#taskDispatch').val("");
+				$('#serialNum_search').val("");
+				layui.formSelects.value('storageLocationSelect', []);
+				layui.formSelects.value('statusSelect', []);
+				form.render("select");
+			},
+			dispatchPointTask:function(othis){
+				//点收任务派发
+				var task = table.checkStatus('abnormalMaterialWorkshopBLTabId').data;
+				if(task==null || task.length==0){
+					layer.alert('请选择要派发的任务！', {icon: 2});
+					return;
+				}
+				//验证物料是否属于同一个仓库
+				var wareHouseName_T;
+				var warehouseCode_T;
+				var storageLocation_T;
+				var unMaterialList = new Array();
+				for (let i = 0; i < task.length; i++) {
+					if (warehouseCode_T == null){
+						wareHouseName_T = task[i].wareHouseName;
+						warehouseCode_T = task[i].warehouseCode;
+						storageLocation_T = task[i].storageLocation;
+					}else {
+						if (warehouseCode_T != null&&warehouseCode_T != task[i].warehouseCode){
+							layer.alert('请选择属于同一个仓库下的物料！', {icon: 2});
+							return;
+						}
+					}
+					var unMaterial = {
+						id:task[i].id,
+						orderCode:task[i].orderCode,
+						factory:task[i].factory,
+						supplierName:task[i].supplierName,
+						taskcode:task[i].taskCode
+					};
+					unMaterialList.push(unMaterial);
+				}
+				var unMaterParam = {
+					storageLocation:storageLocation_T,
+					warehouseCode:warehouseCode_T,
+					wareHouseName:wareHouseName_T,
+					unMaterialList:unMaterialList,
+					billType:"2"
+				};
+				console.log(">>>>>unMaterParam:",unMaterParam);
+				layer.confirm('是否派发任务?', {icon: 3, title: '提示'}, function (index) {
+					var option = {
+						url: wmsContextPath + 'abnormalMaterialWorkshop/saveReceiveTaskInfo',
+						type: 'POST',
+						contentType: "application/json",
+						dataType: 'json',
+						data: JSON.stringify(unMaterParam),
+						success: function (data) {
+							if (data.code == 0) {
+								layer.alert("派发任务成功");
+								table.reload('abnormalMaterialWorkshopBLTabId');
+							}else {
+								layer.alert("派发任务失败");
+							}
+						}, error: function (data) {
+							layer.alert(data.msg);
+						}
+					};
+					$.ajax(option);
+					layer.close(index);
+				});
+
+			}
+		};
+
+		function loadding() {
+			table.render({
+				elem : '#abnormalMaterialWorkshopBLTab',
+				id : 'abnormalMaterialWorkshopBLTabId',
+				url : wmsContextPath + 'abnormalMaterialWorkshop/findAbnormalMaterialOfTBL',
+				where: {
+					abnormalCode: "2"
+				},
+				cols: [[{
+					type: 'checkbox'
+				}, {
+					field: 'taskDispatch',
+					title: '派发状态',
+					templet: function (d) {
+						//0 未派发(默认) 1已派发
+						if (d.taskDispatch == 1) {
+							return "已派发";
+						} else {
+							return "未派发";
+						}
+					}
+				}, {
+					field: 'taskCode',
+					title: '补料任务号',
+				}, {
+					field: 'orderCode',
+					title: '生产订单号',
+				}, {
+					field: 'onlineTime',
+					title: '生产日期',
+				}, {
+					field: 'workShopName',
+					title: '车间',
+				}, {
+					field: 'lineName',
+					title: '产线',
+				}, {
+					field: 'stationName',
+					title: '工位',
+				}, {
+					field: 'wareHouseName',
+					title: '仓库',
+				}, {
+					field: 'materialCode',
+					title: '物料号',
+				}, {
+					field: 'materialNum',
+					title: '退料入库数量',
+				}, {
+					field: 'materialUnit',
+					title: '单位',
+
+				}, {
+					field: 'receiveNum',
+					title: '点收数量',
+				}, {
+					field: 'upStatus',
+					title: '上架状态',
+					templet: function (d) {
+						return d.upStatus == "0" ? "未上架" : d.upStatus == "1" ? "已上架" : "";
+					}
+				}
+				]],
+				page : {
+					theme: '#008155'
+				},
+				even : true,
+				done : function(res, page, count) {//列表数据回调函数
+					//初始化checkbox的状态
+					checkboxChoice(res.data);
+					//initWarehouseSignSelect("warehouse_search", 1);
+				}
+			});
+			$('.layui-btn-container button').on('click', function() {
+				var othis = $(this), method = othis.data('method');
+				active[method] ? active[method].call(this, othis) : '';
+			});
+
+			inintPlantMultiSelect("workshopCode_search", [], 2);
+			initWarehouseMultiSelect("storageLocation_search","storageLocationSelect",1,'');
+			initStatus();
+		}
+
+		//初始化派发状态下拉框
+		function initStatus(){
+			var optoinArray=[{name:'未派发',value:'0'},{name:'已派发',value:'1'}];
+			layui.formSelects.data("statusSelect",'local',{
+				arr:optoinArray
+			});
+		}
+
+		/**
+		 * 多选禁用操作
+		 * @param data
+		 */
+		function checkboxChoice(data) {
+			var allck = true;
+			for (var item in data) {
+				if (data[item].taskDispatch == 1) {
+					allck = false;
+					break;
+				}
+			}
+			if (!allck) {
+				$(".layui-table-header").find("input[name = 'layTableCheckbox'][lay-filter='layTableAllChoose']").each(function() {
+					$(this).attr("disabled", 'disabled').next().removeClass("layui-form-checked");
+					form.render('checkbox');
+				});
+			}
+			var i = 0;
+			$(".layui-table-body.layui-table-main").find("input[name='layTableCheckbox']").each(function() {
+				if (data[i].taskDispatch == 1) {
+					$(this).attr("disabled", 'disabled').removeAttr("checked");
+					$(this).parent("div").attr("title","点收任务已派发!");
+					form.render('checkbox');
+				}
+				i++;
+			});
+			i = 0;
+			$(".layui-table-fixed.layui-table-fixed-l").find(".layui-table-body").find("input[name='layTableCheckbox']").each(function() {
+				if (data[i].taskDispatch == 1) {
+					$(this).attr("disabled", 'disabled').removeAttr("checked");
+					form.render('checkbox');
+				}
+				i++;
+			});
+			//监听表格复选框选择
+			table.on('checkbox(abnormalMaterialWorkshopBLTabF)', function(obj) {
+				console.log(obj)
+			});
+		}
+	</script>
+</body>
+</html>

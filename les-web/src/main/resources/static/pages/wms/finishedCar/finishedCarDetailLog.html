@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>成品车详情</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <style>
+        .layui-form-label {
+            width: 100px;
+        }
+        .layui-form-item{
+        display: inline-block;
+        }
+    </style>
+</head>
+<body id="bodyDiv">
+
+<script type="text/html" id="bodyTpl">
+    <div class="layui-container" style="padding-top: 20px;">
+
+
+        <form class="layui-form" action="" lay-filter="detailForm">
+            <div class="data-form left">
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">存放位置描述</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="storageLocationDesc" id="locationCodeeOrDesc"
+                                   class="layui-input ">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">状态</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="status" id="status" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">VIN号</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="vinCode" id="vinCode" class="layui-input">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">订单号</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="orderCode" id="orderCode" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">客户名称</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="customerName" id="customerName" class="layui-input">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">入场时间</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="createTime" id="createTime" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">出场时间</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="modifiedTime" id="modifiedTime" class="layui-input">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">车辆型号</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="carModel" id="carModel" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">发动机(电机)型号</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="engineModel" id="engineModel" class="layui-input">
+                        </div>
+
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label layui-required">发动机(电机)号</label>
+                        <div class="layui-input-inline">
+                            <input readonly type="text" name="engineCode" id="engineCode" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+    <div class="layui-fluid-table">
+        <table id="finishedCarDetailTab" lay-filter="finishedCarDetailTab"></table>
+    </div>
+</script>
+<script src="/iles//pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<!--<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>-->
+<script type="text/javascript">
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form
+    var oldData = parent.oldData;
+    var wmsContextPath = config.wmsConfig.contextPath;
+
+    function loadding() {
+        table.render({
+            elem: '#finishedCarDetailTab',
+            id: 'finishedCarDetailTabId',
+            url: wmsContextPath + 'finishedCarLogPC/list',
+            where: {sourceId: oldData.id},
+            cols: [[
+                {type: 'numbers', title: '序号', fixed: 'left'},
+                {field: 'storageLocationDesc', title: '存放位置'},
+                {
+                    field: 'status', title: '车辆状态',
+                    templet(d) {
+                        if (d.status == 0) {
+                            return '已入场';
+                        } else if (d.status == 5) {
+                            return '已出场';
+                        } else {
+                            return '-';
+                        }
+                    }
+                },
+                {field: 'createdTime', title: '操作时间'},
+                {field: 'createdBy', title: '操作者'}
+            ]],
+            page: {theme: '#008155'},
+            height: 'full-95',
+            even: false,
+            done: function (res, page, count) {//列表数据回调函数
+
+            }
+        });
+
+        /*
+        {
+            "carModel": "车辆型号",
+            "createTime": "2021-01-15 15:02:39",
+            "createrId": "创建人ID",
+            "createrName": "创建人",
+            "customerName": "客户名称",
+            "engineCode": "发电机号",
+            "engineModel": "发电机型号",
+            "id": "001",
+            "modifiedTime": "2021-01-15 15:45:40",
+            "modifierId": "2",
+            "modifierName": "admin",
+            "orderCode": "生产订单",
+            "page": 1,
+            "productLine": "产线",
+            "sortColums": "",
+            "status": 5,
+            "storageLocationCode": "RC_00001",
+            "storageLocationDesc": "存放地点描述",
+            "storageLocationId": "存放点ID RC_ID00001",
+            "totalCount": 0,
+            "updateFlag": "",
+            "vinCode": "VIN号"
+        }
+         */
+        if (oldData) {
+            console.log(">>>>>oldData",oldData);
+            var status = null;
+            if(oldData.status==0){
+                status = '已入场';
+            }else if(oldData.status==5){
+                status = '已出场';
+            }else{
+                status = '-';
+            }
+            oldData.status= status;
+            form.val('detailForm', JSON.parse(JSON.stringify(oldData)));
+        }
+    };
+
+</script>
+</body>
+</html>

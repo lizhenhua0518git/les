@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/css/style.min.css">
+<title>交接图片</title>
+</head>
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+<form class="layui-form" action="" id="img">
+ 		
+		 
+	</form>
+	</div>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript">
+		var $ = layui.$;
+		var imgUrl = parent.$("#img").val();
+		var imgArray = imgUrl.split(";");
+		var html ='';
+		var src="http://10.220.30.150:9999";
+		for(var i =0;i<imgArray.length;i++){
+		 	html ='<div class="layui-form-item">'
+			
+			+' <div class="layui-inline">'
+			+'<div class="layui-inline">'
+		 
+			+'<div class="layui-input-block">'
+			+'<img src="'+src+imgArray[i]+'"></img>'	     
+			+'</div>'
+			+'</div>'
+            +'</div>';
+		
+		}
+		$("#img").html(html);
+		
+		 
+	</script>
+</body>
+</html>

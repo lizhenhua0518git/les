@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.oms.dao.AssembleOrderDao">
+	<resultMap type="com.zkzn.les.oms.pojo.AssembleOrder" id="assembleMap">
+		<result property="assembleOrderCode" column="assemble_order_code" />
+		<result property="waveId" column="wave_id" />
+		<result property="processOrderId" column="process_order_id" />
+		<result property="storageLocation" column="storage_location" />
+		<result property="enableRowsCount" column="enable_rows_count" />
+		<result property="assembleArea" column="assemble_area" />
+		<result property="activeNum" column="active_num" />
+		<result property="createDate" column="create_date" />
+	</resultMap>
+	
+	<select id="listAssembleOrder" resultMap="assembleMap">
+		select * from t_assemble_order a where exists (
+       		select po.id from t_process_order_detail p left join t_process_order po on po.id=p.process_order_id
+       		where po.storage_location in 
+       		<foreach collection="list" open="(" close=")" separator="," index="index" item="item">
+       			#{item}
+       		</foreach>
+       		and p.leave_over=0 and  a.process_order_id=po.id
+   		) order by  a.process_order_id desc ,ACTIVE_NUM desc
+	</select>
+	
+	<insert id ="saveAssembleOrderDetails" >
+		<foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+			insert into t_assemble_order_detail 
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="item.id != null and item.id != ''">ID,</if>
+			<if test="item.assembleId != null and item.assembleId != ''">ASSEMBLE_ID,</if>
+			<if test="item.materialCode != null and item.materialCode != ''">MATERIAL_CODE,</if>
+			<if test="item.materialDesc != null and item.materialDesc != ''">MATERIAL_DESC,</if>
+			<if test="item.materialUnit != null and item.materialUnit != ''">MATERIAL_UNIT,</if>
+			<if test="item.requiredCount != null and item.requiredCount != ''">REQUIRED_COUNT,</if>
+			<if test="item.enableCount != null and item.enableCount != ''">ENABLE_COUNT,</if>
+			<if test="item.unsendCount != null and item.unsendCount != ''">UNSEND_COUNT,</if>
+			<if test="item.putLevel != null and item.putLevel != ''">PUT_LEVEL,</if>
+			<if test="item.storageBinId != null and item.storageBinId != ''">STORAGE_BIN_ID,</if>
+			<if test="item.sapAdmin != null and  item.sapAdmin!=''">SAP_ADMIN,</if>
+			<if test="item.deliverMode != null and item.deliverMode != ''">DELIVER_MODE,</if>
+			<if test="item.deliverPlatform != null and item.deliverPlatform != ''">DELIVER_PLATFORM,</if>
+			<if test="item.planFillgoodTimeS != null and item.planFillgoodTimeS != ''">PLAN_FILLGOOD_TIME,</if>
+			<if test="item.planDeliverTimeS != null and item.planDeliverTimeS != ''">PLAN_DELIVER_TIME,</if>
+			<if test="item.jobNode != null ">JOB_NODE,</if>
+			<if test="item.lowerFrameTime != null and item.lowerFrameTime != ''">LOWER_FRAME_TIME,</if>
+			<if test="item.assembleTime != null and item.assembleTime != ''">ASSEMBLE_TIME,</if>
+			<if test="item.checkTime != null and item.checkTime != ''">CHECK_TIME,</if>
+			<if test="item.lowerFrameUid != null and item.lowerFrameUid != ''">LOWER_FRAME_UID,</if>
+			<if test="item.assembleUid != null and item.assembleUid != ''">ASSEMBLE_UID,</if>
+			<if test="item.checkUid != null and item.checkUid != ''">CHECK_UID,</if>
+			<if test="item.carrierId != null and item.carrierId != ''">CARRIER_ID,</if>
+			<if test="item.originCarrierId != null and item.originCarrierId != ''">ORIGIN_CARRIER_ID,</if>
+			<if test="item.factory != null and item.factory != ''">FACTORY,</if>
+			<if test="item.deliverRowCode != null and item.deliverRowCode != ''">DELIVERY_ROW_CODE,</if>
+			<if test="item.reserveCode != null and item.reserveCode != ''">RESERVE_CODE,</if>
+			<if test="item.reserveRow != null and item.reserveRow != ''">RESERVE_ROW,</if>
+			<if test="item.assembleArea != null and item.assembleArea != ''">ASSEMBLE_AREA,</if>
+			<if test="item.isUrgent != null and item.isUrgent != ''">IS_URGENT,</if>
+			<if test="item.voucherYear != null and item.voucherYear != ''">VOUCHER_YEAR,</if>
+			<if test="item.voucherCode != null and item.voucherCode != ''">VOUCHER_CODE,</if>
+			<if test="item.voucherLineNum != null and item.voucherLineNum != ''">VOUCHER_LINE_NUM,</if>
+			<if test="item.batchNum != null and item.batchNum != ''">BATCH_NUM,</if>
+			<if test="item.evaluationType != null and item.evaluationType != ''">EVALUATION_TYPE,</if>
+			<if test="item.pDetailId != null and item.pDetailId != ''">P_DETAIL_ID,</if>
+			<if test="item.mStorageBinId != null and item.mStorageBinId != ''">M_STORAGE_BIN_ID,</if>
+			<if test="item.voucherId!= null and item.voucherId != ''">VOUCHER_ID,</if>
+			<if test="item.enableCount != null and item.enableCount != ''">RETREAT_COUNT,</if>
+			</trim>
+	    	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="item.id != null and item.id != ''">'${item.id}',</if>
+			<if test="item.assembleId != null and item.assembleId != ''">'${item.assembleId}',</if>
+			<if test="item.materialCode != null and item.materialCode != ''">'${item.materialCode}',</if>
+			<if test="item.materialDesc != null and item.materialDesc != ''">'${item.materialDesc}',</if>
+			<if test="item.materialUnit != null and item.materialUnit != ''">'${item.materialUnit}',</if>
+			<if test="item.requiredCount != null and item.requiredCount != ''">'${item.requiredCount}',</if>
+			<if test="item.enableCount != null and item.enableCount != ''">'${item.enableCount}',</if>
+			<if test="item.unsendCount != null and item.unsendCount != ''">'${item.unsendCount}',</if>
+			<if test="item.putLevel != null and item.putLevel != ''">'${item.putLevel}',</if>
+			<if test="item.storageBinId != null and item.storageBinId != ''">'${item.storageBinId}',</if>
+			<if test="item.sapAdmin != null and  item.sapAdmin!=''">'${item.sapAdmin}',</if>
+			<if test="item.deliverMode != null and item.deliverMode != ''">'${item.deliverMode}',</if>
+			<if test="item.deliverPlatform != null and item.deliverPlatform != ''">'${item.deliverPlatform}',</if>
+			<if test="item.planFillgoodTimeS != null and item.planFillgoodTimeS != ''">str_to_date('${item.planFillgoodTimeS}',' %Y-%m-%d %H:%i:%s'),</if>
+			<if test="item.planDeliverTimeS != null and item.planDeliverTimeS != ''">str_to_date('${item.planDeliverTimeS}',' %Y-%m-%d %H:%i:%s'),</if>
+			<if test="item.jobNode != null ">'${item.jobNode}',</if>
+			<if test="item.lowerFrameTime != null and item.lowerFrameTime != ''">'${item.lowerFrameTime}',</if>
+			<if test="item.assembleTime != null and item.assembleTime != ''">'${item.assembleTime}',</if>
+			<if test="item.checkTime != null and item.checkTime != ''">'${item.checkTime}',</if>
+			<if test="item.lowerFrameUid != null and item.lowerFrameUid != ''">'${item.lowerFrameUid}',</if>
+			<if test="item.assembleUid != null and item.assembleUid != ''">'${item.assembleUid}',</if>
+			<if test="item.checkUid != null and item.checkUid != ''">'${item.checkUid}',</if>
+			<if test="item.carrierId != null and item.carrierId != ''">'${item.carrierId}',</if>
+			<if test="item.originCarrierId != null and item.originCarrierId != ''">'${item.originCarrierId}',</if>
+			<if test="item.factory != null and item.factory != ''">'${item.factory}',</if>
+			<if test="item.deliverRowCode != null and item.deliverRowCode != ''">'${item.deliverRowCode}',</if>
+			<if test="item.reserveCode != null and item.reserveCode != ''">'${item.reserveCode}',</if>
+			<if test="item.reserveRow != null and item.reserveRow != ''">'${item.reserveRow}',</if>
+			<if test="item.assembleArea != null and item.assembleArea != ''">'${item.assembleArea}',</if>
+			<if test="item.isUrgent != null and item.isUrgent != ''">'${item.isUrgent}',</if>
+			<if test="item.voucherYear != null and item.voucherYear != ''">'${item.voucherYear}',</if>
+			<if test="item.voucherCode != null and item.voucherCode != ''">'${item.voucherCode}',</if>
+			<if test="item.voucherLineNum != null and item.voucherLineNum != ''">'${item.voucherLineNum}',</if>
+			<if test="item.batchNum != null and item.batchNum != ''">'${item.batchNum}',</if>
+			<if test="item.evaluationType != null and item.evaluationType != ''">'${item.evaluationType}',</if>
+			<if test="item.pDetailId != null and item.pDetailId != ''">'${item.pDetailId}',</if>
+			<if test="item.mStorageBinId != null and item.mStorageBinId != ''">'${item.mStorageBinId}',</if>
+			<if test="item.voucherId!= null and item.voucherId != ''">'${item.voucherId}',</if>
+			<if test="item.enableCount != null and item.enableCount != ''">'${item.enableCount}',</if>
+			
+			</trim>
+		</foreach>
+	</insert>
+	
+	<insert id="saveAssembleOrders" >
+		<foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+			insert into T_ASSEMBLE_ORDER
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="item.id != null and item.id != ''">ID,</if>
+				<if test="item.assembleOrderCode != null and item.assembleOrderCode != ''">ASSEMBLE_ORDER_CODE,</if>
+				<if test="item.waveId != null and item.waveId != ''">WAVE_ID,</if>
+				<if test="item.processOrderId != null and item.processOrderId != ''">PROCESS_ORDER_ID,</if>
+				<if test="item.storageLocation != null and item.storageLocation != ''">STORAGE_LOCATION,</if>
+				<if test="item.enableRowsCount != null ">ENABLE_ROWS_COUNT,</if>
+				<if test="item.status != null">STATUS,</if>
+				<if test="item.assembleArea != null and item.assembleArea != ''">ASSEMBLE_AREA,</if>
+				<if test="item.activeNum != null">ACTIVE_NUM,</if>
+				<if test="item.createDateS != null and item.createDateS != ''">CREATE_DATE,</if>
+				<if test="item.voucherCode != null and item.voucherCode != ''">VOUCHER_CODE,</if>
+				<if test="item.voucherYear != null and item.voucherYear != ''">VOUCHER_YEAR,</if>
+				<if test="item.voucherId != null and item.voucherId != ''">VOUCHER_ID,</if>
+				
+				<if test="item.waveOldNum != null and item.waveOldNum != ''">WAVE_OLD_NUM,</if>
+				<if test="item.waveOldId != null and item.waveOldId != ''">WAVE_OLD_ID,</if>
+				
+	
+	
+			</trim>
+	    	<trim prefix="values (" suffix=")" suffixOverrides=",">
+				<if test="item.id != null and item.id != ''">'${item.id}',</if>
+				<if test="item.assembleOrderCode != null and item.assembleOrderCode != ''">'${item.assembleOrderCode}',</if>
+				<if test="item.waveId != null and item.waveId != ''">'${item.waveId}',</if>
+				<if test="item.processOrderId != null and item.processOrderId != ''">'${item.processOrderId}',</if>
+				<if test="item.storageLocation != null and item.storageLocation != ''">'${item.storageLocation}',</if>
+				<if test="item.enableRowsCount != null">'${item.enableRowsCount}',</if>
+				<if test="item.status != null">'${item.status}',</if>
+				<if test="item.assembleArea != null and item.assembleArea != ''">'${item.assembleArea}',</if>
+				<if test="item.activeNum != null">'${item.activeNum}',</if>
+				<if test="item.createDateS != null and item.createDateS != ''">str_to_date('${item.createDateS}',' %Y-%m-%d %H:%i:%s'),</if>
+				<if test="item.voucherCode != null and item.voucherCode != ''">'${item.voucherCode}',</if>
+				<if test="item.voucherYear != null and item.voucherYear != ''">'${item.voucherYear}',</if>
+				<if test="item.voucherId != null and item.voucherId != ''">'${item.voucherId}',</if>
+				
+				<if test="item.waveOldNum != null and item.waveOldNum != ''">'${item.waveOldNum}',</if>
+				<if test="item.waveOldId != null and item.waveOldId != ''">'${item.waveOldId}',</if>
+			</trim>
+		</foreach>
+	</insert>
+</mapper>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta content="" name="description" />
+<meta content="webthemez" name="author" />
+<title>LES物流执行系统</title>
+<link rel="shortcut icon" type="image/x-icon" href="img/logo.ico" />
+<link rel="stylesheet"  href="layui/css/layui.css"  media="all">
+<link rel="stylesheet"  href="css/index.css"  media="all">
+</head>
+<body class="layui-layout-body" id="bodyDiv">
+
+
+<script type="text/html" id="bodyTpl">
+	<div class="layui-layout layui-layout-admin">
+	<div class="index-header">
+		<div class="index-title">
+			<img  src="/iles/pages/img/index_logo.png" style="width: 140px;margin-left: 15px">
+			<div id="logoutDiv"> <i  class="layui-icon layui-icon-logout"></i><span>退出</span></div>
+		</div>
+		<div class="index-menu" id="menuUl">
+			<!-- <ul class="layui-nav index-nav" id="menuUl"> -->
+			  <!-- <li class="layui-nav-item">
+			  	<a href="javascript:;" id="id1" url="url1">入厂协同</a>
+			  	<div class="layui-nav-child">
+			      <div class="nav-child-2">
+			      	<a href="javascript:;">移动模块</a>
+			      	<div class="nav-child-3">
+			      		<a>移动模块1</a>
+			      		<a>移动模块2</a>
+			      		<a>移动模块3</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块8</a>
+			      		<a>移动模块8</a>
+			      		<a>移动模块8</a>
+			      	</div>
+			      </div>
+			      <a href="javascript:;">后台模版</a>
+			      <a href="javascript:;">电商平台</a>
+			    </div>
+			  </li>
+			  <li class="layui-nav-item"><a href="javascript:;">入库管理</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">仓库管理</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">物料拉动</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">出库管理</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">基础数据管理</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">系统管理</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">数据集成控制中心</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">电子看板</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">报表</a></li>
+			  <li class="layui-nav-item"><a href="javascript:;">成品车管理</a>
+			  	<div class="layui-nav-child">
+			      <div class="nav-child-2">
+			      	<a href="javascript:;">移动模块</a>
+			      	<div class="nav-child-3">
+			      		<a>移动模块1</a>
+			      		<a>移动模块2</a>
+			      		<a>移动模块3</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块4</a>
+			      		<a>移动模块8</a>
+			      		<a>移动模块8</a>
+			      		<a>移动模块8</a>
+			      	</div>
+			      </div>
+			      <div class="nav-child-2">
+			      	<a href="javascript:;">后台模版</a>
+			      </div>
+			      <div class="nav-child-2">
+			     	 <a href="javascript:;">电商平台</a>
+			      </div>
+			    </div>
+			  </li> -->
+			<!-- </ul> -->
+		</div>
+	</div>
+
+	<div class="index-body">
+		<div class="layui-tab" lay-filter="indexTab" lay-allowclose="true">
+		  <ul class="layui-tab-title">
+
+		  </ul>
+			<ul class="rightmenu">
+				<li data-type="refreshFrame" title="刷新当前框架">刷新</li>
+				<li data-type="closeothers">关闭其它</li>
+				<li data-type="closeall">关闭所有</li>
+			</ul>
+		  <div class="layui-tab-content">
+
+		  </div>
+		</div>
+	</div>
+
+	<div class="index-footer">
+		<span>智能化工厂-LES系统V1.0版-20200727发布</span>
+		<span>当前用户:{{d.currUser.userName}}</span>
+		<span>登录时间:{{d.currUser.lastLoginTime}}</span>
+	</div>
+</div>
+</script>
+<script src="/iles/pages/js/jquery-3.3.1.min.js"></script>
+<script src="/iles/pages/js/layer/2.4/layer.js"></script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/index.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+
+
+</body>
+</html>

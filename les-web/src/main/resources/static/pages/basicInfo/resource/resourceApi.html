@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>菜单api地址配置</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<style type="text/css">
+.layui-table-cell{
+    overflow: visible !important;
+}
+.layui-table-body{
+    overflow: visible !important;
+}
+.layui-table-box,layui-table-view{
+    overflow: visible !important;
+}
+</style>
+</head>
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+
+<div class="layui-fluid">
+<form class="layui-form" action="">
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">资源名称</label>
+			 	<div class="layui-input-block">
+					<input disabled type="text" id="resourceName" class="layui-input">
+				</div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">资源描述</label>
+			 	 <div class="layui-input-block">
+			       <input disabled type="text" id="resourceDesc" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">资源类型</label>
+			 	 <div class="layui-input-block">
+			        <input disabled type="text" id="resourceType" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">资源url</label>
+			 	 <div class="layui-input-block">
+			        <input disabled type="text" id="resourceUrl" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">资源图标</label>
+			 	 <div class="layui-input-block">
+			        <input disabled type="text" id="resourceIcon" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<div class="layui-btn-container" style="text-align: left;">
+             	 	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="save" id="search" type="button">保存</button>
+			</div>
+		</div>
+	</div>
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			<label class="layui-form-label">资源位置</label>
+			 	 <div class="layui-input-block">
+			        <input disabled type="text" id="resourceAttach" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">资源状态</label>
+			 	 <div class="layui-input-block">
+			        <input disabled type="text" id="resourceStatus" class="layui-input">
+			    </div>
+		</div>
+	</div>
+<input type="text" name="inWarehouseName" id="inWarehouseName" hidden="true">
+<input type="text" name="outWarehouseName" id="outWarehouseName" hidden="true">
+<input type="text" name="billName" id="billName" hidden="true">
+</form>
+</div>
+
+<div class="layui-fluid-table">
+<div class="layui-row layui-form" style="margin-bottom: 0">
+		<div class="layui-btn-container" style="text-align: left;">
+               <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>新增行</button>
+               <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除行</button>
+
+         </div>
+	</div>
+<table class="layui-hide" id="resourceApi" lay-filter="resourceApiF"></table>
+</div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script type="text/javascript">
+var table = layui.table;
+var element = layui.element;
+var contextPath =  config.basicInfoConfig.contextPath;
+var form = layui.form;
+var storage = window.localStorage;
+var token = storage.token;
+var layer = layui.layer;
+var chooseMaterialObj;
+var dictItemValue;
+var factoryCodes = parent.factoryCodes;
+var oldData = parent.oldData;
+var deleteIds = new Array();
+var active = {
+		add:function(type){
+			var cacheTableValue = table.cache.resourceApiId;
+			var dataRowArray = new Array();
+			var newDataRow = {apiPath:"",remark:""};
+			dataRowArray.push(newDataRow);
+			if(cacheTableValue!=null && cacheTableValue.length>0){
+				for(var i=0;i<cacheTableValue.length;i++){
+					dataRowArray.push(cacheTableValue[i]);
+				}
+			}
+			table.reload('resourceApiId',{data:dataRowArray,url:''});
+		},
+		del:function(type){
+			var checkStatus = table.checkStatus('resourceApiId');
+			var oldDataDel = checkStatus.data;
+			if(oldDataDel.length<=0){
+				layer.alert('请选择要删除的行！',{icon: 2});
+				return ;
+			}
+
+			var cacheTableValue = table.cache.resourceApiId;
+
+			if (oldDataDel.length > 0) {
+					//要删除的数组的下标，从0开始
+					var delIndex=0;
+                    //layui中找到CheckBox所在的行，并遍历找到行的顺序
+                    $("div.layui-table-body table tbody input[name='layTableCheckbox']:checked").each(function () { // 遍历选中的checkbox
+                        n = $(this).parents("tbody tr").index();  // 获取checkbox所在行的顺序
+                        //如果有id,需要后台删除，这里把要删除的数据id存放在deleteIds数组中
+                        if('id' in oldDataDel[delIndex]){
+        					deleteIds.push(oldDataDel[delIndex].id);
+        				}
+
+                        //移除行
+                        //$("div.layui-table-body table tbody ").find("tr:eq(" + n + ")").remove();
+                        cacheTableValue.splice(n-delIndex,1);
+                      //数组的下标每循环一次加1
+                        delIndex++;
+                        //如果是全选移除，就将全选CheckBox还原为未选中状态
+                        $("div.layui-table-header table thead div.layui-unselect.layui-form-checkbox").removeClass("layui-form-checked");
+                    });
+            }
+			table.reload('resourceApiId',{data:cacheTableValue,url:''});
+		},
+		save:function(type){
+
+			var cacheTableValue = table.cache.resourceApiId;
+			var checkNames = null;
+			var flg = 0;
+
+			checkNames = ["apiPath","remark"]
+			flg = checkNeedWrite(cacheTableValue,checkNames);
+			if(flg==1){
+				layer.msg("请将列表数据补充完整");
+				return;
+			}
+
+			var params = {};
+			params.resourceId = oldData[0].id;
+			params.item = cacheTableValue;
+			params.deleteIds = deleteIds;
+
+			saveResourceApi(params);
+
+		},
+		reset:function(type){
+			$("#outWarehouseCode").val("");
+			$("#outStorageLocation").val("");
+			$("#billType").val("");
+			$("#inWarehouseCode").val("");
+			$("#inStorageLocation").val("");
+			$("#stockStatus").val("");
+			$("#stockType").val("");
+		}
+};
+function saveResourceApi(data){
+	var option = {
+			url:contextPath+'resourceApiAddress/updateResourceApiAdress',
+			data:JSON.stringify(data),
+			type:'POST',
+			contentType:'application/json',
+			dataType:'json',
+			success:function(res){
+				if(res.code==0){
+					var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+	    			parent.layer.close(index);  // 关闭layer
+				}else{
+					layer.msg("保存失败");
+				}
+			},error:function(res){
+				layer.msg("保存失败");
+			}
+	};
+	$.ajax(option);
+}
+function loadding(){
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+  	});
+	//加载资源基本信息
+	$('#resourceName').val(oldData[0].resourceName);
+	$('#resourceDesc').val(oldData[0].resourceDesc);
+	$('#resourceType').val(oldData[0].resourceType);
+	$('#resourceUrl').val(oldData[0].resourceUrl);
+	$('#resourceIcon').val(oldData[0].resourceIcon);
+	$('#resourceAttach').val(oldData[0].resourceAttach);
+	$('#resourceStatus').val(oldData[0].resourceStatus);
+
+
+
+	table.render({
+		elem:'#resourceApi',
+		id:'resourceApiId',
+		url: contextPath +'resourceApiAddress/listResourceApiAdress',
+		cols:[[
+		{type:'checkbox'},
+		{type:'numbers',title:'序号',width: 60},
+		{field:'apiPath',title:'api接口路径',edit: 'text'},
+		{field:'remark',title:'资源描述',edit: 'text'}
+		]],
+		page: {theme: '#008155'},
+   		even:true,
+   		where:{
+   			resourceId:oldData[0].id
+   		}
+   		/* done:function(res,page,count){//列表数据回调函数
+
+   		} */
+	});
+
+
+}
+
+
+/**
+ * 验证表格数据必填
+ */
+function checkNeedWrite(data,checkNames){
+
+	for(var i=0;i<data.length;i++){
+		for(var j=0;j<checkNames.length;j++){
+			if(data[i][checkNames[j]] == ""){
+				return 1;
+			}
+		}
+	}
+
+}
+
+
+</script>
+</body>
+
+</html>

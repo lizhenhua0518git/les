@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.dao.MaterialLaunchRemarkDao">
+<resultMap type="com.zkzn.les.basicInfo.pojo.MaterialLaunchRemark" id="BaseResultMap">
+	<result property="id"  column="id"/>	
+	<result property="materialCode"  column="MATERIAL_CODE"/>
+	<result property="materialDesc"  column="MATERIAL_DESC"/>
+	<result property="warehouseCode"  column="WAREHOUSE_CODE"/>
+	<result property="warehouseName"  column="WAREHOUSE_NAME"/>
+	<result property="area"  column="AREA"/>
+	<result property="stationCode"  column="STATION_CODE"/>
+	<result property="remarks"  column="REMARKS"/>
+	<result property="levelOneCode"  column="LEVEL_ONE_CODE"/>
+	<result property="levelTwoCode"  column="LEVEL_TWO_CODE"/>
+	<result property="levelThreeCode"  column="LEVEL_THREE_CODE"/>
+	<result property="createUserId"  column="CREATE_USER_ID"/>
+</resultMap>
+
+	<select id="listMaterialLaunchRemark" parameterType="com.zkzn.les.basicInfo.pojo.MaterialLaunchRemark" resultType="com.zkzn.les.basicInfo.pojo.MaterialLaunchRemark">
+			select t.*,
+       o.org_name WAREHOUSE_NAME,
+       (select c.material_classification_name from t_material_classification c
+         where c.level_value = 1
+           and c.material_classification_code = t.level_one_code) level_one_name,
+            (select c.material_classification_name from t_material_classification c
+         where c.level_value = 2
+           and c.material_classification_code = t.level_two_code) level_two_name,
+            (select c.material_classification_name from t_material_classification c
+         where c.level_value = 3
+           and c.material_classification_code = t.level_three_code) level_three_name
+  from t_material_LAUNCH_REMARK t
+
+  left join t_warehouse o
+    on o.org_code = t.warehouse_code
+		<where>
+		    <if test="warehouseCode != null and warehouseCode != ''">
+				and t.WAREHOUSE_CODE =#{warehouseCode}
+			</if>
+			<if test="materialCode != null and materialCode != ''">
+				and t.MATERIAL_CODE like concat(concat('%',#{materialCode}),'%')
+			</if>
+			<if test="materialDesc != null and materialDesc != ''">
+				and t.MATERIAL_DESC like concat(concat('%',#{materialDesc}),'%')
+			</if>
+		</where>
+		order by t.create_time desc
+	</select>
+	
+	<select id="countMaterialLaunchRemark"   parameterType="com.zkzn.les.basicInfo.pojo.MaterialLaunchRemark" resultType="int">
+				select  count(*)
+		  
+		       from t_material_LAUNCH_REMARK t
+		       
+		       where   t.WAREHOUSE_CODE =#{warehouseCode}
+		       
+		      and t.MATERIAL_CODE  =#{materialCode}
+		 
+		 
+		    <if test="id != null and id != ''">
+				and  t.id !=#{id}
+			</if>
+			 
+		 
+	</select>
+
+	<insert id="insert" parameterType="com.zkzn.les.basicInfo.pojo.MaterialLaunchRemark">
+		<selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">
+			select  replace(uuid(),'-','') from dual
+		</selectKey>
+			INSERT INTO t_material_LAUNCH_REMARK
+		<trim prefix="("  suffix=")" suffixOverrides=",">
+			id,
+			<if test="materialCode != null and materialCode != ''">MATERIAL_CODE,</if>
+			<if test="materialDesc != null and materialDesc != ''">MATERIAL_DESC,</if>
+			<if test="warehouseCode != null and warehouseCode != ''">WAREHOUSE_CODE,</if>
+		 
+			<if test="levelOneCode != null and levelOneCode != ''">LEVEL_ONE_CODE,</if>
+			<if test="levelTwoCode != null and levelTwoCode != ''">LEVEL_TWO_CODE,</if>
+			<if test="levelThreeCode != null and levelThreeCode != ''">LEVEL_THREE_CODE,</if>
+			<if test="isFixed != null and isFixed != ''">is_fixed,</if>
+			<if test="createUserId != null and createUserId != ''">CREATE_USER_ID</if>
+		</trim>
+		<trim prefix="values ("  suffix=")" suffixOverrides=",">
+			#{id},
+			<if test="materialCode != null and materialCode != ''">#{materialCode},</if>
+			<if test="materialDesc != null and materialDesc != ''">#{materialDesc},</if>
+			<if test="warehouseCode != null and warehouseCode != ''">#{warehouseCode},</if>
+		 
+			<if test="levelOneCode != null and levelOneCode != ''">#{levelOneCode},</if>
+			<if test="levelTwoCode != null and levelTwoCode != ''">#{levelTwoCode},</if>
+		    <if test="levelThreeCode != null and levelThreeCode != ''">#{levelThreeCode},</if>
+		    <if test="isFixed != null and isFixed != ''">#{isFixed},</if>
+		    <if test="createUserId != null and createUserId != ''">#{createUserId}</if>
+		  
+		</trim>
+	</insert>
+	
+	<update id="update" parameterType="com.zkzn.les.basicInfo.pojo.MaterialLaunchRemark">
+		UPDATE t_material_LAUNCH_REMARK
+		<trim prefix="set" suffixOverrides=",">
+			<if test="materialCode != null and materialCode != ''">MATERIAL_CODE=#{materialCode}</if>
+			<if test="materialDesc != null and materialDesc != ''">,MATERIAL_DESC=#{materialDesc}</if>
+			<if test="warehouseCode != null and warehouseCode != ''">,WAREHOUSE_CODE=#{warehouseCode}</if>
+ 
+			<if test="isFixed != null and isFixed != ''">,IS_FIXED=#{isFixed},</if>
+			<if test="levelOneCode != null and levelOneCode != ''">,LEVEL_ONE_CODE=#{levelOneCode}</if>
+			<if test="levelTwoCode != null and levelTwoCode != ''">,LEVEL_TWO_CODE=#{levelTwoCode}</if>
+			<if test="levelThreeCode != null and levelThreeCode != ''">,LEVEL_THREE_CODE=#{levelThreeCode}</if>
+		 
+		</trim>
+		where id=#{id}
+	</update>
+	
+	<delete id="delete" parameterType="java.util.Map">
+	
+	 <if test="list.size()>0">
+        delete from t_material_LAUNCH_REMARK where
+        <foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+            id=#{item}
+        </foreach>
+        </if>
+		 
+	</delete>
+	
+	<select id="listWarehouse" parameterType="java.util.Map" resultType="java.util.Map" >
+	  select t.org_code "orgCode",t.org_name "orgName" from t_warehouse t  order by t.org_code  
+	</select>
+</mapper>

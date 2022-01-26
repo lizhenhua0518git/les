@@ -1,0 +1,341 @@
+.left,.right{
+	float:left;
+}
+ 
+.circle {
+	 width: 100px;  
+	 height:100px;  
+	 border-radius: 50%;  
+	 border: 10px solid #ffffff;
+     display: inline-block;
+     box-sizing: border-box;
+     text-align: center; 
+     line-height: 20px; 
+     font-weight: normal; 
+     font-style: normal;
+     font-size: 18px; 
+     padding: 30px 0px 0px 0px;
+}
+.circle1 {
+	 width: 70px;  
+	 height:70px;  
+	 border-radius: 50%;  
+	 border: 10px solid #ffffff;
+     display: inline-block;
+     box-sizing: border-box;
+     text-align: center; 
+     line-height: 26px; 
+     font-weight: normal; 
+     font-style: normal;
+     font-size: 14px; 
+     padding: 4px;
+}
+.indicators {
+    width: 740px; 
+	height: 43px; 
+	color:#FFFFFF; 
+	background-color: #883b9d;
+	font-size: 18px; 
+	padding: 0px; 
+	border-width: 1px; 
+	border-style: solid; 
+	text-align: left; 
+	line-height: 10px;
+	font-weight: bold;
+    font-style: normal; 
+    margin-top: 5px;
+   
+  }
+ .coreIndicators1,.coreIndicators2{
+  width: 240px;
+  height: 176px; 
+  color:#FFFFFF; 
+  background-color:#8dcc43; 
+  border-radius: 6px; 
+  border-width: 0px; 
+  border-style: solid; 
+  text-align: center; 
+  line-height: 20px; 
+  font-weight: normal; 
+  font-style: normal;  
+  margin-top: 8px;
+  cursor: pointer;
+  }
+  
+ 
+  .coreIndicators2 {
+   margin-left: 10px;
+  }
+  
+  .account,.account1 {
+  width: 320px;
+  height: 115px;
+  color:#FFFFFF; 
+  background-color:#5e70d7; 
+  border-radius: 6px; 
+  border-width: 0px; 
+  border-style: solid; 
+  text-align: center; 
+  line-height: 20px; 
+  font-weight: normal; 
+  font-style: normal;  
+  margin-left: 8px;
+  cursor: pointer;
+  }
+  .account {
+  margin-top: 0px;
+  }
+  .account1 {
+  margin-top: 5px;
+ 
+  }
+  .rate{
+  	width: 120px; 
+  	height: 36px;
+  	z-index: 10;
+  	font-weight:bold;
+  	font-size: 18px;
+  	line-height: 29px;
+  	cursor: pointer;
+  }
+   
+ .rate1{
+  	width: 120px; 
+  	height: 36px;
+  	z-index: 10;
+  	font-weight:bold;
+  	font-size: 10px;
+  	line-height: 29px;
+  	cursor: pointer;
+  } 
+
+.progressbar{
+	width: 340px; 
+	height: 43px; 
+	left: 1082px;
+	top: 116px; 
+	z-index: 247; 
+	color: #FFFFFF;
+	background-color: #883b9d; 
+	font-size: 18px; 
+	padding: 0px; 
+	border-width: 1px; 
+	border-style: solid; 
+	text-align: left; 
+	line-height: 26px; 
+	font-weight: bold; 
+	font-style: normal;
+	 
+}
+.getGoods{
+	width: 96px; 
+	height: 38px; 
+	color: rgb(255, 255, 255); 
+	background-color: rgb(139, 195, 74); 
+	border-radius: 6px; 
+	font-size: 16px; 
+	border-width: 1px; 
+	border-style: solid; 
+	text-align: center; 
+	line-height: 23px; 
+	margin-top: 15px;
+	cursor: pointer;
+	 
+}
+.getGoodsText{
+	width: 215px; 
+	height: 20px; 
+	left: 1187px; 
+	top: 173px; 
+	z-index: 140; 
+	color: #000000; 
+	font-size: 12px; 
+	padding: 0px;
+	border-width: 0px;
+	border-style: solid; 
+	line-height: 20px; 
+	font-weight: normal; 
+	font-style: normal; 
+	margin-left: 10px;
+	margin-top: 0px;
+}
+.stockFund{
+	width: 420px;
+	height: 234px; 
+	left: 246px;
+	top: 351px;
+	z-index: 205;
+	color: rgb(255, 255, 255);
+	background-color: rgb(94, 112, 215);
+	border-radius: 6px;
+	font-size: 14px;
+	border-width: 0px;
+	border-style: solid;
+	text-align: center;
+	line-height: 20px;
+	font-weight: normal;
+	font-style: normal;
+	 cursor: pointer;
+}
+.marginLeft{
+	margin-left: 10px;
+}
+.float{
+	float:left;
+}
+.stockFundText{
+	margin-left: 50px;
+}
+
+.tab {
+    width: 180px; 
+	height: 23px; 
+    z-index: 29; 
+	color:#FFFFFF; 
+	background-color: #9cb5b1;
+	font-size: 12px; 
+	padding: 0px; 
+	border-width: 1px; 
+	border-style: solid; 
+	text-align: center; 
+	line-height: 20px;
+	font-weight: bold;
+    font-style: normal; 
+    margin-top: 1px;
+    float:left;
+     cursor: pointer;
+  }
+  .statisticalBar{
+    width: 740px; 
+	height: 33px; 
+	color:#FFFFFF; 
+	background-color: #667951;
+	font-size: 16px; 
+	padding: 0px; 
+	border-width: 1px; 
+	border-style: solid; 
+	text-align: left; 
+	line-height: 30px;
+	font-weight: bold;
+    font-style: normal; 	
+  }
+ .exception{
+ 	 width: 350px; 
+	height: 33px; 
+	color:#FFFFFF; 
+	z-index: 31;
+	background-color: #ff9800;
+	font-size: 16px; 
+	padding: 0px; 
+	border-width: 1px; 
+	border-style: solid; 
+	text-align: left; 
+	line-height: 30px;
+	font-weight: bold;
+    font-style: normal; 	
+ }
+ .tool{
+ 	width: 353px; 
+	height: 33px; 
+	color:#FFFFFF; 
+	z-index: 31;
+	background-color: #9d5055;
+	font-size: 16px; 
+	padding: 0px; 
+	border-width: 1px; 
+	border-style: solid; 
+	text-align: left; 
+	line-height: 10px;
+	font-weight: bold;
+    font-style: normal; 	
+ }
+ .toolBar{
+ 	width: 300px;
+ 	height: 66px;
+ 	color: #ffffff; 
+ 	background-color:#5e70d7; 
+ 	border-radius: 6px; 
+ 	font-size: 20px; 
+ 	padding: 0px; 
+ 	border-width: 1px; 
+ 	border-style: solid; 
+ 	text-align: center; 
+ 	line-height: 29px; 
+ 	font-weight: bold; 
+ 	font-style: normal;
+ 	margin-top: 15px;
+ 	margin-left:20px;
+}
+.frame1,.frame2,.frame3{
+	width: 362px; 
+    box-shadow:#aaaaaa 2px 2px 0px 0px; 
+    font-size: 14px; 
+    padding: 0px; 
+    border-width: 1px; 
+    border-style: solid; 
+    text-align: left; 
+    line-height: 20px; 
+    font-weight: normal; 
+    font-style: normal; 
+    margin-left:5px;
+    margin-top:5px; 
+    cursor: pointer; 
+}
+.frame1{
+	 
+	height: 238px; 
+
+}
+ .frame2{
+	 
+	height: 400px; 
+	 
+}
+.frame3{
+	 
+	height: 400px; 
+ 
+}
+.line{
+	width: 150px;
+	border-top:1px solid #d9d9d9;
+	margin-top: 10px;
+	margin-left: 10px;"
+	
+}
+.statistics,.statisticsText{
+    color: #000000; 
+	font-size: 16px; 
+	padding: 10px 0px 0px 0px; 
+	font-weight: bold; 
+	font-style: normal;
+}
+.statistics{
+	width: 350px;
+	height: 76px; 
+	border-color: rgb(164, 158, 26); 
+	border-radius: 6px; 
+	border-width: 1px; 
+	border-style: solid; 
+	text-align: left; 
+	line-height: 23px; 
+	margin-left: 15px;
+	cursor: pointer;
+}
+.statisticsText{
+	width: 130px; 
+	height: 26px;  
+	color: #000000; 
+	font-size: 18px;  
+	margin-left: 120px;	
+}
+.wrapper{
+	width: 350px;
+	height: 76px; 
+	margin-left: 15px;
+}
+.table{
+	width:338px;
+	font-size: 3px;
+	line-height:25px;
+}

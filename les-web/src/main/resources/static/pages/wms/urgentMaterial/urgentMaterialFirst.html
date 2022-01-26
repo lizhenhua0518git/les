@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+
+<title></title>
+</head>
+<style type="text/css">
+.layui-table-body{
+	overflow-x:scroll;
+}
+</style>
+<body>
+  <div id="bodyDiv"></div>
+
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+	<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+	<script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+	<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+			 	<label class="layui-form-label">物料编号:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="materialCode" placeholder="请输入物料编号" class="layui-input">
+			    </div>
+			 </div>
+			 <div class="layui-col-md3">
+			 	<label class="layui-form-label">物料描述:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="materialDesc" placeholder="请输入物料描述" class="layui-input">
+			    </div>
+			 </div>
+
+			 <div class="layui-col-md3">
+				<label class="layui-form-label">供应商:</label>
+			 	<div class="layui-input-block">
+			       <input type="text" id="supplierName" placeholder="请输入供应商" class="layui-input">
+			    </div>
+			</div>
+			 <div class="layui-col-md3">
+				<label class="layui-form-label">通知单号:</label>
+			 	<div class="layui-input-block">
+			       <input type="text" id="arrivalCode" placeholder="请输入通知单号" class="layui-input">
+			    </div>
+			</div>
+			</div>
+				<br>
+			<div class="layui-row layui-form"  >
+
+
+		<div class="layui-col-md3">
+				<label class="layui-form-label">项目号:</label>
+			 	 <div class="layui-input-block">
+			       <input type="text" id="project" placeholder="请输入项目号" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">工位:</label>
+			 	 <div class="layui-input-block">
+			       <input type="text" id="stationCode" placeholder="请输入工位" class="layui-input">
+			    </div>
+			</div>
+
+			  <div class="layui-col-md3">
+				<label class="layui-form-label">生产订单:</label>
+			 	<div class="layui-input-block">
+			       <input type="text" id="orderCode" placeholder="请输入生产订单" class="layui-input">
+			    </div>
+			</div>
+
+			</div>
+				<br>
+			<div class="layui-row layui-form" >
+
+
+
+
+
+			<div class="layui-col-md9">
+				<div class="layui-btn-container" style="text-align: right;">
+			{{# if(d.search==null || d.search=="true"){ }}
+			   <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+		 	   <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+	         {{# } }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<table class="layui-hide" id="urgentMaterialFirst" lay-filter="urgentMaterialFirstF"></table>
+	</script>
+	<script type="text/html" id="ContrlBar">
+	<a class="layui-btn layui-btn-xs" lay-event="info">详情</a>
+</script>
+	<script type="text/javascript">
+	var contextPath = config.wmsConfig.contextPath;
+	var $ = layui.$;
+	var element = layui.element;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var oldData;
+	var dictItems = null;//数据字典
+
+ function loadding(){
+	table.render({
+		elem:'#urgentMaterialFirst',
+		id:'urgentMaterialFirstId',
+		url:contextPath+'urgentMaterialClassify/listUrgentMaterialFirst',
+		cols:[[
+		{type:'checkbox'},
+		{field:'materialCode',width:100,title:'物料编号'},
+		{field:'materialDesc',width:150, title: '物料描述'},
+		{field:'subFactory',width:100, title: '分厂'},
+		{field:'arrivalCode',width:100, title: '通知单号'},
+	    {field:'supplierName',width:100, title: '供货商'},
+	    {field:'project',width:100, title: '项目号供货商'},
+		{field:'pipleLine',width:100, title: '产线'},
+		{field:'orderCode',width:120, title: '生产订单号'},
+		{field:'stationCode', width:120,title: '工位'},
+		{field:'factory',width:120, title: '工厂'},
+		{field:'requiredDate',width:100, title: '需求日期'},
+		{field:'supplierName',width:100, title: '供货商'},
+		{field:'storageLocation',width:100, title: '库存地点'},
+		{field:'totalNum',width:120, title: '到货数量'},
+		{field:'inspectFinishCount',width:100, title: '质检完成数量'},
+		{field:'inspectCount',width:100, title: '质检中数量'},
+		{field:'receiveCount',width:120, title: '点收中'},
+		{field:'waitReceiveCount',width:120, title: '等待点收'},
+		{field:'loadCount',width:90, title: '卸货中'},
+		{field:'waitLoadCount',width:90, title: '等待卸货'},
+
+		{fixed:'right',align:'left',toolbar:'#ContrlBar',title:'操作'}
+		]],
+		page: {theme: '#008155'},
+   		height: 'full-95',
+   		even:true
+	});
+	var active = {
+
+
+			search:function(othis){
+				var materialCode=$('#materialCode').val();
+				var materialDesc=$('#materialDesc').val();
+				var orderCode=$('#orderCode').val();
+				var requiredDate=$('#requiredDate').val();
+				var requiredStart = "";
+				var requiredEnd = "";
+				if(requiredDate!=null && requiredDate.length>0){
+					requiredStart = requiredDate.substring(0,20);
+					requiredEnd = requiredDate.substring(22);
+				}
+				var stationCode=$('#stationCode').val();
+				var carCode=$('#carCode').val();
+				var arrivalCode=$('#arrivalCode').val();
+				var project=$('#project').val();
+				var supplierName=$('#supplierName').val();
+				var params={};
+				params.materialCode=materialCode;
+				params.materialDesc=materialDesc;
+				params.orderCode=orderCode;
+				params.requiredStart=requiredStart;
+				params.requiredEnd=requiredEnd;
+				params.stationCode=stationCode;
+				params.carCode=carCode;
+
+				params.arrivalCode=arrivalCode;
+				params.project=project;
+				params.supplierName=supplierName;
+			      //执行重载
+			      table.reload('urgentMaterialFirstId', {
+			        where:params,
+			        page:{"curr":1}
+			      });
+			},reset:function(othis){
+				 $('#materialCode').val('');
+				 $('#materialDesc').val('');
+				 $('#orderCode').val('');
+				 $('#requiredDate').val('');
+
+				 $('#stationCode').val('');
+				 $('#carCode').val('');
+			     $('#arrivalCode').val('');
+				 $('#project').val('');
+				 $('#supplierName').val('');
+				form.render("select");
+			}
+
+	};
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+  	});
+	table.on('tool(urgentMaterialFirstF)', function(obj){
+		 var value = obj.value
+		    ,data = obj.data;
+		 oldData = data;
+		 layer.open({
+	        type: 2
+	        ,title:'紧急物料详情'
+	        ,maxmin:true
+	        ,area: ['100%', '100%']
+	        ,id: 'materialThreeId' //防止重复弹出
+	        ,content: 'urgentFirstDetail.html'
+	        ,shade: 0 //不显示遮罩
+	        ,yes: function(){
+	          layer.closeAll();
+	        }
+	     });
+	});
+}
+</script>
+</body>
+</html>

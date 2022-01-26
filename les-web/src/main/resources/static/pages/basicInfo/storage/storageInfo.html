@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>新增储位信息</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="${ctx}/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="${ctx}/pages/css/layui_extend.css"  media="all">
+</head>
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+		<form class="layui-form" action="" lay-filter="storageForm">
+			<div class="layui-form-item">
+				<div class="layui-inline">
+				    <label class="layui-form-label">储位编号</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="positionCode" id="positionCode" style="border:none" readonly="readonly" class="layui-input">
+				    </div>
+			 	</div>
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">储位名称</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="positionName" id="positionName" style="border:none" readonly="readonly" class="layui-input">
+				    </div>
+			 	</div>
+			 </div>
+			<div class="layui-form-item">
+				
+			 </div>
+			 <div class="layui-form-item">
+				<div class="layui-inline">
+				    <label class="layui-form-label">工位编号</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="stationCode" id="stationCode" style="border:none" readonly="readonly" class="layui-input">
+				    </div>
+			 	</div>
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">货架编号</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="shelfCode" id="shelfCode"  style="border:none" readonly="readonly" class="layui-input">
+				    </div>
+			 	</div>
+			 </div>
+			 <div class="layui-form-item">
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">选择仓库</label>
+				    <div class="layui-input-block">
+					    <input type="text" name="warehouse" id="warehouse" style="border:none" readonly="readonly" class="layui-input">
+				    </div>
+			 	</div>
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">区域</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="areaName" id="areaName"  style="border:none" class="layui-input" readonly="readonly">
+				    </div>
+			 	</div>
+			 </div>
+			  <div class="layui-form-item">
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">货架层级</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="shelfFloor" id="shelfFloor" style="border:none" readonly="readonly" class="layui-input">
+				    </div>
+			 	</div>
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">状态</label>
+				    <div class="layui-input-block">
+				       <input type="text" name="status" id="status" style="border:none" readonly="readonly" class="layui-input">
+				    </div>
+			 	</div>
+			 </div>
+			 <div class="layui-form-item">
+			 	<div class="layui-inline">
+				    <label class="layui-form-label">存储类型</label>
+				    <div class="layui-input-block">
+				    	<input type="text" name="storageType" id="storageType" style="border:none" readonly="readonly" class="layui-input">
+				    </div>
+			 	</div>
+			 </div>
+			  <input type="text" hidden="true"  name="shelfId" id="shelfId">
+			  <input type="text" hidden="true" name="id"/>
+		</form>
+	</div>
+	<script src="${ctx}/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form
+		var dictItems = parent.dictItems;
+		var warehouseData = parent.warehouseData;
+		var oldData = parent.oldData;
+		var feildName = "shelfCode";
+		var feildValue = "shelfId";
+		
+		  if(oldData && oldData.length>0){
+			 
+			 var formData =  eval('('+JSON.stringify(oldData[0])+')');
+			 console.log(formData);
+			 form.val('storageForm',formData);
+			 if(formData.id!=null && formData.id.length>0){
+				 var option = {
+						 url:'${ctx}/storagePosition/queryStorageById?id='+formData.id,
+						 type:'GET',
+						 success:function(res){
+							 if(res.code==0 && res.data!=null){
+								 $("#shelfCode").val(formData.shelfId);
+								 $("#shelfId").val(res.data.shelfId);
+							 }
+						 }
+				 };
+				 $.ajax(option);
+			 }
+			 $("#areaName").val(formData.areaCode);
+			 if(formData.storageType=="1"){
+				 $("#storageType").val("地堆");
+			 }else if(formData.storageType=="2"){
+				 $("#storageType").val("货架");
+			 }
+			 initWarehouse();
+		 }
+		 
+		 //状态设置下拉选项开始
+		 if(dictItems && dictItems.length>0){
+			 defulatSelect(dictItems);
+		 }else{
+			 queryDictItem(); 
+		 }
+		 function queryDictItem(){
+			  var dictType = new Array();
+				dictType.push("enable");
+				//查询字典
+				var option={
+						url:'${ctx}/dictItems/queryDictItemByTypes',
+						type:'POST',
+						dataType:'json',
+						contentType: "application/json",
+						data:JSON.stringify(dictType),
+						success:function(res){
+							if(res.code==0){
+								dictItems = res.data
+								defulatSelect(res.data);
+							}
+						}
+	  			};
+				$.ajax(option);
+		  }
+		  function defulatSelect(dictItems){
+			  if(dictItems && dictItems.length>0){
+				  for(var i=0;i<dictItems.length;i++){
+					  if(dictItems[i].dictTypeId=="enable" && oldData[0].status==dictItems[i].itemValue){
+						  $("#status").val(dictItems[i].itemName);
+					  }
+				  }
+			  }
+		  }
+		//所属仓库值操作
+		    function  initWarehouse(){
+				 if(warehouseData!=null && warehouseData.length>0){
+					for(var i=0;i<warehouseData.length;i++){
+			  				if(oldData[0].warehouse==warehouseData[i].orgCode){
+			  					$("#warehouse").val(warehouseData[i].orgName);
+			  				}
+					}
+					return;
+				 }
+				 var option={
+							url:'${ctx}/dictItems/queryDictItemByName?itemName=仓库&dictName=组织类型',
+							type:'GET',
+							contentType: "application/json",
+							success:function(res){
+								if(res.code==0){
+									var orgType = res.data.itemValue;
+									var options={
+											url:'${ctx}/orgination/queryOrgnizaByType?orgType='+orgType,
+											type:'GET',
+											contentType: "application/json",
+											success:function(res){
+												if(res.code==0 && res.data!=null && res.data.length>0){
+													warehouseData = res.data;
+													parent.warehouseData=res.data;
+													for(var i=0;i<warehouseData.length;i++){
+														if(oldData[0].warehouse==warehouseData[i].orgCode){
+										  					$("#warehouse").val(warehouseData[i].orgName);
+										  				}
+									    			}
+												}else{
+													layer.msg("获取仓库资源信息失败！");
+												}
+												
+											}
+									};
+									$.ajax(options);
+								}else{
+									layer.msg("获取仓库资源信息失败！");
+								}
+							}
+					};
+					$.ajax(option);
+			  }
+		//状态设置下拉选项结束
+	</script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<title>新增资源信息</title>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+	<div class="layui-container" style="padding-top: 20px;">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+				<div class="layui-inline">
+				    <label class="layui-form-label">资源名称</label>
+				    <div class="layui-input-block">
+				      <input type="text" name="resourceName" id="resourceName" lay-verify="resourceName" autocomplete="off" placeholder="请输入资源名称" class="layui-input"  onblur="checkResourceName()" >
+				    </div>
+			 	</div>
+			 	<div class="layui-inline">
+					    <label class="layui-form-label">资源类型</label>
+					    <div class="layui-input-block">
+					     	<select name="resourceType" lay-filter="resourceType" id="resourceType">
+						        <option value=""></option>
+						      </select>
+					    </div>
+				 </div>
+			 </div>
+			 <div class="layui-form-item" id="codeDiv" style="display:none"> 
+			 	 <div class="layui-inline">
+					    <label class="layui-form-label">按钮code</label>
+					    <div class="layui-input-block">
+					    	<select name="resourceCode"  id="resourceCode" lay-filter="resourceCode">
+						        <option value=""></option>
+						      </select>
+					    </div>
+				 </div>
+			 </div>
+			 <div class="layui-form-item">
+				 <div class="layui-inline">
+					    <label class="layui-form-label">资源url</label>
+					    <div class="layui-input-block">
+							<input type="text" name="resourceUrl" id="resourceUrl" lay-verify="resourceUrl" autocomplete="off" placeholder="请输入资源url" class="layui-input">
+					    </div>
+				 </div>
+				 <div class="layui-inline">
+					    <label class="layui-form-label">资源图标</label>
+					    <div class="layui-input-block">
+					    	<select name="resourceIcon" id="resourceIcon">
+						        <option value=""></option>
+						      </select>
+							<!-- <input type="text" name="resourceIcon" id="resourceIcon" lay-verify="resourceIcon" autocomplete="off" placeholder="请输入资源图标" class="layui-input"> -->
+					    </div>
+				 </div>
+			 </div>
+			 <div class="layui-form-item">
+				<div class="layui-inline">
+				    <label class="layui-form-label">上级资源</label>
+				    <div class="layui-input-block">
+						<input type="text" name="resourceParentName" id="resourceParentName" readonly="readonly"  placeholder="点击选择上级资源名称" class="layui-input" onclick="choseParentResource()">
+				    </div>
+				 </div>
+				 <div class="layui-inline">
+					    <label class="layui-form-label">资源位置</label>
+					    <div class="layui-input-block">
+							<select name="resourceAttach" id="resourceAttach">
+						        <option value=""></option>
+						    </select>
+					    </div>
+				 </div>
+			 </div>
+			 <div class="layui-form-item">
+			 	 <div class="layui-inline">
+					    <label class="layui-form-label">资源顺序号</label>
+					    <div class="layui-input-block">
+							<input type="text" name="resourceOrderNo" id="resourceOrderNo" lay-verify="number" autocomplete="off" placeholder="请输入资源顺序号" class="layui-input">
+					    </div>
+				 </div>
+		 		<div class="layui-inline">
+				    <label class="layui-form-label">状态</label>
+				    <div class="layui-input-block">
+			      		<select name="resourceStatus" id="resourceStatus">
+					        <option value=""></option>
+					      </select>
+			        </div>
+			     </div>
+			 </div>
+			  <div class="layui-form-item">
+				 <div class="layui-inline">
+				    <label class="layui-form-label">资源描述</label>
+				    <div class="layui-input-block">
+				       <textarea placeholder="请输入资源描述信息" class="layui-textarea" name="resourceDesc" id="resourceDesc"></textarea>
+				    </div>
+			 	</div>
+				 <div class="layui-inline">
+				    <label class="layui-form-label">资源编码</label>
+				    <div class="layui-input-block">
+				       <input type="text" name="resourceNum" id="resourceNum" autocomplete="off" placeholder="请输入资源编码" class="layui-input">
+				    </div>
+			 	</div>
+			 </div>
+			 <div class="layui-form-item">
+			    <div class="layui-input-block">
+			      <button class="layui-btn" lay-submit="" lay-filter="roleSubit">立即提交</button>
+			      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			    </div>
+			  </div>
+			  <input type="text" hidden="true" name="resourceParentId" id="resourceParentId" />
+		</form>
+	</div>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+	<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+ 
+	<script type="text/html" id="bodyTpl">
+
+
+  </script>
+	<script type="text/javascript">
+	var contextPath = config.basicInfoConfig.contextPath;
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form
+		var oldData = parent.oldData;
+		var dictItems = parent.dictItems;
+		layui.use(['form', 'layedit'], function(){
+			  //自定义验证规则
+			  form.verify({
+				  resourceName: function(value){
+			      if(value.length < 1){
+			        return '资源名称不能为空';
+			      }
+			      if(value.length > 32){
+			        return '资源名称长度不能超过32';
+			      }
+			    },
+			    resourceCode:function(value){
+			    	if(value.length < 1){
+				        return '按钮code不能为空';
+				      }
+			    	if(value.length > 32){
+				        return '按钮code长度不能超过32';
+				      }
+			    }
+			  });
+			  //监听提交
+			  form.on('submit(roleSubit)', function(data){
+				  var option = {
+			    	url:contextPath+'resource/saveResource',
+			    	data:JSON.stringify(data.field),
+			    	type:'POST',
+			    	contentType:'application/json',
+			    	success:function(data){
+			    		if(data.code==0){
+			    			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+			    			parent.layer.close(index);  // 关闭layer
+			    			parent.parentId = "";
+			    			parent.treeGrid.reload('resourceTabId');
+			    		}else{
+			    			layer.alert(data.msg);
+			    		}
+			    	},error:function(data){
+			    		layer.alert(data.msg)
+			    	}
+			    }
+			    $.ajax(option);
+				return false;
+			 });
+		});
+		if(oldData && oldData.length>0){//表单赋上级资源信息
+		   	 if(oldData[0].id.length>0){
+		   		var option  = {
+						url:contextPath+'resource/getById?id='+oldData[0].id,
+						type:'GET',
+						contentType:'application/json',
+						success:function(data){
+							if(data.code==0 && data.data!=null){
+								$("#resourceParentName").val(data.data.resourceName);
+								$("#resourceParentId").val(data.data.id);
+								return false;
+							}
+						}
+				};
+				$.ajax(option);	
+		   	 }
+		}
+		//资源位置、资源类型、状态设置下拉选项开始
+		if(dictItems && dictItems.length>0){
+			defulatSelect(dictItems);
+		}else{
+			queryDictItem(); 
+		}
+		function queryDictItem(){
+		  var dictType = new Array();
+		  dictType.push("resource_type");
+		  dictType.push("enable");
+		  dictType.push("resource_attach");
+		  dictType.push("btn_name");
+			//查询字典
+			var option={
+					url:contextPath+'dictItems/listDictItemByTypes',
+					type:'POST',
+					dataType:'json',
+					contentType: "application/json",
+					data:JSON.stringify(dictType),
+					success:function(res){
+						if(res.code==0){
+							dictItems = res.data
+							defulatSelect(res.data);
+						}
+					}
+  			};
+			$.ajax(option);
+		 }
+		 function defulatSelect(dictItems){
+			 if(dictItems && dictItems.length>0){
+				 if($("#resourceType").find("option").length==1){
+					  for(var i=0;i<dictItems.length;i++){
+						  if(dictItems[i].dictTypeId=="resource_type"){
+							  $("#resourceType").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+						  }else if(dictItems[i].dictTypeId=="resource_attach"){
+							  $("#resourceAttach").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>"); 
+						  }else if(dictItems[i].dictTypeId=="enable"){
+							  $("#resourceStatus").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+						  }else if(dictItems[i].dictTypeId=="btn_name"){
+							  $("#resourceCode").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+						  }else if(dictItems[i].dictTypeId=="menu_icon"){
+							  $("#resourceIcon").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+						  }
+					  }
+					  $("#resourceType").get(0).selectedIndex=1
+					  $("#resourceAttach").get(0).selectedIndex=1
+					  $("#resourceIcon").get(0).selectedIndex=1
+					  $("#resourceStatus").val("1")
+					  $("#resourceCode").get(0).selectedIndex=1
+					  form.render('select');
+				  }
+			  }
+		 }
+		//资源位置、资源类型、状态设置下拉选项结束
+		function choseParentResource(){
+			layer.open({
+		        type: 2
+		        ,title:'选择父节点'
+		        ,maxmin:true
+		        ,area: ['400px', '300px']
+		        ,id: 'resourcechose' //防止重复弹出
+		        ,content: 'choseResource.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+		   });
+		}
+		function checkResourceName(){
+			/* var resourceName = $("#resourceName").val().trim();
+			if(resourceName && resourceName.length>0){
+				var option  = {
+						url:'/iles/resource/queryByResourceName?resourceName='+resourceName,
+						type:'GET',
+						contentType:'application/json',
+						success:function(data){
+							if(data.code==0 && data.data!=null){
+								layer.msg("该资源名称已经存在，请重新输入");
+								$("#resourceName").focus();
+								$("#submitNow").attr("disabled","true");
+								return false;
+							}else{
+								$("#submitNow").removeAttr("disabled");
+							}
+						}
+				};
+				$.ajax(option);	
+			} */
+		}
+		form.on('select(resourceType)',function(data){
+			if(data.value=="2"){
+				$("#codeDiv").show();
+				var resourceCodeName = $("#resourceCode").find("option:selected").text()
+				$("#resourceName").val(resourceCodeName);
+				$("#resourceName").attr("readOnly","readOnly");
+				$("#resourceCode").attr("lay-verify","resourceCode");
+				
+			}else{
+				$("#codeDiv").hide();
+				$("#resourceCode").attr("lay-verify","");
+				$("#resourceName").removeAttr("readOnly");
+				$("#resourceName").val("");
+			}
+		});
+		form.on('select(resourceCode)',function(data){
+			if(data.value!=""){
+				var resourceCodeName = $("#resourceCode").find("option:selected").text()
+				$("#resourceName").val(resourceCodeName);
+				$("#resourceName").attr("readOnly","readOnly");
+			}
+		});
+	</script>
+</body>
+</html>

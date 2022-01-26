@@ -1,0 +1,202 @@
+.index-footer{
+    position: fixed;
+    left: 0px;
+    right: 0;
+    bottom: 0;
+    height: 40px;
+    line-height: 40px;
+    /*padding: 0 15px;*/
+    background-color: #13161d;
+    text-align: center;
+    font-size: 16px;
+}
+.index-footer span{
+     color: #666c7a;
+}
+.index-footer span:nth-child(2) {
+     left: 28%;
+	 position: relative;
+}
+.index-footer span:nth-child(3) {
+     left: 29%;
+	 position: relative;
+}
+
+
+
+.index-title{
+    background-color: #008155;
+    z-index: 1000;
+	height: 80px;
+	line-height: 80px;
+}
+.index-title div {
+    float: right;
+    height: 80px;
+    line-height: 80px;
+    left: 119px;
+    padding-right: 40px;
+    cursor:pointer;
+}
+
+.index-title div i {
+    font-size: 17px;
+    padding-right: 7px;
+    color: white;
+    height: 60px;
+    line-height: 60px;
+    display: inline-block;
+}
+.index-title div span {
+    font-size: 15px;
+    color: white;
+    height: 60px;
+    line-height: 60px;
+    display: inline-block;
+}
+.index-header{
+	/*height: 90px;*/
+}
+.layui-nav .index-nav{
+	height: 46px;
+	line-height: 46px;
+}
+
+.index-menu .index-nav {
+	height: 46px;
+    line-height:46px;
+	border-radius:0px;
+	background-color:#1a1f2b;
+}
+.index-nav .layui-nav-item  {
+	font-size:12px;
+}
+.index-nav .layui-nav-item a {
+	color:white;
+	font-size:14px;
+}
+.index-nav .layui-nav-item a:hover {
+	color:#008155;
+}
+
+
+
+.index-nav .layui-nav-item .layui-nav-child {
+	position: fixed;
+	top: 130px;
+	padding-left:15px;
+}
+.index-nav .layui-nav-item .layui-nav-child a{
+	color:black;
+}
+.index-nav .nav-child-2 .nav-child-3 {
+	white-space: normal;
+    word-break: break-all;
+    overflow: hidden;
+}
+
+.index-nav .nav-child-2 .nav-child-3 a{
+	display:inline;
+	font-weight: normal;
+}
+
+
+
+.index-nav .nav-child-2 a{
+	   font-weight: bold;
+}
+
+.index-nav  .layui-nav-bar{
+	background-color:#1a1f2b;
+	height:0px;
+}
+.index-nav  .layui-nav-more{
+	border-style:none
+}
+.index-nav .layui-this::after{
+	background-color:#1a1f2b;
+	height:0px;
+}
+.index-body .layui-tab{
+	margin: 0px 0;
+	text-align: left !important;
+}
+
+.index-body .layui-tab-title{
+	height: 50px;
+}
+
+.index-body .layui-tab-title li{
+    font-size: 10px;
+	border: solid #dddddd 1px;
+	padding: 0px 10px;
+	margin: 8px 10px;
+	border-radius: 3px;
+}
+
+.index-body  .layui-tab-title li .layui-tab-close {
+	position: relative;
+	display: inline-block;
+	width: 5px;
+	height: 6px;
+	line-height: 6px;
+	margin-left: 4px;
+	top: 1px;
+	text-align: center;
+	font-size: 10px;
+	/*color: #FFFFFF;*/
+	transition: all .2s;
+	-webkit-transition: all .2s;
+}
+.index-body .layui-tab-title .layui-this::after  {
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+    width: 100%;
+    border-width: 0px;
+    border-style: none;
+    border-bottom-color: #fff;
+    border-radius: 2px 2px 0 0;
+    box-sizing: border-box;
+    pointer-events: none;
+}
+.index-body  .layui-this{
+    color: white;
+    background-color: #008155;
+    border: solid #008155 1px !important;
+}
+.index-body  .layui-this  .layui-tab-close{
+    color: white !important;
+    position: relative;
+	display: inline-block;
+	width: 5px;
+	height: 6px;
+	line-height: 6px;
+	margin-left: 4px;
+	top: 1px;
+	text-align: center;
+	font-size: 10px;
+	transition: all .2s;
+	-webkit-transition: all .2s;
+}
+
+.index-body .layui-tab-title li .layui-tab-close:hover {
+    border-radius: 0px;
+    background-color: transparent;
+}
+.index-body .layui-tab-content {
+    padding: 6px;
+}
+.index-body{
+	background-color: #f8f8f8;
+}
+
+.nav-child-2>a{
+  border-bottom:1px solid #ddd;
+}
+
+/**右键菜单*/
+.rightmenu { position: absolute; left:100px; top:90px; width: 120px; z-index: 9999; display: none; background-color: #fff; padding: 2px; color: #333; border: 1px solid #eee; border-radius: 2px; cursor: pointer; }
+.rightmenu li { text-align: center; display: block; height: 35px; line-height: 35px; }
+.rightmenu li:hover { background-color: #666; color: #fff; }

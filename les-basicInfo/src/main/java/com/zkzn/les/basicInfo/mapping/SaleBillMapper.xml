@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.basicInfo.dao.SaleBillDao">
+
+    <select id="listSaleBill" resultType="java.util.Map">
+        select t.id, t.order_code, t.create_time, t.customer_code, c.customer_name
+        from t_sales_bill t
+        left join t_customer c
+        on c.customer_code = substr(t.customer_code, 5, 9)
+
+        <where>
+
+            <if test="orderCode !=null and ''!= orderCode">and t.ORDER_CODE like '%${orderCode}%'</if>
+            <if test="material !=null and ''!= material">and t.customer_code like '%${material}%'</if>
+            <if test="customerName !=null and ''!= customerName">and c.customer_name like '%${customerName}%'</if>
+            <if test="startDate != null and '' != startDate">
+                AND t.create_time <![CDATA[ >= ]]> str_to_date(#{startDate}, '%Y-%m-%d')
+
+            </if>
+            <if test="endDate != null and '' != endDate">
+                AND t.create_time <![CDATA[ <= ]]> str_to_date(#{endDate}, '%Y-%m-%d')
+            </if>
+
+        </where>
+        <if test="sortColums ==null or  '' ==sortColums">order by t.create_time desc</if>
+        <if test="sortColums !=null and  '' !=sortColums">order by ${sortColums}</if>
+    </select>
+
+    <select id="listSaleBillDetail" resultType="java.util.Map">
+
+
+        select t.order_code,
+        t.material_code,
+        t.material_num,
+        t.material_unit,
+        t.material_roup,
+        t.item_no,
+        m.material_desc
+
+        from t_sales_bill_detail t
+
+        left join t_sales_bill b
+        on b.order_code = t.order_code
+
+        left join t_material m
+        on m.material_code = t.material_code
+
+        where   t.ORDER_CODE=#{orderCode}
+
+
+        <if test="materialCode !=null and ''!= materialCode">and t.material_code like '%${materialCode}%'</if>
+        <if test="materialName !=null and ''!= materialName">and t.material_desc like '%${materialName}%'</if>
+
+    </select>
+
+</mapper>

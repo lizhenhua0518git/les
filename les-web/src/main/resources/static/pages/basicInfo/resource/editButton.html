@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>编辑资源信息</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+</head>
+<body>
+<div id="bodyDiv"></div>
+<form class="layui-form" >
+    <div class="layui-form-item">
+        <label for="skill" class="layui-form-label">技能
+        </label>
+        <div class="layui-input-inline" id="skill" lay-filter="skill" style="width: 80%">
+
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+        </div>
+    </div>
+</div>
+</form>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script type="text/html" id="bodyTpl"></script>
+<script type="text/javascript">
+    var contextPath = config.basicInfoConfig.contextPath;
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var oldData = parent.oldData;
+    var dictItems = parent.dictItems;
+
+    function loadding() {
+        initButtonSignSelect(oldData[0].id);
+        form.on('submit(demo1)', function (data) {
+            var resources = new Array();
+            $('input[type=checkbox]:checked').each(function () {
+                console.log($(this).val());
+                console.log($(this).attr("name"))
+                var requestData = {
+                    "resourceParentId": oldData[0].id,
+                    "resourceName": $(this).attr("name"),
+                    "resourceCode": $(this).val(),
+                    "resourceAttach": "P",
+                    "resourceStatus": 1,
+                    "resourceType": 2
+                };
+                resources.push(requestData);
+            });
+            var option = {
+                url: contextPath + 'resource/addButton',
+                type: 'POST',
+                data: JSON.stringify(resources),
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.code == 0) {
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.location.reload();
+                        parent.layer.close(index);  // 关闭layer
+                    } else {
+                        layer.alert(data.msg);
+                    }
+                }
+            };
+            $.ajax(option);
+            return false;
+        });
+
+    }
+
+    function initButtonSignSelect(id) {
+        var option = {
+            url: contextPath + 'resource/getEditButtonById?id=' + id,
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (data) {
+                if (data.code == 0 && data.data != null) {
+                    for (var i = 0; i < data.data.length; i++) {
+                        if (data.data[i].sortNo == 0) {
+                            $('#skill').append('<input type="checkbox" name="' + data.data[i].itemName + '"  title="' + data.data[i].itemName + '" value="' + data.data[i].itemValue + '">')
+                        } else {
+                            $('#skill').append('<input type="checkbox" name="' + data.data[i].itemName + '" title="' + data.data[i].itemName + '" value="' + data.data[i].itemValue + '" checked>')
+                        }
+                    }
+                    form.render();//重新渲染
+                }
+            }
+        };
+        $.ajax(option);
+    }
+</script>
+</body>
+</html>

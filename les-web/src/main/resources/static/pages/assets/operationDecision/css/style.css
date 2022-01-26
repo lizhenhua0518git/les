@@ -1,0 +1,240 @@
+/* CSS Document */
+
+/*==============================ROW=====================*/
+.row {
+    margin-right: -10px;
+    margin-left: -10px;
+}
+
+.title{text-align:center;	margin-bottom:38px;
+}
+.title h1 {
+    font-size: 45px;
+    color: #fff;
+	margin:40px 0 40px 0;
+}
+.title span {
+    font-size: 18px;
+	line-height:40px;
+    color: #fff;
+		
+}
+
+.title_11{text-align:center;	margin-bottom:5px;
+}
+.title_11 h1 {
+    font-size: 45px;
+    color: #fff;
+	margin:25px 0 25px 0;
+}
+.title_11 span {
+    font-size: 18px;
+	line-height:40px;
+    color: #fff;
+		
+}
+
+.title_22 span{font-size:18px; line-height:36px}
+.card-title {
+    border-bottom: 1px solid #f2f2f2;
+    font-weight: 500;
+    font-family: "Roboto", sans-serif;
+    margin-bottom: 0.2rem;
+}
+
+.number h3 {
+    font-size: 20px;
+	font-weight:600;
+    color: #000;
+}
+.number h4 {
+    font-size: 20px;
+	font-weight:600;
+    color: #000;
+	text-align:center;
+}
+.number h5 {
+    font-size: 20px;
+	font-weight:600;
+    color: #fff;
+}
+.number span {
+    font-size: 16px;
+    color: #000;
+    margin-left:8px;
+	line-height:28px;
+}
+
+/*=========================END ROW========================*/
+
+
+/*=========================ROW========================*/
+.easypiechart {
+	position: relative;
+	text-align: center;
+	width: 80px;
+	height: 80px;
+	margin: 20px 0 10px 5px;
+}
+.easypiechart-panel {
+	text-align: center;
+	padding: 1px 0;
+	margin-bottom: 20px;
+}
+.easypiechart .percent {
+	display: block;
+	position: absolute;
+	font-size: 20px;
+	top: 30px;
+	width: 80px;
+}
+#easypiechart-blue .percent { color: #30a5ff;}
+#easypiechart-teal .percent { color: #fff;}
+#easypiechart-orange .percent { color: #ffb53e;}
+#easypiechart-red .percent { color: #ef4040;}
+#easypiechart-red2 .percent { color: #ef4040;}
+
+/*=========================END ROW========================*/
+
+
+.t{color:#fff; font-size:18px; line-height:36px; margin-top:20px}
+.pic{position: relative; width:95%; height:100px; background:#000;margin:10px 0 0 0;}
+.s{font-size:10px; margin:0 0 25px 5px}
+
+
+
+.fll{background-color:#56afd2; color:#fff; width:80px; height:30px; border-radius:5px; text-align:center; padding-top:7px}
+
+
+
+.abt-lft {
+    float: left;
+    display: block;	
+    width: 23%;
+	font-size:14px;color:#FFFFFF; text-align:center;
+    padding:10px 5px; 
+}
+.abt-rgt {
+    float: left;
+    display: block;	
+    width: 77%;
+    font-size:13px;	
+    padding: 0.2em 0 0 1em;
+}
+
+.col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-xs-1, .col-xs-10, .col-xs-11, .col-xs-12, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6, .col-xs-7, .col-xs-8, .col-xs-9 {
+    position: relative;
+    min-height: 1px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.btn-green{background-color:#61c1c0;
+color:#fff;}
+.btn-purple{background-color:#a4a8d5;
+color:#fff;}
+.button-panel {
+	text-align: center;
+	padding: 1px 0;
+	margin-bottom: 5px;
+}
+label{font-weight:400; color:#000}
+.button-group{float:right;}
+.button-group1{float:left;}
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    background-color: #b81c22;
+    border-color: #b81c22;
+}
+.form-inline .form-control {
+    width: 200px;
+}
+.form-inline .form-control-1 {
+    width: 150px;
+}
+
+.board .text_1{
+    color:#FFFFFF;
+	font-size:18px;
+	line-height:40px;
+	float:left;
+	text-align:left;
+	margin:10px 0 0 10px;
+}
+.title-1{font-size:20px; font-weight:600; color:#FFFFFF; text-align:center; background-color:#61b7d9;
+padding:10px 30px; 
+width:200px;
+margin:-55px auto 10px; 
+}
+.title-2{font-size:20px; font-weight:600; color:#FFFFFF; text-align:center; background-color:#c9d69d;
+padding:10px 30px; 
+width:200px;
+margin:-55px auto 10px; 
+}
+.title-3{font-size:20px; font-weight:600; color:#FFFFFF; text-align:center; background-color:#60c1c1;
+padding:10px 30px; 
+width:200px;
+margin:-55px auto 10px; 
+}
+
+.panel-1{
+border-radius:50%;
+}
+.panel-primary-1{
+display:inline-block;
+width:275px;
+}
+.board .panel-1 {
+    padding: 15px 15px;
+	border:none;
+	background:#fff;
+	height:275px
+}
+.board .text_11{
+    color:#FFFFFF;
+	font-size:18px;
+	line-height:35px;
+	float:left;
+	text-align:left;
+	margin:10px 0 0 50px;
+}
+.panel{
+border-radius:0;
+}
+.panel-primary{
+display:inline-block;
+width:100%;
+}
+
+
+.board .panel {
+    padding: 15px 15px;
+	border:none;
+	background:#fff;
+	height:200px;
+}
+.board .number{
+	float:left;
+	text-align:left;
+}
+.board .text{
+	float:right;
+	text-align:left;
+	margin:50px 5px 0 0;
+}
+.red{
+	background:#ec6d81 !important;
+}
+.blue{
+	background:#61b7d9 !important;
+}
+.green{
+	background:#60c1c1 !important;
+}
+.yellow{
+	background:#FABE28 !important;
+}
+.purple {
+    background: #c9d69d !important;
+}
+.rr{}

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css" media="all">
+    <link rel="stylesheet" href="/iles/pages/css/style.min.css">
+    <title>新增用户</title>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+    <div class="layui-container" style="padding-top: 20px;">
+        <form class="layui-form" action="" lay-filter="userForm">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户头像</label>
+                    <div class="layui-input-block">
+                        <div class="layui-upload-list" style="float: left;">
+                            <img style="width:120px;height:120px;" class="layui-upload-img" id="avatarImg"
+                                 src="/iles/pages/img/default_face.jpg">
+                            <p id="demoText"></p>
+                        </div>
+                        <div style="float: right;margin-top: 93px;margin-left: 10px;">
+                            <button type="button" class="layui-btn" id="avatarUp">上传图片</button>
+                        </div>
+                        <input type="text" name="avatar" id="avatar" hidden="true">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="userName" lay-verify="userName" autocomplete="off"
+                               placeholder="请输入用户姓名" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户手机</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" lay-verify="phone" id="phone" autocomplete="off"
+                               placeholder="请输入用户手机" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户密码</label>
+                    <div class="layui-input-block">
+                        <input type="password" name="userPassword" lay-verify="userPassword" autocomplete="off"
+                               placeholder="请输入用户密码" class="layui-input">
+                    </div>
+                </div>
+<!--                <div class="layui-inline">-->
+<!--                    <label class="layui-form-label">状态</label>-->
+<!--                    <div class="layui-input-block">-->
+<!--                        <select name="status">-->
+<!--                            <option value=""></option>-->
+<!--                            <option value="0">禁用</option>-->
+<!--                            <option value="1" selected="selected">启用</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit="" lay-filter="userSubit">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+            <input name="id" hidden="true"/>
+        </form>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/jquery-3.3.1.min.js"></script>
+<script src="/iles/pages/js/jstree.min.js"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    var element = layui.element;
+    var layer = layui.layer;
+    var oldData = parent.oldData;
+
+    var orgName, orgId;
+    var dictItems = parent.dictItems;
+    var contextPath = config.basicInfoConfig.contextPath;
+    var wmsContextPath = config.wmsConfig.contextPath;
+    var form = layui.form;
+    var layer = layui.layer
+        , layedit = layui.layedit
+        , upload = layui.upload //上传
+        , laydate = layui.laydate;
+
+    function loadding() {
+        //自定义验证规则
+        form.verify({
+            userName: function (value) {
+                if (value.length < 1) {
+                    return '用户姓名不能为空';
+                }
+            }
+            , userPassword: function (value) {
+                if (value.length < 1) {
+                    return '用户密码不能为空';
+                }
+            }
+            , phone: function (value) {
+                if (value.length < 1) {
+                    return '手机号不能为空';
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(userSubit)', function (data) {
+            data.field.userId = oldData[0].userId;//防止重置后id丢失
+            var option = {
+                url: contextPath + 'user/updateUser',
+                data: JSON.stringify(data.field),
+                type: 'POST',
+                contentType: 'application/json',
+                success: function (data) {
+                    if (data.code == 0) {
+                        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);  // 关闭layer
+                        parent.table.reload('userTabId');
+                    } else {
+                        layer.alert(data.msg);
+                    }
+                }, error: function (data) {
+                    layer.alert(data.msg)
+                }
+            }
+            $.ajax(option);
+            return false;
+        });
+        // if (dictItems && dictItems.length > 0) {
+        //     defulatSelect(dictItems);
+        // } else {
+        //     queryDictItem();
+        // }
+        //表单付默认值
+        if (oldData.length > 0) {
+            var formData = eval('(' + JSON.stringify(oldData[0]) + ')');
+            form.val("userForm", formData);
+            $("#orgName").val(formData.orgId);
+            $("#orgId").val("");
+            if (formData.avatar != null && formData.avatar.length > 0) {
+                // var avatarImg=document.getElementById('avatarImg');
+                // avatarImg.src=contextPath+'imgToBase64Servlet?fileName=' + formData.avatar;
+                // $("#avatarImg").attr("src", contextPath+'imgToBase64Servlet?fileName=' + formData.avatar);
+                var option = {
+                    url: contextPath+'user/getUserAvatarImg?fileName=' + formData.avatar,
+                    type: 'GET',
+                    success: function (res) {
+                        if (res.code == 0) {
+                            $("#avatarImg").attr("src", "data:image/png;base64," + res.data);
+                        }
+                    }
+                };
+                $.ajax(option);
+            }
+        }
+        var myDate = new Date();
+        var date = myDate.toLocaleDateString();
+        date = date.replace("/","-");
+        var time = myDate.getTime();
+        var fileName="<000000>userImage<000000>"+date+"<000000>"+time+"_";//文件路径
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#avatarUp'
+            ,url: wmsContextPath+'fileUploadServlet?folder='+fileName
+            ,exts:'jpg|png'
+            //,size:2048
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    fileName = fileName+file.name;
+                    $('#avatarImg').attr('src', result); //图片链接（base64）
+                });
+            }
+            ,done: function(res){
+                //如果上传失败
+                if(res.code <0){
+                    var demoText = $('#demoText');
+                    demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+                    demoText.find('.demo-reload').on('click', function(){
+                        uploadInst.upload();
+                    });
+                    return layer.msg('上传失败');
+                }
+                //上传成功
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: green;">上传成功</span>');
+                $("#avatar").val(fileName);
+                fileName="<000000>userImage<000000>"+date+"<000000>"+time+"_";
+            }
+            ,error: function(){
+                $("#avatar").val('');
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-mini demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+        });
+
+    }
+
+    // function queryDictItem() {
+    //     var dictType = new Array();
+    //     dictType.push("enable");
+    //     //查询字典
+    //     var option = {
+    //         url: contextPath + 'dictItems/listDictItemByTypes',
+    //         type: 'POST',
+    //         dataType: 'json',
+    //         contentType: "application/json",
+    //         data: JSON.stringify(dictType),
+    //         success: function (res) {
+    //             if (res.code == 0) {
+    //                 dictItems = res.data
+    //                 defulatSelect(res.data);
+    //             }
+    //         }
+    //     };
+    //     $.ajax(option);
+    // }
+    //
+    // function defulatSelect(dictItems) {
+    //     if (dictItems && dictItems.length > 0) {
+    //         for (var i = 0; i < dictItems.length; i++) {
+    //             if (dictItems[i].dictTypeId == "enable") {
+    //                 $("#status").append("<option value=" + dictItems[i].itemValue + ">" + dictItems[i].itemName + "</option>");
+    //             }
+    //         }
+    //         form.render('select');
+    //     }
+    // }
+
+    //选择组织结构方法
+    // function choseOrgination() {
+    //     layer.open({
+    //         type: 2
+    //         , title: '选择组织信息'
+    //         , maxmin: true
+    //         , area: ['400px', '300px']
+    //         , id: 'orginationchose' //防止重复弹出
+    //         , content: '/iles/pages/common/chooseOrgination.html'
+    //         , shade: 0 //不显示遮罩
+    //         , yes: function () {
+    //             layer.closeAll();
+    //         }
+    //     });
+    //
+    // }
+
+    // function checkPhoneRepeat(){
+    // 	var phoneNum = $("#phone").val();
+    // 	if(phoneNum.length>0){
+    // 		var option  = {
+    // 				url:contextPath+'user/queryByPhone?phoneNum='+phoneNum+'&id='+oldData[0].id,
+    // 				type:'GET',
+    // 				contentType:'application/json',
+    // 				success:function(data){
+    // 					if(data.code==0 && data.data!=null){
+    // 						layer.alert("该手机号已经存在，请重新输入");
+    // 						return false;
+    // 					}
+    // 				}
+    // 		};
+    // 		$.ajax(option);
+    // 	}
+    // }
+</script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  type="text/css" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+    <title>库存地点管理</title>
+</head>
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid" >
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库</label>
+                <div class="layui-input-inline">
+                    <select name="warehouse_search" id="warehouse_search" lay-verify="required">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库库存地</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="storageLocation_search" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">工厂</label>
+                <div class="layui-input-inline">
+                    <select name="factory_search" id="factory_search" lay-verify="required">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">工厂库存地</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="sapStorageLocation_search" class="layui-input">
+                </div>
+            </div>
+           <div class="layui-btn-container nav-" style="text-align: right;">
+					{{# if(d.search==null || d.search=="true"){ }}
+             	 		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              			<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon  layui-icon-reset"></i>重置</button>
+              		{{# } }}
+			</div>
+        </div>
+    </div>
+    <div class="layui-fluid-table">
+        <div class="layui-row layui-form">
+            <div class="layui-btn-container">
+                {{# if(d.add==null || d.add=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>新增</button>
+                {{# } }}
+                {{# if(d.edit==null || d.edit=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>修改</button>
+                {{# } }}
+<!--                {{# if(d.del==null || d.del=="true"){ }}-->
+<!--                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>-->
+<!--                {{# } }}-->
+<!--                {{# if(d.allow==null || d.allow=="true"){ }}-->
+<!--                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="allow" type="button"><i class="layui-icon layui-icon-about"></i>启用</button>-->
+<!--                {{# } }}-->
+<!--                {{# if(d.forbid==null || d.forbid=="true"){ }}-->
+<!--                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="forbid" type="button"><i class="mine-icon icon-print"></i>禁用</button>-->
+<!--                {{# } }}-->
+            </div>
+        </div>
+        <table id="storageLocationTab" lay-filter="storageLocationTabF"></table>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var oldData;
+    var contextPath = config.basicInfoConfig.contextPath;
+    var active = {
+        add:function(othis){
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                ,title:'新增库存地点'
+                ,maxmin:false
+                ,area: ['800px', '350px']
+                ,offset: type
+                ,id: 'add'+type //防止重复弹出
+                ,content: '/iles/pages/basicInfo/storageLocation/addStorageLocation.html'
+                ,shade: 0 //不显示遮罩
+                ,yes: function(){
+                    layer.closeAll();
+                }
+            });
+        },
+        edit:function(othis){
+            var checkStatus = table.checkStatus('storageLocationTabId');
+            oldData = checkStatus.data;
+            if(oldData.length<=0){
+                layer.alert('请选择要编辑的行！',{icon: 2});
+                return ;
+            }else if(oldData.length >1){
+                layer.alert('编辑不能超过多行！',{icon: 2});
+                return ;
+            }
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                ,title:'编辑库存地点'
+                ,maxmin:false
+                ,area: ['800px', '350px']
+                ,offset: type
+                ,id: 'edit'+type //防止重复弹出
+                ,content: '/iles/pages/basicInfo/storageLocation/editStorageLocation.html'
+                ,shade: 0 //不显示遮罩
+                ,yes: function(){
+                    layer.closeAll();
+                }
+            });
+        },
+        del:function(othis){
+            var checkStatus = table.checkStatus('storageLocationTabId');
+            oldData = checkStatus.data;
+            if(oldData.length<=0){
+                layer.alert('请选择要删除的行！',{icon: 2});
+                return ;
+            }
+            var idarrys = new Array();
+            for(var i=0;i<oldData.length;i++){
+                delete oldData[i].createTime;
+                delete oldData[i].modifiedTime;
+            }
+            layer.confirm('确定删除选中的信息吗?', {icon: 3, title:'提示'}, function(index){
+                //do something
+                var option ={
+                    url:contextPath+'storageLocation/deleteStorageLocation',
+                    type:'POST',
+                    contentType: "application/json",
+                    dataType:'json',
+                    data:JSON.stringify(oldData),
+                    success:function(data){
+                        if(data.code==0){
+                            table.reload('storageLocationTabId');//刷新列表
+                        }
+                    },error:function(data){
+                        layer.alert(data.msg);
+                    }
+                }
+                $.ajax(option);
+                layer.close(index);
+            });
+        },allow:function(othis){
+            var checkStatus =  table.checkStatus('storageLocationTabId');
+            oldData = checkStatus.data;
+            allowType = 1;
+            if(oldData.length<=0){
+                layer.alert('请选择要启用的行！',{icon: 2});
+                return ;
+            }
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                ,title:'说明原因'
+                ,maxmin:false
+                ,area: ['220px', '210px']
+                ,offset: type
+                ,id: 'areaInfo'+type //防止重复弹出
+                ,content: '/iles/pages/basicInfo/storageLocation/storageLocationRemark.html'
+                ,shade: [0.8, '#393D49']
+            });
+        },forbid:function(othis){
+            var checkStatus =  table.checkStatus('storageLocationTabId');
+            oldData = checkStatus.data;
+            allowType = 0;
+            if(oldData.length<=0){
+                layer.alert('请选择要禁用的行！',{icon: 2});
+                return ;
+            }
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                ,title:'说明原因'
+                ,maxmin:false
+                ,area: ['220px', '210px']
+                ,id: 'areaInfo'+type //防止重复弹出
+                ,content: '/iles/pages/basicInfo/storageLocation/storageLocationRemark.html'
+                ,shade: [0.8, '#393D49']
+            });
+        },search:function(othis){
+            var storageLocation =$('#storageLocation_search').val();
+            var warehouse=$('#warehouse_search').val();
+            var factory=$('#factory_search').val();
+            var sapStorageLocation = $('#sapStorageLocation_search').val();
+            var params={};
+            params.storageLocation=storageLocation;
+            params.warehouseCode=warehouse;
+            params.factoryCode=factory;
+            params.sapStorageLocation = sapStorageLocation;
+            //执行重载
+            table.reload('storageLocationTabId', {
+                where:params,
+            });
+        },reset:function(othis){
+            $('#warehouse_search').val("");
+            $('#storageLocation_search').val("");
+            $('#sapStorageLocation_search').val("");
+            $('#factory_search').val("");
+            form.render("select");
+        }
+    };
+
+    function loadding(){
+	    table.render({
+	        elem:'#storageLocationTab',
+	        id:'storageLocationTabId',
+	        url: contextPath + 'storageLocation/queryStorageLocation',
+	        cols:[[
+	        	{type:'checkbox'}
+	            ,{type:'numbers',title:'序号'}
+	            ,{field:'warehouseCode',title:'仓库编码'}
+	            ,{field:'warehouseName',title:'仓库名称'}
+	            ,{field:'storageLocation',title:'仓库库存地'}
+	            ,{field:'factoryCode',title:'工厂编码'}
+	            ,{field:'factoryName',title:'工厂名称'}
+	            ,{field:'sapStorageLocation',title:'工厂库存地'}
+	            ,{field:'statusName',title:'状态'}
+	            ,{field:'createrName',title:'创建人'}
+	            ,{field:'createTime',title:'创建时间'}
+	            ,{field:'modifierName',title:'修改人'}
+	            ,{field:'modifiedTime',title:'修改时间'}
+	            ]],
+	        page: {theme: '#008155'},
+	        even:true,
+	        done:function(res,page,count){//列表数据回调函数
+	            initWarehouseSignSelect("warehouse_search",2);
+	            form.render(null,"storageLocationSearchForm");
+	        }
+	    });
+	    $('.layui-btn-container button').on('click', function(){
+	        var othis = $(this), method = othis.data('method');
+	        active[method] ? active[method].call(this, othis) : '';
+	    });
+        inintFactory("factory_search");
+    }
+    //监听启用操作
+    form.on('switch(statusValue)', function(obj){
+      var  status='0';
+      if(obj.elem.checked){
+          status=='1';
+      }
+      updateStatus(this.value,status);
+    });
+
+    function updateStatus(id,status){
+        var option = {
+            url: contextPath+'/storageLocation/updateStatus',
+            data:{"id":id,"status":status},
+            type:'POST',
+            success:function(data){
+
+            },error:function(data){
+                layer.alert(data.msg)
+            }
+        }
+        $.ajax(option);
+    }
+</script>
+</body>
+</html>

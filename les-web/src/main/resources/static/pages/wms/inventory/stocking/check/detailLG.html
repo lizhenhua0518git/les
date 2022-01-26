@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+    <title>损益详情列表</title>
+</head>
+<div id="bodyDiv">
+
+</div>
+
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/commonUtil.js" charset="UTF-8"></script>
+
+<script type="text/html" id="bodyTpl">
+
+    <form class="layui-form" action="" lay-filter="detailForm">
+
+        <table id="positionTab" lay-filter="positionTabF"></table>
+
+        <div class="layui-form-item" style="text-align: center;margin-top: 18px">
+            <div class="layui-input-block" style="margin-left: auto;">
+                <div class="layui-footer">
+                    <a class="layui-btn layui-btn-xs click" style="margin-right:20px;background-color: rgb(238, 46, 46);" onclick="task_submit(-1)"  title="点击后,库位物料数据不做更改">取消损益</a>
+                    <a class="layui-btn layui-btn-xs click" style="margin-right:20px;background-color: gray;" onclick="task_submit(5)"  title="点击后,库位物料数据改为盘点数据">接受损益</a>
+                    <a class="layui-btn layui-btn-xs click" style="margin-left:20px" onclick="task_submit(10)"  title="对应缺失的物料由客户补充,其他物料改为盘点数据">客户平仓</a>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</script>
+
+<script type="text/javascript">
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form
+    var oldData = parent.oldData;
+    var wmsContextPath = config.stockConfig.contextPath;
+
+    function loadding() {
+
+        table.render({
+            elem: '#positionTab',
+            id: 'positionTabId',
+            method:'get',
+            url: wmsContextPath + 'web/checkInventory/detail/page',
+            where: {taskId: oldData.taskId},
+            cols: [[
+                {type:'numbers',title:'序号',fixed: 'left'},
+                {field: 'positionCode',  title: '仓位code'},
+                {field: 'positionCarCode',  title: '载具编码'},
+                {field: 'materialDesc',  title: '物料描述'},
+                {field: 'batchNo',  title: '批次号'},
+                {field: 'materialCode',  title: '物料号'},
+                {field: 'materialUnit',  title: '单位'},
+                {field: 'checkCount',  title: '盘点数量'},
+                {field: 'differenceValue',  title: '差值',
+                    templet(d){
+
+                        let count = d.checkCount - d.stockCount;
+                        if(count > 0){
+                            return '<span style="color: #0a6aa1">+'+count+'</span>';
+                        }else if(count < 0){
+                            return '<span style="color: #9C0006">'+count+'</span>';
+                        }else{
+                            return count;
+                        }
+                    }},
+                {field: 'stockCount',  title: '原数据库存量'},
+                {field: 'stockStatus',  title: '库存状态',
+                    templet(d){
+                        let status = d.qualifiedType;
+                        if(status == 1){
+                            return '不合格';
+                        }else if(status == 0){
+                            return '合格';
+                        }else{
+                            return '-';
+                        }
+                    }
+                },
+                {field: 'handledTime',  title: '盘点时间'},
+            ]],
+            page: {theme: '#008155'},
+            height: 'full-200',
+            width:'970',
+            even: false,
+            done: function (res, page, count) {//列表数据回调函数
+
+            }
+        });
+
+        if (oldData) {
+            /** 检查审核状态(隐藏控件) */
+            if (oldData.checkStatus == -1&&oldData.verifyStatus == 0){
+                $('.layui-footer').show();
+            }else {
+                $('.layui-footer').hide();
+            }
+            console.log(">>>>>盘点的oldData数据",oldData);
+        }
+
+        form.render();
+    }
+    /** 审核结果提交 */
+    function task_submit(result){
+        var data = {
+            "taskId":oldData.taskId,
+            "verifyStatus":result,
+        };
+        layer.confirm('是否确认提交?', {icon: 3, title: '提示'}, function (index) {
+            var option = {
+                url: wmsContextPath + 'web/checkInventory/verify',
+                type: 'POST',
+                contentType: "application/json",
+                dataType: 'json',
+                data: JSON.stringify(data),
+                success: function (data) {
+                    if (data.code == 0) {
+                        layer.alert("执行成功");
+                        let index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                        parent.layer.close(index);  // 关闭layer
+                        parent.table.reload('taskTabId');
+                    } else {
+                        console.log(">>>>data", data);
+                        layer.alert("执行失败");
+                    }
+                }, error: function (data) {
+                    layer.alert(data.msg);
+                }
+            };
+            $.ajax(option);
+            layer.close(index);
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.receiveRecord.dao.ReceiveRecordDao">
+
+	<select id="listReceiveRecord" resultType="com.zkzn.les.wms.receiveRecord.pojo.ReceiveTaskPojo" parameterType="com.zkzn.les.wms.receiveRecord.pojo.ReceiveTaskPojo">
+		SELECT
+			t.receive_task_id AS "receiveTaskId",
+			t.arrival_code AS "arrivalCode",
+			t.warehouse_name AS "warehouseName",
+			t.warehouse_code AS "warehouseCode",
+			t.bill_name AS "billName",
+			t.client_name AS "clientName",
+			t.receive_status AS "receiveStatus",
+			t.receive_total_time AS "receiveTotalTime",
+			t.receive_start_time AS "receiveStartTime",
+			t.receive_end_time AS "receiveEndTime",
+			t.create_time AS "createTime",
+			t.update_name AS "updateName"
+		FROM
+			w_receive_task t
+		<where>
+		1=1
+		<if test="warehouseCode != null and '' != warehouseCode">
+			<foreach collection="warehouseCode.split(';')" open="and t.warehouse_code in (" close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+		<if test="arrivalCode !=null and ''!= arrivalCode">
+			and t.arrival_code like '%${arrivalCode}%'
+		</if>
+		<if test="clientName != null and '' != clientName">
+			<foreach collection="clientName.split(';')" open="and t.client_manage_id in (" close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+		<if test="billType !=null and ''!= billType">
+			and t.bill_type = #{billType}
+		</if>
+		<if test="receiveStatus !=null">
+			and t.receive_status = #{receiveStatus}
+		</if>
+		<if test="startTimeBeginStr !=null and ''!= startTimeBeginStr and startTimeEndStr !=null and ''!= startTimeEndStr">
+			and t.receive_start_time between str_to_date(#{startTimeBeginStr},' %Y-%m-%d %H:%i:%s') and  str_to_date(#{startTimeEndStr},' %Y-%m-%d %H:%i:%s')
+		</if>
+		<if test="endTimeBeginStr !=null and ''!= endTimeBeginStr and endTimeEndStr !=null and ''!= endTimeEndStr">
+			and t.receive_end_time between str_to_date(#{endTimeBeginStr},' %Y-%m-%d %H:%i:%s') and  str_to_date(#{endTimeEndStr},' %Y-%m-%d %H:%i:%s')
+		</if>
+		</where>
+		order by t.receive_status,t.create_time desc
+	</select>
+
+	<select id="listReceiveDetailRecord" resultType="com.zkzn.les.wms.receiveRecord.pojo.ReceiveTaskDetailPojo" parameterType="com.zkzn.les.wms.receiveRecord.pojo.ReceiveTaskDetailPojo">
+		SELECT
+			rtd.receive_detail_id AS "receiveDetailId",
+			rtd.receive_task_id AS "receiveTaskId",
+			rt.warehouse_name AS "warehouseName",
+			rt.arrival_code AS "arrivalCode",
+			rtd.item_no AS "itemNo",
+			rtd.material_desc AS "materialDesc",
+			rtd.material_unit AS "materialUnit",
+			rtd.actual_num AS "actualNum",
+			rtd.receive_num AS "receiveNum",
+			rtd.receive_detail_status AS "receiveDetailStatus",
+			rtd.pointer_name AS "pointerName",
+			rtd.receive_time AS "receiveTime",
+			rtd.create_time AS "createTime",
+			rc.carrier_code AS "carrierCode",
+			rc.carry_number AS "carryNumber",
+			rc.area_code AS "areaCode",
+			rc.batch_no AS "batchNo",
+			rc.qualified_type AS "qualifiedType"
+		FROM
+		w_receive_task_detail rtd
+		LEFT JOIN w_receive_task rt ON rt.receive_task_id = rtd.receive_task_id
+		LEFT JOIN w_receive_carrier rc ON rc.receive_detail_id=rtd.receive_detail_id
+		<where>
+		1=1
+		<if test="materialDesc !=null and ''!= materialDesc">
+			and rtd.material_desc like '%${materialDesc}%'
+		</if>
+		<if test="carrierCode !=null and ''!= carrierCode">
+			and rc.carrier_code like '%${carrierCode}%'
+		</if>
+		<if test="receiveTaskId !=null and ''!= receiveTaskId">
+			and rtd.receive_task_id=#{receiveTaskId}
+		</if>
+		</where>
+	</select>
+
+	<insert id="addReceiveTaskPojo" parameterType="com.zkzn.les.wms.receiveRecord.pojo.ReceiveTaskPojo" useGeneratedKeys="true" keyProperty="receiveTaskId">
+		insert into w_receive_task (
+        arrival_notice_id,arrival_code,warehouse_name,
+        warehouse_code,bill_type,bill_name,
+        client_name,client_manage_id,receive_status,
+        create_time,operate_user_id,operate_user_name,
+        create_user_id,create_name)
+    values (
+        #{arrivalNoticeId,jdbcType=INTEGER},#{arrivalCode,jdbcType=VARCHAR},#{warehouseName,jdbcType=VARCHAR},
+        #{warehouseCode,jdbcType=VARCHAR},#{billType,jdbcType=INTEGER},#{billName,jdbcType=VARCHAR},
+        #{clientName,jdbcType=VARCHAR},#{clientManageId,jdbcType=INTEGER},15,
+        #{createTime,jdbcType=TIMESTAMP},#{operateUserId,jdbcType=INTEGER},#{operateUserName,jdbcType=VARCHAR},
+        #{createUserId,jdbcType=INTEGER}, #{createName,jdbcType=VARCHAR})
+	</insert>
+
+	<insert id="addReceiveTaskDetailPojoList">
+		INSERT INTO w_receive_task_detail
+		(
+			receive_task_id,arrival_detail_id,item_no,material_desc,
+			material_unit,actual_num,receive_detail_status,create_time,
+			create_user_id,create_name
+		)
+		VALUES
+		<foreach collection="receiveTaskDetailPojoList" item="model" separator=",">
+			(
+			#{model.receiveTaskId},#{model.arrivalDetailId}, #{model.itemNo},#{model.materialDesc},
+			#{model.materialUnit}, #{model.actualNum},15 ,#{model.createTime}, #{model.createUserId}, #{model.createName}
+			)
+		</foreach>
+	</insert>
+</mapper>

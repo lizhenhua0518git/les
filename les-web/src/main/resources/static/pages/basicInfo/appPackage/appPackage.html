@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+    <title>app包升级管理</title>
+</head>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">版本名称</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="versionName" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">版本号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="versionCode" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">创建时间</label>
+                <div class="layui-input-inline layui-form">
+                    <input type="text" class="layui-input" name="" id="createTime" placeholder="请选择创建时间">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">更新范围</label>
+                <div class="layui-input-inline">
+                    <select id="warehouseCode" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                {{# if(d.search==null || d.search=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i class="layui-icon  layui-icon-reset"></i>重置</button> {{# } }}
+            </div>
+        </div>
+        <div class="layui-row layui-form" style="margin-top: 10px">
+
+            <div class="layui-col-md6">
+                <div class="layui-btn-container" style="text-align: left;">
+
+                    {{# if(d.add==null || d.add=="true"){ }}
+                    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>增加</button>
+
+                    {{# } }}
+
+                    {{# if(d.del==null || d.del=="true"){ }}
+                    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-fluid-table">
+        <table id="appManagerTab" lay-filter="appManagerTabF"></table>
+    </div>
+</script>
+
+<!--<script src="/iles/pages/js/jquery-3.3.1.min.js"></script>-->
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script type="text/html" id="toolBar">
+    <button type="button" class="layui-btn layui-btn-xs" id="del" lay-event="del">删除</button>
+    <button type="button" class="layui-btn layui-btn-xs" id="downLoad" lay-event="downLoad">下载</button>
+</script>
+<script type="text/javascript">
+    var contextPath = config.basicInfoConfig.contextPath;
+    var table = layui.table;
+    var layer = layui.layer;
+    var form= layui.form;
+    var laydate = layui.laydate;
+    var active = {
+        search: function (othis) {
+            var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');//仓库编号
+            var  versionName = $('#versionName').val();//版本名称
+            var  versionCode =  $('#versionCode').val();//版本编码
+            var  createTime = $('#createTime').val();//创建时间
+            //执行重载
+            table.reload('appManagerTableId', {
+                where: {
+                    warehouseCode: warehouseCode,
+                    versionCode:versionCode,
+                    versionName:versionName,
+                    createTime:createTime,
+                },
+                page: {"curr": 1}
+            });
+        },
+        //重置
+        reset: function (othis) {
+            $('#versionName').val("");//版本名称
+            $('#versionCode').val("");//版本编码
+            $('#createTime').val("");//创建时间
+            layui.formSelects.value('warehouseCodeSelect', []);//仓库编号
+            form.render("select");
+        },
+        //新增
+        add:function(othis) {
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                ,title:'上传app包'
+                ,maxmin:false
+                ,area:['700px', '500px']
+                ,offset: type
+                ,id: 'appPackageAdd'+type //防止重复弹出
+                //static/pages/basicInfo/appPackage/appPackagerManager.html
+                ,content: '/iles/pages/basicInfo/appPackage/appPackagerManager.html'
+                ,shade: [0.8, '#393D49']
+            });
+        },
+        del:function(othis){
+            var checkStatus = table.checkStatus('appManagerTableId');
+            oldData = checkStatus.data;
+            if(oldData.length<=0){
+                layer.alert('请选择要删除的行！',{icon: 2});
+                return ;
+            }
+            let appPackageId = new Array();
+            for(let i=0;i<oldData.length;i++){
+                appPackageId.push(oldData[i].id);
+            }
+            layer.confirm('确定删除选中的信息吗?', {icon: 3, title:'提示'}, function(index){
+                //do something
+                var option ={
+                    url:contextPath+'media/upload/delAppPackageInfo',
+                    type:'POST',
+                    contentType: "application/json",
+                    dataType:'json',
+                    data:JSON.stringify(appPackageId),
+                    success:function(data){
+                        if(data.code==0){
+                            table.reload('appManagerTableId');//刷新列表
+                        }
+                    },error:function(data){
+                        layer.alert(data.msg);
+                    }
+                }
+                $.ajax(option);
+                layer.close(index);
+            });
+        },
+
+    };
+
+
+
+
+
+    //页面数据表单加载
+    function loadding() {
+        table.render({
+            elem: '#appManagerTab',
+            id: 'appManagerTableId',
+            url: contextPath + 'media/upload/findAppPackages',
+            cols: [[
+                {type: 'checkbox',fixed: 'left'},
+                {type: 'numbers', title: '序号', fixed: 'left'},
+                {field: 'versionName',  title: '版本名称', fixed: 'left'},
+                {field: 'versionCode', title: '版本号'},
+                {field: 'isPas', title: '设备终端', templet:function(d){
+                        return d.isPad == "0" ? "手持机" : d.isPad == 1 ? "平板" : "";
+                    }},
+                {field: 'remark', title: '更新描述'},
+                {
+                    field: 'wareHouseId',  title: '更新范围',
+                    templet(d) {
+
+                        let updateRange = '';
+                        if (d.wareHouseId.length > 0) {
+                            for (let e of d.wareHouseId) {
+                                updateRange += e + ',';
+                            }
+                            updateRange = updateRange.substr(0, updateRange.length - 1);
+                        } else {
+                            updateRange = '-';
+                        }
+                        return updateRange;
+                    }
+                },
+                {field: 'createrName',  title: '创建人'},
+                {field: 'createTime',  title: '创建时间'},
+                {align: 'center',  title: '操作', toolbar: '#toolBar'}
+            ]],
+            page: {theme: '#008155'},
+            even: true,
+            done: function (res, page, count) {//列表数据回调函数
+            }
+        });
+
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+        //监听
+        table.on('tool(appManagerTabF)', function(obj) {
+            var eventName = obj.event;			//事件名称
+            var clickObj = $(obj.tr[0]);		//当前对象tr
+            var data = obj.data;
+            //删除
+            if (eventName == "del") {
+                let appPackageId = new Array();
+                appPackageId.push(obj.data.id);
+                //删除记录事件触发
+                $.ajax({
+                    contentType: "application/json",
+                    type: 'POST',
+                    async: false,
+                    data:JSON.stringify(appPackageId),
+                    url: contextPath+"media/upload/delAppPackageInfo",
+                    dataType: "json",
+                    success: function(res){
+                        if(res.msg == "成功!"){
+                            table.reload('appManagerTableId');
+                        }else{
+                            layer.alert('删除失败',{icon: 2});
+                        }
+                    }
+                });
+            }
+            if (eventName == "downLoad") {
+                var url = data.fileUrl;
+                if (url == null || url == '') {
+                    layer.alert('错误:无有效的下载地址',{icon: 2});
+                    return;
+                }
+                console.log("urlurlurl>>>",url);
+                window.open(url,'_blank',);
+            }
+        });
+        //时间选择器
+        laydate.render({
+            elem: '#createTime'
+            ,type: 'date'
+            ,trigger: 'click'
+            ,range: true
+        });
+        initWarehouseMultiSelect("warehouseCode","warehouseCodeSelect","2",'');
+        // var selectIds = ["storageLocationSelect"];
+        // var cols = ["storagelocation"];
+        // var defualtValues = [[],[]];
+        // linkageSelect("warehouseCodeSelect",selectIds,cols,defualtValues);
+        // initBillTypeMultiSelect2("billNameSelect",[],'0,2');
+        form.render();
+    }
+</script>
+
+</html>

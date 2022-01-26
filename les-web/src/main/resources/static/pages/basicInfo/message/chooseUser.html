@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>选择人员</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+</head>
+<body>
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+			 <div class="layui-col-md3">
+			 	<!-- <label class="layui-form-label">用户姓名:</label> -->
+			 	 <div >
+			      <input type="text" id="userName_search" class="layui-input" placeholder="请输入用户名"  style="width:79%;margin-top:10px;">
+			       <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" style="float:right;margin-top:-31px"><i class="layui-icon">&#xe615;</i>查询</button>
+			    </div>
+			 </div>
+		</div>
+	</div>
+	<table class="layui-hide" id="userTab" lay-filter="userTabF"></table>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/treeGrid.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var oldData;
+		var dictItems = null;//数据字典
+		table.render({
+			elem:'#userTab',
+			id:'userTabId',
+			url:'${ctx}/user/',
+			cols:[[
+			{type:'checkbox'},
+			{field:'userName',title:'用户姓名',sort:true},
+			{field:'orgId', title: '用户组织', sort: true}
+			]],
+			page: {theme: '#008155'},
+	   		height: 'full-95',
+	   		even:true
+		});
+		//隐藏全选的复选框
+		$("input[lay-filter=layTableAllChoose]").parent().hide();
+		var active = {
+				search:function(othis){
+					var userName = $('#userName_search');
+				      //执行重载
+				      table.reload('userTabId', {
+				        where:{
+				           userName: userName.val()
+				        }
+				        ,page:{"curr":1}
+				      });
+				}
+		};
+		table.on('checkbox(userTabF)',function(res){
+        	if(res.checked){
+        		parent.$("#"+parent.filedName).val(res.data.userName);
+        		parent.$("#"+parent.filedId).val(res.data.userId);
+        		parent.layer.closeAll();
+        	}
+	    });
+		$('.layui-col-md3 button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+	</script>
+</body>
+</html>

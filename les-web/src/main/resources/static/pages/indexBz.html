@@ -1,0 +1,383 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Access-Control-Allow-Origin" content="*" />
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-COMPATIBLE" content="IE=edge,chrome=1"/>
+<title>LES物流执行系统</title>
+<link rel="stylesheet" href="/iles/pages/css/base.css">
+<link rel="stylesheet" href="/iles/pages/css/list.css">
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<style type="text/css">
+.layui-nav {
+	margin-top: -4%;
+	position: relative;
+	padding: 0 20px;
+	color: #fff;
+	border-radius: 2px;
+	font-size: 0;
+	box-sizing: border-box;
+	background: no-repeat;
+ }
+</style>
+</head>
+
+<body>
+<div class="LESlist">
+<input type="hidden" value="${modelCode}" id="modelCode">
+	<div class="tit">
+		<div class="fl">
+			<h1>中车唐山机车车辆有限公司</h1>
+			<h2>CRRC TANGSHAN CO.,LTD.</h2>
+		</div>
+		<h3>物流执行管理系统（LES）</h3>
+	<!-- 	<div class="layui-input-inline"    style="float: right;">
+	       <select name="orgCode"   id="orgCode" onchange="changeWarehose(this);">
+		   </select>
+	 	</div> -->
+		<ul class="layui-nav">
+		  <li class="layui-nav-item" style="padding-left:80%"></li>
+		  <li class="layui-nav-item">
+		    <a href="" id="orgName" style="color:black"></a>
+		    <dl class="layui-nav-child" id="orgCode">
+		      
+		    </dl>
+		  </li>
+		  <li class="layui-nav-item" lay-unselect="">
+		    <a href="javascript:;" style="color:black"><img src="pages/img/boy.png" class="layui-nav-img">${currUser.userName}</a>
+		    <dl class="layui-nav-child">
+		      <dd><a href="javascript:;" id="changePassWord">修改密码</a></dd>
+		      <dd><a href="javascript:;" onclick="removeCache()">清除菜单缓存</dd>
+		      <dd><a href="javascript:;" onclick="logout()">退出</a></dd>
+		    </dl>
+		  </li>
+		</ul>
+	</div>
+	 
+	<div class="list">
+	 <!--  
+		<table>
+			<colgroup span="8" width="12.5%"></colgroup>
+			<tr>
+				<th colspan="8"><p><i></i>入库作业管理</p></th>
+			</tr>
+			<tr>
+				<td><a href="/iles/homePageNewNew?modelCode=drrkzyjh">当日入库作业计划</a></td>
+				<td><a href="/iles/homePageNew?modelCode=dhtzdgl">到货通知单管理</a></td>
+				<td><a href="/iles/homePageNew?modelCode=shrwjk">收货任务监控</a></td>
+				<td><a href="/iles/homePageNew?modelCode=rkzyjdgl">入库作业进度管理</a></td>
+				<td><a href="/iles/homePageNew?modelCode=cwzy">仓位转移</a></td>
+				<td><a href="/iles/homePageNew?modelCode=cwhb">仓位合并</a></td>
+				<td><a href="/iles/homePageNew?modelCode=dbrwgl">调拨任务管理</a></td>
+				<td></td>
+			</tr>
+		</table>
+		
+		<table>
+			<colgroup span="8" width="12.5%"></colgroup>
+			<tr>
+				<th colspan="8"><p><i></i>出库作业管理</p></th>
+			</tr>
+			<tr>
+				<td><a href="/iles/homePageNew?modelCode=drckzyjh">当日出库作业计划</a></td>
+				<td><a href="/iles/homePageNew?modelCode=ckzyjk">出库作业监控</a></td>
+				<td><a href="/iles/homePageNew?modelCode=gwddcx">工位订单查询</a></td>
+				<td><a href="/iles/homePageNew?modelCode=jpzyjdgl">集配作业进度管理</a></td>
+				<td><a href="/iles/homePageNew?modelCode=psgl">配送管理</a></td>
+				<td><a href="/iles/homePageNew?modelCode=sdjjgl">送达交接管理</a></td>
+				<td><a href="/iles/homePageNew?modelCode=tlrwfq">退料任务发起</a></td>
+				<td><a href="/iles/homePageNew?modelCode=tljdgl">退料进度管理</a></td>
+			</tr>
+		</table>
+		
+		<table>
+			<colgroup span="8" width="12.5%"></colgroup>
+			<tr>
+				<th colspan="8"><p><i></i>台账管理</p></th>
+			</tr>
+			<tr>
+				<td><a href="/iles/homePageNew?modelCode=ckkctz">仓库库存台账</a></td>
+				<td><a href="/iles/homePageNew?modelCode=ckkclsz">仓库库存流水账</a></td>
+				<td><a href="/iles/homePageNew?modelCode=cwkctz">仓位库存台账</a></td>
+				<td><a href="/iles/homePageNew?modelCode=cwkclsz">仓位库存流水账</a></td>
+				<td><a href="/iles/homePageNew?modelCode=cwkctzrz">仓位库存调整日志</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</table>
+		
+		<table>
+			<colgroup span="8" width="12.5%"></colgroup>
+			<tr>
+				<th colspan="8"><p><i></i>数据管理</p></th>
+			</tr>
+			<tr>
+				<td><a href="/iles/homePageNew?modelCode=clgl">策略管理</a></td>
+				<td><a href="/iles/homePageNew?modelCode=jcsj">基础数据</a></td>
+			 	<td><a href="###">供应商直送进度</a></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</table>
+		  -->
+	</div>
+</div>
+<!--右侧信息展示-->
+<div class="sectInfo">
+<div style="float: left;position: absolute;cursor: pointer; top: 26%; right: 200px; margin: auto; background-color: #e7ae2b;" id="sdiv"><input id="input" type="text" style="display: none;" value="1"></input><h4 id="clock">收起</h4></a></div>
+<div style="float: right;">
+	<ul id="ul">
+		<li></li>
+		<li></li>
+		<li></li>
+	</ul>
+</div>
+</div>
+ 
+ <!--右侧信息展示-->
+<script id="sectDetail01" type="text/html">
+	<div class="detail" onclick="openArrivalNotice()">
+		<h1>紧急物料</h1>
+		<p><b>紧急物料种类：</b><span>{{d.urgentMaterialNum}}</span></p>
+		<p><b>影响工位：</b><span >{{d.stationCodeList.join('，')}}</span></p>
+	</div>
+</script>
+<script id="sectDetail02" type="text/html">
+	<div class="detail" onclick="openNoPaperPc()">
+		<h1>电子化交接</h1>
+		<p><b>电子化交接异常：</b><span>{{d.notHandOverNum}}</span></p>
+	</div>
+</script>
+ <script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+<script src="/iles/pages/assets/js/bootstrap.min.js"></script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/fullScreen.js"></script>
+<script src="/iles/pages/js/index.js"></script> 
+ 
+ 
+ 
+
+ 
+<script>
+ 
+//数据更新频率（毫秒）
+var updateInterval=30000;
+//图标数组全局变量
+var imgArr = [];
+	layui.use(['layer','laytpl','jquery'],function(){
+		var layer = layui.layer,
+			laytpl = layui.laytpl,
+			$ = layui.jquery;
+		 
+		 update();
+    	 setInterval(update,updateInterval);
+    	 
+    	
+		 var sectDetail01 =document.getElementById('sectDetail01').innerHTML;　
+		 
+		//紧急物料
+		$.ajax({
+			url:"scan/instorePc/queryUrgentMaterialInfo",
+			success:function(data){
+				laytpl(sectDetail01).render(data.data,function(html){
+					$(".sectInfo ul li").eq(0).html(html);
+				});
+				$("#sdiv").css("right",$("#ul").width());
+				$("#ul").hide();
+			    $("#clock").text("展开")
+			    $("#sdiv").css("right","0px");
+			    $("#input").val("2");
+			}
+		});
+		$("#ul").hide();
+	    $("#clock").text("展开")
+	    $("#sdiv").css("right","0px");
+	    $("#input").val("2");
+		
+	});
+	
+	
+	 function update(){
+		 laytpl = layui.laytpl,
+		 $ = layui.jquery;
+		 var sectDetail02 =document.getElementById('sectDetail02').innerHTML;　
+		 
+		
+			//无纸化未交接
+			$.ajax({
+				url:"assembleOrderDetail/queryDayNotHandOverNum",
+				success:function(data){
+					laytpl(sectDetail02).render(data.data,function(html){
+						$(".sectInfo ul li").eq(1).html(html);
+					});
+				}
+			});
+ 		 
+ 	}
+	 
+     
+     function openArrivalNotice(){
+    	 
+    	 window.open("pages/orders/indexToArrivalNotice.html");
+     }
+     
+     function openNoPaperPc(){
+    	 window.open("pages/wms/noPaper/noPaperList.html");
+     }
+
+     $("#clock").click(function(){
+    	 if($("#input").val()==1){
+    	    $("#ul").hide();
+    	    $("#clock").text("展开")
+    	    $("#sdiv").css("right","0px");
+    	    $("#input").val("2");
+    	 }else{
+    		$("#ul").show();
+     	    $("#clock").text("收起");
+     	    $("#sdiv").css("right",$("#ul").width());
+     	   	$("#input").val("1");
+    	 }
+    	  });
+     function changeWarehose(obj){ 
+ 		var selecteObj = $(obj).find(':selected');
+ 		
+   		var orgCode=selecteObj.attr("orgCode");		
+   		var storageLocation=selecteObj.attr("storageLocation");
+   		var orgName=selecteObj.html();
+   		chooseWarehose(orgCode,orgName,storageLocation);
+ 	}
+ 	
+ 	function chooseWarehose(orgCode,orgName,storageLocation){   			
+ 		var option ={
+ 				url:'./orgination/chooseWarehouse',
+ 				type:"post",
+ 				data:JSON.stringify({storageLocation:storageLocation,orgName:orgName,orgCode:orgCode}),
+ 				contentType:'application/json',
+ 				dateType:"json",
+ 				success:function(res){
+ 					if(res.code==0){
+ 						$("#orgName").html(orgName);
+  					}
+ 				}
+ 		};
+ 		$.ajax(option);		
+ 	}
+ 	function removeCache(){
+ 		var option ={
+ 				url:'/iles/resource/removeCache',
+ 				type:"post",
+ 				success:function(res){
+ 					if(res.code==0){
+ 						layer.alert("清除成功");
+  					}
+ 				}
+ 		};
+ 		$.ajax(option);	
+ 	}
+ 	var option = {
+ 			url : "./orgination/queryWarehouse",
+ 			type : "GET",
+ 			success : function(res) {
+ 				if (res.code == 0) {
+ 					var data = res.data;
+ 					var currWareHose = data.currWareHose;
+ 					var wareHoseList = data.wareHoseList;
+ 					for (var i = 0; i < wareHoseList.length; i++) {
+ 						/* if(currWareHose==wareHoseList[i].storageLocation){
+ 							$("#orgCode").append("<option value='"+wareHoseList[i].orgCode+"' storageLocation='"+wareHoseList[i].storageLocation+"' orgCode='"+wareHoseList[i].orgCode+"' selected>"+ wareHoseList[i].orgName + "</option>")
+ 						}else{
+ 							$("#orgCode").append("<option value='"+wareHoseList[i].orgCode+"' storageLocation='"+wareHoseList[i].storageLocation+"' orgCode='"+wareHoseList[i].orgCode+"' >"+ wareHoseList[i].orgName + "</option>")
+ 						} */
+ 						if(currWareHose==wareHoseList[i].storageLocation){
+ 							$("#orgName").html(wareHoseList[i].orgName);
+ 						}
+						$("#orgCode").append("<dd><a href='javaScript:void(0)' onclick=chooseWarehose('"+wareHoseList[i].orgCode+"','"+wareHoseList[i].orgName+"','"+wareHoseList[i].storageLocation+"')>"+wareHoseList[i].orgName+"</a></dd>")
+ 					}
+ 				}
+ 			}
+ 		};
+	$.ajax(option);
+	
+	  //接收websocket推送的消息开始
+    var websocket = null;
+    var host = document.location.host;
+    var tNum=1;
+    var layArray = new Array();
+    var userId = "${userId}";
+    var modelCode = "${modelCode}";
+    
+   // var userId = $.query.get("userId");;
+    if("WebSocket" in window){
+        console.log("host:"+host);
+        websocket = new WebSocket("ws://"+host+"/iles/websocket/"+userId);
+        websocket.onopen = function(){
+            console.log("websocket 连接成功");
+        }
+        websocket.onerror = function(){
+            console.log("websocket 连接错误");
+        }
+        websocket.onmessage = function(event){
+            var temp = eval('('+event.data+')');
+            var msgCount = $("#msgCount").text();
+            $("#msgCount").text(parseInt(msgCount)+1);
+            showMsgContent(temp.title,temp.content);
+        }
+        websocket.colse = function(){
+            console.log("websocket 关闭");
+        }
+        
+    }else{
+        layer.msg("当前浏览器不支持websocket！无法接收消息")
+    }
+    window.onbeforeunload = function(event){
+        if(websocket!=null)
+            websocket.close();
+    }
+    function showMsgContent(titleStr,messageContent){
+        layer.open({
+            type: 1
+            ,title:titleStr
+            ,offset:'rb'//具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+            ,id: 'rabitMq'+tNum //防止重复弹出
+            ,content: '<div style="padding: 20px 50px;width:250px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden">'+messageContent+'</div>'
+            ,shade: 0 //不显示遮罩
+            ,btn: ['查看消息']
+            ,btnAlign: 'r' //按钮居中
+            ,tipsMore: true
+            ,yes: function(){
+                showMsgTab();
+                layer.closeAll();
+            }
+          });
+        tNum++;
+    }
+    function showMsgTab(){
+    	
+        var isData = false;
+        var msgManageObj = $("#main-menu").find("[data-title='消息日志管理']");
+        var dataId = msgManageObj.attr("data-id");
+        if(dataId && dataId.length>0){
+         $.each($(".layui-tab-title li[lay-id]"), function () {
+                if ($(this).attr("lay-id") == dataId) {
+                    isData = true;
+                }
+            })
+            if (isData == false) {
+                active.tabAdd("pages/message/msgLog.html",dataId,"消息日志管理");
+            }
+            active.tabChange(dataId);
+        }
+    }
+   
+    //接收websocket推送的消息结束
+</script>
+
+
+</body>
+</html>

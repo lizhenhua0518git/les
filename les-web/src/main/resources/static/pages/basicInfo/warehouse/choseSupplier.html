@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>选择供货商</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+ 
+</head>
+<style type="text/css">
+.layui-table-body{
+	overflow-x:hidden;
+}
+</style>
+<body>
+<div id="bodyDiv">
+
+</div>
+	<div class="layui-fluid">
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+				<div class="layui-col-md6">
+					<div class="layui-col-md3">
+					 	<label class="layui-form-label">供货商编码:</label>
+					 	 <div class="layui-input-block">
+					      <input type="text" id="supplierCode" class="layui-input">
+					    </div>
+					</div>
+					<div class="layui-col-md3">
+					 	<label class="layui-form-label">供货商名称:</label>
+					 	 <div class="layui-input-block">
+					      <input type="text" id="supplierName" class="layui-input">
+					    </div>
+					</div>
+				</div>
+				<div class="layui-col-md6">
+					<div class="layui-btn-container" style="text-align: right;">
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search"><i class="layui-icon">&#xe615;</i>查询</button>
+	 					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset"><i class="mine-icon">&#xe640;</i>重置</button>
+					<input type="hidden" id="isDel" value="1" class="layui-input">
+					</div>
+				</div>
+			</div>
+	</div>
+	<table id="chooseSupllierTab" lay-filter="chooseSupllierTabF"></table>
+	    <script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+    <script type="text/html" id="bodyTpl"></script>
+	<script type="text/javascript">
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		 var contextPath = config.basicInfoConfig.contextPath;
+		  function loadding(){
+		table.render({
+			elem:'#chooseSupllierTab',
+			id:'chooseSupllierTabId',
+			url:contextPath+'supplier/listSupplier',
+			cols:[[
+			{type:'checkbox'},
+			{field:'supplierName',title:'供应商名称',sort:true},
+		    {field:'supplierCode', title: '供应商编码',sort:true}
+			]],
+			page: false,
+			
+    		even:true,
+    		done:function(res,page,count){//列表数据回调函数
+    			$("input[lay-filter=layTableAllChoose]").parent().hide();
+    		}
+		});
+		var active = {
+				search:function(othis){
+					var supplierCode =  $('#supplierCode').val();
+					var supplierName =  $('#supplierName').val();
+					var isDel =  $('#isDel').val();
+					  var params={};
+		                params.supplierName=supplierName;
+		                params.supplierCode=supplierCode;
+		                params.isDel=isDel;
+				      //执行重载
+				      table.reload('chooseSupllierTabId', {
+				    	  where:params,
+		                    page:{"curr":1}
+				      });
+				},reset:function(othis){
+					$('#supplierCode').val("");
+					$('#supplierName').val("");
+					 
+				}
+		}
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		//隐藏全选的复选框
+		$("input[lay-filter=layTableAllChoose]").parent().hide();
+		table.on('checkbox(chooseSupllierTabF)',function(res){
+        	if(res.checked){
+        		if(table.cache.chooseSupllierTabId.length==1){
+        			res.data = table.cache.chooseSupllierTabId[0];
+        		}
+        		parent.$("#supplierCode").val(res.data.supplierCode);
+        		parent.$("#supplierName").val(res.data.supplierName);
+        		parent.layer.closeAll();
+        	}
+	    });
+		  }
+	</script>
+</body>
+</html>

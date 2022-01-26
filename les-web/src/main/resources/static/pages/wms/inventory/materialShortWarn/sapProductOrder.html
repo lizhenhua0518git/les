@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+
+<title>生产订单管理</title>
+</head>
+
+    <script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+		<div class="layui-row layui-form" >
+			<div class="layui-col-md2">
+				<label class="layui-form-label">订单号</label>
+				<div class="layui-input-inline">
+					<input type="text" id="orderCode" placeholder="请输入订单号"  class="layui-input">
+				</div>
+            </div>
+			<div class="layui-col-md2">
+				<label class="layui-form-label">需求时间</label>
+				<div class="layui-input-inline layui-form">
+					<input type="text" class="layui-input" id="productDate" placeholder="请选择配送时间">
+				</div>
+			</div>
+			<div class="layui-col-md2">
+				<div class="layui-btn-container" style="text-align: right;">
+					{{# if(d.search==null || d.search=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-syncronize"></i>重置</button>
+					{{# } }}
+				</div>
+			</div>
+</div>
+		<!-- 按钮区域-->
+<div class="layui-fluid-table">
+  <div class="layui-row layui-form" style="margin-bottom: 0">
+      <div class="layui-col-md6">
+          <div class="layui-btn-container">
+
+              {{# if(d.add==null || d.add=="true"){ }}
+          <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="view" data-type="auto" type="button"><i class="layui-icon">&#xe63c;</i>   </i>缺料预警</button>
+           {{# } }}
+          </div>
+      </div>
+  </div>
+</div>
+
+	<table class="layui-hide" id="sapProductTab" lay-filter="sapProductTabF"></table>
+</div>
+	</div>
+	</script>
+
+    <script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+    <script type="text/javascript">
+
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+	var laydate = layui.laydate;
+    var contextPath = config.wmsConfig.contextPath;
+    var oldData;
+    var orderCode ;
+
+    function loadding(){
+
+    table.render({
+        elem:'#sapProductTab',
+        id:'sapProductTabId',
+        url: contextPath + 'materialShortWarn/listSapProuductOrder',
+        cols:[[
+			{type:'checkbox'},
+        {type:'numbers',title:'序号',width: 80},
+        {field:'orderTypeName',title:'订单类型',width: 100},
+        {field:'orderCode', title: '生产订单号'},
+        {field:'startTime', title: '基本开始时间'},
+        {field:'endTime', title: '基本结束时间'},
+        {field:'vehicleCode', title: '产品号'},
+        {field:'sellOrder', title: '销售订单'},
+        {field:'sellOrderItem', title: '销售订单行项目'},
+        {field:'customCode', title: '客户编码'},
+        {field:'customDesc', title: '客户描述'},
+        {field:'factory', title: '工厂'},
+        {field:'carModel', title: '车型'},
+        {field:'serialNum', title: '序列号'},
+        {field:'productDate', title: '创建时间'}
+
+        ]],
+        page: {theme: '#008155'},
+        even:true,
+        done:function(res,page,count){//列表数据回调函数
+           // initTableDate(res.data);
+
+        }
+    });
+
+    $('.layui-btn-container button').on('click', function(){
+        var othis = $(this), method = othis.data('method');
+        active[method] ? active[method].call(this, othis) : '';
+    });
+
+		//时间选择器
+		laydate.render({
+			elem : '#productDate',
+			type : 'date',
+			trigger: 'click',
+			range : false
+		});
+
+
+
+
+   }
+
+
+    var active = {
+		view: function (othis) {
+			var checkStatus = table.checkStatus('sapProductTabId');
+			oldData = checkStatus.data;
+            if(oldData.length <1){
+				layer.alert("请选择生产订单");
+				return;
+			}
+			var idarrys = new Array();
+			for(var i = 0; i < oldData.length; i++) {
+				idarrys.push(oldData[i].orderCode);
+			}
+			var id = "sapProductOrder";
+			var url = "/iles/pages/wms/inventory/materialShortWarn/sapProductOrderMaterial.html?orderCodeArray="+idarrys.toString();
+
+			var currHeight = parent.$(document).height();
+
+				parent.element.tabDelete('indexTab', id);
+				parent.element.tabAdd('indexTab', {
+					title: "缺料预警"
+					,content: ' <iframe id="'+id+'" frameborder="0"  src="'+url+'" width="100%" height="'+currHeight+'px"></iframe>'
+					,id: id //实际使用一般是规定好的id，这里以时间戳模拟下
+				});
+				parent.element.tabChange('indexTab', id); //切换到：用户管理
+
+		},
+            search:function(othis){
+				var loading=layer.msg('正在加载',{ico:16,shade:0.3,time:5000});
+                var productDate=$('#productDate').val();
+                var orderCode=$('#orderCode').val();
+
+
+                var params={};
+                params.productDate=productDate;
+                params.orderCode=orderCode;
+
+
+                  //执行重载
+                  table.reload('sapProductTabId', {
+                    where:params,
+                    page:{"curr":1}
+                  });
+
+            },reset:function(othis){
+                $('#productDate').val("");
+                $('#orderCode').val("");
+
+
+            }
+
+    };
+
+
+</script>
+<body id="bodyDiv">
+</body>
+</html>

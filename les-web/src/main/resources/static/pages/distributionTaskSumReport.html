@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>配送任务统计表（产线）</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+</head>
+<body>
+<div class="layui-fluid" style="margin-top:10px;">
+ 
+ <div class="layui-row layui-form">
+			 
+			 
+		 <div class="layui-col-md3" style="margin-left:800px;margin-top:10px;">
+				<div class="layui-btn-container" style="text-align: right;">
+					 
+  					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="export" type="button"><i class="layui-icon-reset"></i>导出</button>
+ 
+				</div>
+			</div>
+	  
+			
+		</div>
+</div>
+ <table id="distributionTaskSumReport" lay-filter="distributionTaskSumReportTabF" class="layui-table"></table>
+
+<script src="/iles/pages/layui_extends/layui/layui.js"></script>
+<script src="/iles/pages/layui_extends/layui/layui.all.js"></script>
+<script src="/iles/pages/layui_extends/layui_exts/excel.js"></script>
+ 
+ 
+ 
+<script type="text/javascript">
+ 
+var $ = layui.$;
+var element = layui.element;
+var layer = layui.layer;
+var table = layui.table;
+
+ 
+table.render({
+	elem:'#distributionTaskSumReport',
+	id:'distributionTaskSumReportId',
+	url:'${ctx}/operationDecision/getDistributionTaskSum',
+	cols:[
+		  [
+	 		 
+	 	    { title: '<span style="font-weight:1000;font-size:24px;font-family:Microsoft YaHei">配送任务统计表（产线）</span>', colspan:8,align:'center'}
+	 	   
+	 	  ],
+	 	   [
+	 		 
+		 	    {field: '', title: '单位：笔', colspan:8,align:'right'}
+		 	   
+		 	  ],
+		 	 [
+		 		     {field: 'project', title: '项目', width: 120,align:'center'} 
+		 		    ,{field: 'station', title: '工位', width: 120,align:'center'}
+		 		    ,{field: 'warehouse', title: '仓库', width: 120,align:'center'}
+			 	    ,{field: 'materilUnit', title: '总需求', width: 120,align:'center'}
+			 	    ,{field: 'storageBin', title: '已完成', width: 150,align:'center'}
+			 	    ,{field: 'totalStockCount', title: '未完成', width: 120,align:'center'}
+			 	    ,{field: 'incount', title: '未配送', width: 120,align:'center'}
+			 	    ,{field: 'outCount', title: '未交接', width: 120,align:'center'}
+			 	    
+			 	     
+			 	  ]
+		
+		],
+
+	 title:'配送任务统计表（产线）',
+	 done:function(res,curr,count){  
+		 
+		 $('th').each(function(i) {  
+             if(i>=2){
+            	 $(this).css({'background-color': '#A2CD5A','font-weight':'1000','font-size':'16px'}); 	 
+             }
+			 
+
+			});  
+	}
+});
+
+var active = {
+		search:function(othis){
+			var startTime =$('#startTime').val();
+			var endTime =$('#endTime').val();
+			if(startTime>endTime){
+				layer.alert("开始时间不能大于结束时间")
+				return;
+			}
+		      //执行重载
+		      table.reload('materialGatherReportId', {
+		        where:{
+		        	storageBin: $.trim( $('#storageBin').val()),
+		        	materialCode:$.trim( $('#materialCode').val()),
+		        	startTime:startTime,
+		        	endTime:endTime
+		        }
+		        ,page:{"curr":1}
+		      });
+		},reset:function(othis){
+			$('#storageBin').val("");
+			$('#materialCode').val("");
+			$('#startTime').val('');
+			$('#endTime').val("");
+		},
+		export:function(othis){
+          	/* var storageBin =$.trim( $("#storageBin").val());
+          	var materialCode =$.trim( $("#materialCode").val());
+           
+          	var startTime =$("#startTime").val();
+        	var endTime =$("#endTime").val();
+    	    var  params ="storageBin="+storageBin+"&materialCode="+materialCode+"&startTime="
+    	     +startTime+"&endTime="+endTime;
+          	 window.open("${ctx}/binInOut/exportMaterialGather?"+params); */
+         	var excel =  layui.excel;
+          	 // 生成配置的辅助函数，返回结果作为扩展功能的配置参数传入即可
+             // 1. 复杂表头合并[B1,C1,D1][E1,F1]
+             var mergeConf = excel.makeMergeConfig([
+               ['A1', 'H1'],
+               ['A2', 'H2'],
+               
+             ]);
+             // 2. B列宽 150，F列宽200，默认80
+             var colConf = excel.makeColConfig({
+               'B': 150,
+               'F': 200,
+             }, 80);
+             // 3. 第1行行高40，第二行行高30，默认20
+             var rowConf = excel.makeRowConfig({
+               1: 40,
+               3: 30
+             }, 20);
+          	 var objData = table.cache.distributionTaskSumReportId;
+         	objData.push({
+         		LAY_TABLE_INDEX: "",
+         		incount: '100',
+         		materilUnit: "笔",
+         		outCount: '300',
+         		project: "001",
+         		station: "GW01",
+         		storageBin: "13-01-02-03",
+         		totalStockCount: 200,
+         		warehouse: '仓库'
+              });  
+          	 excel.exportExcel({
+          	      sheet1: objData,
+          	    }, '测试导出复杂表头.xlsx', 'xlsx', {
+          	      extend: {
+          	        // extend 中可以指定某个 sheet 的属性，如果不指定 sheet 则所有 sheet 套用同一套属性
+          	         sheet1: {
+          '!merges': mergeConf
+          ,'!cols': colConf
+          ,'!rows': rowConf
+        } 
+          	      }
+          	    });
+		}
+	};
+
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+		});
+	 
+</script>
+</body>
+</html>

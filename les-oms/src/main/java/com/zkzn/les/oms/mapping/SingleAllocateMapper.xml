@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.oms.dao.SingleAllocateDao">
+
+	
+	<select id="listSingleAllocate" resultType="com.zkzn.les.oms.pojo.SingleAllocate">
+		
+		select * from t_single_allocate 
+		
+		<where>
+			<if test="sapAllocationOrder !=null and ''!= sapAllocationOrder"> and sap_Allocation_Order like '%${sapAllocationOrder}%'</if>
+			<if test="allocationOrder !=null and ''!= allocationOrder"> and allocation_order like '%${allocationOrder}%'</if>
+			<if test="outWarehouseCode !=null and ''!= outWarehouseCode"> 
+			    <foreach collection="outWarehouseCode.split(';')" open="and out_warehouse_code in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			</if>
+			<if test="outStorageLocations !=null and outStorageLocations.size()>0">
+				 <foreach collection="outStorageLocations" open="and out_storage_location in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			 </if>
+			<if test="startTimeStr !=null and ''!= startTimeStr and endTimeStr != null and ''!= endTimeStr"> 
+				and create_time between str_to_date(#{startTimeStr}, '%Y-%m-%d') and str_to_date(#{endTimeStr}, '%Y-%m-%d')</if>
+			<if test="inWarehouseCode !=null and ''!= inWarehouseCode"> 
+			    <foreach collection="inWarehouseCode.split(';')" open="and in_warehouse_code in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			</if>
+			<if test="inStorageLocations !=null and inStorageLocations.size()>0">
+				 <foreach collection="inStorageLocations" open="and in_storage_location in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			</if>
+			
+			<if test="statusStr !=null and ''!= statusStr"> 
+				 <foreach collection="statusStr.split(';')" open="and status in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			</if>
+			<if test="outFactory !=null and ''!= outFactory"> 
+				 <foreach collection="outFactory.split(';')" open="and out_factory in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			</if>
+			<if test="inFactory !=null and ''!= inFactory"> 
+				<foreach collection="inFactory.split(';')" open="and in_factory in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			</if>
+			<if test="billType !=null and ''!= billType"> 
+				<foreach collection="billType.split(';')" open="and bill_type in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			</if>
+			<if test="stockCheckStatusStr !=null and ''!= stockCheckStatusStr"> 
+				<foreach collection="stockCheckStatusStr.split(';')" open="and stock_check_status in (" close=")" separator="," index="index" item="item">
+				 	#{item}
+				 </foreach>
+			</if>
+		</where>
+	
+	</select>
+	
+	<update id="updateSingleAllocate" parameterType="com.zkzn.les.oms.pojo.SingleAllocate">
+			update t_single_allocate 
+			<trim prefix="set" prefixOverrides=",">
+				<if test="inWarehouseName !=null and ''!= inWarehouseName">  ,in_warehouse_name=#{inWarehouseName}</if>
+				<if test="outWarehouseName !=null and ''!= outWarehouseName">  ,out_warehouse_name=#{outWarehouseName}</if>
+				<if test="allocationOrder !=null and ''!= allocationOrder">  ,allocation_order=#{allocationOrder}</if>
+				<if test="outWarehouseCode !=null and ''!= outWarehouseCode"> , out_warehouse_code=#{outWarehouseCode}</if>
+				<if test="outStorageLocation !=null and ''!= outStorageLocation"> , out_storage_location=#{outStorageLocation}</if>
+				<if test="inWarehouseCode !=null and ''!= inWarehouseCode"> , in_warehouse_code=#{inWarehouseCode}</if>
+				<if test="inStorageLocation !=null and ''!= inStorageLocation"> , in_storage_location=#{inStorageLocation}</if>
+				<if test="status !=null "> , status=#{status}</if>
+				<if test="outFactory !=null and ''!= outFactory"> , out_factory=#{outFactory}</if>
+				<if test="inFactory !=null and ''!= inFactory"> , in_factory=#{inFactory}</if>
+				<if test="billType !=null and ''!= billType"> , bill_type=#{billType}</if>
+				<if test="stockCheckStatus !=null "> , stock_check_status=#{stockCheckStatus}</if>
+				<if test="modifierId !=null "> , modifier_id=#{modifierId}</if>
+				<if test="modifierName !=null "> , modifier_name=#{modifierName}</if>
+				<if test="modifiedTime !=null "> , modified_time=#{modifiedTime}</if>
+			</trim>
+			where id=#{id}
+	</update>
+	
+	<insert id="saveSingleAllocate">
+		 insert into t_single_allocate
+		 <trim prefix="(" prefixOverrides="," suffix=")">
+		 		<if test="id != null and ''!= id">,id</if>
+				<if test="inWarehouseName !=null and ''!= inWarehouseName">  ,in_warehouse_name</if>
+				<if test="outWarehouseName !=null and ''!= outWarehouseName">  ,out_warehouse_name</if>
+				<if test="allocationOrder !=null and ''!= allocationOrder">  ,allocation_order</if>
+				<if test="outWarehouseCode !=null and ''!= outWarehouseCode"> , out_warehouse_code</if>
+				<if test="outStorageLocation !=null and ''!= outStorageLocation"> , out_storage_location</if>
+				<if test="inWarehouseCode !=null and ''!= inWarehouseCode"> , in_warehouse_code</if>
+				<if test="inStorageLocation !=null and ''!= inStorageLocation"> , in_storage_location</if>
+				<if test="status !=null "> , status</if>
+				<if test="outFactory !=null and ''!= outFactory"> , out_factory</if>
+				<if test="inFactory !=null and ''!= inFactory"> , in_factory</if>
+				<if test="billName !=null and ''!= billName"> ,bill_Name</if>
+				<if test="billType !=null and ''!= billType"> , bill_type</if>
+				<if test="inFactoryName !=null and ''!= inFactoryName"> , in_factory_name</if>
+				<if test="outFactoryName !=null and ''!= outFactoryName"> , out_factory_name</if>
+				<if test="stockCheckStatus !=null "> , stock_check_status</if>
+				<if test="createrId !=null "> , creater_Id</if>
+				<if test="createrName !=null "> , creater_Name</if>
+				<if test="createTime !=null "> ,create_Time</if>
+				<if test="stockType !=null "> ,stock_type</if>
+				<if test="allocationType !=null "> ,allocation_type</if>
+		</trim>
+		<trim prefix="values (" prefixOverrides="," suffix=")">
+				<if test="id != null and ''!= id">,#{id}</if>
+				<if test="inWarehouseName !=null and ''!= inWarehouseName">  ,#{inWarehouseName}</if>
+				<if test="outWarehouseName !=null and ''!= outWarehouseName">  ,#{outWarehouseName}</if>
+				<if test="allocationOrder !=null and ''!= allocationOrder">  ,#{allocationOrder}</if>
+				<if test="outWarehouseCode !=null and ''!= outWarehouseCode"> , #{outWarehouseCode}</if>
+				<if test="outStorageLocation !=null and ''!= outStorageLocation"> ,#{outStorageLocation}</if>
+				<if test="inWarehouseCode !=null and ''!= inWarehouseCode"> ,#{inWarehouseCode}</if>
+				<if test="inStorageLocation !=null and ''!= inStorageLocation"> ,#{inStorageLocation}</if>
+				<if test="status !=null "> ,#{status}</if>
+				<if test="outFactory !=null and ''!= outFactory"> , #{outFactory}</if>
+				<if test="inFactory !=null and ''!= inFactory"> , #{inFactory}</if>
+				<if test="billName !=null and ''!= billName"> ,#{billName}</if>
+				<if test="billType !=null and ''!= billType"> ,#{billType}</if>
+				<if test="inFactoryName !=null and ''!= inFactoryName"> , #{inFactoryName}</if>
+				<if test="outFactoryName !=null and ''!= outFactoryName"> , #{outFactoryName}</if>
+				<if test="stockCheckStatus !=null "> , #{stockCheckStatus}</if>
+				<if test="createrId !=null "> , #{createrId}</if>
+				<if test="createrName !=null "> , #{createrName}</if>
+				<if test="createTime !=null "> ,#{createTime}</if>
+				<if test="stockType !=null "> ,#{stockType}</if>
+				<if test="allocationType !=null "> ,#{allocationType}</if>
+		</trim>
+	</insert>
+	
+	<delete id="deleteSingleAllocate">
+		delete from t_single_allocate where id in 
+		<foreach collection="list" open="(" close=")" index="index" item="item" separator="," >
+			#{item}
+		</foreach>
+	</delete>
+	
+	<update id="updateSingleAllocates" parameterType="com.zkzn.les.oms.pojo.SingleAllocate">
+		<foreach collection="list" open="begin" close=";end;" index="index" item="item" separator="">
+			update t_single_allocate 
+			<trim prefix="set" prefixOverrides=",">
+				<if test="item.inWarehouseName !=null and ''!= item.inWarehouseName">  ,in_warehouse_name=#{item.inWarehouseName}</if>
+				<if test="item.outWarehouseName !=null and ''!= item.outWarehouseName">  ,out_warehouse_name=#{item.outWarehouseName}</if>
+				<if test="item.allocationOrder !=null and ''!= item.allocationOrder">  ,allocation_order=#{item.allocationOrder}</if>
+				<if test="item.outWarehouseCode !=null and ''!= item.outWarehouseCode"> , out_warehouse_code=#{item.outWarehouseCode}</if>
+				<if test="item.outStorageLocation !=null and ''!= item.outStorageLocation"> , out_storage_location=#{item.outStorageLocation}</if>
+				<if test="item.inWarehouseCode !=null and ''!= item.inWarehouseCode"> , in_warehouse_code=#{item.inWarehouseCode}</if>
+				<if test="item.inStorageLocation !=null and ''!= item.inStorageLocation"> , in_storage_location=#{item.inStorageLocation}</if>
+				<if test="item.status !=null "> , status=#{item.status}</if>
+				<if test="item.outFactory !=null and ''!= item.outFactory"> , out_factory=#{item.outFactory}</if>
+				<if test="item.inFactory !=null and ''!= item.inFactory"> , in_factory=#{item.inFactory}</if>
+				<if test="item.billType !=null and ''!= item.billType"> , bill_type=#{item.billType}</if>
+				<if test="item.stockCheckStatus !=null "> , stock_check_status=#{item.stockCheckStatus}</if>
+				<if test="item.modifierId !=null "> , modifier_id=#{item.modifierId}</if>
+				<if test="item.modifierName !=null "> , modifier_name=#{item.modifierName}</if>
+				<if test="item.modifiedTime !=null "> , modified_time=#{item.modifiedTime}</if>
+			</trim>
+			where id=#{item.id}
+		</foreach>
+	</update>
+	
+	<select id="checkDocument" resultType="java.util.Map">
+		select DOCUMENT_CODE as "documentCode",DOCUMENT_NAME as "documentName" from T_DOCUMENT_TYPE 
+		where DOCUMENT_CODE in 
+		<foreach collection="collection" open="(" close=")" index="index" item="item" separator="," >
+			#{item}
+		</foreach>
+	</select>
+	
+	<select id="checkOrgCode" resultType="java.util.Map">
+		select ORG_CODE as "orgCode",ORG_NAME as "orgName" from t_warehouse where ORG_CODE in
+		<foreach collection="collection" open="(" close=")" index="index" item="item" separator="," >
+			#{item}
+		</foreach>
+	</select>
+	<select id="checkStorageLocation" resultType="java.util.Map">
+		select FACTORY_CODE as "factoryCode",model_Name as "factoryName",STORAGE_LOCATION as "storageLocation",SAP_STORAGE_LOCATION as "sapStorageLocation"
+		 from t_factory_warehouse fw left join t_plm_plant_structure pl on fw.FACTORY_CODE = pl.model_code where  status=1 and STORAGE_LOCATION in
+		<foreach collection="collection" open="(" close=")" index="index" item="item" separator="," >
+			#{item}
+		</foreach>
+	</select>
+	
+	<select id="checkMaterialCode" resultType="java.util.Map">
+		select FACTORY||STORAGE_LOCATION||MATERIAL_CODE as "key",MATERIAL_DESC as "materialDesc",MATERIAL_UNIT as "materialUnit" 
+		from t_material where FACTORY||STORAGE_LOCATION||MATERIAL_CODE in
+		<foreach collection="collection" open="(" close=")" index="index" item="item" separator="," >
+			#{item}
+		</foreach>
+	</select>
+	
+	<insert id="saveSingleAllocates">
+		<foreach collection="list" open="begin" close=";end;" index="index" item="item" separator=";">
+			 insert into t_single_allocate
+			 <trim prefix="(" prefixOverrides="," suffix=")">
+			 		<if test="item.id != null and ''!= item.id">,id</if>
+					<if test="item.inWarehouseName !=null and ''!= item.inWarehouseName">  ,in_warehouse_name</if>
+					<if test="item.outWarehouseName !=null and ''!= item.outWarehouseName">  ,out_warehouse_name</if>
+					<if test="item.allocationOrder !=null and ''!= item.allocationOrder">  ,allocation_order</if>
+					<if test="item.outWarehouseCode !=null and ''!= item.outWarehouseCode"> , out_warehouse_code</if>
+					<if test="item.outStorageLocation !=null and ''!= item.outStorageLocation"> , out_storage_location</if>
+					<if test="item.inWarehouseCode !=null and ''!= item.inWarehouseCode"> , in_warehouse_code</if>
+					<if test="item.inStorageLocation !=null and ''!= item.inStorageLocation"> , in_storage_location</if>
+					<if test="item.status !=null "> , status</if>
+					<if test="item.outFactory !=null and ''!= item.outFactory"> , out_factory</if>
+					<if test="item.inFactory !=null and ''!= item.inFactory"> , in_factory</if>
+					<if test="item.billName !=null and ''!= item.billName"> ,bill_Name</if>
+					<if test="item.billType !=null and ''!= item.billType"> , bill_type</if>
+					<if test="item.inFactoryName !=null and ''!= item.inFactoryName"> , in_factory_name</if>
+					<if test="item.outFactoryName !=null and ''!= item.outFactoryName"> , out_factory_name</if>
+					<if test="item.stockCheckStatus !=null "> , stock_check_status</if>
+					<if test="item.createrId !=null "> , creater_Id</if>
+					<if test="item.createrName !=null "> , creater_Name</if>
+					<if test="item.createTime !=null "> ,create_Time</if>
+					<if test="item.stockType !=null "> ,stock_type</if>
+					<if test="item.allocationType !=null "> ,allocation_type</if>
+			</trim>
+			<trim prefix="values (" prefixOverrides="," suffix=")">
+					<if test="item.id != null and ''!= item.id">,#{item.id}</if>
+					<if test="item.inWarehouseName !=null and ''!= item.inWarehouseName">  ,#{item.inWarehouseName}</if>
+					<if test="item.outWarehouseName !=null and ''!= item.outWarehouseName">  ,#{item.outWarehouseName}</if>
+					<if test="item.allocationOrder !=null and ''!= item.allocationOrder">  ,#{item.allocationOrder}</if>
+					<if test="item.outWarehouseCode !=null and ''!= item.outWarehouseCode"> , #{item.outWarehouseCode}</if>
+					<if test="item.outStorageLocation !=null and ''!= item.outStorageLocation"> ,#{item.outStorageLocation}</if>
+					<if test="item.inWarehouseCode !=null and ''!= item.inWarehouseCode"> ,#{item.inWarehouseCode}</if>
+					<if test="item.inStorageLocation !=null and ''!= item.inStorageLocation"> ,#{item.inStorageLocation}</if>
+					<if test="item.status !=null "> ,#{item.status}</if>
+					<if test="item.outFactory !=null and ''!= item.outFactory"> , #{item.outFactory}</if>
+					<if test="item.inFactory !=null and ''!= item.inFactory"> , #{item.inFactory}</if>
+					<if test="item.billName !=null and ''!= item.billName"> ,#{item.billName}</if>
+					<if test="item.billType !=null and ''!= item.billType"> ,#{item.billType}</if>
+					<if test="item.inFactoryName !=null and ''!= item.inFactoryName"> , #{item.inFactoryName}</if>
+					<if test="item.outFactoryName !=null and ''!= item.outFactoryName"> , #{item.outFactoryName}</if>
+					<if test="item.stockCheckStatus !=null "> , #{item.stockCheckStatus}</if>
+					<if test="item.createrId !=null "> , #{item.createrId}</if>
+					<if test="item.createrName !=null "> , #{item.createrName}</if>
+					<if test="item.createTime !=null "> ,#{item.createTime}</if>
+					<if test="item.stockType !=null "> ,#{item.stockType}</if>
+					<if test="item.allocationType !=null "> ,#{item.allocationType}</if>
+			</trim>
+		</foreach>
+	</insert>
+</mapper>

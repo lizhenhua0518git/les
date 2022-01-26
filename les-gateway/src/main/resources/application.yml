@@ -1,0 +1,110 @@
+server:
+ port: 8095
+
+eureka:
+ client:
+  service-url:
+   defaultZone: http://127.0.0.1:8011/eureka/
+
+spring:
+ application:
+  name: les-gateway-provider
+ cloud:
+  gateway:
+   discovery:
+    locator:
+     enabled: true
+     lower-case-service-id: true
+   routes:
+
+        - id: les-uas-providerId
+          uri: lb://les-uas-provider
+          predicates:
+                    - Path=/auth/**
+
+        - id: les-basicInfo-providerId
+          uri: lb://les-basicInfo-provider
+          predicates:
+                    - Path=/basicInfo/**
+
+        - id: les-mesApi-provider
+          uri: lb://les-mesApi-provider
+          predicates:
+                    - Path=/mes/**
+        - id: les-srmApi-provider
+          uri: lb://les-srmApi-provider
+          predicates:
+                    - Path=/srm/**
+        - id: les-gawApi-provider
+          uri: lb://les-gawApi-provider
+          predicates:
+                    - Path=/gaw/**
+        - id: les-oms-provider
+          uri: lb://les-oms-provider
+          predicates:
+                    - Path=/oms/**
+        - id: les-quartz-provider
+          uri: lb://les-quartz-provider
+          predicates:
+                    - Path=/quartz/**
+        - id: les-wms-opt-providers
+          uri: lb://les-wms-opt-providers
+          predicates:
+                    - Path=/wmsOpt/**
+        - id: les-stock-providers
+          uri: lb://les-stock-providers
+          predicates:
+                    - Path=/stock/**
+        - id: les-statics-providers
+          uri: lb://les-statics-providers
+          predicates:
+                    - Path=/statics/**
+ redis:
+  database: 0
+  host: 39.105.216.41
+  port: 6379
+  password: Les2021!
+  timeout: 5000
+  jedis:
+   pool:
+    max-active: 200
+    max-wait: 3000
+    max-idle: 20
+    min-idle: 5
+ security:
+    oauth2:
+      resourceserver:
+       opaquetoken:
+        introspection-uri: http://localhost:8070/auth/oauth/check_token
+        client-id: les-gateway-ssoclient
+        client-secret: les-gateway-ssosecret
+        authorized_grant_types: authorization_code
+    ignored: |
+        /auth/login,
+        /favicon.ico,
+        /srm/push/getDeliveryBill,
+        /gaw/*
+    notRole: |
+        /auth/user/me,
+        /basicInfo/orgnization/listAppWarehouse,
+        /auth/simpleLogout,
+        /auth/resource/getResoureList,
+        /basicInfo/resource/getAppResourceList,
+        /basicInfo/orgnization/chooseWarehouse
+logging:
+ level:
+  com:
+   zkzn:
+    les:
+     gateway: DEBUG
+  org.springframework.cloud.gateway: debug
+
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE  #加上这个就可以获取到HttpServletRequest
+          thread:
+            timeoutInMilliseconds: 10000

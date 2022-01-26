@@ -1,0 +1,288 @@
+@charset "utf-8";
+/* CSS Document */
+
+/***************基础样式设置*****************/
+.fl{float: left;}
+.fr{float: right;}
+.clear{clear: both;}
+.ml50{margin-left: 50px;}
+.containerBox{width: 100%; position: relative;}
+
+
+
+/*栏目标题*/
+.gTitle{height: 38px; margin-bottom: 20px; line-height: 38px; background-color: #b81c22; border-radius: 0.5rem;}
+.gTitle h1{margin: 0; padding: 0; color: white; font-size: 12px; font-weight: normal; line-height: 38px; text-indent: 15px;}
+
+
+.dropdown.down .btn{background-color: transparent; border: 1px solid white; color: white; font-size: 12px; padding: 4px 12px; margin-top: 5px; margin-right: 10px;}
+
+
+
+/*卡片面板*/
+.gCard{border-radius: 0.5rem; padding: 20px 15px 20px 15px; margin-bottom: 20px; position: relative; overflow: hidden;}
+.gCard h1{margin: 0; padding: 0; font-size: 20px; font-weight: bold; color: white; line-height: 40px;}
+.gCard h2{margin: 0; padding: 0; font-size: 20px; font-weight: bold; color: #666; line-height: 40px;}
+
+.gCard .detail{float: right; max-width: 255px; margin-top: 20px;}
+.gCard .detail p{display: inline-block; min-width: 125px; margin: 0; line-height: 22px; font-size: 14px; color: white;}
+.gCard .YWZ_detail{float: right; max-width: 180px; margin-top: 5px;}
+.gCard .YWZ_detail p{min-width: 170px; margin: 0; line-height: 20px; font-size: 14px; color: white;}
+.gCard .easypiechart{overflow: hidden; margin-top: 10px; color: white; width: 100px; height: 100px;}
+.gCard .easypiechart .percent{width: 100px; top: 40px;}
+.gCard .ratio{margin-top: 20px; margin-bottom: 5px; font-size: 14px; color: white;}
+.gCard .dateTime{position: absolute; left: 120px; top: 35px; font-size: 12px;}
+.gCard .summary{font-size: 14px; font-weight: bold; color: #666; text-align: center; line-height: 70px;}
+.gCard .summary.w476{width: 476px; height: 36px; line-height: 36px; border: 2px dashed #cf8a8d; border-radius: 5px; margin: 15px auto;}
+
+.gCard.bg-white h1{color: #666;}
+.gCard.bg-white .detail p{color: #666;}
+.gCard.bg-white .easypiechart{color: #666;}
+.gCard.bg-white .ratio{color: #666;}
+
+.tables{}
+.tables .tableHd{position: relative;}
+.tables .tableHd button{border-left: 10px solid rgba(255,255,255,1);}
+.tables .tableHd .buttonsTab{margin-bottom: 15px;}
+.tables .tableHd .filterCondition{margin-right: 225px;}
+.tables .tableHd .filterCondition label{box-sizing: content-box;}
+.tables .tableHd .buttonsTool{position: absolute; right: 5px; bottom: 10px;}
+
+
+
+
+
+
+
+/*Echarts图表*/
+.sh120{height: 150px;}
+.gEchartBox{position: relative; overflow: hidden;}
+.gEchart{position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto;}
+.sh120 .gEchart{top: -30px; bottom: -40px; left: -30px; right: -50px;}
+
+.pieDetial{float: left; margin-left: 120px; margin-top: 60px; font-size: 12px; color: #666; line-height: 25px;}
+.piesBox{width: 120px; height: 140px; margin-top: 16px; overflow:inherit;}
+
+.h620{height: 620px; position: relative;}
+.h620 .norms{position: absolute; right: 40px; top: 26px;}
+.h620 .norms > span{margin-left: 30px; font-size: 12px; color: #666;}
+
+
+
+
+
+
+
+
+
+/*
+**版块section
+**
+*/
+
+/*三日物控*/
+.SRWK{color: #666; font-size: 12px; margin-top: -43px;}
+.SRWK .hd{padding: 0 20px; margin-left: 30%; margin-bottom: 20px; display: flex;}
+.SRWK .hd > div{flex: 1; text-align: center;}
+.SRWK .hd > div span{border: 1px solid #b81c22; border-radius: 4px; padding: 4px 8px; line-height: 50px;}
+.SRWK .bd{}
+.SRWK .bd dl{padding: 15px 20px; border: 2px dashed #50d1bf; position: relative; border-radius: 5px;}
+.SRWK .bd dl:nth-child(2){border-color: #f4afba;}
+.SRWK .bd dl:nth-child(3){border-color: #bccc65;}
+.SRWK .bd dl:nth-child(4){border-color: #eece95;}
+.SRWK .bd dl:nth-child(5){border-color: #69c1e0;}
+.SRWK .bd dl:nth-child(6){border-color: #b78dd1;}
+.SRWK .bd dl dt{position: absolute; width: 16%; top: 10px; bottom: 10px; margin-top: auto; margin-bottom: auto; display: flex; align-items: center; justify-content: center;}
+.SRWK .bd dl dd{margin-left: 18%; }
+.SRWK .bd dl dd table{width: 100%;}
+.SRWK .bd dl dd table tr td{width: 28%; text-align: center; line-height: 22px;}
+.SRWK .bd dl dd table tr td:first-child{width: 16%; text-align: left;}
+
+/*物流成本*/
+.WLCB{margin: 6px 0; }
+.WLCB table{width: 100%; text-align: center;}
+.WLCB table thead tr td{padding: 10px; font-size: 14px; color: #666;}
+.WLCB table thead tr td:first-child{font-weight: bold;}
+.WLCB table tbody tr td{padding: 10px; font-size: 20px; color: #b81b22;}
+.WLCB table tbody tr td:first-child{font-weight: bold; font-size: 30px;}
+
+.minh640{min-height: 640px;}
+.WLCB_month{color: #666;}
+.WLCB_month .tit{font-size: 14px; font-weight: bold; text-align: center; line-height: 30px;}
+.WLCB_month .totalValue{font-size: 30px; color: #b81b22; text-align: center; line-height: 60px;}
+.WLCB_month > table{width: 100%; text-align: center;}
+.WLCB_month > table tr td{font-size: 20px; color: #b81b22; line-height: 40px; padding: 0 5px;}
+.WLCB_month > table tr:first-child td{font-size: 14px; color: #666; line-height: 30px;}
+.WLCB_month > ul{width: 100%; margin-top: 10px; overflow: hidden;}
+.WLCB_month > ul li{min-width: 40%; font-size: 12px; line-height: 30px; margin-left: 10%;}
+.WLCB_month > ul li:nth-child(odd){float: left;}
+.WLCB_month > ul li:nth-child(even){float: right;}
+
+
+
+/*质检任务*/
+.ZJRW{position: relative; margin-top: 20px;}
+.ZJRW .hd{position: absolute; left: 0; bottom: 0; right: 0; top: 0; margin: auto; display: flex; align-items: center;}
+.ZJRW .hd span{display: inline-block; padding: 20px 8px; border-radius: 5px; background-color: #50d1bf; font-size: 20px; color: white; max-width: 60px; margin-right: 15px; line-height: 28px;}
+.ZJRW .bd{overflow: hidden; margin-bottom: 12px; margin-left: 75px;}
+.ZJRW .bd .tit{font-size: 14px; color: #666;}
+.ZJRW .bd .tit span{margin-right: 30px;}
+.ZJRW .bd .cet{margin-top: 10px; padding: 5px 10px;}
+.ZJRW .bd .cet table{width: 100%;}
+.ZJRW .bd .cet table td{font-size: 16px; color: #666;}
+.ZJRW .bd .cet table td:nth-child(odd) > div{display: inline-block; padding:16% 15%; border: 1px solid #c6c6c6; border-radius: 50%; background-color: #cbba9c; color: white;}
+.ZJRW .bd .cet table td:nth-child(1) > div{background-color: transparent; color: #666;}
+.ZJRW .bd .cet table td:nth-child(3) > div{background-color: #d2dba4;}
+.ZJRW .bd .cet table td:nth-child(5) > div{background-color: #daad90;}
+.ZJRW .bd .line{height: 2px; background-color: #d4d4d4; }
+.ZJRW .bd .line i{float: right; width: 6px; height: 10px; margin-top: -4px; background: url(../img/toRight.png);}
+.ZJRW.bg-ed7789 .hd span{background-color: #ed7789;}
+.ZJRW.bg-bccc65 .hd span{background-color: #bccc65;}
+.ZJRW.bg-e2ab4a .hd span{background-color: #e2ab4a;}
+.ZJRW.bg-69c1e0 .hd span{background-color: #69c1e0;}
+.ZJRW.bg-b78dd1 .hd span{background-color: #b78dd1;}
+
+
+/*库存周转*/
+.h-buttons{position: absolute; right: 20px; top: 25px;}
+.v-buttons{position: absolute; top: 80px; left: 30px;}
+.v-buttons button{width: 60px; background-color: transparent; margin-bottom: 12px; color: white; border-color: white;}
+.v-buttons button.active{background-color: white; color: #64b0cc; border-color: white;}
+.groupBox{display: flex; flex-direction: row; flex-wrap: wrap; margin-left: 80px;  margin-right: 2%;}
+.groupBox > div{flex: 1; height: 160px; overflow: hidden;}
+.groupBox .barEchart{height: 100%;}
+
+/*项目专题*/
+.topicTitle{}
+.topicTitle h1{color: #666; text-align: center; margin-bottom: 10px;}
+.topicTitle p{float: right; font-size: 12px; color: #666; line-height: 40px; margin-right: 18px;}
+
+/*人员使用情况*/
+table.personnelTable{width: 100%; font-size: 12px; color: #666; margin-top: 30px;}
+table.personnelTable tr td{width: 25%; line-height: 30px; text-align: center; padding-bottom: 40px;}
+table.personnelTable tr td:first-child{font-size: 14px; font-weight: bold; text-align: left;}
+table.personnelTable tr td:last-child{text-align: right;}
+
+/*仓库资源*/
+.CKZY{margin-top: 10px; overflow-x: auto;}
+.CKZY table{width: 100%; min-width: 660px; font-size: 14px; color: #666; text-align: center;}
+.CKZY table thead tr th{font-weight: normal; text-align: center; line-height: 30px;}
+.CKZY table tbody tr td{font-size: 20px; line-height: 50px;}
+
+
+
+
+/*tab标签按钮*/
+ul.tabButtons{position: absolute; right: 20px; top: 25px; border: 0;}
+ul.tabButtons li{}
+ul.tabButtons li a{margin-left: 8px; border: 1px solid #fff; border-radius: 4px; font-size: 12px; padding: 4px 10px; color: white;}
+ul.tabButtons li a:hover{background-color: transparent;}
+
+.gCard.bg-white ul.tabButtons a{border-color: #dfdfdf; color: #666;}
+.gCard.bg-white ul.tabButtons li.active a{border-color: #e51c23; color: #e51c23;}
+
+
+
+/*色块*/
+.bg-white{background-color: white;}
+.bg-b81c22{background-color: #b81c22;}
+.bg-fbfbfb{background-color: #fbfbfb;}
+.bg-gradient-f18999{background: linear-gradient(to right, #f18999, #ec6d82);}
+.bg-gradient-71cae8{background: linear-gradient(to right, #71cae8, #59add2);}
+.bg-gradient-cbd191{background: linear-gradient(to right, #cbd191, #abb679);}
+.bg-gradient-81d9d0{background: linear-gradient(to right, #81d9d0, #0bcdaf);}
+
+
+
+/*边框色*/
+.bd-e6e6e6{border: 1px solid #e6e6e6;}
+.bd-dfdfdf{border: 1px solid #dfdfdf;}
+
+
+
+
+
+.radioBox{position: absolute; left: 0; right: 0; top: 80px; margin: auto; z-index: 99; text-align: center;}
+.radioBox .reviseRadio{display: inline-block; margin-left: 36px;}
+
+/*****对build.css单选框的修改****/
+.radio label {
+  padding-left: 10px;
+  line-height: 22px;
+}
+.radio label::before {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #cccccc;
+  outline: none;
+}
+.radio label::after {
+  width: 10px;
+  height: 10px;
+  left: 7px;
+  top: 7px;
+  outline: none;
+}
+.radio input[type="radio"]:checked + label{
+	color: #e51c23;
+	outline: none;
+}
+.radio input[type="radio"]{
+	z-index: -1;
+}
+.radio-danger input[type="radio"] + label::after {
+  background-color: #e51c23;
+  outline: none;
+}
+.radio-danger input[type="radio"]:checked + label::before {
+  border-color: #e51c23;
+  outline: none;
+}
+.radio-danger input[type="radio"]:checked + label::after {
+  background-color: #e51c23;
+  outline: none;
+}
+
+
+
+
+@media(min-width:1200px) and (max-width:1560px){
+	.YWZ_half{width: 50%;}
+}
+
+@media(min-width:1200px) and (max-width:1500px){
+	.gCard.bg-white .detail{max-width: 125px; margin-top: 5px; margin-right: 10px;}
+	.gCard.bg-white .detail p{line-height: 20px;}
+}
+
+@media(min-width:1500px){
+	.gCard.bg-white .detail{max-width: 255px; margin-top: 20px;}
+	.gCard.bg-white .detail p{line-height: 22px;}
+}
+
+@media (min-width:1360px) and (max-width:1900px){
+	.gCard .detail{max-width: 125px; margin-top: 5px;}
+	.gCard .detail p{line-height: 20px;}
+}
+
+@media (min-width:1200px) and (max-width:1360px){
+	.half{width: 50%;}
+	.whole{width: 100%;}
+}
+
+@media (min-width:992px) and (max-width:1080px){
+	.col-md-6.half{width: 100%;}
+}
+@media (min-width:1200px) and (max-width:1380px){
+	.WLCB_month > ul li:nth-child(even){float: left;}
+}
+@media (max-width:1200px){
+	.minh640{min-height:inherit;}
+}
+@media (min-width:1200px) and (max-width:1645px){
+	.minh640{min-height: 620px;}
+}
+
+
+
+

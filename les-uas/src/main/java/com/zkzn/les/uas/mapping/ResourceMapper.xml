@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.uas.dao.ResourceDao">
+<insert id="saveResource" parameterType="com.zkzn.les.uas.pojo.Resource">
+	<selectKey keyProperty="id" keyColumn="id" resultType="java.lang.String" order="BEFORE">
+		select  replace(uuid(),'-','') from dual
+	</selectKey>
+	insert into t_resource
+	<trim prefix="(" suffix=")" prefixOverrides=",">
+		id
+		<if test="resourceName !=null and '' !=resourceName">,resource_name</if>
+		<if test="resourceDesc !=null and '' !=resourceDesc">,resource_desc</if>
+		<if test="resourceType !=null and '' !=resourceType">,resource_type</if>
+		<if test="resourceParentId !=null and '' !=resourceParentId">,resource_parent_id</if>
+		<if test="resourceUrl !=null and '' !=resourceUrl">,resource_url</if>
+		<if test="resourceIcon !=null and '' !=resourceIcon">,resource_icon</if>
+		<if test="resourceAttach !=null and '' !=resourceAttach">,resource_attach</if>
+		<if test="resourceStatus !=null">,resource_status</if>
+		<if test="resourceCode !=null and '' !=resourceCode">,resource_code</if>
+		<if test="resourceOrderNo !=null">,resource_order_no</if>
+		<if test="resourceNum !=null">,resource_num</if>
+
+	</trim>
+	<trim prefix="values (" suffix=")" prefixOverrides="," >
+		#{id, jdbcType=VARCHAR}
+		<if test="resourceName !=null and '' !=resourceName">,#{resourceName}</if>
+		<if test="resourceDesc !=null and '' !=resourceDesc">,#{resourceDesc}</if>
+		<if test="resourceType !=null and '' !=resourceType">,#{resourceType}</if>
+		<if test="resourceParentId !=null and '' !=resourceParentId">,#{resourceParentId}</if>
+		<if test="resourceUrl !=null and '' !=resourceUrl">,#{resourceUrl}</if>
+		<if test="resourceIcon !=null and '' !=resourceIcon">,#{resourceIcon}</if>
+		<if test="resourceAttach !=null and '' !=resourceAttach">,#{resourceAttach}</if>
+		<if test="resourceStatus !=null ">,#{resourceStatus}</if>
+		<if test="resourceCode !=null and '' !=resourceCode">,#{resourceCode}</if>
+		<if test="resourceOrderNo !=null">,#{resourceOrderNo}</if>
+		<if test="resourceNum !=null">,#{resourceNum}</if>
+	</trim>
+</insert>
+<delete id="removeResource">
+<if test="list.size()>0">
+	delete from  t_resource  where
+	<foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+		id=#{item}
+	</foreach>
+	</if>
+</delete>
+<update id="updateResource" parameterType="com.zkzn.les.uas.pojo.Resource">
+	update t_resource
+	<trim prefix="set" prefixOverrides=",">
+		<if test="resourceName !=null and '' !=resourceName">,resource_name=#{resourceName}</if>
+		<if test="resourceDesc !=null and '' !=resourceDesc">,resource_desc=#{resourceDesc}</if>
+		<if test="resourceType !=null and '' !=resourceType">,resource_type=#{resourceType}</if>
+		<if test="resourceParentId !=null and '' !=resourceParentId">,resource_parent_id=#{resourceParentId}</if>
+		<if test="resourceUrl !=null and '' !=resourceUrl">,resource_url=#{resourceUrl}</if>
+		<if test="resourceIcon !=null and '' !=resourceIcon">,resource_icon=#{resourceIcon}</if>
+		<if test="resourceAttach !=null and '' !=resourceAttach">,resource_attach=#{resourceAttach}</if>
+		<if test="resourceStatus !=null">,resource_status=#{resourceStatus}</if>
+		<if test="resourceCode !=null and '' !=resourceCode">,resource_code=#{resourceCode}</if>
+		<if test="resourceOrderNo !=null">,resource_order_no=#{resourceOrderNo}</if>
+		<if test="resourceNum !=null">,resource_num=#{resourceNum}</if>
+	</trim>
+	where id=#{id}
+</update>
+<select id="listresource" parameterType="com.zkzn.les.uas.pojo.Resource" resultMap="baseResource">
+	select * from t_resource where 1=1
+	<if test="resourceName !=null and '' !=resourceName">and resource_name=#{resourceName}</if>
+	<if test="resourceDesc !=null and '' !=resourceDesc">and resource_desc=#{resourceDesc}</if>
+	<if test="resourceType !=null and '' !=resourceType">and resource_type=#{resourceType}</if>
+	<if test="resourceParentId !=null and '' !=resourceParentId">and resource_parent_id=#{resourceParentId}</if>
+	<if test="resourceUrl !=null and '' !=resourceUrl">and resource_url=#{resourceUrl}</if>
+	<if test="resourceIcon !=null and '' !=resourceIcon">and resource_icon=#{resourceIcon}</if>
+	<if test="resourceAttach !=null and '' !=resourceAttach">and resource_attach=#{resourceAttach}</if>
+	<if test="resourceStatus !=null and '' !=resourceStatus">and resource_status=#{resourceStatus}</if>
+	order by resource_parent_id desc,resource_order_no ASC
+	<if test="sortColums !=null and  '' !=sortColums">, ${sortColums}</if>
+
+</select>
+<select id="getById" resultMap="baseResource">
+	select * from t_resource where id=#{id}
+</select>
+
+<select id="listByParentId" resultMap="baseResource">
+	select * from t_resource where resource_parent_id=#{parentId}
+</select>
+<select id="getByResourceName" resultMap="baseResource">
+	select * from t_resource where 1=1 and (resource_type='0' or resource_type='1')
+	<if test="resourceName !=null and '' !=resourceName">and resource_name=#{resourceName}</if>
+	<if test="id !=null and '' !=id">and id!=#{id}</if>
+</select>
+<select id="listResourceByUserId" resultMap="baseResource">
+	select * from t_resource r where exists (
+   select res_id from ( select res_id from t_privilege p where exists (
+    select role_id from t_user_role u where u.role_id=p.role_id and u.user_id=#{userId})
+    )  pr where pr.res_id=r.id and r.resource_type=#{type}
+	<if test="status !=null">
+		and r.resource_status=#{status}
+	</if>
+	<if test="attach !=null and ''!= attach">
+		and resource_attach=#{attach}
+	</if>
+	)  order by resource_parent_id,resource_order_no ASC
+</select>
+
+	<select id="listResourceByAdmin" resultMap="baseResource">
+		select * from t_resource r
+			where r.RESOURCE_ATTACH=#{attach}
+		  order by resource_parent_id,resource_order_no ASC
+	</select>
+
+<select id="listResourceByUrl" resultMap="baseResource">
+	select * from t_resource where resource_url=#{url}
+</select>
+<select id="listResourceByType" resultMap="baseResource">
+	select * from t_resource where resource_type=#{type}
+	<if test="status !=null">
+		and resource_status=#{status}
+	</if>
+	<if test="attach !=null and ''!= attach">
+		and resource_attach=#{attach}
+	</if>
+	order by resource_parent_id,resource_order_no ASC
+</select>
+<resultMap type="com.zkzn.les.uas.pojo.Resource" id="baseResource">
+	<result property="resourceName" column="resource_name"/>
+	<result property="resourceDesc" column="resource_desc"/>
+	<result property="resourceType" column="resource_type"/>
+	<result property="resourceParentId" column="resource_parent_id"/>
+	<result property="resourceUrl" column="resource_url"/>
+	<result property="resourceIcon" column="resource_icon"/>
+	<result property="resourceAttach" column="resource_attach"/>
+	<result property="resourceStatus" column="resource_status"/>
+	<result property="resourceCode" column="resource_code"/>
+	<result property="resourceOrderNo" column="resource_order_no"/>
+	<result property="resourceNum" column="resource_num"/>
+</resultMap>
+
+</mapper>

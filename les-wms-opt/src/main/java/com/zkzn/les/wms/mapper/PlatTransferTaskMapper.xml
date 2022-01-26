@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.dao.PlatTransferTaskDao">
+    <insert id="savePlatTransferInfo" useGeneratedKeys="true" keyColumn="id" keyProperty="id"
+            parameterType="java.util.Map">
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_transfer_task(
+        ARRIVAL_CODE,
+        ORDER_CODE,
+        INSPECTION_TASK_ID,
+        TRANSFER_TASK_CODE,
+        STORAGE_LOCATION,
+        WAREHOUSE_CODE,
+        WAREHOUSE_NAME
+        )values (#{arrivalCode,jdbcType=VARCHAR}, #{orderCode,jdbcType=VARCHAR},
+        #{inspectionTaskId},
+        #{transferTaskCode,jdbcType=VARCHAR},#{storageLocation,jdbcType=VARCHAR},
+        #{warehouseCode,jdbcType=VARCHAR},#{warehouseName,jdbcType=VARCHAR})
+    </insert>
+
+    <insert id="savePlatTransferDetailInfos">
+        INSERT INTO t_transfer_task_detail
+        (
+        <if test="materialCode !=null and '' !=materialCode">MATERIAL_CODE</if>
+        <if test="materialDesc !=null and '' !=materialDesc">,MATERIAL_DESC</if>
+        <if test="materialUnit !=null and '' !=materialUnit">,MATERIAL_UNIT</if>
+        <if test="materialNum !=null">,MATERIAL_NUM</if>
+        <if test="batchNo !=null and '' !=batchNo">,BATCH_NO</if>
+        <if test="inspectionTaskCode !=null and '' !=inspectionTaskCode">,INSPECTION_TASK_CODE</if>
+        <if test="transferCode !=null ">,TRANSFER_CODE</if>
+        <if test="transferTaskId !=null ">,TRANSFER_TASK_ID</if>
+        <if test="carrierId !=null and '' !=carrierId">,CARRIER_ID</if>
+        <if test="carrierCode !=null and '' !=carrierCode">,CARRIER_CODE</if>
+        <if test="qualifiedNum !=null ">,QUALIFIED_NUM</if>
+        <if test="unQualifiedNum !=null ">,UNQUALIFIED_NUM</if>
+        <if test="orderCode !=null and '' !=orderCode">,ORDER_CODE</if>
+        <if test="shipperCode !=null and '' != shipperCode ">,SHIPPER_CODE</if>
+        <if test="shipperName !=null and '' != shipperName ">,SHIPPER_NAME</if>
+        <if test="stationCode !=null and '' != stationCode ">,STATION_CODE</if>
+        <if test="inspectionPositionCode !=null and '' != inspectionPositionCode ">,INSPECTION_POSITION_CODE</if>
+        <if test="inspectionPositionId !=null and '' != inspectionPositionId ">,INSPECTION_POSITION_ID</if>
+        )
+        VALUES
+        (
+        <if test="materialCode !=null and '' !=materialCode">#{materialCode}</if>
+        <if test="materialDesc !=null and '' !=materialDesc">,#{materialDesc}</if>
+        <if test="materialUnit !=null and '' !=materialUnit">,#{materialUnit}</if>
+        <if test="materialNum !=null">,#{materialNum}</if>
+        <if test="batchNo !=null and '' !=batchNo">,#{batchNo}</if>
+        <if test="inspectionTaskCode !=null and '' !=inspectionTaskCode">,#{inspectionTaskCode}</if>
+        <if test="transferCode !=null ">,#{transferCode}</if>
+        <if test="transferTaskId !=null ">,#{transferTaskId}</if>
+        <if test="carrierId !=null and '' !=carrierId">,#{carrierId}
+        </if>
+        <if test="carrierCode !=null and '' !=carrierCode">,#{carrierCode}</if>
+        <if test="qualifiedNum !=null ">,#{qualifiedNum}</if>
+        <if test="unQualifiedNum !=null ">,#{unQualifiedNum}</if>
+
+        <if test="orderCode !=null and '' !=orderCode">,#{orderCode}</if>
+        <if test="shipperCode !=null and '' != shipperCode ">,#{shipperCode}</if>
+        <if test="shipperName !=null and '' != shipperName ">,#{shipperName}</if>
+        <if test="stationCode !=null and '' != stationCode ">,#{stationCode}</if>
+        <if test="inspectionPositionCode !=null and '' != inspectionPositionCode ">,#{inspectionPositionCode}</if>
+        <if test="inspectionPositionId !=null and '' != inspectionPositionId ">,#{inspectionPositionId}</if>
+        )
+    </insert>
+    <select id="listPlatTransferInfos" resultType="java.util.Map">
+        SELECT
+        t.ID AS "id",
+        t.ARRIVAL_CODE AS "arrivalCode",
+        t.CREATE_TIME AS "createTime",
+        t.FINISH_TIME AS "finishTime",
+        t.ORDER_CODE AS "orderCode",
+        t.INSPECTION_TASK_ID AS "inspectionTaskId",
+        t.STATUS AS "status",
+        t.TRANSFER_TASK_CODE AS "transferTaskCode",
+        (select count(0) from t_transfer_task_detail d where d.TRANSFER_TASK_ID = t.id) AS "materialType"
+        FROM t_transfer_task t
+        <where>
+            <if test="id != null">
+                id = #{transferId}
+            </if>
+            <if test="arrivalCode != null and '' != arrivalCode">
+                AND ARRIVAL_CODE = #{arrivalCode}
+            </if>
+            <if test="orderCode != null and '' != orderCode">
+                AND ORDER_CODE = #{orderCode}
+            </if>
+            <if test="status != null ">
+                AND STATUS = #{status}
+            </if>
+            <if test="ltStatus != null">
+                AND status <![CDATA[ <= ]]> #{ltStatus}
+            </if>
+            <if test="gtStatus != null">
+                AND status <![CDATA[ >= ]]> #{gtStatus}
+            </if>
+            <if test="warehouseCode != null">
+                AND warehouse_code = #{warehouseCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="listPlatTransferDetailInfos" resultType="java.util.Map">
+        SELECT
+        ttd.ID AS "transferDetailId",
+        CARRIER_ID AS "carrierId",
+        CARRIER_CODE AS "carrierCode",
+        NEW_CARRIER_ID AS "newCarrierId",
+        NEW_CARRIER_CODE AS "newCarrierCode",
+        ttd.MATERIAL_CODE AS "materialCode",
+        ttd.MATERIAL_NUM AS "materialNum",
+        ttd.MATERIAL_DESC AS "materialDesc",
+        ttd.MATERIAL_UNIT AS "materialUnit",
+        ttd.BATCH_NO AS "batchNo",
+        INSPECTION_DETAIL_ID AS "inspectionDetailId",
+        INSPECTION_TASK_CODE AS "inspectionTaskCode",
+        ttd.TRANSFER_TASK_CODE AS "transferTaskCode",
+        ttd.STATUS AS "status",
+        TRANSFER_TASK_ID AS "transferTaskId",
+        tpt.order_code AS "orderCode",
+        tpt.id AS "transferTaskId",
+        ttd.shipper_code AS "shipperCode",
+        ttd.shipper_name AS "shipperName",
+        ttd.UNQUALIFIED_NUM AS "unQualifiedNum",
+        ttd.QUALIFIED_NUM AS "qualifiedNum",
+        tpt.STORAGE_LOCATION AS "storageLocation",
+        ttd.INSPECTION_POSITION_ID AS "inspectionPositionId",
+        tm.IS_KEY AS "isKey"
+        FROM t_transfer_task_detail ttd
+        LEFT JOIN t_transfer_task tpt on tpt.id = TRANSFER_TASK_ID
+        LEFT JOIN t_material tm on ttd.MATERIAL_CODE = tm.MATERIAL_CODE
+        <where>
+            <if test="transferDetailId != null">
+                ttd.id = #{transferDetailId}
+            </if>
+            <if test="transferTaskId != null">
+                AND ttd.TRANSFER_TASK_ID = #{transferTaskId}
+            </if>
+            <if test="ltStatus != null">
+                AND status <![CDATA[ <= ]]> #{ltStatus}
+            </if>
+            <if test="gtStatus != null">
+                AND status <![CDATA[ >= ]]> #{gtStatus}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <update id="updatePlatTransferDetailInfo">
+        UPDATE t_transfer_task_detail
+        <set>
+            <if test="status != null ">
+                status=#{status}
+            </if>
+            <if test="transferNum != null ">
+                ,TRANSFER_NUM=#{transferNum}
+            </if>
+            <if test="transferTime != null ">
+                ,TRANSFER_TIME=#{transferTime}
+            </if>
+            <if test="newCarrierId != null ">
+                ,NEW_CARRIER_ID=#{newCarrierId}
+            </if>
+            <if test="newCarrierCode != null ">
+                ,NEW_CARRIER_CODE=#{newCarrierCode}
+            </if>
+        </set>
+        WHERE id = #{transferDetailId}
+    </update>
+
+    <update id="updatePlatTransferInfo">
+        UPDATE t_transfer_task
+        <set>
+            <if test="status != null ">
+                status=#{status}
+            </if>
+        </set>
+        WHERE id = #{transferTaskId}
+    </update>
+</mapper>

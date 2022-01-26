@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.stock.dao.MaterialStorageBinDao">
+    <update id="updateMaterialStorageBinStatus">
+        update t_material_storage_bin
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="STOCK_STATUS=case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.storageBinId!='' and item.storageBinId !=null ">
+                        when id=#{item.storageBinId} then  #{changStatus}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.storageBinId}
+        </foreach>
+    </update>
+
+    <insert id="saveBinStorageBinRecord">
+        INSERT INTO t_bin_in_out_record(MATERIAL_CODE,MATERIAL_DESC,FACTORY,
+        STORAGE_LOCATION,WAREHOUSE_CODE,WAREHOUSE_NAME,STOCK_TYPE,
+        BATCH_NO,SUPPLIER_CODE,SUPPLIER_NAME,CUSTOMER_CODE,CUSTOMER_NAME,
+        POSITION_CODE,STORAGE_BIN_ID,CHANGE_TIME,CHANGE_TYPE,STOCK_STATUS,CHANGE_NUM,CHANGE_STATUS)
+        SELECT MATERIAL_CODE,MATERIAL_DESC,FACTORY,STORAGE_LOCATION,WAREHOUSE_CODE,WAREHOUSE_NAME,
+        STOCK_TYPE,BATCH_NO,SUPPLIER_CODE,SUPPLIER_NAME,CUSTOMER_CODE,CUSTOMER_NAME,POSITION_CODE,ID AS STORAGE_BIN_ID,sysdate AS CHANGE_TIME,4 AS CHANGE_TYPE,STOCK_STATUS
+        ,STOCK_COUNT,#{changStatus} AS CHANGE_STATUS
+        FROM t_material_storage_bin  tmsb
+        WHERE tmsb.id in <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+        #{item.storageBinId}
+    </foreach>
+    </insert>
+</mapper>

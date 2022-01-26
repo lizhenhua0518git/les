@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.dao.InspectionTaskDao">
+    <insert id="saveInspectionInfo" useGeneratedKeys="true" keyColumn="id" keyProperty="id"
+            parameterType="java.util.Map">
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
+        INSERT INTO t_inspection_task(
+        BILL_CODE,
+        BILL_NAME,
+        ORDER_CODE,
+        STORAGE_LOCATION,
+        WAREHOUSE_NAME,
+        WAREHOUSE_CODE,
+        BILL_TYPE,
+        RECEIVE_ID,
+        ARRIVAL_ID,
+        FACTORY,INSPECTION_TASK_CODE,SHIPPER_NAME,SHIPPER_CODE,PURCHASE_CODE
+        )values (#{billCode,jdbcType=VARCHAR}, #{billName,jdbcType=VARCHAR},
+        #{orderCode,jdbcType=VARCHAR}, #{storageLocation,jdbcType=VARCHAR}, #{warehouseName,jdbcType=VARCHAR},
+        #{warehouseCode,jdbcType=VARCHAR}, #{billType},
+        #{receiveId}, #{arrivalId,jdbcType=VARCHAR},
+        #{factory},#{inspectionTaskCode},#{shipperName},#{shipperCode},#{purchaseCode})
+    </insert>
+
+    <insert id="saveInspectionDetailInfo">
+        <if test="list.size() > 0">
+
+            <foreach collection="list" item="item" index="index" separator=";">
+                INSERT INTO t_inspection_task_detail
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="item.materialCode !=null and '' !=item.materialCode">MATERIAL_CODE</if>
+                    <if test="item.materialDesc !=null and '' !=item.materialDesc">,MATERIAL_DESC</if>
+                    <if test="item.materialNum !=null and '' !=item.materialNum">,MATERIAL_NUM</if>
+                    <if test="item.materialUnit !=null and '' !=item.materialUnit">,MATERIAL_UNIT</if>
+                    <if test="item.inspectionNum !=null">,INSPECTION_NUM</if>
+                    <if test="item.batchNo !=null and '' !=item.batchNo">,BATCH_NO</if>
+                    <if test="item.storageLocation !=null and '' !=item.storageLocation">,STORAGE_LOCATION</if>
+                    <if test="item.qualifiedNum !=null ">,QUALIFIED_NUM</if>
+                    <if test="item.inspectionTaskCode !=null and '' !=item.inspectionTaskCode">,INSPECTION_TASK_CODE
+                    </if>
+                    <if test="item.itemNo !=null and '' !=item.itemNo">,ITEM_NO</if>
+                    <if test="item.inspectionTaskId !=null">,INSPECTION_TASK_ID</if>
+                    <if test="item.inspectionPositionId !=null and '' !=item.inspectionPositionId">
+                        ,INSPECTION_POSITION_ID
+                    </if>
+                    <if test="item.inspectionPositionCode !=null and '' !=item.inspectionPositionCode">
+                        ,INSPECTION_POSITION_CODE
+                    </if>
+                    <if test="item.receiveDetailId !=null ">
+                        ,RECEIVE_DETAIL_ID
+                    </if>
+                    <if test="item.shipperName !=null and '' !=item.shipperName">
+                        ,SHIPPER_NAME
+                    </if>
+                    <if test="item.shipperCode !=null and '' !=item.shipperCode">
+                        ,SHIPPER_CODE
+                    </if>
+                    <if test="item.stationCode !=null and '' !=item.stationCode">
+                        ,STATION_CODE
+                    </if>
+                </trim>
+                <trim prefix="values (" suffix=")" suffixOverrides=",">
+                    <if test="item.materialCode !=null and '' !=item.materialCode">#{item.materialCode}</if>
+                    <if test="item.materialDesc !=null and '' !=item.materialDesc">,#{item.materialDesc}</if>
+                    <if test="item.materialNum !=null and '' !=item.materialNum">,#{item.materialNum}</if>
+                    <if test="item.materialUnit !=null and '' !=item.materialUnit">,#{item.materialUnit}</if>
+                    <if test="item.inspectionNum !=null">,#{item.inspectionNum}</if>
+                    <if test="item.batchNo !=null and '' !=item.batchNo">,#{item.batchNo}</if>
+                    <if test="item.storageLocation !=null and '' !=item.storageLocation">,#{item.storageLocation}</if>
+                    <if test="item.qualifiedNum !=null ">,#{item.qualifiedNum}</if>
+                    <if test="item.inspectionTaskCode !=null and '' !=item.inspectionTaskCode">
+                        ,#{item.inspectionTaskCode}
+                    </if>
+                    <if test="item.itemNo !=null and '' !=item.itemNo">,#{item.itemNo}</if>
+                    <if test="item.inspectionTaskId !=null ">,#{item.inspectionTaskId}</if>
+                    <if test="item.inspectionPositionId !=null and '' !=item.inspectionPositionId">
+                        ,#{item.inspectionPositionId}
+                    </if>
+                    <if test="item.inspectionPositionCode !=null and '' !=item.inspectionPositionCode">
+                        ,#{item.inspectionPositionCode}
+                    </if>
+                    <if test="item.receiveDetailId !=null ">
+                        ,#{item.receiveDetailId}
+                    </if>
+                    <if test="item.shipperName !=null and '' !=item.shipperName">
+                        ,#{item.shipperName}
+                    </if>
+                    <if test="item.shipperCode !=null and '' !=item.shipperCode">
+                        ,#{item.shipperCode}
+                    </if>
+                    <if test="item.stationCode !=null and '' !=item.stationCode">
+                        ,#{item.stationCode}
+                    </if>
+                </trim>
+            </foreach>
+        </if>
+    </insert>
+
+    <select id="listInspectionInfo" resultType="java.util.Map">
+        SELECT
+        id AS "inspectionTaskId",
+        BILL_CODE AS "arrivalCode",
+        BILL_NAME AS "billName",
+        ORDER_CODE AS "orderCode",
+        STORAGE_LOCATION AS "storageLocation",
+        WAREHOUSE_NAME AS "warehouseName",
+        WAREHOUSE_CODE AS "warehouseCode",
+        INSPECTION_TASK_CODE AS "inspectionTaskCode",
+        BILL_TYPE AS "billType",
+        ARRIVAL_ID AS "arrivalId",
+        RECEIVE_ID AS "receiveId",
+        FACTORY AS "factory",
+        STATUS AS "status",
+        INSPECTION_TOTAL_TIME AS "inspectionTotalTime",
+        INSPECTION_END_TIME AS "inspectionEndTime",
+        CREATE_TIME AS "createTime",
+        INSPECTION_START_TIME AS "inspectionStartTime",
+        t.SHIPPER_NAME AS "shipperName",
+        t.SHIPPER_CODE AS "shipperCode",
+        (select count(0) from t_inspection_task_detail d where d.INSPECTION_TASK_ID = t.id) AS "materialType"
+        FROM t_inspection_task t
+        <where>
+            <if test="inspectionId != null">
+                id = #{inspectionId}
+            </if>
+            <if test="ltStatus != null">
+                AND status <![CDATA[ <= ]]> #{ltStatus}
+            </if>
+            <if test="gtStatus != null">
+                AND status <![CDATA[ >= ]]> #{gtStatus}
+            </if>
+            <if  test="warehouseCode != null">
+                AND warehouse_code = #{warehouseCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="listInspectionDetailInfo" resultType="java.util.Map">
+        SELECT
+        titd.ID AS "inspectionDetailId",
+        titd.MATERIAL_CODE AS "materialCode",
+        titd.MATERIAL_DESC AS "materialDesc",
+        titd.MATERIAL_UNIT AS "materialUnit",
+        titd.MATERIAL_NUM AS "materialNum",
+        titd.INSPECTION_NUM AS "inspectionNum",
+        titd.QUALIFIED_NUM AS "qualifiedNum",
+        titd.UNQUALIFIED_NUM AS "unQualifiedNum",
+        titd.BATCH_NO AS "batchNo",
+        titd.STORAGE_LOCATION AS "storageLocation",
+        titd.FACTORY AS "factory",
+        titd.STATUS AS "status",
+        titd.INSPECTION_RESULT AS "inspectionResult",
+        titd.PLAT_TRANSFER_STATUS AS "splatStatus",
+        titd.INSPECTION_NAME AS "inspectionName",
+        titd.INSPECTION_POSITION_ID AS "inspectionPositionId",
+        titd.INSPECTION_POSITION_CODE AS "inspectionPositionCode",
+        titd.INSPECTION_TASK_CODE AS "inspectionTaskCode",
+        titd.ITEM_NO AS "itemNo",
+        titd.INSPECTION_TASK_ID AS "inspectionId",
+        titd.CREATE_TIME AS "createTime",
+        titd.REMARKS AS "remark",
+        tit.WAREHOUSE_NAME AS "warehouseName",
+        tit.WAREHOUSE_CODE AS "warehouseCode",
+        titd.SHIPPER_CODE AS "shipperCode",
+        titd.SHIPPER_NAME AS "shipperName",
+        titd.STATION_CODE AS "stationCode",
+        tit.INSPECTION_START_TIME AS "inspectionStartTime",
+        tit.BILL_CODE AS "arrivalCode",
+        trc.CARRY_NUMBER AS "carrierNum",
+        trc.CARRIER_CODE AS "carrierCode",
+        trc.CARRIER_ID AS "carrierId",
+        trc.CARRIER_TYPE AS "carrierType"
+        FROM t_inspection_task_detail titd
+        LEFT JOIN t_inspection_task tit on tit.id = titd.INSPECTION_TASK_ID
+        LEFT JOIN t_receive_carrier trc on trc.RECEIVE_DETAIL_ID = titd.RECEIVE_DETAIL_ID
+        <where>
+            <if test=" inspectionDetailId != null ">
+                titd.id = #{inspectionDetailId}
+            </if>
+            <if test=" inspectionId != null">
+                AND titd.INSPECTION_TASK_ID = #{inspectionId}
+            </if>
+            <if test="ltStatus != null">
+                AND titd.status <![CDATA[ <= ]]> #{ltStatus}
+            </if>
+            <if test="grStatus != null">
+                AND titd.status <![CDATA[ >= ]]> #{gtStatus}
+            </if>
+            <if test="status != null">
+                AND titd.status = #{status}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="saveInspectionAbnormalInfo">
+        insert into t_inspection_abnormal (INSPECTION_TASK_ID,
+                                           BATCH_NO,
+                                           CREATER_ID,
+                                           CREATE_TIME,
+                                           CREATER_NAME,
+                                           REMARK,
+                                           MATERIAL_CODE,
+                                           MATERIAL_DESC,
+                                           MATERIAL_UNIT,
+                                           MATERIAL_NUM,
+                                           ABNORMAL_REASON)
+        values (#{inspectionId},
+                #{batchNo},
+                #{createrId},
+                #{createTime,jdbcType=TIMESTAMP},
+                #{createrName},
+                #{remark,jdbcType=VARCHAR},
+                #{materialCode,jdbcType=VARCHAR},
+                #{materialDesc,jdbcType=VARCHAR},
+                #{materialUnit,jdbcType=VARCHAR},
+                #{materialNum},
+                #{abnormalReason})
+    </insert>
+
+    <update id="updateInspectionInfo">
+        UPDATE t_inspection_task
+        <set>
+            <if test="status != null ">
+                status=#{status}
+            </if>
+            <if test="inspectionEndTime != null ">
+                ,INSPECTION_END_TIME=#{inspectionEndTime}
+            </if>
+            <if test="inspectionTotalTime != null ">
+                ,INSPECTION_TOTAL_TIME=#{inspectionTotalTime}
+            </if>
+            <if test="inspectionStartTime != null ">
+                ,INSPECTION_START_TIME=#{inspectionStartTime}
+            </if>
+        </set>
+        WHERE id = #{inspectionId}
+    </update>
+
+    <update id="updateInspectionDetailInfos">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update t_inspection_task_detail
+            <set>
+                <if test="item.status != null ">
+                    status =#{item.status},
+                </if>
+
+                <if test="item.inspectionResult != null">
+                    INSPECTION_RESULT = #{item.inspectionResult}
+                </if>
+            </set>
+            where id = #{item.inspectionDetailId}
+        </foreach>
+    </update>
+
+    <update id="updateInspectionDetailInfo">
+        update t_inspection_task_detail
+        <set>
+            <if test="status != null ">
+                status =#{status}
+            </if>
+            <if test="inspectionResult != null">
+                ,INSPECTION_RESULT = #{inspectionResult}
+            </if>
+            <if test="platTransferStatus != null">
+                ,PLAT_TRANSFER_STATUS = #{platTransferStatus}
+            </if>
+            <if test="inspectionResult != null">
+                ,INSPECTION_RESULT = #{inspectionResult}
+            </if>
+            <if test="qualifiedNum != null">
+                ,QUALIFIED_NUM = #{qualifiedNum}
+            </if>
+            <if test="unQualifiedNum != null">
+                ,UNQUALIFIED_NUM = #{unQualifiedNum}
+            </if>
+            <if test="inspectionNum != null">
+                ,INSPECTION_NUM = #{inspectionNum}
+            </if>
+            <if test="inspectionTime != null">
+                ,INSPECTION_TIME = #{inspectionTime}
+            </if>
+        </set>
+        <where>
+            <if test="inspectionId != null ">
+                INSPECTION_TASK_ID = #{inspectionId}
+            </if>
+            <if test="inspectionDetailId != null">
+               AND id = #{inspectionDetailId}
+            </if>
+
+        </where>
+
+    </update>
+</mapper>

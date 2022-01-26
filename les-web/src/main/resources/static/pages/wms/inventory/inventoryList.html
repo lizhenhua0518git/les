@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>仓库库存列表</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+</head>
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="showDetail">查看</a>
+</script>
+<body id="bodyDiv">
+
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库名称</label>
+                <div class="layui-input-block layui-form">
+                    <select id="warehouseCode" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">物料名称</label>
+                <div class="layui-input-block">
+                    <input type="text" id="materialDesc" class="layui-input" placeholder="请输入物料名称">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">客户名称</label>
+                <div class="layui-input-block layui-form">
+                    <select id="clientName" xm-select="clientNameSelect" xm-select-show-count="1">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">批次号</label>
+                <div class="layui-input-block layui-form">
+                    <input type="text" class="layui-input" id="batchNo" placeholder="请输入批次号">
+                </div>
+            </div>
+            <div class="layui-col-md2" style="float: right">
+                <div class="layui-btn-container" style="text-align: left;">
+                    {{# if(d.search==null || d.search=="true"){ }}
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search"
+                            type="button"><i class="layui-icon layui-icon-search"></i>查询
+                    </button>
+                    <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset"
+                            type="button"><i class="layui-icon layui-icon-reset"></i>重置
+                    </button>
+                    {{# } }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 按钮区域
+<div class="layui-fluid-table">
+    <div class="layui-row layui-form" style="margin-bottom: 0">
+        <div class="layui-col-md6">
+            <div class="layui-btn-container">
+
+                {{# if(d.add==null || d.add=="true"){ }}
+            <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>添加委外库存</button>
+             {{# } }}
+            </div>
+        </div>
+    </div>
+</div> -->
+    <table id="queryStore" lay-filter="orderTypeTabF"></table>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/clientManage.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    var contextPath = config.stockConfig.contextPath;
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var oldData;
+    var active = {
+        add: function (othis) {
+            var checkStatus = table.checkStatus('warehouseTabId');
+            oldData = checkStatus.data;
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                , title: '添加委外库存'
+                , maxmin: false
+                , area: ['600px', '500px']
+                , offset: type
+                , id: 'warehouseAdd' + type //防止重复弹出
+                , content: '/iles/pages/wms/inventory/addOtherInventory.html'
+                , shade: [0.8, '#393D49']
+            });
+        },
+        search: function (othis) {
+            //执行重载
+            table.reload('storeTabId', {
+                where: {
+                    materialDesc : $('#materialDesc').val(),
+                    warehouseCode : layui.formSelects.value('warehouseCodeSelect', 'valueStr'),
+                    batchNo : $('#batchNo').val(),
+                    clientName: layui.formSelects.value('clientNameSelect', 'valueStr'),
+                },
+                page: {"curr": 1}
+            });
+        },
+        reset: function (othis) {
+            $('#materialDesc').val("");
+            $('#batchNo').val("");
+            layui.formSelects.value('warehouseCodeSelect', []);
+            layui.formSelects.value('clientNameSelect', []);
+            form.render("select");
+        },
+        check: function (othis) {
+            var checkStatus = table.checkStatus('storeTabId');
+            oldData = checkStatus.data;
+            if (oldData.length <= 0) {
+                layer.alert('请选择要查看的行！', {icon: 2});
+                return;
+            } else if (oldData.length > 1) {
+                layer.alert('查看不能超过多行！', {icon: 2});
+                return;
+            }
+        }
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#queryStore',
+            id: 'storeTabId',
+            url: contextPath + 'storageBin/listMaterialInstock',
+            cols: [[
+                {type: 'numbers', title: '序号', width: 80},
+                {field: 'warehouseName', title: '仓库名称'},
+                {field: 'warehouseCode', title: '仓库编号'},
+                {field: 'clientName', title: '客户名称'},
+                {field: 'materialDesc', title: '物料名称'},
+                {field: 'materialUnit', title: '单位'},
+                {field: 'batchNo', title: '批次'},
+                {field: 'unlimitedNumber', title: '库存数量'},
+                {field: 'qualifiedType', title: '库存类型',templet(d){
+                    if(d.qualifiedType=='0'){
+                        return '合格';
+                    }else if(d.qualifiedType=='1') {
+                        return '不合格';
+                    }
+                }},
+                {field: 'createTime', title: '创建时间'},
+            ]],
+            page: {theme: '#008155'},
+            even: true,
+            done: function (res, page, count) {
+            }
+        });
+
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+        //加载仓库、库存地开始
+        initWarehouseMultiSelect("warehouseCode", "warehouseCodeSelect", 1, '');
+        initClientManageList("clientNameSelect",[]);
+
+        table.on('tool(orderTypeTabF)', function (obj) {
+            var eventName = obj.event;
+            var data = obj.data;
+            var idValue = data.id;
+            var id = "singleAllocateDetail";
+            var url = "/iles/pages/wms/inventory/inventoryListDetail.html?id=" + idValue;
+            var currHeight = parent.$(document).height();
+            if (eventName == "showDetail") {
+                parent.element.tabDelete('indexTab', id);
+                parent.element.tabAdd('indexTab', {
+                    title: "库存流水"
+                    ,
+                    content: ' <iframe id="' + id + '" frameborder="0"  src="' + url + '" width="100%" height="' + currHeight + 'px"></iframe>'
+                    ,
+                    id: id //实际使用一般是规定好的id，这里以时间戳模拟下
+                });
+                parent.element.tabChange('indexTab', id); //切换到：用户管理
+            }
+        });
+    }
+
+
+</script>
+</body>
+</html>

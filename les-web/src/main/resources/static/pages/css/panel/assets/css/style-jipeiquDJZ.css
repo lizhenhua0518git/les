@@ -1,0 +1,51 @@
+@charset "utf-8";
+/* CSS Document */
+body {
+    background: #052655;
+    text-align: center;
+    margin:0 auto;
+}
+
+h1{
+    font-size:4em;
+	color:#d9d9d9;
+	text-align:center;
+	margin-top:30px;
+	margin-bottom:10px;
+}
+
+.list-main{
+    font-size:30px;
+	color:#d9d9d9;
+}
+
+.table{
+    width:100%;
+    border: 1px solid #d9d9d9;
+}
+
+.tr, .td, .th {
+    font-size:21px;
+	color:#d9d9d9;
+    border: 1px solid #d9d9d9;
+	width:110px;
+	height:90px;
+	background-color:#1d3e63;
+	border-style:solid none solid solid;
+}
+
+.text-1{float:left}
+
+.left_tr .left_td {
+	font-size:17px;
+	color:#d9d9d9;
+    border: none;
+	width:130px;
+	height:35px;
+	text-align: left;
+}
+ td li{
+	font-size:21px;
+	color:#d9d9d9;
+}
+

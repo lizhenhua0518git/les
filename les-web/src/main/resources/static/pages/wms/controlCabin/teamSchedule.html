@@ -1,0 +1,370 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Access-Control-Allow-Origin" content="*" />
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-COMPATIBLE" content="IE=edge,chrome=1"/>
+<title>班组配送进度</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/controlCabin/progressView.css">
+</head>
+
+<body>
+<div id="bodyDiv">
+
+</div>
+
+ <script charset="utf-8" src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+ 
+ <script src="/iles/pages/wms/controlCabin/productPlanBoard/js/resetFontSize.js"></script>
+ 
+<script src="/iles/pages/wms/controlCabin/productPlanBoard/js/echarts.js"></script>
+<script type="text/html" id="bodyTpl">
+<div class="progressTop">
+	<div class="dateChoose">
+		<div class="_inline">
+			<label>需求日期</label>
+			<input type="text" name="day" id="day"  style="width:400px"/>
+		</div>
+	</div>
+	<div class="buttonGroup">
+		<button id="search" name="search">查询</button>
+		<button id="reset" name="reset">重置</button>			
+	</div>
+</div>
+<div class="container mt50 ml50 mr50">
+	<div id="orgName" class="tit"></div>
+	<div class="planeMenu">
+		<ul>
+			<li>
+				<h1>送达任务总数</h1>
+				<p id="sdNum" name="sdNum">0</p>
+			</li>
+			<li>
+				<h1>送达进度</h1>
+				<p id="sdPerCent" name="sdPerCent">0%</p>
+			</li>
+			<li>
+				<h1>未送达数量</h1>
+				<p id="wsdNum" name="wsdNum">0</p>
+			</li>
+			<li>
+				<h1>交接任务总数</h1>
+				<p id="jjNum" name="jjNum">0</p>
+			</li>
+			<li>
+				<h1>交接进度</h1>
+				<p id="jjPerCent" name="jjPerCent">0%</p>
+			</li>
+			<li>
+				<h1>未交接总数</h1>
+				<p id="wjjNum" name="wjjNum">0</p>
+			</li>
+		</ul>
+	</div>
+	<ul class="section section2 section3">
+		<li>
+			<div>
+				<ul class="asTable" id="sdjd">
+					<li>
+						<div>送达进度</div>
+						<div>完成占比</div>
+						<div>总数量</div>
+						<div>未完成</div>
+					</li>
+					<li>
+						<div></div>
+						<div>完成占比</div>
+						<div>总数量</div>
+						<div>未完成</div>
+					</li>
+					
+					
+				</ul>
+			</div>
+		</li>
+		<li>
+			<div>
+				<ul class="asTable" id='jjjd'>
+					<li>
+						<div>交接进度</div>
+						<div>完成占比</div>
+						<div>总数量</div>
+						<div>未完成</div>
+					</li>
+					<li>
+						<div></div>
+						<div>完成占比</div>
+						<div>总数量</div>
+						<div>未完成</div>
+					</li>
+				</ul>
+			</div>
+		</li>
+		<li>
+			<div>
+				<ul class="asTable" id="psjsjd">
+					<li>
+						<div>配送及时进度</div>
+						<div>完成占比</div>
+						<div>总数量</div>
+						<div>超时数</div>
+					</li>
+					<li>
+						<div></div>
+						<div>完成占比</div>
+						<div>总数量</div>
+						<div>超时数</div>
+					</li>
+					
+				</ul>
+			</div>
+		</li>
+		<li>
+			<div>
+				<ul class="asTable" id="gwqtjd">
+					<li>
+						<div>工位齐套进度</div>
+						<div>完成占比</div>
+						<div>总数量</div>
+						<div>未完成</div>
+					</li>
+					<li>
+						<div></div>
+						<div>完成占比</div>
+						<div>总数量</div>
+						<div>未完成</div>
+					</li>
+					
+				</ul>
+			</div>
+		</li>
+	</ul>
+</div>
+</script>
+<script>
+var contextPath = config.wmsConfig.contextPath;
+function loadding(){
+var $ = layui.$;
+var element = layui.element;
+var layer = layui.layer;
+var table = layui.table;
+var laydate = layui.laydate;
+var form = layui.form;
+$(function(){
+	var curDate = new Date();
+	curDate.setDate(curDate.getDate()+1);
+	var curDateStr = dateFtt("yyyy-MM-dd",curDate);
+	var defautDate = curDateStr+" - "+curDateStr;
+	//日期控件
+	laydate.render({
+		elem:"#day",
+		value: defautDate,
+		range: true
+	});
+	function dateFtt(fmt,date)   
+	{ //author: meizz   
+	  var o = {   
+	    "M+" : date.getMonth()+1,                 //月份   
+	    "d+" : date.getDate(),                    //日   
+	    "h+" : date.getHours(),                   //小时   
+	    "m+" : date.getMinutes(),                 //分   
+	    "s+" : date.getSeconds(),                 //秒   
+	    "q+" : Math.floor((date.getMonth()+3)/3), //季度   
+	    "S"  : date.getMilliseconds()             //毫秒   
+	  };   
+	  if(/(y+)/.test(fmt))   
+	    fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));   
+	  for(var k in o)   
+	    if(new RegExp("("+ k +")").test(fmt))   
+	  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
+	  return fmt;   
+	}
+	teamSchedule(defautDate);
+});
+
+function teamSchedule(day){
+	var beginDay = day.substring(0,10);
+	var endDay = day.substring(13); 
+	var url =contextPath+"teamSchedule/dayList?beginDay="+beginDay+"&endDay="+endDay;
+	$.post(url,function(map){
+		if(map.code==0){
+			if(map.data!=null){
+				$("#orgName").html(map.data.orgName);
+				$('#sdNum').html(map.data.count);
+				$('#sdPerCent').html(map.data.sdPerCent);
+				$('#wsdNum').html(map.data.wsdNum);
+				$('#jjNum').html(map.data.count);
+				$('#jjPerCent').html(map.data.jjPerCent);
+				$('#wjjNum').html(map.data.wjjNum);
+				if(map.data.sdList !=null&&map.data.sdList !=""){
+					var str ="<li><div>送达进度</div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+						str +="<li><div></div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+					for(var sdMap in map.data.sdList){
+						var gw = map.data.sdList[sdMap].stationCode;
+						var  zs = map.data.sdList[sdMap].count;
+	 					var  wcs = map.data.sdList[sdMap].sdNum;
+	 					var  wwcs = map.data.sdList[sdMap].wsdNum;
+	 					var wczb=(wcs/zs*100).toFixed(2);
+						str+="<li><div><label>"+gw+"</label>";
+						str+="<div class='customBar'><div class='layui-progress' lay-filter='sd_"+gw+"'><div class='layui-progress-bar'></div></div></div>";
+						str+="</div><div>"+wczb+"%</div><div>"+zs+"</div><div onclick=showDetail('"+gw+"','71') style='cursor: pointer;'>"+wwcs+"</div></li>";
+					}
+					$("#sdjd").html(str);
+					for(var sdMap in map.data.sdList){
+						var gw =map.data.sdList[sdMap].stationCode;
+						var wczb=(map.data.sdList[sdMap].sdNum/map.data.sdList[sdMap].count*100).toFixed(2);
+						element.progress('sd_'+gw, wczb+'%');
+					}
+				}else{
+					var str ="<li><div>送达进度</div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+						str +="<li><div></div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+					$("#sdjd").html(str);
+				}
+				
+				if(map.data.jjList !=null&&map.data.jjList !=""){
+					var str ="<li><div>交接进度</div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+						str +="<li><div></div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+					for(var jjMap in map.data.jjList){
+						var gw =map.data.jjList[jjMap].stationCode;
+						var  zs = map.data.jjList[jjMap].count;
+	 					var  wcs = map.data.jjList[jjMap].jjNum;
+	 					var  wwcs = map.data.jjList[jjMap].wjjNum;
+	 					var wczb=(wcs/zs*100).toFixed(2);
+						str+="<li><div><label>"+gw+"</label>";
+						str+="<div class='customBar'><div class='layui-progress' lay-filter='jj_"+gw+"'><div class='layui-progress-bar'></div></div></div>";
+						str+="</div><div>"+wczb+"%</div><div>"+zs+"</div><div onclick=showDetail('"+gw+"','80') style='cursor: pointer;'>"+wwcs+"</div></li>";
+					}
+					$("#jjjd").html(str);
+					for(var jjMap in map.data.jjList){
+						var gw =map.data.sdList[jjMap].stationCode;
+						var wczb=(map.data.sdList[jjMap].jjNum/map.data.sdList[jjMap].count*100).toFixed(2);
+						element.progress('jj_'+gw, wczb+'%');
+					}
+				}else{
+					var str ="<li><div>交接进度</div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+						str +="<li><div></div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+					$("#jjjd").html(str);
+				}
+				
+				if(map.data.qtList !=null&&map.data.qtList !=""){
+					var str ="<li><div>工位齐套进度</div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+						str +="<li><div></div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+					for(var i=0;i<map.data.qtList.length;i++){
+						var qt = map.data.qtList[i];
+						var  totalNum = qt.totalNum;
+	 					var  qtNum = qt.qtNum;
+	 					var  wqtNum = qt.wqtNum;
+	 					var wczb=(qtNum/totalNum*100).toFixed(2);
+						str+="<li><div><label>"+qt.gw+"</label>";
+						str+="<div class='customBar'><div class='layui-progress' lay-filter='qt_"+qt.gw+"'><div class='layui-progress-bar'></div></div></div>";
+						str+="</div><div>"+wczb+"%</div><div>"+totalNum+"</div><div>"+wqtNum+"</div></li>";
+					}
+					$("#gwqtjd").html(str);
+					for(var i=0;i<map.data.qtList.length;i++){
+						var qt = map.data.qtList[i];
+						var  totalNum = qt.totalNum;
+	 					var  qtNum = qt.qtNum;
+						var wczb=(qtNum/totalNum*100).toFixed(2);
+						element.progress('qt_'+qt.gw, wczb+'%');
+					}
+				}else{
+					var str ="<li><div>工位齐套进度</div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";
+					str +="<li><div></div><div>完成占比</div><div>总数量</div><div>未完成</div></li>";	
+					$("#gwqtjd").html(str);
+				}
+				
+				if(map.data.jsList !=null&&map.data.jsList !=""){
+					var str ="<li><div>配送及时进度</div><div>完成占比</div><div>总数量</div><div>超时数</div></li>";
+						str +="<li><div></div><div>完成占比</div><div>总数量</div><div>超时数</div></li>";	
+					for(var i=0;i<map.data.jsList.length;i++){
+						var js = map.data.jsList[i];
+						var  totalNum = js.totalNum;
+	 					var  jsNum = js.jsNum;
+	 					var  wjsNum = js.wjsNum;
+	 					var wczb=(jsNum/totalNum*100).toFixed(2);
+						str+="<li><div><label>"+js.gw+"</label>";
+						str+="<div class='customBar'><div class='layui-progress' lay-filter='js_"+js.gw+"'><div class='layui-progress-bar'></div></div></div>";
+						str+="</div><div>"+wczb+"%</div><div>"+totalNum+"</div><div onclick=showOverTime('"+js.gw+"','80') style='cursor: pointer;'>"+wjsNum+"</div></li>";
+					}
+					$("#psjsjd").html(str);
+					for(var i=0;i<map.data.jsList.length;i++){
+						var js = map.data.jsList[i];
+						var  totalNum = js.totalNum;
+	 					var  jsNum = js.jsNum;
+	 					var wczb=(jsNum/totalNum*100).toFixed(2);
+						element.progress('js_'+js.gw, wczb+'%');
+					}
+				}else{
+					var str ="<li><div>配送及时进度</div><div>完成占比</div><div>总数量</div><div>超时数</div></li>";
+						str +="<li><div></div><div>完成占比</div><div>总数量</div><div>超时数</div></li>";	
+					$("#psjsjd").html(str);
+				}
+				
+			}else{
+				$('#sdNum').html("0");
+				$('#sdPerCent').html("0%");
+				$('#wsdNum').html("0");
+				$('#jjNum').html("0");
+				$('#jjPerCent').html("0%");
+				$('#wjjNum').html("0");
+			}
+		}
+	});
+}
+function showDetail(stationCode,jobNode){
+	if(stationCode=="非工位"){
+		stationCode = "unStation";
+	}
+	var day = $("#day").val();
+	var beginDay = day.substring(0,10);
+	var endDay = day.substring(13); 
+	layer.open({
+        type: 2
+        ,title:'物料明细信息'
+        ,area: ['100%', '100%']
+        ,id: 'materialDetail' //防止重复弹出
+        ,content: "unFinshDetail.html?stationCode="+stationCode+"&jobNode="+jobNode+"&beginDay="+beginDay+"&endDay="+endDay
+        ,shade: 0 //不显示遮罩
+        ,yes: function(){
+          layer.closeAll();
+        }
+ 	 });
+}
+function showOverTime(stationCode,jobNode){
+	if(stationCode=="非工位"){
+		stationCode = "unStation";
+	}
+	var day = $("#day").val();
+	var beginDay = day.substring(0,10);
+	var endDay = day.substring(13); 
+	layer.open({
+        type: 2
+        ,title:'物料明细信息'
+        ,area: ['100%', '100%']
+        ,id: 'overTimeDetail' //防止重复弹出
+        ,content: "sendOverTimeDetail.html?stationCode="+stationCode+"&jobNode="+jobNode+"&beginDay="+beginDay+"&endDay="+endDay
+        ,shade: 0 //不显示遮罩
+        ,yes: function(){
+          layer.closeAll();
+        }
+ 	 });
+	
+}
+$("#search").click(function(){
+	  var day = $('#day').val();
+	  teamSchedule(day);
+});
+
+$("#reset").click(function(){
+	$('#day').val("");
+});
+
+}
+</script>
+</body>
+</html>

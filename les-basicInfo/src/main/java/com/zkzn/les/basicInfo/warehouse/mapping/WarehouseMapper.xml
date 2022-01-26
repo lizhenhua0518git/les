@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.warehouse.dao.WarehouseDao">
+	<select id="initWarehouseSelect" parameterType="com.zkzn.les.basicInfo.warehouse.pojo.WarehousePojo" resultType="com.zkzn.les.basicInfo.warehouse.pojo.WarehousePojo">
+		SELECT
+			 uo.WAREHOUSE_CODE AS "warehouseCode",
+			 uo.WAREHOUSE_NAME AS "warehouseName"
+		FROM
+			t_user_organization uo
+			LEFT JOIN t_warehouse w ON uo.WAREHOUSE_CODE = w.ORG_CODE
+			AND uo.WAREHOUSE_NAME = w.ORG_NAME
+			WHERE uo.USER_ID = #{belongUserId}
+	</select>
+
+	<insert id="saveWarehouse" parameterType="com.zkzn.les.basicInfo.warehouse.pojo.Warehouse">
+		<selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE">
+			select  replace(uuid(),'-','') from dual
+		</selectKey>
+		insert into t_warehouse
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			id,
+			<if test="orgCode !=null and ''!= orgCode">org_code,</if>
+			<if test="orgType !=null and ''!= orgType">org_type,</if>
+			<if test="orgName !=null and ''!= orgName">org_name,</if>
+			<if test="orgAddress !=null and ''!= orgAddress">org_address,</if>
+			<if test="status !=null">status,</if>
+			<if test="contacts !=null and ''!= contacts">contacts,</if>
+			<if test="phone !=null and ''!= phone">phone,</if>
+			<if test="createTime !=null ">create_time,</if>
+			<if test="createrId !=null and ''!= createrId">creater_id,</if>
+			<if test="createrName !=null and ''!= createrName">creater_name,</if>
+			 <if test="supplierCode !=null and ''!= supplierCode"> supplier_code,</if>
+            <if test="supplierName !=null and ''!= supplierName"> supplier_name ,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=VARCHAR},
+			<if test="orgCode !=null and ''!= orgCode">#{orgCode},</if>
+			<if test="orgType !=null and ''!= orgType">#{orgType},</if>
+			<if test="orgName !=null and ''!= orgName">#{orgName},</if>
+			<if test="orgAddress !=null and ''!= orgAddress">#{orgAddress},</if>
+			<if test="status !=null">#{status},</if>
+			<if test="contacts !=null and ''!= contacts">#{contacts},</if>
+			<if test="phone !=null and ''!= phone">#{phone},</if>
+			<if test="createTime !=null ">#{createTime},</if>
+		    <if test="createrId !=null and ''!= createrId">#{createrId},</if>
+			<if test="createrName !=null and ''!= createrName">#{createrName},</if>
+			<if test="supplierCode !=null and ''!= supplierCode">#{supplierCode},</if>
+            <if test="supplierName !=null and ''!= supplierName">#{supplierName}</if>
+		</trim>
+	</insert>
+
+	<delete id="deleteWarehouse">
+	<if test="list.size()>0">
+		delete from t_warehouse where
+		<foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+			id=#{item}
+		</foreach>
+	</if>
+	</delete>
+
+	<update id="updateWarehouse">
+		update t_warehouse
+		<trim prefix="set" prefixOverrides=",">
+			<if test="orgCode !=null and ''!= orgCode">,org_code = #{orgCode}</if>
+			<if test="orgType !=null and ''!= orgType">,org_type=#{orgType}</if>
+			<if test="orgName !=null and ''!= orgName">,org_name=#{orgName}</if>
+			<if test="orgAddress !=null and ''!= orgAddress">,org_address=#{orgAddress}</if>
+			<if test="status !=null">,status=#{status}</if>
+			<if test="contacts !=null and ''!= contacts">,contacts=#{contacts}</if>
+			<if test="phone !=null and ''!= phone">,phone=#{phone}</if>
+			 <if test="modifierId !=null and '' != modifierId">,modifier_id=#{modifierId}</if>
+             <if test="modifierName !=null and '' != modifierName">,modifier_name=#{modifierName}</if>
+             <if test="modifiedTime !=null">,modified_time=#{modifiedTime}</if>
+             <if test="supplierCode !=null and ''!= supplierCode">,supplier_code=#{supplierCode}</if>
+            <if test="supplierName !=null and ''!= supplierName">,supplier_name=#{supplierName}</if>
+
+		</trim>
+		where id=#{id}
+	</update>
+
+	<select id="listWarehouse" parameterType="com.zkzn.les.basicInfo.warehouse.pojo.Warehouse" resultType="com.zkzn.les.basicInfo.warehouse.pojo.Warehouse">
+		select * from t_warehouse
+		<where>
+			<if test="warehouse.orgCode !=null and ''!= warehouse.orgCode">  org_code like upper('%${warehouse.orgCode}%')</if>
+			<if test="warehouse.orgName !=null and ''!= warehouse.orgName">and org_name like '%${warehouse.orgName}%'</if>
+			<if test="warehouse.orgTypeName !=null and ''!= warehouse.orgTypeName">
+
+			  and org_type in
+			  <foreach item="item" index="index" collection="warehouse.orgTypeName.split(';')"  open="(" separator="," close=")">
+                #{item}
+             </foreach>
+
+			</if>
+
+
+			<if test="warehouse.status !=null">and status=#{warehouse.status}</if>
+        </where>
+        <if test="warehouse.sortColums !=null and  '' !=warehouse.sortColums">
+	            order by ${warehouse.sortColums}</if>
+	</select>
+
+	<select id="getWarehouseById"  resultType="com.zkzn.les.basicInfo.warehouse.pojo.Warehouse">
+		select * from t_warehouse where id=#{id}
+	</select>
+
+  <update id="changeStatus">
+    <if test="ids.size()>0">
+       update t_warehouse
+        <trim prefix="set" prefixOverrides=",">
+        <if  test="remark !=null and ''!= remark">,remark=#{remark}</if>
+        <if test="status !=null">,status=#{status}</if>
+        <if test="modifierId !=null and '' != modifierId">,modifier_id=#{modifierId}</if>
+        <if test="modifierName !=null and '' != modifierName">,modifier_name=#{modifierName}</if>
+        <if test="modifiedTime !=null">,modified_time=#{modifiedTime}</if>
+       </trim>
+       where
+        <foreach collection="ids" item="item" index="index" open="(" separator="or" close=")">
+            id=#{item}
+        </foreach>
+    </if>
+    </update>
+
+	<select id="countWarehouse" parameterType="com.zkzn.les.basicInfo.warehouse.pojo.Warehouse" resultType="int">
+
+	select count(0) from t_warehouse where org_code=#{orgCode} or  org_name=#{orgName}
+	</select>
+
+
+</mapper>

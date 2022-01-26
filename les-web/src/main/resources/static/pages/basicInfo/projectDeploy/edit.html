@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>新增项目余料配置</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="${ctx}/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="${ctx}/pages/css/layui_extend.css"  media="all">
+</head>
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+		<form class="layui-form" action="" lay-filter="projectDeployForm">
+			<div class="layui-form-item">
+			 	<div class="layui-inline">
+				    <label class="layui-form-label" style="width: 100px"><span style="color:red;">*</span>项目号</label>
+				    <div class="layui-input-block" style="padding-left:30px;">
+				      <input type="text" name="projectCode" id="projectCode" lay-verify="projectCode" autocomplete="off" placeholder="项目号" class="layui-input">
+				    </div>
+			 	</div>
+			 	 
+			</div>
+			<div class="layui-form-item">
+                 
+                <div class="layui-inline">
+                    <label class="layui-form-label"style="width: 100px"><span style="color:red;">*</span>BOM编号</label>
+                    <div class="layui-input-block" style="padding-left:30px;">
+                      <input type="text" name="bomHeadCode" id="bomHeadCode" lay-verify="bomHeadCode" autocomplete="off" placeholder="BOM编号" class="layui-input" >
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                 
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="width: 100px">结束时间</label>
+                    <div class="layui-input-block" style="padding-left:30px;">
+                    
+                    <input type="text" class="layui-input" name="endTime" id="endTime" placeholder="">
+                                                  
+                  </div>
+                </div>
+              </div>
+           
+			 <div class="layui-form-item">
+			    <div class="layui-input-block">
+			      <button class="layui-btn" lay-submit="" lay-filter="projectDeploySubit">立即提交</button>
+			     <button   class="layui-btn" onclik="initData()">重置</button>
+			    </div>
+			  </div>
+			    <input type="text" hidden="true"  name="id">
+		</form>
+	</div>
+	<script src="${ctx}/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+	var $ = layui.$;
+	var layer = layui.layer;
+	var form = layui.form
+	var laydate = layui.laydate;
+	//时间选择器
+     laydate.render({
+         elem: '#endTime',
+         range: false
+     });
+     initData();
+	layui.use(['form', 'layedit'], function(){
+		form.verify({
+			projectCode:function(value){
+				 if(value.length < 1){
+				        return '项目号不能为空';
+				 }
+				 
+			}
+			,bomHeadCode:function(value){
+				 if(value.length < 1){
+				        return 'BOM编号不能为空';
+				  }
+			       
+			},endTime:function(value){
+               
+              if(value.length<1){
+                  return '结束时间不能为空';
+              }
+              
+             
+            } 
+	 
+			
+		  });
+		  //监听提交
+		  form.on('submit(projectDeploySubit)', function(data){
+			saveDict(data);
+			return false;
+		 });
+	});
+	function saveDict(data){
+		var option = {
+	    	url:'${ctx}/projectDeploy/modify',
+	    	data:JSON.stringify(data.field),
+	    	type:'POST',
+	    	contentType:'application/json',
+	    	success:function(data){
+	    		if(data.code==0){
+	    			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+	    			parent.layer.close(index);  // 关闭layer
+	    			parent.table.reload('projectDeployInfoTabId');
+	    		}else{
+	    			layer.alert(data.data);
+	    		}
+	    	},error:function(data){
+	    		layer.alert(data.msg)
+	    	}
+	    }
+	    $.ajax(option); 
+	}
+
+	
+		//初始化表单数据
+		function initData(){
+		    var oldData = parent.oldData;
+		    var formData =  eval('('+JSON.stringify(oldData)+')');
+		        form.val('projectDeployForm',formData);
+		        form.render('select');
+		     
+		}
+		 
+		
+	</script>
+</body>
+</html>

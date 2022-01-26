@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>期量规则配置</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/tableFilter.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+</head>
+<body>
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+	 <input type="hidden" id="id"/>
+			 <div class="layui-col-md3">
+			 	<label class="layui-form-label">分类级别:</label>
+			 	 <div class="layui-input-block">
+			     <select  id="grade" name="grade"  lay-filter="grade">
+			        <option value="">全部</option>
+			        <option value="quantity_type_grade_a">一级分类</option>
+			        <option value="quantity_type_grade_b">二级分类</option>
+			        <option value="quantity_type_grade_c">三级分类</option>
+			      </select>
+			    </div>
+			 </div>
+			 <div class="layui-col-md3">
+				<label class="layui-form-label">物料分类:</label>
+			 	 <div class="layui-input-block">
+			       <select  id="type" name="type">
+<!-- 			       <option value="">全部</option> -->
+			      </select>
+			    </div>
+			</div>
+	</div>
+	<div class="layui-row layui-form" style="margin-bottom: 0">
+			<div class="layui-col-md6">&nbsp;</div>
+			<div class="layui-col-md6">
+				<div class="layui-btn-container" style="text-align: right;">
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>增加</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+  					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+				</div>
+			</div>
+	</div>
+</div>
+<table class="layui-hide" id="quanityRule" lay-filter="quanityRuleF"></table>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script type="text/html" id="typeLevelTpl">
+  {{d.dictName}}
+</script>
+<script type="text/html" id="materialTypeTpl">
+  {{d.itemName}}
+</script>
+<script type="text/html" id="quanitityRuleTpl">
+ {{d.quanitityRule}}
+</script>
+<script type="text/html" id="quanitityDateTpl">
+ {{d.quanitityDate}}
+</script>
+</script>
+<script type="text/html" id="lowerQuanitityRuleTpl">
+ 期量的{{d.lowerQuanitityRule}}%
+</script>
+<script type="text/html" id="barDemo">
+	<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+</script>
+<script type="text/javascript">
+var contextPath = config.basicInfoConfig.contextPath;
+var element = layui.element;
+var layer = layui.layer;
+var table = layui.table;
+var form = layui.form;
+
+	table.render({
+		elem:'#quanityRule',
+		id:'quanityRuleId',
+		url:contextPath+'quanityRule/quanityRuleList',
+		method:'post',
+		cols:[[
+		{type:'checkbox'},
+		{field:'typeLevel',title:'分类级别',templet: '#typeLevelTpl'},
+		{field:'itemName',title:'物料分类',templet: '#materialTypeTpl'},
+		{field:'quanitityRule',title:'期量规则',templet: '#quanitityRuleTpl'},
+		{field:'quanitityDate',title:'满足天数（天）',templet: '#quanitityDateTpl'},
+		{field:'lowerQuanitityRule',title:'安全库存规则',templet: '#lowerQuanitityRuleTpl'},
+		{fixed:'right',title:'操作', align:'center', toolbar: '#barDemo'}
+		]],
+		page: {theme: '#008155'},
+		done:function(res,page,count){//列表数据回调函数
+	 	}
+
+	});
+	var active = {
+			add:function(othis){
+				var type = othis.data('type');
+	  			layer.open({
+		        type: 2
+		        ,title:'添加期量规则'
+		        ,maxmin:true
+		        ,area: ['520px', '420px']
+		        ,offset: type
+		        ,id: 'ruleAdd'+type //防止重复弹出
+		        ,content: 'addQuanityRule.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+		      });
+			},search:function(othis){
+// 				var grade = $('#grade').find("option:selected").text();
+				var grade = $('#grade').val();
+				var type = $('#type').val();
+			      //执行重载
+			      table.reload('quanityRuleId', {
+			        where:{
+			        	typeLevel: grade
+			           ,materialType: type
+			        }
+			        ,page:{"curr":1}
+			      });
+			},reset:function(othis){
+				$('#grade').val("");
+				$('#type').empty();
+				form.render("select");
+			}
+	};
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+  	});
+	table.on('tool(quanityRuleF)', function(obj){
+		var eventName = obj.event;			//事件名称
+		var clickObj = $(obj.tr[0]);		//当前对象tr
+		if(eventName=="edit"){	//详情
+			$("#id").val(obj.data.id);			//方便子页面取点收记录的Id
+			layer.open({
+		        type: 2
+		        ,title:'编辑期量规则'
+		        ,maxmin:true
+				,area: ['520px', '420px']
+		        ,offset: type
+		        ,id: 'ruleEdit'//防止重复弹出
+		        ,content: 'editQuanityRule.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+	     	 });
+		}
+	});
+
+
+    layui.use('form', function(){
+        var form = layui.form;
+        form.on('select(grade)', function(data){
+            var gradeId=data.elem.value;
+            var dictType = new Array();
+			dictType.push(gradeId);
+            $.ajax({
+            	url:contextPath+'dictItems/queryDictItemByTypes',
+				type:'POST',
+				dataType:'json',
+				contentType: "application/json",
+				data:JSON.stringify(dictType),
+				success:function(res){
+					 $("#type").empty();
+					 form.render('select');
+					 $("#type").append("<option value=''>全部</option>");
+					 for(var i=0;i<res.data.length;i++){
+						  $("#type").append("<option value="+res.data[i].itemValue+">"+res.data[i].itemName+"</option>");
+					  }
+					  form.render('select');
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.dao.LineUpTaskDao">
+
+    <resultMap id="BaseResultMap" type="com.zkzn.les.wms.pojo.arrivalNotice.ArrivalNoticePojo">
+        <id column="id" property="arrivalNoticeId"/>
+        <result column="queueCode" property="queueCode"/>
+        <result column="queueTime" property="queueTime"/>
+        <result column="uploadPlatCode" property="uploadPlatCode"/>
+        <result column="uploadPlatName" property="uploadPlatName"/>
+        <result column="arrivalCode" property="arrivalCode"/>
+        <result column="shipperName" property="shipperName"/>
+        <result column="orderCode" property="orderCode"/>
+        <result column="uploadPlatId" property="uploadPlatId"/>
+        <result column="uploadPlatCode" property="uploadPlatCode"/>
+        <result column="driverName" property="driverName"/>
+        <result column="logisticsCode" property="logisticsCode"/>
+        <result column="admissionId" property="admissionId"/>
+        <!--一对多，方式一-->
+        <collection property="arrivalNoticeDetailsList"
+                    ofType="com.zkzn.les.wms.pojo.arrivalNotice.ArrivalNoticeDetails">
+            <id column="" property="id"/>
+            <result column="materialDesc" property="materialDesc"/>
+            <result column="materialCode" property="materialCode"/>
+            <result column="arrivalCount" property="arrivalCount"/>
+            <result column="storageLocation" property="storageLocation"/>
+            <result column="materialUnit" property="materilUnit"/>
+            <result column="supplierName" property="supplierName"/>
+            <result column="supplierCode" property="stationCode"/>
+        </collection>
+    </resultMap>
+
+    <select id="getLineUpMainInfo" resultMap="BaseResultMap">
+        SELECT tan.id                as "id",
+               tak.QUEUE_CODE        as "queueCode",
+               tak.id                as "admissionId",
+               tak.UPLOAD_PLAT_ID    as "uploadPlatId",
+               tak.UPLOAD_PLAT_NAME  as "uploadPlatName",
+               tak.create_time       as "queueTime",
+               tan.ARRIVAL_CODE      as "arrivalCode",
+               tan.SHIPPER_NAME      as "shipperName",
+               tan.ORDER_CODE        as "orderCode",
+               tak.UPLOAD_PLAT_CODE  as "uploadPlatCode",
+               tak.DRIVER_NAME       as "driverName",
+               tan.LOGISTICS_CODE    as "logisticsCode",
+               tand.MATERIAL_DESC    as "materialDesc",
+               tand.MATERIAL_CODE    as "materialCode",
+               tand.ARRIVAL_COUNT    as "arrivalCount",
+               tand.STORAGE_LOCATION as "storageLocation",
+               tand.MATERIAL_UNIT    as "materialUnit",
+               tand.SUPPLIER_NAME    as "supplierName",
+               tand.SUPPLIER_CODE    as "supplierCode",
+               tand.ARRIVAL_ITEM_NO  as "arrivalItemNo"
+        FROM t_admission_task tak
+                 LEFT JOIN t_arrival_notice tan on tak.ARRIVAL_NOTICE_ID = tan.id
+                 LEFT JOIN t_arrival_notice_detail tand on tan.id = tand.ARRIVAL_ID
+        WHERE tak.id = #{admissionId}
+    </select>
+
+
+    <select id="listArrivalNotice" resultType="java.util.HashMap">
+        SELECT t.id               as "arrivalNoticeId",
+               t.shipper_name     as "shipperName",
+               t.shipper_code     as "shipperCode",
+               t.purchase_code    as "orderCode",
+               t.arrival_code     as "billCode",
+               t.warehouse_name   as "wareHouseName",
+               t.warehouse_code   as "wareHouseCode",
+               t.storage_location as "storageLocation",
+               t.factory          as "factory",
+               t.bill_type        as "billType",
+               t.bill_name        as "billName",
+               t.queue_status     as "queueState"
+        FROM t_arrival_notice t
+        WHERE t.arrival_code = #{billCode}
+    </select>
+
+    <select id="getListArrivalNoticeDetail" resultType="java.util.HashMap">
+        select t.material_code    AS "materialCode",
+               t.material_desc    AS "materialDesc",
+               t.material_unit    AS "materialUnit",
+               t.arrival_count    AS "receiveNum",
+               t.batch_no         AS "batchNo",
+               t.storage_location AS "storageLocation",
+               t.factory          AS "factory",
+               t.id               AS "sourceId",
+               t.arrival_item_no  AS "arrivalItemNo",
+               t.order_item       AS "orderItemNo",
+               t.purchase_item    AS "purchaseItem",
+               t.SUPPLIER_CODE    AS "supplierCode",
+               t.SUPPLIER_NAME    AS "supplierName",
+               t.ORDER_CODE       AS "orderCode",
+               t.ARRIVAL_ITEM_NO  AS "arrivalItemNo",
+               t.station_code     AS "stationCode",
+               tan.PURCHASE_CODE  AS "purchaseCode",
+               tan.id             AS "arrivalNoticeId",
+               tan.ARRIVAL_CODE   AS "arrivalCode",
+               tan.bill_name      AS "billName"
+        from t_arrival_notice_detail t
+                 left join t_arrival_notice tan on t.ARRIVAL_ID = tan.id
+                 LEFT JOIN t_material m ON m.material_code = t.material_code
+        where t.arrival_id = #{arrivalNoticeId}
+    </select>
+
+    <select id="listLineUpMainInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select
+        tak.QUEUE_CODE as "queueCode",
+        tak.CREATE_TIME as "queueTime",
+        tak.EMERGENCY_STATUE as "emergencyStatus",
+        tak.STATUS as "admissionStatus",
+        tan.ARRIVAL_CODE as "arrivalCode",
+        tan.WAREHOUSE_CODE as "warehouseCode",
+        tan.BILL_TYPE as "billType",
+        tan.ACTUAL_ARRIVAL_TIME as "actualArrivalTime",
+        tan.SHIPPER_NAME as "shipperName",
+        tan.ORDER_CODE as "orderCode",
+        tan.SUPPLIER_CONTACTS as "supplierContacts",
+        tan.PURCHASE_CODE as "purchaseCode",
+        tak.id as "admissionId",
+        tan.id AS "arrivalNoticeId"
+        from t_admission_task tak
+        left join t_arrival_notice tan on tak.ARRIVAL_NOTICE_ID = tan.id
+        <where>
+            <if test="warehouseCode != null and '' != warehouseCode">
+                AND tan.warehouse_code = #{warehouseCode}
+            </if>
+            <if test="ltStatus != null">
+                AND status <![CDATA[ <= ]]> #{ltStatus}
+            </if>
+            <if test="gtStatus != null">
+                AND status <![CDATA[ >= ]]> #{gtStatus}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        order by tak.CREATE_TIME
+    </select>
+    <update id="modifyArrival">
+        update t_arrival_notice t
+        <set>
+            <if test="actualArrivalTime !=null">
+                t.ACTUAL_ARRIVAL_TIME=#{actualArrivalTime},
+            </if>
+
+            <if test="uploadStatus !=null ">
+                t.UPLOAD_STATUS=#{uploadStatus},
+            </if>
+
+            <if test="queueStatus !=null">
+                t.QUEUE_STATUS=#{queueStatus}
+            </if>
+        </set>
+
+        where t.id=#{arrivalNoticeId}
+
+    </update>
+    <select id="listUploadAddress" resultType="com.zkzn.les.wms.pojo.UploadAddress">
+        SELECT
+        ID,
+        UPLOAD_CODE,
+        UPLOAD_NAME,
+        USE_STATUS,
+        WAREHOUSE_CODE,
+        WAREHOUSE_NAME,
+        CREATE_TIME,
+        CREATER_NAME,
+        CREATER_ID,
+        MODIFIER_NAME,
+        MODIFIED_TIME,
+        MODIFIER_ID
+        FROM t_upload_address
+        <where>
+            <if test="warehouseCode !=null and '' != warehouseCode">
+                warehouse_code = #{warehouseCode}
+            </if>
+        </where>
+    </select>
+    <update id="modifyUploadPlat">
+        UPDATE t_receive_record t
+        <set>
+            <if test="uploadCode != null and '' != uploadCode">
+                t.upload_plat=#{uploadCode},
+            </if>
+            <if test="uploadPlatId != null and '' != uploadPlatId">
+                t.upload_plat_id=#{uploadPlatId},
+            </if>
+            <if test="status != null and '' != status">
+                t.status=#{status}
+            </if>
+        </set>
+        WHERE t.id = #{receiveId}
+        and t.status <![CDATA[ < ]]> 15
+    </update>
+    <update id="modifyUploadPlatInfo">
+        update t_upload_address
+        <trim prefix="set " suffixOverrides=",">
+            <if test="uploadCode !=null and ''!= uploadCode">upload_code = #{uploadCode},</if>
+            <if test="uploadName !=null and ''!= uploadName">upload_Name = #{uploadName},</if>
+            <if test="useStatus !=null">use_status=#{useStatus},</if>
+            <if test="warehouseCode !=null and ''!= warehouseCode">warehouse_code=#{warehouseCode},</if>
+            <if test="warehouseName !=null and ''!= warehouseName">warehouse_name=#{warehouseName},</if>
+            <if test="modifierId !=null and ''!= modifierId">modifier_id=#{modifierId},</if>
+            <if test="modifierName !=null and ''!= modifierName">modifier_name=#{modifierName},</if>
+            <if test="modifiedTime !=null ">modified_time = #{modifiedTime},</if>
+        </trim>
+        where id=#{uploadPlatId}
+    </update>
+
+    <select id="listStorageLocations" resultType="java.util.Map">
+        SELECT
+        id AS "id",
+        warehouse_code AS "warehouseCode",
+        storage_location AS "storageLocation",
+        warehouse_name AS "warehouseName",
+        produce_line_code AS "produceLineCode",
+        status As "status",
+        factory_code AS "factoryCode"
+        FROM t_factory_warehouse
+        <where>
+            <if test="status != null ">
+                status = #{status}
+            </if>
+            <if test="warehouseCode != null and '' != warehouseCode">
+                AND warehouse_code = #{warehouseCode}
+            </if>
+            <if test="storageLocation != null and '' !=storageLocation">
+                AND storage_location =#{storageLocation}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta content="" name="description" />
+<meta content="webthemez" name="author" />
+<title>LES物流执行系统</title>
+<!-- Bootstrap Styles-->
+<!-- <link href="pages/assets/css/bootstrap.css" rel="stylesheet" /> -->
+<!-- FontAwesome Styles-->
+<!-- <link href="pages/assets/css/font-awesome.css" rel="stylesheet" /> -->
+
+<!-- Custom Styles-->
+<!-- <link href="pages/assets/css/main.css" rel="stylesheet" /> -->
+<!-- Google Fonts-->
+<link rel="stylesheet"  href='pages/assets/css/googleFonts.css'  type='text/css' />
+<link rel="stylesheet"  href="pages/layui/css/layui.css"  media="all">
+<link rel="stylesheet"  href="pages/css/index.css"  media="all">
+</head>
+<style>
+div#mws-sidebar-stitch, 
+div#mws-sidebar-bg
+{
+    position:absolute;
+    top:0; bottom:0;
+}
+
+/* div#mws-sidebar-stitch
+{
+    left:189px;
+    width:17px;
+    z-index:2;
+    background:url(pages/assets/img/mws-sidebar-stitch.png) repeat-y;
+} */
+
+div#mws-sidebar-bg
+{
+    left:0;
+    z-index:0;
+    width:200px;
+    background:url(pages/assets/img/mws-sidebar-bg.png);
+}
+#main-menu{
+  height:1500px; 
+  overflow:scroll;
+   scrollbar-3dlight-color: blue; 
+}
+
+@media(max-width:1366px) {
+.sidebar-collapse{
+    /* height:auto; */ 
+    overflow:scroll;
+    scrollbar-3dlight-color: blue; 
+    }
+}
+#main-menu>li{
+        width:200px;
+    }
+    
+    
+    
+</style>
+
+
+
+
+<body>
+<!--========WRAPPER==========-->
+<div id="wrapper">
+  <!--========NAV TOP==========-->
+  
+    <!--========NAV TOP==========-->
+  <nav class="navbar navbar-default top-navbar" role="navigation">
+    <!--NAVBAR HEADER-->
+    <div class="navbar-header" >
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+      <a class="navbar-brand" href="javaScript:openPanelIndex()"><img src="pages/assets/img/logo.png" class="img-responsive" alt="" /></a>
+      <!--  <div id="sideNav" href=""> <i class="fa fa-bars icon"></i> </div>-->
+    </div>
+    <!--/.NAVBAR HEADER-->
+    <!--NAVBAR RIGHT-->
+    
+   
+	
+	
+    
+                <ul class="nav navbar-top-links navbar-right" style="pdding-left:10px">
+                
+ 				<div class="layui-input-inline">
+				      <select name="orgCode"   id="orgCode" onchange="changeWarehose(this);">
+ 				      </select>
+				 </div>
+
+         
+				<li class="dropdown"><a href="#" aria-expanded="false" ><i class="fa fa-envelope fa-fw" ></i></a></li>
+			      
+			      <li class="dropdown"><a href="#" aria-expanded="false" ><i class="fa fa-bell fa-fw" onclick="showMsgTab()" ></i><span class="layui-badge" id="msgCount">0</span></a></li>
+                <li class="dropdown" >
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                          
+                        <img id="userImage" src="pages/img/boy.png" style="width:20px; height: 20px;">
+                        <#if currUser?? && currUser.userName??>
+                            ${currUser.userName}
+                        </#if>
+                        <i class="fa fa-caret-down"></i>
+                    </a>
+                   
+                    <ul class="dropdown-menu dropdown-user" style="z-index:988;margin-block-end:0 !important">
+                        <li ><a href="#"><i class="fa fa-user fa-fw"></i>个人中心</a>
+                        </li>
+                        <li ><a href="#"   id="changePassWord"><i class="fa fa-gear fa-fw"></i>修改密码</a>
+                        </li>
+                        <li class="divider" ></li>
+                        <li><a href="#"   onclick="logout();"><i class="fa fa-sign-out fa-fw"></i>退出登录</a>
+                        </li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+   <!-- 
+  <div class="navbar_1" style="z-index:888">
+    <ul class="layui-nav-1 layui-layout-left" style="margin-left:-20px">
+      <li class="layui-nav-item"><a href="javascript:;">入库管理</a></li>
+      <li class="layui-nav-item"><a href="">库内管理</a></li>
+      <li class="layui-nav-item"><a href="">出库管理</a></li>
+      <li class="layui-nav-item"><a href="">运营监控</a></li>
+      <li class="layui-nav-item"><a href="">运营调度</a></li>
+      <li class="layui-nav-item"><a href="">运营决策</a></li>
+      <li class="layui-nav-item"><a href="">消息中心</a></li>
+      <li class="layui-nav-item"><a href="">订单中心</a></li>
+    </ul>
+  </div>
+ -->
+  </nav>
+  <!--========END NAV TOP==========-->
+    <div class="layui-body" style="margin-top:60px;margin-left:5px;background-color: #ffffff;z-index:188">
+                <div class="layui-tab layui-tab-card"  lay-allowclose="true" lay-filter="layout-tabs" style="margin-top:0px;">
+                    <ul class="layui-tab-title" style="">
+                    </ul>
+                    <ul class="rightmenu">
+                        <li data-type="closethis">关闭当前</li>
+                        <li data-type="closeall">关闭所有</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                    </div>
+                </div>
+     </div>
+  <!--========NAV SIDE==========-->
+  
+  <div class="layui-side-narrow" style="display: none;">
+                <div class="layui-card">
+                    <div class="layui-card-header" style="background-color: #f5f5f5;"><i class="layui-icon" id="left_bar_show" style="font-size: 16px; position: absolute; right:5px;" onclick="leftMenun()">&#xe66b;</i></div>
+                    <div class="layui-card-body" style="background-color: #f5f5f5;">&nbsp;</div>
+                </div>
+         </div>
+  
+  <nav class="navbar-default navbar-side" role="navigation" style="top:60px">
+  <!--   <div id="mws-sidebar-stitch"></div> -->
+    <div id="mws-sidebar-bg" ></div>
+    <div class="sidebar-collapse">
+      <ul class="nav" id="main-menu"  style="width:200px">
+     
+        
+        
+      </ul>
+    </div>
+  </nav>
+  <!--========END NAV SIDE==========-->
+          
+</div>
+<!--========END WRAPPER==========-->
+<!-- JS Scripts-->
+<!-- jQuery Js -->
+<script src="pages/assets/js/jquery-1.10.2.js"></script>
+<!-- Bootstrap Js -->
+<script src="pages/assets/js/bootstrap.min.js"></script>
+  
+<!-- Custom Js -->
+
+<script src="pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="pages/js/fullScreen.js"></script>
+<script src="pages/js/indexOld.js"></script>
+        <script>
+        //JavaScript代码区域
+        //接收websocket推送的消息开始
+        var websocket = null;
+        var host = document.location.host;
+        var tNum=1;
+        var layArray = new Array();
+        var userId = "${userId}";
+        if("WebSocket" in window){
+            console.log("host:"+host);
+            websocket = new WebSocket("ws://"+host+"/iles/websocket/"+userId);
+            websocket.onopen = function(){
+                console.log("websocket 连接成功");
+            }
+            websocket.onerror = function(){
+                console.log("websocket 连接错误");
+            }
+            websocket.onmessage = function(event){
+                var temp = eval('('+event.data+')');
+                var msgCount = $("#msgCount").text();
+                $("#msgCount").text(parseInt(msgCount)+1);
+                showMsgContent(temp.title,temp.content);
+            }
+            websocket.colse = function(){
+                console.log("websocket 关闭");
+            }
+            
+        }else{
+            layer.msg("当前浏览器不支持websocket！无法接收消息")
+        }
+        window.onbeforeunload = function(event){
+            if(websocket!=null)
+                websocket.close();
+        }
+        function showMsgContent(titleStr,messageContent){
+            layer.open({
+                type: 1
+                ,title:titleStr
+                ,offset:'rb'//具体配置参考：http://www.layui.com/doc/modules/layer.html#offset
+                ,id: 'rabitMq'+tNum //防止重复弹出
+                ,content: '<div style="padding: 20px 50px;width:250px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden">'+messageContent+'</div>'
+                ,shade: 0 //不显示遮罩
+                ,btn: ['查看消息']
+                ,btnAlign: 'r' //按钮居中
+                ,tipsMore: true
+                ,yes: function(){
+                    showMsgTab();
+                    layer.closeAll();
+                }
+              });
+            tNum++;
+        }
+        function showMsgTab(){
+        	
+            var isData = false;
+            var msgManageObj = $("#main-menu").find("[data-title='消息日志管理']");
+            var dataId = msgManageObj.attr("data-id");
+            if(dataId && dataId.length>0){
+             $.each($(".layui-tab-title li[lay-id]"), function () {
+                    if ($(this).attr("lay-id") == dataId) {
+                        isData = true;
+                    }
+                })
+                if (isData == false) {
+                    active.tabAdd("pages/message/msgLog.html",dataId,"消息日志管理");
+                }
+                active.tabChange(dataId);
+            }
+        }
+       
+        //接收websocket推送的消息结束
+        </script>
+   
+        <!-- 
+
+         -->
+
+
+<script type="text/javascript">
+	var option = {
+		url : "./orgination/queryWarehouse",
+		type : "GET",
+		success : function(res) {
+			if (res.code == 0) {
+				var data = res.data;
+				var currWareHose = data.currWareHose;
+				var wareHoseList = data.wareHoseList;
+				for (var i = 0; i < wareHoseList.length; i++) {
+					if(currWareHose==wareHoseList[i].storageLocation){
+						$("#orgCode").append("<option value='"+wareHoseList[i].orgCode+"' storageLocation='"+wareHoseList[i].storageLocation+"' orgCode='"+wareHoseList[i].orgCode+"' selected>"+ wareHoseList[i].orgName + "</option>")
+					}else{
+						$("#orgCode").append("<option value='"+wareHoseList[i].orgCode+"' storageLocation='"+wareHoseList[i].storageLocation+"' orgCode='"+wareHoseList[i].orgCode+"' >"+ wareHoseList[i].orgName + "</option>")
+					}
+				   /*  if(i==0){
+				    	chooseWarehose(wareHoseList[i].orgCode,wareHoseList[i].orgName,wareHoseList[i].storageLocation);
+				    } */
+				}
+			}
+		}
+	};
+	$.ajax(option);
+	 	
+ 	
+	
+
+	
+	function changeWarehose(obj){ 
+		var selecteObj = $(obj).find(':selected');
+		
+  		var orgCode=selecteObj.attr("orgCode");		
+  		var storageLocation=selecteObj.attr("storageLocation");
+  		var orgName=selecteObj.html();
+  		chooseWarehose(orgCode,orgName,storageLocation);
+  		/* var sub_option = {
+  				url : "./orgination/queryWarehouse",
+  				type : "GET",
+  				success : function(res) {
+  					if (res.code == 0) {
+  						var data = res.data;
+  						var wareHoseList = data.wareHoseList;
+  						for (var i = 0; i < wareHoseList.length; i++) {
+  							
+  							if(wareHoseList[i].orgCode==orgCode){
+  								
+  								orgName=wareHoseList[i].orgName
+  								storageLocation=wareHoseList[i].storageLocation
+  								
+  								chooseWarehose(orgCode,orgName,storageLocation);
+
+  								
+  								break;
+  							}
+  						 
+  						}
+
+  					}
+  				}
+  			};
+  			$.ajax(sub_option); */
+	}
+	
+	function chooseWarehose(orgCode,orgName,storageLocation){   			
+		var option ={
+				url:'./orgination/chooseWarehouse',
+				type:"post",
+				data:JSON.stringify({storageLocation:storageLocation,orgName:orgName,orgCode:orgCode}),
+				contentType:'application/json',
+				dateType:"json",
+				success:function(res){
+					if(res.code==0){
+ 					}
+				}
+		};
+		$.ajax(option);		
+	}
+
+	function openPanelIndex(){
+		 
+		var warehoseName = $('#orgCode').find("option:selected").val();  
+		var url ="/iles/pages/panelIndex/panelIndex.html";
+		if(warehoseName=='00500100'){
+			url ="/iles/pages/panelIndex.html";
+		}else if(warehoseName=='00500400'){
+			url ="/iles/pages/panelIndex/yzz_panelIndex.html";
+		}else if(warehoseName=='00500300'){
+			url ="/iles/pages/panelIndex/zzz_panelIndex.html";
+		}else if(warehoseName=='00500500'){
+			url ="/iles/pages/panelIndex/djzk_panelIndex.html";
+		}else if(warehoseName=='00500600'){
+			url ="/iles/pages/panelIndex/djxbk_panelIndex.html";
+		}else if(warehoseName=='00501100'){
+			url ="/iles/pages/panelIndex/xbj_panelIndex.html";
+		}else if(warehoseName=='00501200'){
+			url ="/iles/pages/panelIndex/tgzk_panelIndex.html";
+		}
+		window.open(url);
+	}
+</script>
+ 
+</body>
+</html>

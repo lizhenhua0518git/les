@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.storagePosition.dao.StoragePositionDao">
+	<select id="listStoragePosition" parameterType="com.zkzn.les.basicInfo.storagePosition.pojo.StoragePositionPojo" resultType="com.zkzn.les.basicInfo.storagePosition.pojo.StoragePositionPojo">
+		SELECT
+			s.storage_position_id AS "storagePositionId",
+			s.position_code AS "positionCode",
+			s.position_name AS "positionName",
+			s.client_manage_id AS "clientManageId",
+			s.client_name as clientName,
+			s.warehouse_code AS "warehouseCode",
+			w.ORG_NAME AS "warehouseName",
+			s.bin_type AS "binType",
+			s.occupy_status AS "occupyStatus",
+			(CASE WHEN s.occupy_status = 0 THEN '占用' WHEN s.occupy_status = 1 THEN '空闲' END) AS "occupyStatusName",
+			s.create_time AS "createTime"
+		FROM b_storage_position s
+		LEFT JOIN t_warehouse w ON s.warehouse_code = w.ORG_CODE
+		WHERE 1=1
+		<if test="occupyStatus !=null">and s.occupy_status=#{occupyStatus}</if>
+		<if test="positionCode != null and '' != positionCode">and s.position_code like '%${positionCode}%'</if>
+		<if test="warehouseCode != null and '' != warehouseCode">
+			<foreach collection="warehouseCode.split(';')" open="and s.warehouse_code in (" close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+		<if test="clientName != null and '' != clientName">
+			<foreach collection="clientName.split(';')" open="and s.client_manage_id in (" close=")" separator="," index="index" item="item">
+				#{item}
+			</foreach>
+		</if>
+		<if test="status != null">and s.status =#{status}</if>
+		ORDER BY s.create_time DESC
+	</select>
+
+	<select id="checkStoragePosition" parameterType="com.zkzn.les.basicInfo.storagePosition.pojo.StoragePositionPojo" resultType="java.lang.Integer">
+		SELECT
+			COUNT(*)
+		FROM b_storage_position s
+		WHERE s.position_code = #{positionCode} AND warehouse_code = #{warehouseCode}
+	</select>
+
+	<insert id="saveStoragePosition" parameterType="com.zkzn.les.basicInfo.storagePosition.pojo.StoragePositionPojo">
+		INSERT INTO b_storage_position
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="positionCode !=null and ''!= positionCode">position_code,</if>
+			<if test="positionName !=null and ''!= positionName">position_name,</if>
+			<if test="clientManageId !=null">client_manage_id,</if>
+			<if test="clientName !=null and ''!= clientName">client_name,</if>
+			<if test="binType !=null">bin_type,</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">warehouse_code,</if>
+			<if test="createrUserId !=null ">creater_user_id,</if>
+			<if test="createTime !=null">create_time,</if>
+			occupy_status
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="positionCode !=null and ''!= positionCode">#{positionCode},</if>
+			<if test="positionName !=null and ''!= positionName">#{positionName},</if>
+			<if test="clientManageId !=null">#{clientManageId},</if>
+			<if test="clientName !=null and ''!= clientName">#{clientName},</if>
+			<if test="binType !=null">#{binType},</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">#{warehouseCode},</if>
+			<if test="createrUserId !=null ">#{createrUserId},</if>
+			<if test="createTime !=null">#{createTime},</if>
+			1
+		</trim>
+	</insert>
+
+	<update id="updateStoragePosition" parameterType="com.zkzn.les.basicInfo.storagePosition.pojo.StoragePositionPojo">
+		UPDATE b_storage_position
+		<trim prefix="set" prefixOverrides=",">
+			<if test="positionCode !=null and ''!= positionCode">position_code = #{positionCode}</if>
+			<if test="positionName !=null and ''!= positionName">,position_name = #{positionName}</if>
+			<if test="clientManageId !=null and ''!= clientManageId">,client_manage_id = #{clientManageId}</if>
+			<if test="clientName !=null and ''!= clientName">,client_name = #{clientName}</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">,warehouse_code = #{warehouseCode}</if>
+			<if test="modifiedTime !=null">,modifie_time=#{modifiedTime}</if>
+		</trim>
+		WHERE storage_position_id = #{storagePositionId}
+	</update>
+
+	<delete id="deleteStoragePosition">
+		<if test="list.size()>0">
+			delete from b_storage_position where storage_position_id in
+			<foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+				#{item}
+			</foreach>
+		</if>
+	</delete>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<select id="queryStorageById" resultMap="storagePositionMap">
+		select * from b_storage_position where id=#{id}
+	</select>
+	<resultMap id="storagePositionMap" type="com.zkzn.les.basicInfo.pojo.StoragePosition">
+		<result property="positionName" column="position_name" />
+		<result property="positionCode" column="position_code" />
+		<result property="shelfId" column="shelf_id" />
+		<result property="shelfFloor" column="shelf_floor" />
+		<result property="stationCode" column="station_code" />
+		<result property="shelfCode" column="shelf_code" />
+
+		<result property="tunnel" column="tunnel" />
+		<result property="rowNumber" column="row_number" />
+		<result property="performNumber" column="perform_number" />
+		<result property="layerNumber" column="layer_number" />
+		<result property="factory" column="factory" />
+		<result property="storageLocation" column="storage_location" />
+		<result property="storageType" column="storage_type" />
+		<result property="frozenFlagEntry" column="frozen_flag_entry" />
+		<result property="frozenFlagDelivery" column="frozen_flag_delivery" />
+		<result property="creater"  column="creater" />
+		<result property="createTime"  column="create_time" />
+		<result property="modifier"  column="modifier" />
+		<result property="modifiedTime"  column="modified_time" />
+	</resultMap>
+	<select id="queryStorageByIdStationCode" parameterType="com.zkzn.les.basicInfo.pojo.StoragePosition" resultMap="storagePosition">
+		select * from b_storage_position p where 1=1
+		<if test="status !=null and ''!= status">
+			and p.status=#{status}
+		</if>
+		<if test="stationCode !=null and  '' !=stationCode">
+			and  p.STATION_CODE=#{stationCode}
+		</if>
+		<if test="stationCode ==null or  '' ==stationCode">
+			and  p.STATION_CODE is null
+		</if>
+		<if test="positionCode !=null and  '' !=positionCode">
+			and p.POSITION_CODE=#{positionCode}
+		</if>
+		<if test="areaType !=null and  '' !=areaType">
+			and a.area_type=#{areaType}
+		</if>
+		<if test="id !=null and  '' !=id">
+			and p.id=#{id}
+		</if>
+		<if test="factory !=null and  '' !=factory">
+			and substr(a.area_code,9,12)=#{factory}
+		</if>
+		<if test="warehouse !=null and  '' !=warehouse">
+			and a.warehouse=#{warehouse}
+		</if>
+	</select>
+	<!-- 直接查找空仓位 -->
+	<select id="queryStorage" parameterType="com.zkzn.les.basicInfo.pojo.StoragePosition" resultMap="storagePosition">
+		select distinct p.* from b_storage_position p,t_area a,t_dict_items b where a.area_type=b.item_value and a.id=p.area_id
+		<if test="status !=null and ''!= status">
+			and p.status=#{status}
+		</if>
+		<if test="stationCode !=null and  '' !=stationCode">
+			and  p.STATION_CODE=#{stationCode}
+		</if>
+		<if test="stationCode ==null or  '' ==stationCode">
+			and  p.STATION_CODE is null
+		</if>
+		<if test="positionCode !=null and  '' !=positionCode">
+			and p.POSITION_CODE=#{positionCode}
+		</if>
+		<if test="areaType !=null and  '' !=areaType">
+			and a.area_type=#{areaType}
+		</if>
+		<if test="id !=null and  '' !=id">
+			and p.id=#{id}
+		</if>
+		<if test="factory !=null and  '' !=factory">
+			and substr(a.area_code,9,12)=#{factory}
+		</if>
+		<if test="warehouse !=null and  '' !=warehouse">
+			and a.warehouse=#{warehouse}
+		</if>
+		and p.frozen_flag_entry = 0
+		 and p.id not in (select storage_bin_id from t_material_storage_bin b where  b.storage_bin_id is not null)
+       <!--   and not exists (select  e.storage_bin_id from t_material_storage_bin e where (e.total_stock_count !=0
+        or (e.frozen_count !=0 and e.frozen_count is not null) and e.storage_bin_id =p.id)) -->
+	</select>
+
+	<!-- 直接查找空仓位 -->
+	<select id="getStorage" parameterType="com.zkzn.les.basicInfo.pojo.StoragePosition" resultType="java.util.HashMap">
+		select distinct p.id "id",p.POSITION_CODE "positionCode",p.storage_Type "storageType",p.MAX_LOAD_WEIGHT "maxLoadWeight" from b_storage_position p,t_area a,t_dict_items b where a.area_type=b.item_value and a.id=p.area_id
+		<if test="status !=null and ''!= status">
+			and p.status=#{status}
+		</if>
+		<if test="stationCode !=null and  '' !=stationCode">
+			and  p.STATION_CODE=#{stationCode}
+		</if>
+		<if test="stationCode ==null or  '' ==stationCode">
+			and  p.STATION_CODE is null
+		</if>
+		<if test="positionCode !=null and  '' !=positionCode">
+			and p.POSITION_CODE=#{positionCode}
+		</if>
+		<if test="areaType !=null and  '' !=areaType">
+			and a.area_type=#{areaType}
+		</if>
+		<if test="id !=null and  '' !=id">
+			and p.id=#{id}
+		</if>
+		<if test="factory !=null and  '' !=factory">
+			and substr(a.area_code,9,12)=#{factory}
+		</if>
+		<if test="warehouse !=null and  '' !=warehouse">
+			and a.warehouse=#{warehouse}
+		</if>
+
+		and p.frozen_flag_entry = 0
+
+
+		 and p.id not in (select storage_bin_id from t_material_storage_bin b where  b.storage_bin_id is not null)
+
+       <!--   and not exists (select  e.storage_bin_id from t_material_storage_bin e where (e.total_stock_count !=0
+        or (e.frozen_count !=0 and e.frozen_count is not null) and e.storage_bin_id =p.id)) -->
+
+	</select>
+
+	<select id="queryStorageBin" resultType="java.util.Map">
+	   select m.max_capacity as "maxLoadWeight",
+	   s.position_code as "positionCode",
+	   s.id as "storageBinId",
+	   ms.total_stock_count as "totalStockCount",
+	   ms.IN_STOCK_COUNT as "inStockCount",
+	   ms.stock_type as "stockType",
+	   ms.id as "materialStorageBinId",
+	   ms.SPECIAL_TYPE as "specialType",
+	   ms.SPECIAL_CODE as "specialCode",
+	   (ms.STOCK_TYPE||ms.STORAGE_LOCATION||ms.MATERIAL_CODE||
+			ms.FACTORY||
+			ms.BATCH_NO) as "materialKey"
+	   from  t_material_storage_bin ms
+	   left join t_material m on m.factory=ms.factory and m.material_code=ms.material_code and m.storage_location=ms.storage_location
+ 	   left join b_storage_position s on s.id=ms.storage_bin_id
+	   where exists (
+        select sp.id from T_LAUNCH_STRATEGY ls left join t_material_LAUNCH_REMARK mlr
+		on ls.area=mlr.area and ls.WAREHOUSE_CODE=mlr.WAREHOUSE_CODE and ls.station_code = mlr.station_code left join T_GROUNDING_AREA ga
+		on ga.g_area_code=ls.position_code and ga.WAREHOUSE_CODE = mlr.WAREHOUSE_CODE left join b_storage_position sp on sp.TUNNEL BETWEEN
+		ga.TUNNEL_START and ga.TUNNEL_END and sp.LAYER_NUMBER BETWEEN ga.STOREY_START and ga.STOREY_END and sp.ROW_NUMBER between ga.ROW_START
+		and ga.ROW_END and sp.PERFORM_NUMBER between ga.LINE_START and ga.LINE_END and sp.WAREHOUSE = ls.WAREHOUSE_CODE
+        where order_type=#{orderType} and material_status=ms.STOCK_TYPE and material_code=ms.MATERIAL_CODE and sp.factory=ms.FACTORY and sp.id=s.id
+       ) and
+		 	(ms.STOCK_TYPE||ms.STORAGE_LOCATION||ms.MATERIAL_CODE||
+			ms.FACTORY||
+			ms.BATCH_NO)
+			<foreach collection="list" open=" in (" close=")" index="index" item="item" separator=",">
+				#{item}
+			</foreach>
+			and s.warehouse = #{warehouse}
+			and s.BIN_TYPE = 2
+			and s.status=1
+			and (ms.total_stock_count <![CDATA[<]]> m.max_capacity or m.max_capacity is null )
+			order by (ms.STOCK_TYPE||ms.STORAGE_LOCATION||ms.MATERIAL_CODE||
+			ms.FACTORY||
+			ms.BATCH_NO),ms.TOTAL_STOCK_COUNT ASC
+	</select>
+	<select id="queryStorageBinCount" resultType="java.util.Map">
+	   select min(m.max_capacity) as "maxLoadWeight",
+	   s.id as "storageBinId",
+	   min(ms.stock_type) as "stockType",
+	   min(s.position_code )as "positionCode",
+	   sum(ms.total_stock_count) as "totalStockCount",
+	   min((ms.STOCK_TYPE||ms.STORAGE_LOCATION||ms.MATERIAL_CODE||
+			ms.FACTORY||
+			ms.BATCH_NO)) as "materialKey"
+	   from  t_material_storage_bin ms
+	   left join t_material m on m.factory=ms.factory and m.material_code=ms.material_code and m.storage_location=ms.storage_location
+ 	   left join b_storage_position s on s.id=ms.storage_bin_id
+	   where exists (
+        select sp.id from T_LAUNCH_STRATEGY ls left join t_material_LAUNCH_REMARK mlr
+		on ls.area=mlr.area and ls.WAREHOUSE_CODE=mlr.WAREHOUSE_CODE and ls.station_code = mlr.station_code left join T_GROUNDING_AREA ga
+		on ga.g_area_code=ls.position_code and ga.WAREHOUSE_CODE = mlr.WAREHOUSE_CODE left join b_storage_position sp on sp.TUNNEL BETWEEN
+		ga.TUNNEL_START and ga.TUNNEL_END and sp.LAYER_NUMBER BETWEEN ga.STOREY_START and ga.STOREY_END and sp.ROW_NUMBER between ga.ROW_START
+		and ga.ROW_END and sp.PERFORM_NUMBER between ga.LINE_START and ga.LINE_END and sp.WAREHOUSE = ls.WAREHOUSE_CODE
+        where order_type=#{orderType} and material_status=ms.STOCK_TYPE and material_code=ms.MATERIAL_CODE and sp.factory=ms.FACTORY and sp.id=s.id
+       ) and
+	 	(ms.STOCK_TYPE||ms.STORAGE_LOCATION||ms.MATERIAL_CODE||
+		ms.FACTORY||
+		ms.BATCH_NO)
+		<foreach collection="list" open=" in (" close=")" index="index" item="item" separator=",">
+			#{item}
+		</foreach>
+		and s.warehouse = #{warehouse}
+		and s.BIN_TYPE = 2
+		and s.status=1
+		and (ms.total_stock_count <![CDATA[<]]> m.max_capacity or m.max_capacity is null )
+		group by s.id order by sum(ms.total_stock_count) desc
+	</select>
+	<select id="queryEmptyPosition" resultType="java.util.HashMap">
+		<!-- select * from (
+			select * from b_storage_position s where not exists (
+			    select * from t_material_storage_bin m where s.id=m.storage_bin_id
+			) and s.WAREHOUSE=#{warehouse} and status=1 and bin_type=2 )
+			where rownum <![CDATA[>]]>0 and rownum<![CDATA[<]]>#{rowNum} -->
+			select * from b_storage_position s where not exists (
+			    select * from t_material_storage_bin m where s.id=m.storage_bin_id
+			) and s.WAREHOUSE=#{warehouse} and status=1 and bin_type=2
+			 and exists (
+	        select sp.id from T_LAUNCH_STRATEGY ls left join t_material_LAUNCH_REMARK mlr
+			on ls.area=mlr.area and ls.WAREHOUSE_CODE=mlr.WAREHOUSE_CODE and ls.station_code = mlr.station_code left join T_GROUNDING_AREA ga
+			on ga.g_area_code=ls.position_code and ga.WAREHOUSE_CODE = mlr.WAREHOUSE_CODE left join b_storage_position sp on sp.TUNNEL BETWEEN
+			ga.TUNNEL_START and ga.TUNNEL_END and sp.LAYER_NUMBER BETWEEN ga.STOREY_START and ga.STOREY_END and sp.ROW_NUMBER between ga.ROW_START
+			and ga.ROW_END and sp.PERFORM_NUMBER between ga.LINE_START and ga.LINE_END and sp.WAREHOUSE = ls.WAREHOUSE_CODE
+	        where order_type=#{orderType} and material_status=#{stockType} and material_code=#{materialCode} and sp.factory=#{factory} and sp.id=s.id
+	       )
+	</select>
+	<!-- 直接查找空仓位 -->
+	<select id="getStorageBinId" parameterType="com.zkzn.les.basicInfo.pojo.StoragePosition" resultType="java.util.HashMap">
+		select distinct p.id "id",p.POSITION_CODE "positionCode",0 "type",p.STATION_CODE "stationCode",null "storageId" from b_storage_position p,t_area a,t_dict_items b where a.area_type=b.item_value and a.id=p.area_id
+		<if test="status !=null and ''!= status">
+			and p.status=#{status}
+		</if>
+		<if test="stationCode !=null and  '' !=stationCode">
+			and  p.STATION_CODE=#{stationCode}
+		</if>
+		<if test="stationCode ==null or  '' ==stationCode">
+			and  p.STATION_CODE is null
+		</if>
+		<if test="positionCode !=null and  '' !=positionCode">
+			and p.POSITION_CODE=#{positionCode}
+		</if>
+		<if test="areaType !=null and  '' !=areaType">
+			and a.area_type=#{areaType}
+		</if>
+		<if test="id !=null and  '' !=id">
+			and p.id=#{id}
+		</if>
+		<if test="factory !=null and  '' !=factory">
+			and substr(a.area_code,9,12)=#{factory}
+		</if>
+		<if test="warehouse !=null and  '' !=warehouse">
+			and a.warehouse=#{warehouse}
+		</if>
+		and p.frozen_flag_entry = 0
+		 and p.id not in (select storage_bin_id from t_material_storage_bin b where  b.storage_bin_id is not null)
+	</select>
+
+	<resultMap id="storagePosition" type="com.zkzn.les.basicInfo.pojo.StoragePosition">
+		<result property="id" column="id" />
+		<result property="stationCode" column="STATION_CODE" />
+		<result property="status" column="status" />
+		<result property="maxLoadWeight" column="MAX_LOAD_WEIGHT" />
+		<result property="positionCode" column="position_code" />
+		<result property="shelfId" column="shelf_id" />
+		<result property="shelfFloor" column="shelf_floor" />
+		<result property="frozenFlagEntry" column="FROZEN_FLAG_ENTRY" />
+		<result property="frozenFlagDelivery" column="FROZEN_FLAG_DELIVERY" />
+		<result property="storageType" column="BIN_TYPE" />
+		<result property="areaCode" column="area_code"/>
+	</resultMap>
+	<!-- 根据物料编号和工厂查询仓位信息 -->
+	<select id="findByMaterialCodeAndFactory" parameterType="java.util.Map" resultMap="storagePosition">
+		select distinct sp.* from b_storage_position sp
+		left join t_material_storage_bin msb on sp.ID=msb.STORAGE_BIN_ID
+		where msb.MATERIAL_CODE=#{materialCode} and msb.FACTORY=#{factory}
+		and sp.STATUS=1
+	</select>
+	<!-- 查询工位信息 -->
+	<select id="getStationCodeList" parameterType="com.zkzn.les.basicInfo.pojo.StoragePosition" resultMap="storagePositionMap">
+    	SELECT DISTINCT STATION_CODE FROM T_STATION_SETTING WHERE STATUS = '1'
+		<if test="stationCode !=null and ''!= stationCode">AND STATION_CODE LIKE '%${stationCode}%'</if>
+		ORDER BY STATION_CODE
+	</select>
+	<!-- 通过仓位编号获取 -->
+	<select id="getPosition" parameterType="com.zkzn.les.basicInfo.pojo.StoragePosition" resultMap="storagePositionMap">
+    	select p.* from b_storage_position p,t_shelf t WHERE  p.shelf_id=t.shelf_code and p.STATUS = '1'
+		<if test="positionCode !=null and ''!= positionCode">AND POSITION_CODE=#{positionCode}</if>
+		<if test="warehouse !=null and ''!= warehouse">AND warehouse=#{warehouse}</if>
+		ORDER BY STATION_CODE
+	</select>
+	<select id="queryPositionByCode" resultType="com.zkzn.les.basicInfo.pojo.StoragePosition">
+		select * from b_storage_position where POSITION_CODE=#{positionCode} AND warehouse=#{warehouse} and status='1'
+	</select>
+	<select id="query" parameterType="java.util.Map" resultType="java.util.Map">
+		select * from b_storage_position where STATUS=1
+		<if test="positionCode !=null and ''!= positionCode">AND POSITION_CODE=#{positionCode}</if>
+		<if test="storageLocation !=null and ''!= storageLocation">AND STORAGE_LOCATION=#{storageLocation}</if>
+	</select>
+
+	<select id="hasChildren" resultType="String">
+	   select distinct parent_id from b_storage_position where parent_id in
+       <foreach collection="storagePositionList"  item="item" index="index" separator="," open="(" close=")">
+           #{item.id,jdbcType=VARCHAR}
+       </foreach>
+	</select>
+
+	<update id="changeStatus">
+	    <if test="ids.size()>0">
+	       update b_storage_position
+	        <trim prefix="set" prefixOverrides=",">
+	        <if  test="remark !=null and ''!= remark">,remark=#{remark}</if>
+	        <if test="status !=null">,status=#{status}</if>
+	       </trim>
+	       where
+	        <foreach collection="ids" item="item" index="index" open="(" separator="or" close=")">
+	            id=#{item}
+	        </foreach>
+	    </if>
+    </update>
+
+    <insert id="importStorage">
+        <foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+            insert into b_storage_position (ID,position_code,position_name,warehouse,storage_location,area,factory,status) select  replace(uuid(),'-',''),'${item.positionCode}','${item.positionName}','${item.warehouse}','${item.storageLocation}','${item.areaCode}','${item.factory}','${item.status}' from dual
+        </foreach>
+    </insert>
+
+    <update id="updateStorageBatch">
+        <foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+            update b_storage_position
+            <trim prefix="set" prefixOverrides=",">
+                <if test="item.positionCode !=null and ''!= item.positionCode">,position_code = #{item.positionCode}</if>
+                <if test="item.positionName !=null and ''!= item.positionName">,position_name=#{item.positionName}</if>
+                <if test="item.warehouse !=null and ''!= item.warehouse">,warehouse=#{item.warehouse}</if>
+                <if test="item.storageLocation !=null and ''!= item.storageLocation">,storage_location=#{item.storageLocation}</if>
+                <if test="item.area !=null and ''!= item.area">,area=#{item.area}</if>
+                <if test="item.factory!=null">,factory=#{item.factory}</if>
+                <if test="item.status !=null">,status=#{item.status}</if>
+            </trim>
+            where id=#{item.id}
+        </foreach>
+    </update>
+
+	<select id="getStoragePositionByCode" parameterType="com.zkzn.les.basicInfo.pojo.StoragePosition" resultMap="storagePosition">
+		select * from b_storage_position p where 1=1
+		<if test="status !=null and ''!= status">
+			and p.status=#{status}
+		</if>
+		<if test="stationCode !=null and  '' !=stationCode">
+			and  p.STATION_CODE=#{stationCode}
+		</if>
+		<if test="positionCode !=null and  '' !=positionCode">
+			and p.POSITION_CODE=#{positionCode}
+		</if>
+		<if test="areaType !=null and  '' !=areaType">
+			and a.area_type=#{areaType}
+		</if>
+		<if test="id !=null and  '' !=id">
+			and p.id=#{id}
+		</if>
+		<if test="factory !=null and  '' !=factory">
+			and substr(a.area_code,9,12)=#{factory}
+		</if>
+		<if test="warehouse !=null and  '' !=warehouse">
+			and p.warehouse=#{warehouse}
+		</if>
+	</select>
+
+	<select id="getWareHouse" resultType="java.lang.String">
+		SELECT ORG_CODE FROM t_warehouse
+	</select>
+
+	<select id="getStoragePosition" resultType="com.zkzn.les.basicInfo.pojo.StoragePosition">
+		SELECT POSITION_CODE AS "positionCode",WAREHOUSE AS "warehouse",ID AS "id" FROM b_storage_position
+	</select>
+
+	<select id="getArea" resultType="com.zkzn.les.basicInfo.pojo.Area">
+		SELECT WAREHOUSE AS "warehouse",AREA_CODE AS "areaCode",ID AS "id" FROM t_area
+	</select>
+
+	<select id="getWorkArea" resultType="com.zkzn.les.basicInfo.pojo.WorkArea">
+		SELECT WORK_AREA_CODE AS "workAreaCode",WAREHOUSE_CODE AS "warehouseCode",ID AS "id" FROM T_WORK_AREA
+	</select>
+
+	<update id="updateStoragePositionList">
+		update b_storage_position
+		<trim prefix="set" suffixOverrides=",">
+			<trim prefix="POSITION_CODE =case" suffix="end,">
+				<foreach collection="list" item="item" index="index">
+					<if test="item.warehouseCode !=null ">
+						when id=#{item.id} then #{item.positionCode}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="POSITION_NAME =case" suffix="end,">
+				<foreach collection="list" item="item" index="index">
+					<if test="item.positionName !=null ">
+						when id=#{item.id} then #{item.positionName}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="WAREHOUSE =case" suffix="end,">
+				<foreach collection="list" item="item" index="index">
+					<if test="item.warehouseCode !=null ">
+						when id=#{item.id} then #{item.warehouseCode}
+					</if>
+				</foreach>
+			</trim>
+			<trim prefix="STATUS =case" suffix="end,">
+				<foreach collection="list" item="item" index="index">
+					<if test="item.status !=null ">
+						when id=#{item.id} then #{item.status}
+					</if>
+				</foreach>
+			</trim>
+		</trim>
+		where id in
+		<foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+			#{item.id}
+		</foreach>
+
+	</update>
+
+	<insert id="saveStoragePositionList">
+		INSERT INTO b_storage_position(id,POSITION_CODE,POSITION_NAME,WAREHOUSE,CREATER_ID,CREATER_NAME,CREATE_TIME,STATUS,OCCUPY_STATUS)
+		<foreach collection="list" close=")" open="(" separator="union all" item="item">
+			SELECT  replace(uuid(),'-',''),#{item.positionCode},#{item.positionName},#{item.warehouseCode},#{item.createrId},#{item.createrName},#{item.createTime},#{item.status},1    FROM DUAL
+		</foreach>
+	</insert>
+</mapper>

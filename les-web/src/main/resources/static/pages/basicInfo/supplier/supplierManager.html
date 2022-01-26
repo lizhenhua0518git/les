@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css" />
+<title>供应商管理</title>
+</head>
+<body id="bodyDiv">
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script type="text/html" id="bodyTpl">
+<div class="layui-fluid">
+	<div class="layui-row layui-form" >
+		<div class="layui-col-md2">
+			<label class="layui-form-label">客户名称</label>
+			 <div class="layui-input-inline">
+			  <input type="text" id="supplierName" placeholder="请输入供应商名称"  class="layui-input">
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">是否启用</label>
+			 <div class="layui-input-inline">
+			   <select name="isDel" id="isDel" lay-verify="required">
+					<option value="">请选择</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-btn-container" style="text-align: right;">
+			{{# if(d.search==null || d.search=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+			{{# } }}
+		</div>
+	</div>
+	<div class="layui-fluid-table">
+		<table class="layui-hide" id="supplierInfoTab" lay-filter="supplierInfoTabF"></table>
+	</div>
+</div>
+</script>
+<script type="text/javascript">
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var contextPath = config.basicInfoConfig.contextPath;
+    var oldData;
+    function loadding(){
+		table.render({
+			elem:'#supplierInfoTab',
+			id:'supplierInfoTabId',
+			url: contextPath + 'supplier/listSupplier',
+			cols:[[
+			{type:'checkbox'},
+			{type:'numbers',title:'序号',width: 80},
+			{field:'supplierName',title:'供应商名称',sort:true},
+			{field:'supplierCode', title: '供应商编码',sort:true},
+			{field:'supplierAddress', title: '供应商联系地址',sort:true},
+			{field:'phone', title: '联系方式'},
+			{field:'province', title: '省份编码',sort:true},
+			{field:'city', title: '城市名称',sort:true},
+			{field:'statusName', title: '是否启用',sort:true},
+			{field:'createTime', title: '创建时间'}
+			]],
+			page: {theme: '#008155'},
+			even:true,
+			done:function(res,page,count){//列表数据回调函数
+
+			}
+		});
+
+		$('.layui-btn-container button').on('click', function(){
+			var othis = $(this), method = othis.data('method');
+			active[method] ? active[method].call(this, othis) : '';
+		});
+   	}
+    var active = {
+		search:function(othis){
+			var supplierName=$('#supplierName').val();
+			var supplierCode=$('#supplierCode').val();
+			var isDel=$('#isDel').val();
+
+			var params={};
+			params.supplierName=supplierName;
+			params.supplierCode=supplierCode;
+			params.isDel=isDel;
+
+			  //执行重载
+			  table.reload('supplierInfoTabId', {
+				where:params,
+				page:{"curr":1}
+			  });
+		},reset:function(othis){
+			$('#supplierName').val("");
+			$('#supplierCode').val("");
+			$('#isDel').val("");
+			form.render("select");
+		}
+
+    };
+
+    table.on('sort(supplierInfoTabF)', function (obj) {
+        var sortColums;
+        if(obj.field=="supplierName"){
+            sortColums = "supplier_name "+obj.type;
+        }else if(obj.field=="supplierCode"){
+            sortColums = "supplier_code "+obj.type;
+        }else if(obj.field=="supplierAddress"){
+            sortColums = "supplier_address "+obj.type;
+        }else if(obj.field=="createTime"){
+            sortColums = "create_time "+obj.type;
+        }else if(obj.field=="isDel"){
+            sortColums = "is_del "+obj.type;
+        }
+        var supplierName=$('#supplierName').val();
+        var supplierCode=$('#supplierCode').val();
+        var status=$('#isDel').val();
+          //执行重载
+          table.reload('supplierInfoTabId', {
+            where:{
+            	supplierName:supplierName,
+            	supplierCode:supplierCode,
+            	isDel:isDel,
+                sortColums:sortColums,
+                page:1
+            }
+          });
+    });
+
+
+
+
+
+</script>
+</body>
+</html>

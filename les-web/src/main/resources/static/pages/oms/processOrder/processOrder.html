@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<title>物料需求单</title>
+</head>
+<body id="bodyDiv">
+	<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid" >
+        <div class="layui-row layui-form">
+			<div class="layui-col-md2">
+				<label class="layui-form-label">生产日期</label>
+				<div class="layui-input-inline layui-form">
+					<input type="text" class="layui-input"  id="requiredTime_search" placeholder="请选择生产日期">
+				</div>
+			</div>
+			<div class="layui-col-md2">
+                <label class="layui-form-label">生产订单号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="orderCode_search" class="layui-input" placeholder="请输入生产订单号">
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">车间</label>
+                <div class="layui-input-inline">
+ 					<select  id="workshopCode_search"  xm-select="workshopCode_search" xm-select-show-count="1" >
+			        	<option value="">请选择</option>
+			      	</select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">产线</label>
+                <div class="layui-input-inline">
+					<select  id="lineCode_search"  xm-select="lineCode_search" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <label class="layui-form-label">产品号</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="vehicleCode_search" class="layui-input" placeholder="请输入产品号">
+                </div>
+            </div>
+        </div>
+		<div class="layui-row layui-form">
+			<div class="layui-col-md2" >
+                <label class="layui-form-label">车号</label>
+                <div class="layui-input-inline" >
+                    <input type="text" id="serialNum_search" class="layui-input" placeholder="请输入车号">
+                </div>
+            </div>
+			<div class="layui-col-md2" >
+				<label class="layui-form-label">销售订单号</label>
+				<div class="layui-input-inline" >
+					<input type="text" id="sellOrder" class="layui-input" placeholder="请输入销售订单号">
+				</div>
+			</div>
+			<!--<div class="layui-col-md2">
+			 	<label class="layui-form-label">仓库</label>
+				<div class="layui-input-inline">
+			        <select  id="storageLocation_search" lay-filter="storageLocationFilter" xm-select="storageLocationSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+			</div>		-->
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">业务类型</label>
+			 	 <div class="layui-input-inline">
+			        <select  id="businessType_search" xm-select="businessTypeSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+			</div>
+			<div class="layui-btn-container nav-" style="text-align: right;">
+				{{# if(d.search==null || d.search=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon  layui-icon-reset"></i>重置</button>
+				{{# } }}
+			</div>
+		</div>
+    </div>
+    <div class="layui-fluid-table">
+        <div class="layui-row layui-form">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="detail" type="button"><i class="layui-icon layui-icon-edit"></i>详情</button>
+				{{# if(d.match==null || d.match=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="match" type="button"><i class="layui-icon layui-icon-add-circle"></i>匹配库存</button>
+            	{{# } }}
+			</div>
+        </div>
+        <table class="layui-hide" id="processOrderTab" lay-filter="processOrderTabF"></table>
+    </div>
+</script>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var laydate = layui.laydate;
+		var oldData;
+		var contextPath = config.omsConfig.contextPath;
+		var active = {
+
+			detail : function(othis) {
+				var checkStatus = table.checkStatus('processOrderTabId');
+				oldData = checkStatus.data;
+				if (oldData.length <= 0) {
+					layer.alert('请选择要查看的行！', {
+						icon : 2
+					});
+					return;
+				} else if (oldData.length > 1) {
+					layer.alert('查看不能超过多行！', {
+						icon : 2
+					});
+					return;
+				}
+				var type = othis.data('type');
+				layer.open({
+					type : 2,
+					title : '物料需求清单明细',
+					maxmin : false,
+					area : [ '100%', '100%' ],
+					offset : type,
+					id : 'processOrderDetail' + type //防止重复弹出
+					,
+					content : 'processOrderDetail.html',
+					shade : 0 //不显示遮罩
+					,
+					yes : function() {
+						layer.closeAll();
+					}
+				});
+			},
+			search : function(othis) {
+				var requiredTime = $('#requiredTime_search').val();
+				var orderCode = $('#orderCode_search').val();
+				var workshopCode = layui.formSelects.value('workshopCode_search', 'valueStr');
+				var lineCode = layui.formSelects.value('lineCode_search','valueStr');
+				var vehicleCode = $('#vehicleCode_search').val();
+				var serialNum = $('#serialNum_search').val();
+				var storageLocation = layui.formSelects.value('storageLocationSelect', 'valueStr');
+				var businessType = layui.formSelects.value('businessTypeSelect', 'valueStr');
+			    let sellOrder = $('#sellOrder').val();
+				var params = {};
+				params.requiredTimeStr = requiredTime;
+				params.orderCode = orderCode;
+				params.workshopCode = workshopCode;
+				params.lineCode = lineCode;
+				params.vehicleCode = vehicleCode;
+				params.serialNum = serialNum;
+				params.storageLocation = storageLocation;
+				params.businessType=businessType;
+				params.sellOrder = sellOrder;
+				//执行重载
+				table.reload('processOrderTabId', {
+					where : params,
+				});
+			},
+			reset : function(othis) {
+				$('#requiredTime_search').val("");
+				$('#orderCode_search').val("");
+				layui.formSelects.value('workshopCode_search', []);
+				layui.formSelects.value('lineCode_search', []);
+				$('#vehicleCode_search').val("");
+				$('#serialNum_search').val("");
+				layui.formSelects.value('storageLocationSelect', []);
+				layui.formSelects.value('businessTypeSelect', []);
+				$('#sellOrder').val('');
+				form.render("select");
+			},match:function(othis){//匹配库存
+				var cacheTable = table.cache.processOrderTabId;
+				if(cacheTable==null || cacheTable.length==0){
+					layer.msg("无数据");
+					return ;
+				}
+				var type = othis.data('type');
+				layer.open({
+					type : 2,
+					title : '匹配库存 ',
+					maxmin : false,
+					area : [ '100%', '100%' ],
+					offset : type,
+					id : 'matchProcessOrder' + type //防止重复弹出
+					,
+					content : 'matchProcessOrder.html',
+					shade : 0 //不显示遮罩
+					,
+					yes : function() {
+						layer.closeAll();
+					}
+				});
+			}
+		};
+
+		function loadding() {
+			table.render({
+				elem : '#processOrderTab',
+				id : 'processOrderTabId',
+				url : contextPath + 'processOrder/listProcessOrder',
+				cols : [ [ {
+					type : 'checkbox'
+				}, {
+					type : 'numbers',
+					title : '序号'
+				}, {
+					field : 'orderCode',
+					width:'200',
+					title : '生产订单号'
+				}, {
+					field : 'businessType',
+					width:'100',
+					title : '业务类型',templet(d){
+						if(d.businessType=='1'){
+							if(d.isCall =='0'){
+								return '计划拉动';
+							}else{
+								return '计划拉动(缺料呼叫)';
+							}
+						}else if(d.businessType=='3'){
+							return '补料(计划外)';
+						}else if(d.businessType=='4'){
+							return '退补料';
+						}else{
+							return '';
+						}
+					}
+				}, {
+					field : 'vinCode',
+					width:'100',
+					title : 'VIN号'
+				},{field:'requiredTime',width:'120',title:'生产日期',templet(d){
+						if(d.requiredTime!=null&&d.requiredTime!=''){
+							return d.requiredTime.substring(0,10);
+						}else{
+							return '-';
+						}
+				}}, {
+					field : 'workShopName',
+					width:'100',
+					title : '车间'
+				}, {
+					field : 'lineName',
+					width:'100',
+					title : '产线'
+				},
+					/*{
+					field : 'warehouseName',
+					width:'100',
+					title : '仓库'
+				},*/
+					{
+					field : 'orderType',
+					width:'100',
+					title : '订单类型'
+				}, {
+					field : 'vehicleCode',
+					width:'100',
+					title : '产品号'
+				}, {
+					field : 'vehicleDesc',
+					width:'150',
+					title : '产品描述'
+				}, {
+					field : 'sellOrder',
+					width:'150',
+					title : '销售订单'
+				}, {
+					field : 'sellOrderItem',
+					width:'150',
+					title : '销售订单行项目'
+				}, {
+					field : 'customCode',
+					width:'150',
+					title : '客户编码'
+				}, {
+					field : 'customDesc',
+					width:'150',
+					title : '客户描述'
+				}, {
+					field : 'orderNum',
+					width:'80',
+					title : '订单数量'
+				}, {
+					field : 'unit',
+					width:'120',
+					title : '基本计量单位'
+				}, {
+					field : 'priority',
+					width:'100',
+					title : '订单优先级'
+				}, {
+					field : 'batchNo',
+					width:'150',
+					title : '批次'
+				}, {
+					field : 'serialNum',
+					width:'150',
+					title : '车号（序列号）'
+				} ] ],
+				page : {
+					theme : '#008155'
+				},
+				even : true,
+				done : function(res, page, count) {//列表数据回调函数
+					//initWarehouseSignSelect("warehouse_search", 1);
+					form.render(null, "storageLocationSearchForm");
+				}
+			});
+			$('.layui-btn-container button').on('click', function() {
+				var othis = $(this), method = othis.data('method');
+				active[method] ? active[method].call(this, othis) : '';
+			});
+			//时间选择器
+			laydate.render({
+				elem : '#requiredTime_search',
+				type : 'date',
+				 trigger: 'click',
+				range : true
+			});
+			inintPlantMultiSelect("workshopCode_search", [], 2);
+			inintPlantMultiSelect("lineCode_search", [], 3);
+			initWarehouseMultiSelect("storageLocation_search","storageLocationSelect",1,'');
+			initBusinessType();
+		}
+		//监听启用操作
+		form.on('switch(statusValue)', function(obj) {
+			var status = '0';
+			if (obj.elem.checked) {
+				status == '1';
+			}
+			updateStatus(this.value, status);
+		});
+
+		function updateStatus(id, status) {
+			var option = {
+				url : contextPath + '/storageLocation/updateStatus',
+				data : {
+					"id" : id,
+					"status" : status
+				},
+				type : 'POST',
+				success : function(data) {
+
+				},
+				error : function(data) {
+					layer.alert(data.msg)
+				}
+			}
+			$.ajax(option);
+		}
+		//初始化业务类型下拉框
+		function initBusinessType(){
+			var optoinArray=[{name:'计划拉动',value:'1'},{name:'缺料呼叫',value:'2'}];
+			layui.formSelects.data("businessTypeSelect",'local',{
+				arr:optoinArray
+			});
+		}
+	</script>
+</body>
+</html>

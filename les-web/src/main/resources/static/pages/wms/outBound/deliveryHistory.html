@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/tableFilter.css"  type="text/css" />
+<title>送达作业历史查询</title>
+<style type="text/css">
+	.layui-table-body{overflow-x:scroll;}
+	.firstSpan{margin-left: 35px}
+	.aloneSpan{margin-left: 35px;cursor: pointer}
+	.hidden2Div{margin-top: 15px;margin-left: 30px}
+	.hidden2Div li{margin-bottom: 10px}
+</style>
+<style> .layui-layer-content{background: linear-gradient(#001a47,#022558);}</style>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js"></script>
+<script type="text/html" id="bodyTpl">
+<!-- <div class="layui-collapse">
+<div class="layui-colla-item">
+	<h2 class="layui-colla-title">检索信息</h2>
+	<div class="layui-colla-content">  -->
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+	<input type="hidden" id="img">
+		 <div class="layui-col-md3">
+                <label class="layui-form-label">仓库:</label>
+                 <div class="layui-input-block">
+					<select id="warehouseCode" xm-select="select1" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+                </div>
+     	</div>
+		<div class="layui-col-md2">
+	      <label class="layui-form-label">需求日期:</label>
+	      <div class="layui-input-block" >
+	        <input type="text" class="layui-input" id="dateTime" placeholder=" - ">
+	     </div>
+	   </div>
+	   <div class="layui-col-md2">
+			 	<label class="layui-form-label">需求时间:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="requiredTime" class="layui-input" placeholder="yyyy-MM-dd">
+			    </div>
+			 </div>
+		<div class="layui-col-md2">
+	 	 <label class="layui-form-label">集配订单:</label>
+	 	  <div class="layui-input-block">
+	      	<input type="text" id="assembleCode" class="layui-input">
+	     </div>
+	   	</div>
+		<div class="layui-col-md2">
+	 	 <label class="layui-form-label">物料号:</label>
+	 	  <div class="layui-input-block">
+	      	<input type="text" id="materialCode" class="layui-input">
+	     </div>
+	   	</div>
+
+
+	   	</div>
+		<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+	 	     <label class="layui-form-label">物料描述:</label>
+	 	  	 <div class="layui-input-block">
+	      		<input type="text" id="materialDesc" class="layui-input">
+	     	  </div>
+	   		</div>
+	   	   <div class="layui-col-md2">
+	 	     <label class="layui-form-label">是否工位:</label>
+	 	     <div class="layui-input-block">
+	      	  <select id="type">
+	      		<option value="">请选择</option>
+	      		<option value="0">工位制</option>
+	      		<option value="1">非工位制</option>
+	      	  </select>
+	         </div>
+	   	    </div>
+			<div class="layui-col-md2">
+	 	 		<label class="layui-form-label">仓位号:</label>
+	 	  		<div class="layui-input-block">
+	      			<input type="text" id="storageCode" class="layui-input">
+	     		</div>
+	   		</div>
+	   		<div class="layui-col-md2">
+	 		  <label class="layui-form-label">工序订单号:</label>
+	 	  	  <div class="layui-input-block">
+	      		<input type="text" id="processOrderCode" class="layui-input">
+	     	  </div>
+	   		</div>
+	   	    <div class="layui-col-md2">
+	 	 		<label class="layui-form-label">工序物料号:</label>
+	 	  		<div class="layui-input-block">
+	      			<input type="text" id="processMaterialCode" class="layui-input">
+	     		</div>
+	   		</div>
+		</div>
+	   	<div class="layui-row layui-form">
+
+	   	<div class="layui-col-md3">
+              <label class="layui-form-label">工位:</label>
+             	<div class="layui-input-block layui-form">
+				<select  id="stationCode" xm-select="select8" xm-select-show-count="1" xm-select-search="">
+					<option value="">请选择</option>
+				</select>
+				</div>
+          </div>
+	    <div class="layui-col-md2">
+	 	 <label class="layui-form-label">派工日期:</label>
+	 	  <div class="layui-input-block">
+	      	<input type="text" id="activeTime" class="layui-input">
+	     </div>
+	   	</div>
+		<div class="layui-col-md2">
+	 	 <label class="layui-form-label">是否移库:</label>
+	 	  <div class="layui-input-block">
+	      	<select id="moveStatus">
+	      		<option value="">请选择</option>
+	      		<option value="0">未移库</option>
+	      		<option value="1">已移库</option>
+	      	</select>
+	     </div>
+	   	</div>
+		<div class="layui-col-md2">
+	 	 <label class="layui-form-label">是否送达:</label>
+	 	  <div class="layui-input-block">
+	      	<select id="deliveryStatus">
+	      		<option value="">请选择</option>
+	      		<option value="0">未送达</option>
+	      		<option value="1">已送达</option>
+	      	</select>
+	     </div>
+	   	</div>
+		<div class="layui-col-md2">
+	 	 <label class="layui-form-label">是否交接:</label>
+	 	  <div class="layui-input-block">
+	      	<select id="handleStatus">
+	      		<option value="">请选择</option>
+	      		<option value="0">未交接</option>
+	      		<option value="1">已交接</option>
+	      	</select>
+	     </div>
+	   	</div>
+	</div>
+	<div class="layui-row layui-form" style="margin-top: 10px">
+		<div class="layui-col-md3">
+	 	 <label class="layui-form-label">产线:</label>
+	 	  <div class="layui-input-block">
+	      	<input type="text" id="pipeLineCode" class="layui-input">
+	     </div>
+	   	</div>
+		<div class="layui-col-md2">
+	 	 <label class="layui-form-label">载具:</label>
+	 	  <div class="layui-input-block">
+	      	<input type="text" id="carrierCode" class="layui-input">
+	     </div>
+	   	</div>
+
+
+	</div>
+	<div class="layui-row layui-form">
+			<div class="layui-btn-container">
+				{{# if(d.search==null || d.search=="true"){ }}
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+				{{# } }}
+				{{# if(d.export==null || d.export=="true"){ }}
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+				{{# } }}
+			</div>
+	</div>
+<!--</div>
+</div>
+</div> -->
+</div>
+<div style="margin-top: 12px">
+	<nobr><span class="firstSpan" index="1">今日送达数量：<input type="text" id="jr_ckd" value="0笔" style="border: wheat;"></span></nobr>
+	<nobr><span class="aloneSpan" index="2">今日剩余送达数量：<input type="text" id="yl_ckd" value="0笔" style="border: wheat;"></span>
+	<i class="layui-icon layui-icon-help" style="font-size: 24px;color: #bdbd19;float:none;padding-top: 13px;" onclick="helpDoc()"></i>
+	</nobr>
+</div>
+<table class="layui-hide" id="sdWorkTab" lay-filter="sdWorkTabF"></table>
+<div id="helpDocDiv" style="display:none">
+	<div class="layui-col-md12">
+      <div class="layui-card" style="background: linear-gradient(#001a47,#022558);">
+        <div class="layui-card-header" style="color: #c0dcfe;border-bottom: 1px solid #2a69c7;font-size: 22px;padding-top: 22px;">今日计划到货单数</div>
+        <div class="layui-card-body"  style="border-bottom: 1px solid #2a69c7;color: #c0dcfe;">
+        	<p>列表数据已匹配的集配单详情表为数据源，默认统计需求日期（工位制的取sap生产订单的需求日期，非工位制的取凭证创建日期+72小时）是未来3的的所有物料。可根据筛选条件对数据进行筛选</p>
+        	<p>今日送达数量:统计需求日期是明天并且已经送达的物料总量</p>
+        	<p>今日剩余送达数量:统计需求日期是明天并且没有送达的物料总量</p>
+        </div>
+      </div>
+    </div>
+</div>
+</script>
+<script type="text/javascript">
+var storage = window.localStorage;
+var token = storage.token;
+var element = layui.element;
+var layer = layui.layer;
+var table = layui.table;
+var laydate = layui.laydate;
+var form = layui.form;
+var formSelects;
+var contextPath = config.wmsConfig.contextPath;
+var myDate=new Date();
+myDate=myDate.setDate(myDate.getDate());
+myDate=new Date(myDate);
+var requiredDate=new Date(myDate.getTime());
+var requiredDateStr=getFormatDate(requiredDate);
+var endDate=myDate.setDate(myDate.getDate()+3);
+endDate=new Date(endDate);
+var requiredEndDate=new Date(endDate.getTime());
+var requiredDateEnd=getFormatDate(requiredEndDate);
+
+layui.use(['formSelects'],function(){
+	formSelects = layui.formSelects;
+});
+var active = {
+		search:function(othis){
+		      //执行重载
+		    var dateTime = $('#dateTime').val();
+			var beginDate="";
+			var endDate="";
+			if(dateTime && dateTime.length>0){
+				beginDate = dateTime.substring(0,10);
+				endDate = dateTime.substring(13);
+			}
+			//工位
+			var stationCode = layui.formSelects.value('select8', 'valueStr');
+			var storageLocation = layui.formSelects.value('select1', 'storagelocationStr');
+		    table.reload('sdWorkTabId', {
+		        where:{
+		        	beginDate:beginDate,
+	       			endDate:endDate,
+		        	beginTime:$('#requiredTime').val().substring(0,8),
+	       			endTime:$('#requiredTime').val().substring(11),
+		        	assembleCode: $('#assembleCode').val(),
+		        	materialCode:$('#materialCode').val(),
+		        	materialDesc:$('#materialDesc').val(),
+		        	storageCode:$('#storageCode').val(),
+		        	processOrderCode:$('#processOrderCode').val(),
+		        	processMaterialCode:$('#processMaterialCode').val(),
+		        	stationCode:stationCode,
+		        	storageLocation:storageLocation,
+		        	pipeLineCode:$('#pipeLineCode').val(),
+		        	deliveryStatus:$("#deliveryStatus").val(),
+		        	handleStatus:$("#handleStatus").val(),
+		        	carrierCode:$("#carrierCode").val(),
+		        	activeTime:$("#activeTime").val(),
+		        	moveStatus:$("#moveStatus").val(),
+		        	type:$("#type").val()
+		        }
+		        ,page:{"curr":1}
+		      });
+		},reset:function(othis){
+			$('#dateTime').val("");
+			$('#requiredTime').val("");
+			$('#assembleCode').val("");
+			$('#materialCode').val("");
+	    	$('#materialDesc').val("");
+	    	$('#storageCode').val("");
+	    	$('#processOrderCode').val("");
+	    	$('#processMaterialCode').val("");
+	    	$('#stationCode').val("");
+	    	$('#pipeLineCode').val("");
+	    	$("#deliveryStatus").val("");
+	    	$("#handleStatus").val("");
+	    	$("#carrierCode").val("");
+	    	$("#activeTime").val("");
+	    	$("#moveStatus").val("");
+	    	$("#type").val("");
+	    	layui.formSelects.value('select1', []);
+	    	layui.formSelects.value('select8', []);
+	    	 form.render('select');
+		},export:function(othis){
+			var dateTime = $('#dateTime').val();
+			var beginDate="";
+			var endDate="";
+			if(dateTime && dateTime.length>0){
+				beginDate = dateTime.substring(0,10);
+				endDate = dateTime.substring(13);
+			}
+			/* var beginDate = $('#dateTime').val().substring(0,10);
+			var endDate = $('#dateTime').val().substring(13); */
+			var beginTime = $('#requiredTime').val().substring(0,8);
+			var	endTime = $('#requiredTime').val().substring(11);
+	    	var assembleCode =  $('#assembleCode').val();
+	    	var materialCode = $('#materialCode').val();
+	    	var materialDesc = $('#materialDesc').val();
+	    	var storageCode = $('#storageCode').val();
+	    	var processOrderCode = $('#processOrderCode').val();
+	    	var processMaterialCode = $('#processMaterialCode').val();
+	    	var storageLocation = layui.formSelects.value('select1', 'storagelocationStr');
+	    	//工位
+			var stationCode = layui.formSelects.value('select8', 'valueStr');
+	    	//var stationCode = $('#stationCode').val();
+	    	var pipeLineCode = $('#pipeLineCode').val();
+	    	var deliveryStatus = $("#deliveryStatus").val();
+	    	var handleStatus = $("#handleStatus").val();
+	    	var carrierCode = $("#carrierCode").val();
+	    	var activeTime = $("#activeTime").val();
+	    	var moveStatus = $("#moveStatus").val();
+	    	var type = $("#type").val();
+
+	   var params = "beginDate="+beginDate+"&endDate="+endDate+"&storageLocation="+storageLocation+"&beginTime="+beginTime+"&endTime="+endTime+"&assembleCode="+assembleCode
+	    +"&materialCode="+materialCode+"&materialDesc="+materialDesc+"&storageCode="+storageCode
+	    +"&processOrderCode="+processOrderCode+"&processMaterialCode="+processMaterialCode+"&stationCode="+stationCode
+	    +"&pipeLineCode="+pipeLineCode+"&deliveryStatus="+deliveryStatus+"&handleStatus="+handleStatus
+	    +"&carrierCode="+carrierCode+"&activeTime="+activeTime+"&moveStatus="+moveStatus
+	    +"&type="+type+"&token="+token ;
+
+	    window.open(contextPath+"outBoundPlanManger/exprotQuerySdList?"+params);
+	}
+};
+function loadding(){
+	//日期范围
+	laydate.render({
+	  elem: '#dateTime'
+	  ,range: true
+	});
+	laydate.render({
+	  elem: '#requiredTime'
+	  ,type:'time'
+	  ,range: true
+	});
+	laydate.render({
+	  elem: '#activeTime'
+	  ,range: false
+	});
+	initStationCode();//工位
+	table.render({
+		elem:"#sdWorkTab",
+		id:"sdWorkTabId",
+		url:contextPath+"outBoundPlanManger/querySdList",
+		headers:{"Authorization": 'Bearer '+token},
+		cols:[[
+		     {type:'checkbox',fixed:'left'},
+		     {type:'numbers',title:'序号',width: 60,fixed:'left'},
+		     {field:'warehouseCode', title: '仓库编码',width:100,fixed:'left'},
+ 			 {field:'warehouseName', title: '仓库名称',width:100,fixed:'left'},
+		     {field:'pipelinecode',title:'产线',width:100,fixed:'left'},
+		     {field:'stationcode',title:'工位',width:100,fixed:'left'},
+		     {field:'materialcode',title:'物料号',width:160,fixed:'left'},
+		     {field:'materialdesc',title:'物料描述',width:100},
+		     {field:'enablecount',title:'数量',width:100},
+		     {field:'materialunit',title:'单位',width:100},
+		     {field:'requireddate',title:'需求日期',width:120},
+		     {field:'requiredtime',title:'需求时间',width:100},
+		     {field:'atime',title:'派工日期',width:120},
+		     {field:'type',title:'是否计划',width:100},
+		     {field:'deliveryuid',title:'送达人',width:100},
+		     {field:'stationareacode',title:'送达地点',width:100},
+		     {field:'handoperuid',title:'交接操作人',width:100},
+		     {field:'handoveruid',title:'交接人',width:100},
+		     {field:'deliverytime',title:'送达时间',width:100},
+		     {field:'handovertime',title:'交接时间',width:150},
+		     {field:'deliverplatform',title:'配送台位',width:100},
+		     {field:'carriercode',title:'载具编码',width:100},
+		     {field:'carcode',title:'车号',width:100},
+		     {field:'positioncode',title:'仓位号',width:100},
+		     {field:'assembleordercode',title:'集配单据号',width:100},
+		     {field:'activenum',title:'集配序号',width:100},
+		     {field:'batchnum',title:'批次',width:100},
+		     {field:'processordercode',title:'工序订单号',width:100},
+		     {field:'processmaterialcode',title:'工序物料号',width:100},
+		     {field:'processmaterialdesc',title:'工序组件描述',width:100},
+		     {field:'subfactory',title:'分厂代码',width:100},
+		     {fixed:'right',align:'center',toolbar:'#toolBar',width:100},
+		     ]],
+		 page: {theme: '#008155'},
+		 //height: 'full-200',
+		 even:true,
+		 done:function(res,page,count){//列表数据回调函数
+				initCount();
+				//initTableDate(res.data);
+			},
+		 where: {
+			beginDate : requiredDateStr,
+			endDate : requiredDateEnd,
+			}
+	});
+
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+	});
+	initWarehouseMultiSelect("warehouseCode","select1","0",null);
+	element.init();
+}
+function initCount(){
+	$.ajax({
+		url:contextPath+"outBoundPlanManger/queryCount",
+		data:"",
+		success:function(res){
+			if(res.code==0){
+				var counts=res.data;
+				$("#jr_ckd").val(counts.finishCount+"笔");
+				$("#yl_ckd").val(counts.unfinishCount+"笔");
+			}
+		}
+	});
+}
+
+function initStationCode(){//工位
+	$.ajax({
+		url:config.basicInfoConfig.contextPath+"stationManager/getAllStationCode",
+		type:"GET",
+		success:function(result){
+			$('#stationCode').html("");
+			$('#stationCode').append('<option value="">请选择</option>');
+      	  	var order = result.data;
+			if(order && order.length>0){
+			var optionItem;
+			var optoinArray = new Array();
+				for(var i=0;i<order.length;i++){
+				optionItem = {"name":""+order[i].stationCode, "value":""+order[i].stationCode};
+				optoinArray.push(optionItem);
+				}
+				layui.formSelects.data('select8','local',{
+					arr:optoinArray
+				});
+			}
+			form.render('select');
+		}
+	});
+
+	//监听工具条
+	table.on('tool(sdWorkTabF)', function(obj){
+		var eventName = obj.event;			//事件名称
+		var clickObj = $(obj.tr[0]);		//当前对象tr
+
+		 	if(eventName=="moveDispatchImgUrl"){	//移动发货区图片
+			 if(obj.data.MOVEDISPATCHIMGURL==null || obj.data.MOVEDISPATCHIMGURL==''){
+				 layer.alert("抱歉，该记录没有移动发货区图片！");
+				 return;
+			 }
+
+				$("#img").val(obj.data.MOVEDISPATCHIMGURL);			//方便子页面取点收记录的Id
+
+				layer.open({
+			    	type: 2,
+			        title:'移动发货区图片',
+			        offset:'auto',
+			        maxmin:true,
+			        area: ['100%', '100%'],
+			        id: 'moveDispatchImgUrl', //防止重复弹出
+			        content: 'SDmoveDispatchImgUrl.html',
+			        shade: 0, //不显示遮罩
+			        yes: function(){
+			          layer.closeAll();
+			        }
+		     	});
+			}
+	})
+
+}
+function initTableDate(data) {
+	$("[data-field='TYPE']").children().each(function() {
+		if ($(this).text() == '0') {
+			$(this).text('计划');
+		} else if ($(this).text() == '1') {
+			$(this).text('非计划');
+		}
+	});
+}
+
+//格式化日期
+function getFormatDate(date){
+	var seperator1 = "-";
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var strDate = date.getDate();
+    if (month >= 1 && month <= 9) {
+        month = "0" + month;
+    }
+    if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+    }
+    var currentdate = year + seperator1 + month + seperator1 + strDate;
+    return currentdate;
+}
+function helpDoc(){
+	layer.open({
+		  type: 1,
+		  area: ['50%', '50%'],
+		  title:'',
+		  content: $('#helpDocDiv') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+	});
+};
+</script>
+<script type="text/html" id="toolBar">
+
+   <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="moveDispatchImgUrl">图片</a>
+
+</script>
+
+</body>
+</html>

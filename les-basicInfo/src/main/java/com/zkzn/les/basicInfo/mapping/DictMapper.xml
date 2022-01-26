@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.dao.DictDao">
+
+	<insert id="saveDict" parameterType="com.zkzn.les.basicInfo.pojo.Dict">
+		<selectKey keyProperty="id" resultType="java.lang.String" order="BEFORE" >
+			select replace(uuid(),'-','') from dual
+		</selectKey>
+		insert into t_dict (id,dict_type,dict_name,dict_desc) values (#{id,jdbcType=VARCHAR},#{dictType},#{dictName},#{dictDesc})
+	</insert>
+
+	<delete id="deleteDict">
+	<if test="list.size()>0">
+		delete from t_dict where
+		<foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+			id=#{item}
+		</foreach>
+		</if>
+	</delete>
+	<update id="updateDict" parameterType="com.zkzn.les.basicInfo.pojo.Dict">
+		update t_dict set dict_type=#{dictType},dict_name=#{dictName},dict_desc=#{dictDesc} where id=#{id}
+	</update>
+	<select id="listDictList" parameterType="com.zkzn.les.basicInfo.pojo.Dict" resultMap="dictMap">
+		select * from t_dict where 1=1
+		<if test="dictType !=null and ''!= dictType"> and dict_type like '%${dictType}%'</if>
+		<if test="dictName !=null and ''!= dictName"> and dict_name like '%${dictName}%'</if>
+		<if test="sortColums !=null and ''!= sortColums">order by ${sortColums}</if>
+	</select>
+
+	<select id="getDict" parameterType="com.zkzn.les.basicInfo.pojo.Dict" resultMap="dictMap">
+		select * from t_dict where 1=1
+		<if test="dictType !=null and ''!= dictType"> and dict_type=#{dictType}</if>
+		<if test="dictName !=null and ''!= dictName"> and dict_name=#{dictName}</if>
+		<if test="id !=null and ''!= id"> and id!=#{id}</if>
+	</select>
+	<resultMap id="dictMap" type="com.zkzn.les.basicInfo.pojo.Dict">
+		<result property="dictType" column="dict_type" />
+		<result property="dictName" column="dict_name" />
+	</resultMap>
+	<select id="initStockType" resultType="java.util.Map">
+		SELECT
+    		di.ITEM_NAME AS "itemName",
+    		di.ITEM_VALUE AS "itemValue"
+		FROM T_DICT d LEFT JOIN T_DICT_ITEMS di ON d.ID = di.DICT_TYPE_ID WHERE d.DICT_TYPE = #{dictType}
+	</select>
+
+	<select id="listDict" parameterType="com.zkzn.les.basicInfo.pojo.Dict" resultMap="dictMap">
+		     select t.id, t.dict_type,t.dict_name from t_dict t where t.dict_type like '%${dictType}'
+	</select>
+
+	<select id="initDictItemList" resultType="com.zkzn.les.basicInfo.pojo.DictItems">
+		SELECT
+			di.ITEM_NAME AS "itemName",
+			di.ITEM_VALUE AS "itemValue"
+		FROM t_dict d
+		LEFT JOIN t_dict_items di ON d.ID = di.DICT_TYPE_ID
+		WHERE d.DICT_TYPE = #{dictType}
+	</select>
+</mapper>

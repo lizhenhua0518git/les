@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.oms.stationOrder.dao.AppStationOrderDao">
+
+    <select id="findStationOrder" resultType="com.zkzn.les.oms.stationOrder.pojo.AppShipmentTaskPojo" parameterType="com.zkzn.les.oms.stationOrder.pojo.AppShipmentTaskPojo">
+        SELECT
+            s.shipment_task_id AS "shipmentTaskId",
+            s.client_name AS "clientName",
+            s.order_code AS "orderCode",
+            s.order_type AS "orderType",
+            IF(s.order_type = 0,'合格品出库',IF(s.order_type = 1,'不合格品出库','调拨出库')) AS "orderTypeName",
+            (SELECT COUNT(*) FROM o_shipment_task_detail WHERE shipment_task_id = s.shipment_task_id
+            <if test="taskStatus != 2">
+                and shipment_status = 0
+            </if>
+            ) AS "materialNumber"
+        FROM
+            o_shipment_task s
+        WHERE
+            1=1
+        <if test="warehouseCode != null and '' != warehouseCode ">
+            AND s.warehouse_code = #{warehouseCode}
+        </if>
+        <if test="operateUserId != null">
+            AND operate_user_id = #{operateUserId}
+        </if>
+        <if test="taskStatus != null">
+            AND task_status = #{taskStatus}
+        </if>
+        ORDER BY s.creater_time ASC
+    </select>
+
+    <select id="findMaterialById" resultType="com.zkzn.les.oms.stationOrder.pojo.AppShipmentTaskDetailPojo">
+        SELECT
+            std.shipment_task_detail_id AS "shipmentTaskDetailId",
+            std.shipment_task_id AS "shipmentTaskId",
+            std.material_desc AS "materialDesc",
+            std.material_unit AS "materialUnit",
+            std.shipment_count AS "shipmentCount",
+            std.storage_position_id AS "storagePositionId",
+            std.position_code AS "positionCode",
+            std.batch_no AS "batchNo",
+            std.position_car_code AS "positionCarCode",
+            st.client_name AS "clientName",
+            std.carrier_code AS "carrierCode",
+            std.area_code AS "areaCode",
+            std.stock_status AS "stockStatus"
+        FROM
+            o_shipment_task_detail std
+            LEFT JOIN o_shipment_task st ON std.shipment_task_id = st.shipment_task_id
+        WHERE
+            std.shipment_task_id = #{shipmentTaskId}
+            AND std.shipment_status = #{shipmentStatus}
+    </select>
+
+    <update id="updateStationOrderDetail" parameterType="com.zkzn.les.oms.stationOrder.pojo.UpdateShipmentTaskDetail">
+        UPDATE o_shipment_task_detail
+        <trim prefix="set" prefixOverrides=",">
+            <if test="carrierCode !=null and '' != carrierCode">,carrier_code=#{carrierCode}</if>
+            <if test="areaCode !=null and '' != areaCode">,area_code=#{areaCode}</if>
+            <if test="shipmentStatus !=null">,shipment_status=#{shipmentStatus}</if>
+            <if test="updateUserId !=null">,update_user_id=#{updateUserId}</if>
+            <if test="updateTime !=null">,update_time=#{updateTime}</if>
+        </trim>
+        WHERE shipment_task_detail_id = #{shipmentTaskDetailId}
+    </update>
+
+    <select id="getShipmentStatus" resultType="java.lang.Integer">
+        SELECT
+            COUNT(shipment_task_detail_id)
+        FROM o_shipment_task_detail
+        WHERE shipment_task_id = #{shipmentTaskId} AND shipment_status = 0
+    </select>
+
+    <update id="updateShipmentTaskStatus">
+        UPDATE o_shipment_task SET task_status = #{taskStatus} WHERE shipment_task_id = #{shipmentTaskId}
+    </update>
+
+</mapper>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>质检区实时信息</title>
+    <link rel="stylesheet" type="text/css" href="css/index.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="js/date.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>
+<div id="app1">
+    <div class="header">
+        <div class="title"><b>质检区实时信息</b></div>
+        <div class="date" id="date">
+        </div>
+        <div class="center-div">
+            <span class="green ">合格</span>
+            <span class="red ">不合格</span>
+            <span class="orage ">部分合格</span>
+        </div>
+        <div class="amount">
+            <span class="right">今日任务数：{{finishedCount}}/{{totalCount}}</span>
+        </div>
+        <div class="main">
+            <div class="mainBox" v-for="item in task">
+                <p class="boxTitle">{{item.area}}</p>
+                <div class="" desc="该质检区的物料情况" v-if="item.inspectResult.length == 0">暂无数据</div>
+                <div class="" desc="该质检区的物料情况" v-for="m in item.inspectResult">
+                    <p v-if="m.vote == -1">{{m.materialDesc}} [待质检] </p>
+                    <p class="red" v-if="m.vote == 1">{{m.materialDesc}} {{m.qualifiedCount}}/{{m.totalCount}} </p>
+                    <p class="green" v-if="m.vote == 0">{{m.materialDesc}} {{m.qualifiedCount}}/{{m.totalCount}}</p>
+                    <p class="orage" v-if="m.vote == 2">{{m.materialDesc}} {{m.qualifiedCount}}/{{m.totalCount}}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    var contextPath = config.wmsConfig.contextPath;
+
+    new Vue({
+        el: '#app1',
+        data() {
+            return {
+                finishedCount: "",
+                totalCount: "",
+                task: [],
+            }
+        },
+
+        methods: {
+            addList() {
+                //请求数据
+                // var api = 'less2.json';
+                var api = contextPath+'receiveRecord/listQualityRecordCollectionScreen';
+                axios.get(api).then((res) => {
+                    console.log(res);
+                    this.finishedCount = res.data.data.finishedCount;
+                    this.totalCount = res.data.data.totalCount;
+                    this.task = res.data.data.task;
+//							console.log(this.task);
+//							this.inspectResult=res.data.task.inspectResult;
+//							console.log(this.inspectResult);
+
+                }).catch((err) => {
+                    console.log(err)
+                })
+            }
+        },
+        mounted() { //请求数据，操作dom可在这进行
+            var fun = this;
+            fun.addList();
+            var t2 = window.setInterval(function () {
+                console.log('每隔60秒钟执行一次');
+                fun.addList();
+            }, 60000)
+        },
+    })
+</script>
+</body>
+
+</html>

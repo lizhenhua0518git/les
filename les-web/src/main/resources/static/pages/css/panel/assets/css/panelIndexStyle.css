@@ -1,0 +1,160 @@
+/** 清除内外边距 **/
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
+dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
+pre, /* text formatting elements 文本格式元素 */
+form, fieldset, legend, button, input, textarea, /* form elements 表单元素 */
+th, td /* table elements 表格元素 */ {
+  margin: 0;
+  padding: 0;
+}
+/** 重置列表元素 **/
+ul, ol { list-style: none; }
+
+/** 重置文本格式元素 **/
+a { text-decoration: none; }
+
+/** 设置默认字体 **/
+body,
+button, input, select, textarea /* for ie */ {
+  font: 12px/1.5 tahoma, arial, \5b8b\4f53, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 { font-size: 100%; }
+address, cite, dfn, em, var { font-style: normal; } /* 将斜体扶正 */
+code, kbd, pre, samp { font-family: courier new, courier, monospace; } /* 统一等宽字体 */
+small { font-size: 12px; } /* 小于 12px 的中文很难阅读，让 small 正常化 */
+
+.clearfix {
+  clear: both;
+}
+
+body {
+  overflow: hidden;
+  background-color:#0a3e72;
+}
+body * {
+  font-family: "微软雅黑";
+}
+
+.login-main {
+  width: 1200px;
+  margin:0 auto;
+  z-index: 2;
+}
+.login-top {
+  margin: 80px 0 0 0;
+}
+.login-bottom {
+  margin: 65px auto 0 auto;
+}
+.card.card-img-holder {
+    position: relative;
+}
+.text-white {
+    color: #ffffff !important;
+}
+
+.col-md-4{padding-right: 0px;
+    padding-left: 0px;
+}
+
+.col-md-6{padding-right: 10px;
+    padding-left: 10px;
+}
+.col-md-12{padding-right:10px;
+    padding-left:10px;
+}
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0px solid rgba(0, 0, 0, 0.125);
+    border-radius:0;
+}
+.card {
+    border: 0;
+    margin-bottom: 20px;
+}
+.card-body {
+    flex: 1 1 auto;
+    padding: 1.25rem;
+	font-size:30px;
+	text-align:center;
+}
+.card .text1{padding:65px 50px 50px 130px;}
+.card .text2{padding:180px 50px; text-align:center;}
+.card .text3{padding:280px 50px 0; text-align:center;}
+.card .text33{padding:110px 50px 0; text-align:center;}
+.card.card-img-holder .card-img-absolute {
+  position: absolute;
+  top: 150px;
+  left:42px;
+  height: 96px;
+}
+.card.card-img-holder .card-img-absolute2 {
+  position: absolute;
+  top: 50px;
+  left:50px;
+  height: 80px;
+}
+.card.card-img-holder .card-img-absolute3 {
+  position: absolute;
+  top: 150px;
+  left:50px;
+  height: 80px;
+}
+.card.card-img-holder .card-img-absolute33 {
+  position: absolute;
+  top: 30px;
+  left:50px;
+  height: 80px;
+}
+.card.card-img-holder .card-img-absolute4 {
+  position: absolute;
+  top: 70px;
+  left:50px;
+  height: 80px;
+}
+.bg-gradient-success{background-color:#44c176; height:170px}
+.bg-gradient-success1{background-color:#c73e48; height:400px}
+.bg-gradient-success2{background-color:#e39352; height:400px}
+.bg-gradient-success3{background-color:#3abbb9; height:400px}
+.bg-gradient-success4{background-color:#7c50dd; height:400px}
+.bg-gradient-success5{background-color:#bb58b5; height:170px}
+.bg-gradient-success6{background-color:#d3c752; height:590px}
+.bg-gradient-success7{background-color:#5357e2; height:285px}
+.bg-gradient-success8{background-color:#3c93d1; height:285px}
+
+
+@media(max-width:1600px) {
+}
+@media(max-width:1440px) {
+.login-top {
+  margin: 70px 0 0 0;
+}
+.login-bottom {
+  margin: 55px auto 0 auto;
+}
+}
+@media(max-width:1366px) {
+.login-top {
+  margin: 65px 0 0 0;
+}
+.login-bottom {
+  margin: 50px auto 0 auto;
+}
+
+}
+@media(max-width:1280px) {
+
+.login-top {
+  margin: 60px 0 0 0;
+}
+.login-bottom {
+  margin: 45px auto 0 auto;
+}
+}
+

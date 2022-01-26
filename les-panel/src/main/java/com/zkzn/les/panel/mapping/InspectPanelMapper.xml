@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.panel.dao.InspectPanelDao">
+
+    <select id="listShowArea" resultType="com.zkzn.les.common.pojo.panel.Area">
+		select t.* from t_area t where area_type = '03' and status = '1'
+	</select>
+
+	<select id="listInspectResultPanel" resultType="com.zkzn.les.common.pojo.panel.InspectPanel">
+	select
+		  "tab".inspect_position_id as "areaId",
+		  "tab".batch_no as "batchNo",
+		  "tab".material_desc as "materialDesc",
+		 ifnull( "tab".qualified_num,0)   as "qualifiedCount",
+		   ifnull("tab".extract_num,0) as "totalCount",
+		  "tab".inspection_status as "vote"
+		from
+		  t_receive_detail_record "tab"
+		where
+
+		  "tab".status ='30'
+		   and date_format(trr.point_time, '%Y-%m-%d')=date_format(sysdate, '%Y-%m-%d')
+-- 		  <![CDATA[ (date_format( "tab".point_time,  '%Y-%m-%d' ) <= #{parameter.pointtime} and "tab".status = 30)]]>
+-- 		  or(date_format( "tab".point_time,  '%Y-%m-%d' ) = #{parameter.pointtime} and "tab".status in ( 30, 32, 35 ))
+		 order by "tab".create_time desc
+ 	</select>
+
+
+	<select id="inspectPanel"  resultType="com.zkzn.les.common.pojo.panel.InspectPanel">
+		SELECT trr.BILL_CODE as "billCode",
+         ROUND(sum(ifnull(trdr_30.RECEIVE_NUM,0))/4,2)  as "unInspectNum",
+          ROUND(sum(ifnull(trdr_32.RECEIVE_NUM,0))/4,2) as "insepectedNum",
+          ROUND(sum(ifnull(trdr_32.QUALIFIED_NUM,0))/4,2) as "qualifiedNum",
+          ROUND(sum(ifnull(trdr_32.UNQUALIFIED_NUM,0))/4,2) as "unqualifiedNum",
+         min(ifnull(trdr_32.INSPECTION_TIME,sysdate)) as "inspectionTime",
+          ROUND(sum(ifnull(trdr.RECEIVE_NUM ,0))/4,2) as "totalCount"
+    FROM T_RECEIVE_RECORD trr
+         LEFT JOIN T_RECEIVE_DETAIL_RECORD trdr on trr.id = trdr.RECEIVE_ID
+         LEFT JOIN T_RECEIVE_DETAIL_RECORD trdr_30 on trr.id = trdr_30.RECEIVE_ID and trdr_30.STATUS = 30
+         LEFT JOIN T_RECEIVE_DETAIL_RECORD trdr_32 on trr.id = trdr_32.RECEIVE_ID and trdr_32.STATUS = 32
+
+    GROUP BY trr.BILL_CODE
+-- 		 	WHERE date_format( trdr.point_time,  '%Y-%m-%d' ) = date_format(sysdate, '%Y-%m-%d')
+	</select>
+</mapper>

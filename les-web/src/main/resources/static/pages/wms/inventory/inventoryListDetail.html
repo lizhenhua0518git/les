@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>仓库明细</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+</head>
+<body id="bodyDiv">
+
+<script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+
+			<div class="layui-col-md2">
+                 <label class="layui-form-label">仓库</label>
+                  <div class="layui-input-block layui-form">
+					<select id="warehouseCode" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+
+            <div class="layui-col-md2">
+            <label class="layui-form-label">库存地点</label>
+
+              <div class="layui-input-block layui-form">
+				 <select  id="storageLocation" xm-select="storageLocationSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+				</div>
+            </div>
+
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">库存状态</label>
+				<div class="layui-input-block layui-form">
+					<select  id="stockStatus" xm-select="stockStatusSelect" xm-select-show-count="1">
+					<option value="">请选择</option>
+				</select>
+				</div>
+			</div>
+            <div class="layui-col-md2">
+			 	<label class="layui-form-label">供应商/客户</label>
+				<div class="layui-input-block layui-form">
+					<input type="text" class="layui-input" id="supplierName" placeholder="请输入供应商/客户">
+				</div>
+			</div>
+             <div class="layui-col-md2">
+			 	<label class="layui-form-label">创建时间</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="createTime" class="layui-input">
+			    </div>
+		    </div>
+		</div>
+			<div class="layui-row layui-form">
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">物料编号</label>
+			 	<div class="layui-input-block">
+			    	<input type="text" id="materialCode" class="layui-input" placeholder="请输入物料编号">
+			    </div>
+			</div>
+
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">物料名称</label>
+			 	<div class="layui-input-block">
+			    	<input type="text" id="materialDesc" class="layui-input" placeholder="请输入物料名称">
+			    </div>
+			</div>
+
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">库存类型</label>
+				<div class="layui-input-block layui-form">
+					<select  id="stockType" xm-select="stockTypeSelect" xm-select-show-count="1">
+					<option value="">请选择</option>
+				</select>
+				</div>
+			</div>
+
+               <div class="layui-col-md2">
+			 	<label class="layui-form-label">变更类型</label>
+				<div class="layui-input-block layui-form">
+					<select  id="businessType" xm-select="businessTypeSelect" xm-select-show-count="1">
+					<option value="">请选择</option>
+				</select>
+				</div>
+			</div>
+
+          <div class="layui-col-md2">
+			 	<label class="layui-form-label">变更单号</label>
+			 	<div class="layui-input-block">
+			    	<input type="text" id="businessCode" class="layui-input" placeholder="请输入变更单号">
+			    </div>
+			</div>
+        </div>
+
+       <div class="layui-row layui-form">
+
+
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">变更人</label>
+			 	<div class="layui-input-block">
+			    	<input type="text" id="createrName" class="layui-input" placeholder="请输入变更人">
+			    </div>
+			</div>
+
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">订单号</label>
+			 	<div class="layui-input-block">
+			    	<input type="text" id="orderCode" class="layui-input" placeholder="请输入订单号">
+			    </div>
+			</div>
+
+			<div class="layui-col-md2">
+			 	<label class="layui-form-label">订单行号</label>
+			 	<div class="layui-input-block">
+			    	<input type="text" id="orderItemNo" class="layui-input" placeholder="请输入订单行项目号">
+			    </div>
+			</div>
+		   <div class="layui-col-md2">
+			<div class="layui-btn-container" style="text-align: left;">
+				{{# if(d.search==null || d.search=="true"){ }}
+             	 	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+              	{{# } }}
+			</div>
+		</div>
+	  </div>
+	</div>
+
+		<!-- 按钮区域 -->
+ <div class="layui-fluid-table">
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+			<div class="layui-col-md6">
+				<div class="layui-btn-container">
+
+					{{# if(d.export==null || d.export=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="export" type="button"><i class="layui-icon icon-export"></i>导出</button>
+            	 {{# } }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<table id="listStoreDetail" lay-filter="listStoreDetailTabF"></table>
+</div>
+</script>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+ <script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var contextPath = config.wmsConfig.contextPath;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var laydate = layui.laydate;
+		var oldData;
+
+		var active = {
+				export:function(othis){
+					var token = window.localStorage.token;
+
+					var createTime = $('#createTime').val();
+					   var startTime = null;
+					    var endTime = null;
+					    if(createTime && createTime.length>0){
+					    	startTime = createTime.substring(0,10);
+					    	endTime = createTime.substring(13);
+					      }
+					var materialCode = $('#materialCode').val();
+					var materialDesc = $('#materialDesc').val();
+					var createrName=$('#createrName').val();
+					var orderCode=$('#orderCode').val();
+					var businessCode=$('#businessCode').val();
+					var orderItemNo=$('#orderItemNo').val();
+					var supplierName = $('#supplierName').val();
+					var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+					var businessType =layui.formSelects.value('businessTypeSelect', 'valueStr');
+					var storageLocation = layui.formSelects.value('storageLocationSelect', 'valueStr');
+					var stockType  = layui.formSelects.value('stockTypeSelect', 'valueStr');
+					var stockStatus  = layui.formSelects.value('stockStatusSelect', 'valueStr');
+
+
+
+					var params = "materialCode="+materialCode+"&materialDesc="+materialDesc
+					+"&createrName="+createrName+"&orderCode="+orderCode+"&businessCode="+businessCode
+					+"&orderItemNo="+orderItemNo+"&supplierName="+supplierName+"&warehouseCode="+warehouseCode
+					+"&businessType="+businessType+"&storageList="+storageList+"&stockType="+stockType
+					+"&stockStatus="+stockStatus +"&token="+token;
+					window.open(contextPath+"materialInstock/inventoryInfoExport?"+params);
+				},
+				search:function(othis){
+					  var createTime = $('#createTime').val();
+					   var startTime = null;
+					    var endTime = null;
+					    if(createTime && createTime.length>0){
+					    	startTime = createTime.substring(0,10);
+					    	endTime = createTime.substring(13);
+					      }
+					//执行重载
+					table.reload('listStoreDetailTabId', {
+						where:{
+							startTime:startTime,
+							endTime:endTime,
+					  		materialCode : $('#materialCode').val(),
+					  		materialDesc : $('#materialDesc').val(),
+					  		createrName:$('#createrName').val(),
+					  		orderCode:$('#orderCode').val(),
+					  		businessCode:$('#businessCode').val(),
+					  		orderItemNo:$('#orderItemNo').val(),
+
+					  		supplierName : $('#supplierName').val(),
+					  		warehouseCode : layui.formSelects.value('warehouseCodeSelect', 'valueStr'),
+					  		businessType :layui.formSelects.value('businessTypeSelect', 'valueStr'),
+					  		storage  : layui.formSelects.value('storageLocationSelect', 'valueStr'),
+					  		stockType  : layui.formSelects.value('stockTypeSelect', 'valueStr'),
+					  		stockStatus  : layui.formSelects.value('stockStatusSelect', 'valueStr')
+
+
+					  	},
+						page:{"curr" : 1}
+					});
+				},
+				reset:function(othis){
+					$('#materialCode').val("");
+					$('#materialDesc').val("");
+					$('#supplierName').val("");
+					$('#createrName').val("");
+					$('#createTime').val("");
+					$('#orderCode').val("");
+					$('#businessCode').val("");
+					$('#orderItemNo').val("");
+			  		layui.formSelects.value('stockStatusSelect', []);
+			  		layui.formSelects.value('stockTypeSelect', []);
+			  		layui.formSelects.value('storageLocationSelect', []);
+			  		layui.formSelects.value('warehouseCodeSelect', []);
+			  		layui.formSelects.value('businessTypeSelect', []);
+					form.render("select");
+				}
+			};
+		function loadding(){
+			table.render({
+				elem:'#listStoreDetail',
+				id:'listStoreDetailTabId',
+		    	url:contextPath+'materialInstock/listInventoryInfo',
+			    cols: [[
+			    	{type:'numbers',title:'序号',width:'3%'},
+				    {field:'materialCode',title: '物料编号',width:'5%'},
+				    {field:'materialDesc',title: '物料名称' ,width:'5%'},
+				    {field:'materialUnit',title: '单位' ,width:'3%'},
+				    {field:'factory', title: '工厂',width:'5%'},
+				    {field:'sapStorageLocation', title: '工厂库存地点',width:'8%'},
+				    {field:'storageLocation', title: '库存地点',width:'5%'},
+				    {field:'warehouseName', title: '仓库名称',width:'5%'},
+				    {field:'batchNo', title: '批次',width:'5%'},
+				    {field:'supplierName', title: '供应商/客户',width:'10%'},
+				    {field:'stockTypeName', title: '库存类型',width:'5%'},
+				    {field:'stockStatusName', title: '库存状态',width:'5%'},
+				    {field:'businessTypeName', title: '变更类型',width:'5%'},
+				    {field:'orderCode', title: '订单号',width:'5%'},
+				    {field:'orderItemNo', title: '订单行项目号',width:'8%'},
+				    {field:'stockCount', title: '变更数量',width:'4%'},
+				    {field:'businessCode', title: '变更号',width:'4%'},
+				    {field:'createrName', title: '变更人',width:'5%'},
+				    {field:'createTime', title: '变更世间'}
+			    	]],
+			    	page: {theme: '#008155'},
+	    		even:true,
+	    		done:function(res,page,count){//列表数据回调函数
+	    		}
+			});
+			$('.layui-btn-container button').on('click', function(){
+			    var othis = $(this), method = othis.data('method');
+			    active[method] ? active[method].call(this, othis) : '';
+		  	});
+
+			//创建时间区间
+		 	laydate.render({
+			    elem: '#createTime',
+			    range: true
+			});
+			//加载字典开始
+			var dictTypes = ["stock_status","stock_type","chanage_type"]
+			var selectItems = ["stockStatusSelect","stockTypeSelect","businessTypeSelect"]
+			var defaultValues = [[],[],[]]
+			initDictItemMultiSelect(dictTypes,selectItems,defaultValues);
+			//加载字典结束
+
+			//加载仓库、库存地开始
+			initWarehouseMultiSelect("warehouseCode","warehouseCodeSelect",0,'');
+			var selectIds = ["storageLocationSelect"];
+			var cols = ["storagelocation"];
+			var defualtValues = [[],[]];
+			linkageSelect("warehouseCodeSelect",selectIds,cols,defualtValues);
+			//加载仓库、库存地结束
+
+		}
+
+
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>选择库存地点</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+ 
+</head>
+<style type="text/css">
+.layui-table-body{
+	overflow-x:hidden;
+}
+</style>
+<body>
+<div id="bodyDiv">
+
+</div>
+	<div class="layui-fluid">
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+				<div class="layui-col-md6">
+					<div class="layui-col-md3">
+					 	<label class="layui-form-label">库存地点:</label>
+					 	 <div class="layui-input-block">
+					      <input type="text" id="storageLocation" class="layui-input">
+					    </div>
+					</div>
+					 
+				</div>
+				<div class="layui-col-md6">
+					<div class="layui-btn-container" style="text-align: right;">
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search"><i class="layui-icon">&#xe615;</i>查询</button>
+	 					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset"><i class="mine-icon">&#xe640;</i>重置</button>
+					<input type="hidden" id="isDel" value="1" class="layui-input">
+					</div>
+				</div>
+			</div>
+	</div>
+	<table id="chooseStorageLocationTab" lay-filter="chooseStorageLocationTabF"></table>
+	    <script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+    <script type="text/html" id="bodyTpl"></script>
+	<script type="text/javascript">
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		 var contextPath = config.basicInfoConfig.contextPath;
+		  function loadding(){
+		table.render({
+			elem:'#chooseStorageLocationTab',
+			id:'chooseStorageLocationTabId',
+			url:contextPath+'storageLocation/queryStorageLocation',
+			cols:[[
+			 {type:'radio'}
+			,{field:'warehouseCode',title:'仓库编码'}
+            ,{field:'warehouseName',title:'仓库名称'}
+            ,{field:'storageLocation',title:'仓库库存地'}
+            ,{field:'factoryCode',title:'工厂编码'}
+            ,{field:'sapStorageLocation',title:'工厂库存地'}
+			]],
+			page: false,
+			
+    		even:true,
+    		done:function(res,page,count){//列表数据回调函数
+    			$("input[lay-filter=layTableAllChoose]").parent().hide();
+    		}
+		});
+		var active = {
+				search:function(othis){
+					var storageLocation =  $('#storageLocation').val();
+				 
+					 
+					  var params={};
+		                params.storageLocation=storageLocation;
+		                
+				      //执行重载
+				      table.reload('chooseStorageLocationTabId', {
+				    	  where:params,
+		                    page:{"curr":1}
+				      });
+				},reset:function(othis){
+					$('#storageLocation').val("");
+					 
+					 
+				}
+		}
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		//隐藏全选的复选框
+		 $("input[lay-filter=layTableAllChoose]").parent().hide();
+		
+		table.on('radio(chooseStorageLocationTabF)',function(res){
+			 var checkStatus = table.checkStatus('chooseStorageLocationTabId');
+             var  tableObj = checkStatus.data;
+			
+             if(tableObj.length==1){
+                parent.$("#sapStorageLocation").val(res.data.sapStorageLocation);
+                parent.$("#storageLocation").val(res.data.storageLocation);
+         		parent.$("#warehouseCode").val(res.data.warehouseCode);
+         		parent.$("#warehouseName").val(res.data.warehouseName);
+         		parent.layer.closeAll();
+            	 return false;
+             }
+		/* 	if(res.checked){
+        		if(table.cache.chooseStorageLocationTabId.length==1){
+        			res.data = table.cache.chooseStorageLocationTabId[0];
+        		}
+        		
+        	} */
+	    });
+		  }
+	</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+
+<title>交接管理</title>
+</head>
+<script type="text/html" id="toolbar">
+	<a class="layui-btn layui-btn-xs" lay-event="showDetail">明细</a>
+	<a class="layui-btn layui-btn-xs" lay-event="exportDetail">导出</a>
+</script>
+    <script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+		<div class="layui-row layui-form" >
+			<div class="layui-col-md2">
+				<label class="layui-form-label">出库任务号</label>
+				<div class="layui-input-inline">
+					<input type="text" id="orderCode" placeholder="请输入出库任务号"  class="layui-input">
+				</div>
+            </div>
+			<div class="layui-col-md2">
+				<label class="layui-form-label">仓库编码</label>
+				<div class="layui-input-inline">
+					<select  id="warehouseCode" lay-filter="storageLocationFilter" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-col-md2">
+				<label class="layui-form-label">交接时间</label>
+				<div class="layui-input-inline layui-form">
+					<input type="text" class="layui-input" id="createTime" placeholder="请选择交接时间">
+				</div>
+			</div>
+			<div class="layui-col-md2">
+				<div class="layui-btn-container" style="text-align: right;">
+					{{# if(d.search==null || d.search=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-syncronize"></i>重置</button>
+					{{# } }}
+				</div>
+			</div>
+    </div>
+		<div class="layui-fluid-table">
+	<table class="layui-hide" id="handoverTab" lay-filter="handoverTabF"></table>
+</div>
+</script>
+    <script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+    <script type="text/javascript">
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var laydate =layui.laydate;
+    var contextPath = config.omsConfig.contextPath;
+    var oldData;
+    var shipmentTaskId ;
+
+    function loadding(){
+    table.render({
+        elem:'#handoverTab',
+        id:'handoverTabId',
+        url: contextPath + 'handover/listHandoverOrderList',
+        cols:[[
+        {type:'numbers',title:'序号'},
+        {field:'orderCode', title: '出库任务号'},
+        {field:'workshopName', title: '仓库名称'},
+        {field:'clientName', title: '客户名称'},
+		{field:'orderType', title: '交接类型', templet:function(d){
+				return d.orderType == "0" ? "合格品出库" : d.orderType == "1" ? "不合格品出库" : d.orderType == "2" ? "调拨出库":"";
+			}
+		},
+        {field:'connectName', title: '交接人'},
+        {field:'connectTime', title: '交接时间'},
+		{field:'taskStatus', title: '交接状态', templet:function(d){
+				if(d.taskStatus == 1){
+					return '待下架';
+				}else if(d.taskStatus == 2){
+					return '待交接';
+				}else if(d.taskStatus == 3){
+					return '交接完成';
+				}
+			}
+		},
+        {align:'center',title:'操作', toolbar:"#toolbar"}
+        ]],
+        page: {theme: '#008155'},
+        even:true,
+        done:function(res,page,count){//列表数据回调函数
+
+        }
+    });
+
+    $('.layui-btn-container button').on('click', function(){
+        var othis = $(this), method = othis.data('method');
+        active[method] ? active[method].call(this, othis) : '';
+    });
+
+	initWarehouseMultiSelect("warehouseCode","warehouseCodeSelect","1",'');
+
+	//时间选择器
+	laydate.render({
+		elem : '#createTime',
+		type : 'date',
+		trigger: 'click',
+		range : true
+	});
+
+	 table.on('tool(handoverTabF)', function(obj){
+			var eventName = obj.event;
+			var data = obj.data;
+		 	shipmentTaskId = data.shipmentTaskId;
+			var id = "handoverMian";
+			var url = "/iles/pages/wms/outBound/handoverDetailManager.html?shipmentTaskId="+shipmentTaskId;
+			var currHeight = parent.$(document).height();
+			if(eventName == "showDetail"){
+				parent.element.tabDelete('indexTab', id);
+				parent.element.tabAdd('indexTab', {
+			        title: "配送交接单明细"
+			        ,content: ' <iframe id="'+id+'" frameborder="0"  src="'+url+'" width="100%" height="'+currHeight+'px"></iframe>'
+			        ,id: id //实际使用一般是规定好的id，这里以时间戳模拟下
+			    });
+				parent.element.tabChange('indexTab', id); //切换到：用户管理
+			}else if(eventName == "exportDetail"){
+				 let token = window.localStorage.token;
+				layer.confirm('确定导出该详情吗？', { icon: 3, title: '提示' }, function (index) {
+					window.open(contextPath + 'handover/exportHandoverOrderDetail?shipmentTaskId=' + data.shipmentTaskId+ '&token=' + token);
+				});
+			}
+		});
+   }
+ 
+
+    var active = {
+		search:function(othis){
+			var orderCode=$('#orderCode').val();
+			var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+			let createTime = $('#createTime').val();
+			var startTime='';
+			var endTime='';
+			if(createTime.length>0){
+				startTime = createTime.substring(0,10);
+				endTime = createTime.substring(13);
+			}
+			var params={};
+			params.orderCode=orderCode;
+			params.warehouseCode=warehouseCode;
+			params.startTime=startTime;
+			params.endTime=endTime;
+			  //执行重载
+			  table.reload('handoverTabId', {
+				where:params,
+				page:{"curr":1}
+			  });
+		},reset:function(othis){
+			$('#orderCode').val("");
+			layui.formSelects.value('warehouseCodeSelect', []);
+			$('#createTime').val("");
+			form.render("select");
+		}
+    };
+</script>
+<body id="bodyDiv">
+</body>
+</html>

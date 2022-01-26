@@ -1,0 +1,583 @@
+<#assign  title="载具管理" />
+	<#include '/header.html' />
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="${ctx}/pages/layui/css/layui.css"  type="text/css" />
+    <link rel="stylesheet" href="${ctx}/pages/css/layui_extend.css"  media="all">
+    <link rel="stylesheet" href="${ctx}/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+
+	<script src="${ctx}/pages/lib/jquery-qrcode-0.14.0/jquery.min.js"></script>
+	<script src="${ctx}/pages/lib/jquery-qrcode-0.14.0/jquery-qrcode-0.14.0.min.js"></script>
+	<script src="${ctx}/pages/lib/jquery-barcode/jquery-migrate-1.2.1.min.js"></script>
+	<script src="${ctx}/pages/lib/jquery-barcode/jquery.jqprint-0.3.js"></script>
+	<script src="${ctx}/pages/lib/jquery-barcode/jquery-barcode.js"></script>
+
+	<script src="${ctx}/pages/layui/layui.all.js" charset="UTF-8"></script>
+
+<#if athemTag.loginFlag=="true" && athemTag.menuFlag=="true">
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+
+	    <div class="layui-col-md3">
+			 	<label class="layui-form-label">载具编码:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="carrierCode" placeholder="请输入编码" class="layui-input">
+			    </div>
+			 </div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">载具类型:</label>
+			 	 <div class="layui-input-block">
+			       <select  id="carrierType"  name="carrierType" >
+			        <option value="">请选择</option>
+			      </select>
+			    </div>
+			</div>
+
+			 <div class="layui-col-md3">
+				<label class="layui-form-label">所属仓库:</label>
+			 	 <div class="layui-input-block">
+			       <select  id="warehouseCode" name="warehouseCode">
+			        <option value="">请选择</option>
+			      </select>
+			    </div>
+			</div>
+			</div>
+			<br>
+			  <div class="layui-row layui-form">
+
+
+            <div class="layui-col-md3">
+				<label class="layui-form-label">是否报废:</label>
+			 	 <div class="layui-input-block">
+			       <select  id="isDel" name="isDel">
+			        <option value="">请选择</option>
+			        <option value="0">否</option>
+			        <option value="1">是</option>
+			      </select>
+			    </div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">使用状态:</label>
+			 	 <div class="layui-input-block">
+			       <select  id="useStatus"  name="useStatus">
+			        <option value="">请选择</option>
+			        <option value="0">闲置</option>
+			        <option value="1">占用</option>
+			      </select>
+			    </div>
+			</div>
+
+			<div class="layui-col-md3">
+                <label class="layui-form-label">创建时间:</label>
+                <div class="layui-input-block layui-form">
+                    <input type="text" class="layui-input" name="startTime" id="startTime" placeholder="">
+
+                </div>
+            </div>
+            <div class="layui-col-md3" style="margin-left:-70px">
+                <label class="layui-form-label">至</label>
+                <div class="layui-input-block layui-form">
+
+                     <input type="text" class="layui-input" name="endTime" id="endTime" placeholder="">
+                </div>
+            </div>
+		</div>
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+			<div class="layui-col-md9">&nbsp;</div>
+			<div class="layui-col-md9">
+				<div class="layui-btn-container" style="text-align: right;">
+				   <#if athemTag.add?? && athemTag.add="true">
+			 	 		<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="add" type="button"><i class="layui-icon layui-icon-add"></i>新增</button>
+
+				  	</#if>
+
+				  	<#if athemTag.del?? && athemTag.del=="true">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="forbidden" type="button"><i class="layui-icon layui-icon-del"></i>禁用</button>
+				  	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-del"></i>报废</button>
+				  	</#if>
+					<#if athemTag.export?? && athemTag.export=="true">
+  						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+
+
+  					</#if>
+  					<#if athemTag.import?? && athemTag.import=="true">
+				  	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="import" id="import" type="button"><i class="layui-icon layui-icon-import"></i>导入</button>
+				  </#if>
+  				   <!--  <#if athemTag.print?? && athemTag.print=="true"> -->
+				  	<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="printCanvas" type="button"><i class="mine-icon icon-print"></i>打印二维码</button>
+  					<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="printBarCode" type="button"><i class="mine-icon icon-print"></i>打印条形码</button>
+
+				  <!--   </#if> -->
+
+                   <#if athemTag.search?? && athemTag.search=="true">
+			 	 		<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+				  		<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+				  	</#if>
+				  	 <a class="layui-btn layui-btn-normal layui-btn-sm"  onclick="exportCodeRule()"   type="button"><i class="layui-icon-reset"></i>载具编码规则附件</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<table class="layui-hide" id="carrierResumeTab" lay-filter="carrierResumeTabF"></table>
+
+	<script type="text/javascript">
+
+	layui.use('laydate', function(){
+		var laydate = layui.laydate;
+		//时间选择器
+		laydate.render({
+			 elem: '#startTime',
+		        range: false
+		});
+		//时间选择器
+		laydate.render({
+			 elem: '#endTime',
+		        range: false
+		});
+	});
+	var $ = layui.$;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var upload = layui.upload;
+
+	var oldData;
+
+
+	table.render({
+		elem:'#carrierResumeTab',
+		id:'carrierResumeTabId',
+		url:'${ctx}/carrier/queryRresume',
+		cols:[[
+		{type:'checkbox'},
+		//{field:'id', title: 'ID', sort: true},
+		{field:'carrierCode', width:'11%', title: '载具编码',sort:true},
+		{field:'carrierName',width:'11%',title:'载具名称'},
+		{field:'carrierType', width:'11%', title: '载具类型'},
+		{field:'warehouseCode', width:'10%',title: '仓库编码'},
+		{field:'warehouseName', width:'10%',title: '仓库名称'},
+		{field:'useStatus', width:'9%', title: '使用状态',sort:true},
+		{field:'status', width:'9%', title: '是否禁用',sort:true},
+		{field:'isDel', width:'9%', title: '是否报废',sort:true},
+		{field:'createUserName', width:'8%', title: '创建人'},
+		{field:'createTime', width:'10%', title: '创建时间'}
+		]],
+		page: {theme: '#008155'},
+   		height: 'full-95',
+   		even:true,
+   		done:function(res,page,count){//列表数据回调函数
+   			initTableDate(res.data);
+   			//一级载具下拉菜单初始化
+   			initSelect();
+   		}
+	});
+
+	upload.render({
+	  elem: '#import'
+	  ,url: '${ctx}/carrier/importCarrierResumeExcel' //必填项
+	  ,method: 'post'
+	  ,accept: 'file'
+	  ,exts:'xls|xlsx'
+	  ,before: function(obj){
+		layer.load(); //上传loading
+	  }
+	  ,done: function(res, index, upload){
+		  if(res.code==0){
+			  layer.alert('载具导入成功！', {icon: 6});
+			  layer.closeAll('loading'); //关闭loading
+			  table.reload('carrierResumeTabId', {
+			        page:{"curr":1}
+			      });
+		  }else{
+			  layer.alert('载具导入失败！', {icon: 5});
+			  layer.closeAll('loading'); //关闭loading
+		  }
+
+	  }
+	  ,error: function(index, upload){
+		  layer.alert('载具导入失败！', {icon: 5});
+		  layer.closeAll('loading'); //关闭loading
+	  }
+	});
+	var active = {
+			add:function(othis){
+				var type = othis.data('type');
+	  			layer.open({
+		        type: 2
+		        ,title:'新增载具信息'
+		        ,maxmin:true
+		        ,area: ['800px', '300px']
+		        ,offset: type
+		        ,id: 'carrierResumeAdd'+type //防止重复弹出
+		        ,content: '${ctx}/pages/basicInfo/carrier/addCarrierResume.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+		      });
+			},
+			  del:function(othis){
+	                var checkStatus = table.checkStatus('carrierResumeTabId');
+	                oldData = checkStatus.data;
+	                if(oldData.length<=0){
+	                    layer.alert('请选择要报废的行！',{icon: 2});
+	                    return ;
+	                }
+	                var idarrys = new Array();
+	                for(var i=0;i<oldData.length;i++){
+	                    idarrys.push(oldData[i].id);
+	                }
+	                layer.confirm('确定报废选中的信息吗?', {icon: 3, title:'提示'}, function(index){
+	                      //do something
+	                      var option ={
+	                            url:'${ctx}/carrier/delCarrierResume',
+	                            type:'POST',
+	                            contentType: "application/json",
+	                            dataType:'json',
+	                            data:JSON.stringify(idarrys),
+	                            success:function(data){
+	                                if(data.code==0){
+	                                	table.reload('carrierResumeTabId');//刷新列表
+	                                }
+	                            },error:function(data){
+	                                layer.alert(data.msg);
+	                            }
+	                        }
+	                        $.ajax(option);
+	                      layer.close(index);
+	                    });
+	            },
+	            forbidden:function(othis){
+	                var checkStatus = table.checkStatus('carrierResumeTabId');
+	                oldData = checkStatus.data;
+	                if(oldData.length<=0){
+	                    layer.alert('请选择要禁用的行！',{icon: 2});
+	                    return ;
+	                }
+	                var idarrys = new Array();
+	                for(var i=0;i<oldData.length;i++){
+	                    idarrys.push(oldData[i].id);
+	                }
+	                layer.confirm('确定禁用选中的信息吗?', {icon: 3, title:'提示'}, function(index){
+	                      //do something
+	                      var option ={
+	                            url:'${ctx}/carrier/forbiddenStatus',
+	                            type:'POST',
+	                            contentType: "application/json",
+	                            dataType:'json',
+	                            data:JSON.stringify(idarrys),
+	                            success:function(data){
+	                                if(data.code==0){
+	                                	table.reload('carrierResumeTabId');//刷新列表
+	                                }
+	                            },error:function(data){
+	                                layer.alert(data.msg);
+	                            }
+	                        }
+	                        $.ajax(option);
+	                      layer.close(index);
+	                    });
+	            },
+	            enable:function(othis){
+	                var checkStatus = table.checkStatus('carrierResumeTabId');
+	                oldData = checkStatus.data;
+	                if(oldData.length<=0){
+	                    layer.alert('请选择要启用的行！',{icon: 2});
+	                    return ;
+	                }
+	                var idarrys = new Array();
+	                for(var i=0;i<oldData.length;i++){
+	                    idarrys.push(oldData[i].id);
+	                }
+	                layer.confirm('确定启禁用选中的信息吗?', {icon: 3, title:'提示'}, function(index){
+	                      //do something
+	                      var option ={
+	                            url:'${ctx}/carrier/enableStatus',
+	                            type:'POST',
+	                            contentType: "application/json",
+	                            dataType:'json',
+	                            data:JSON.stringify(idarrys),
+	                            success:function(data){
+	                                if(data.code==0){
+	                                	table.reload('carrierResumeTabId');//刷新列表
+	                                }
+	                            },error:function(data){
+	                                layer.alert(data.msg);
+	                            }
+	                        }
+	                        $.ajax(option);
+	                      layer.close(index);
+	                    });
+	            },
+			export:function(othis){
+				var carrierType=$('#carrierType').val();
+				var useStatus=$('#useStatus').val();
+				var carrierCode=$('#carrierCode').val();
+				var warehouseCode=$('#warehouseCode').val();
+				var isDel=$('#isDel').val();
+				var startTime =$('#startTime').val();
+				var endTime =$('#endTime').val();
+				var params = "useStatus="+useStatus+"&carrierCode="+carrierCode+"&isDel="+isDel
+				+"&carrierType="+carrierType+"&warehouseCode="+warehouseCode+"&startTime="+startTime+"&endTime="+endTime;
+				window.open("${ctx}/carrier/exportCarrierResume?"+params);
+			},
+
+			printCanvas:function(othis){		//打印二维码
+				   var checkStatus = table.checkStatus('carrierResumeTabId');
+	                oldData = checkStatus.data;
+	                if(oldData.length<=0){
+	                	layer.alert('请选择要打印的行！',{icon: 2});
+	                    return ;
+	                }
+	                var str = "";
+	                for(var i=0;i<oldData.length;i++){
+	                	//生成二维码
+						var newStr = "载具名称:"+oldData[i].carrierName+"\n"+"载具编码:"+oldData[i].carrierCode;
+						  $("#code").empty().qrcode({
+							render: "canvas", //canvas方式
+							width: 120, //宽度
+							height:120, //高度
+							text: newStr //显示内容
+						});
+
+
+	                //二维码暂存给img
+					var qrcodeImgSrc = $("canvas")[0].toDataURL('image/jpg');//二维码canvas转img
+					var img = "<img src='"+qrcodeImgSrc+"' alt='' id='codeImg' style='float:right;width:130px;height:130px;margin-right:50px;'>";
+  				    str += "<div class='main' style='margin:0 auto; padding:0px 10px 10px 10px; width:100%; height:65%; background: #fff;line-height:40px;font-family: 'Microsoft YaHei', 'Open Sans', sans-serif;'>"+
+  							      "<div class='top' style='height:130px;'>"+
+  							          img+
+  							  	      "<h2 style='font-size:35px; font-weight:bold; margin:0; text-align:center;margin-left:135px'>转储物料标签</h2>"+
+  							  	      "<span style='font-size:18px;'>载具名称："+oldData[i].carrierName+"</span>"+
+  							  	  "<div><span style='font-size:18px;'>载具编码：</span><span style='font-size:35px;font-weight:bold;'>"+oldData[i].carrierCode+"</span></div>"+
+  							  	      "</div></div>"+
+  							      "<div style='page-break-after:always;'></div>";
+	                }
+				  	$("#printContent").empty().append(str).jqprint();
+
+
+	         },
+	         printBarCode:function(othis){		//打印条形码
+				   var checkStatus = table.checkStatus('carrierResumeTabId');
+	                oldData = checkStatus.data;
+	                if(oldData.length<=0){
+	                	layer.alert('请选择要打印的行！',{icon: 2});
+	                    return ;
+	                }
+	                var str = "";
+	                for(var i=0;i<oldData.length;i++){
+
+
+
+	                	$("#bcTarget").empty().barcode(oldData[i].carrierCode, "code128",{barWidth:2, barHeight:70,showHRI:true});
+						var outDiv = $("#outDiv").html();
+
+						str +=  "<div id='printBatchDiv' style='margin:0 auto; padding:15px; width:98%; background: #fff;'>"+
+  		  				"<div id='secondDiv' style='height:100px;'>"+
+  		  					"<div class='top' style='height:100px;'>"+
+		  		  				"<div style='float: left;display: block;width: 45%;'>"+
+		  		  					"<h2 style='font-size:35px;font-weight:bold; float:right;margin-left: 70px'><strong>载具清单</strong></h2>"+
+		  		  				"</div>"+
+		  		  				"<div style='float: left;display: block;width: 55%;position:absoulte;'>"+
+		  		  					outDiv+
+		  		  					"<span style='float:right;font-size:20px;margin-top: 50px'>载具编码：</span>"+
+		  		  				"</div>"+
+
+  		  					"</div>"+
+  		  					"<div id='bottom' class='bottom' style='margin-top: 12px;margin-bottom: 10px'>";
+						str+="<div style='page-break-after:always;'></div>";
+	                }
+
+
+				  	$("#printContent").empty().append(str).jqprint();
+
+
+	         },
+			search:function(othis){
+				var startTime =$('#startTime').val();
+				var endTime =$('#endTime').val();
+				if(startTime!='' && endTime!='' && startTime >endTime){
+					layer.alert('开始时间不能大于结束时间！',{icon: 2});
+                    return ;
+				}
+				var carrierType=$('#carrierType').val();
+				var useStatus=$('#useStatus').val();
+				var isDel=$('#isDel').val();
+				var carrierCode=$('#carrierCode').val();
+				var warehouseCode=$('#warehouseCode').val();
+
+				var params={};
+				params.carrierType=carrierType;
+				params.useStatus=useStatus;
+				params.isDel=isDel;
+				params.carrierCode=carrierCode;
+				params.warehouseCode=warehouseCode;
+				params.startTime=startTime;
+				params.endTime=endTime;
+			      //执行重载
+			      table.reload('carrierResumeTabId', {
+			        where:params,
+			        page:{"curr":1}
+			      });
+			},reset:function(othis){
+				$('#carrierType').val("");
+				$('#useStatus').val("");
+				$('#carrierCode').val("");
+				$('#warehouseCode').val("");
+				$('#isDel').val("");
+				 $('#startTime').val("");
+                 $('#endTime').val("");
+				form.render("select");
+			}
+
+	};
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+  	});
+	table.on('sort(carrierResumeTabF)', function (obj) {
+		var sortColums;
+		if(obj.field=="carrierCode"){
+			sortColums = "carrierCode "+obj.type;
+		}else if(obj.field=="useStatus"){
+			sortColums = "useStatus "+obj.type;
+		}else if(obj.field=="status"){
+			sortColums = "status "+obj.type;
+		}
+		var carrierType=$('#carrierType').val();
+		var useStatus=$('#useStatus').val();
+		var carrierCode=$('#carrierCode').val();
+		var warehouseCode=$('#warehouseCode').val();
+	      //执行重载
+	      table.reload('carrierResumeTabId', {
+	        where:{
+	        	carrierType:carrierType,
+	        	useStatus:useStatus,
+	        	carrierCode:carrierCode,
+	        	warehouseCode:warehouseCode,
+		        sortColums:sortColums,
+	            //page:1
+	        }
+	      });
+	});
+	//表格数据初始化
+	function initTableDate(data){
+		$("[data-field='useStatus']").children().each(function(){
+			if($(this).text()=='0'){
+				$(this).text('闲置');
+			}else if($(this).text()=='1'){
+				$(this).text('占用');
+			}
+		});
+		$("[data-field='status']").children().each(function(){
+
+			if($(this).text()=='0'){
+				$(this).text('是');
+			}else if($(this).text()=='1'){
+				$(this).text('否');
+			}
+		});
+
+		$("[data-field='isDel']").children().each(function(){
+			if($(this).text()=='0'){
+				$(this).text('否');
+			}else if($(this).text()=='1'){
+				$(this).text('是');
+			}
+		});
+	}
+	//一级载具下拉菜单初始化
+	function initSelect(){
+		var dictType = new Array();
+		dictType.push("carrier_type");
+		//查询字典
+		var option={
+				url:'${ctx}/dictItems/queryDictItemByTypes',
+				type:'POST',
+				dataType:'json',
+				contentType: "application/json",
+				data:JSON.stringify(dictType),
+				success:function(res){
+					if(res.code==0){
+						dictItems = res.data;
+						//搜索框的区域类型、状态赋值
+						defulatSelect(dictItems);
+					}
+				}
+			};
+		$.ajax(option);
+		initWarehouseCode();
+	}
+	function defulatSelect(dictItems){
+		if(dictItems && dictItems.length>0){
+			if($("#carrierType").find("option").length==1){
+			  for(var i=0;i<dictItems.length;i++){
+					$("#carrierType").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+			  }
+			  form.render('select');
+		  }
+		}
+	}
+	function initWarehouseCode(){
+		var params={};
+		params.itemName='仓库';
+		params.dictName='组织类型';
+		$.ajax({
+			url:"${ctx}/dictItems/queryDictItemByName",
+			type:"post",
+			data :params,
+			success:function(result){
+				if(result.code==0){
+					var itemValue = result.data.itemValue;
+					params.orgType=itemValue;
+					$.ajax({
+						url:"${ctx}/orgination/queryOrgnizaByType",
+						type:"post",
+						data :params,
+						success:function(res){
+							if(res.code==0){
+								var WarehouseCodes=res.data;
+								if(WarehouseCodes.length>0){
+									if($("#warehouseCode").find("option").length==1){
+										for(var i=0;i<WarehouseCodes.length;i++){
+											$("#warehouseCode").append("<option value="+WarehouseCodes[i].orgCode+">"+WarehouseCodes[i].orgName+"</option>");
+										}
+										form.render('select');
+									}
+								}
+							}
+						}
+					});
+				}
+			}
+		});
+	}
+
+
+
+	function exportCodeRule(){
+
+
+        var a = document.getElementsByTagName("a")[0];
+        // 利用URL.createObjectURL()方法为a元素生成blob URL
+        a.href ="/iles/pages/files/carrierCodeRule.xlsx";
+        // 设置文件名
+        a.download = "载具编码规则.xlsx";
+  }
+
+</script>
+<#else>
+	<#include '/noAuthority.html' />
+</#if>
+<#include '/footer.html' />
+<div id="outDiv" style="display: none"><div id='bcTarget' style='float:right;'></div></div>
+	<!--打印内容-->
+	<div style="display: none"><!-- style="display: none" -->
+		<div id="printContent"></div>
+	</div>
+
+	<!-- 二维码 -->
+	<div id="codeDiv" style="display:none">
+		<div id="code" style='float: right;width:140px;height:140px;margin-top:30px;position:absoulte;margin-right: 30px'></div>
+	</div>

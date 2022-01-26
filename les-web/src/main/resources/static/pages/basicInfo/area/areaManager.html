@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta http-equiv="Content-Type" content="charset=UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css" />
+		<!--<link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>-->
+		<link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css" />
+		<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+
+		<title>区域信息管理</title>
+	</head>
+
+	<body id="bodyDiv">
+		<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+		<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+		<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+		<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+		<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+		<script type="text/html" id="bodyTpl">
+			<div class="layui-fluid">
+				<div class="layui-row layui-form">
+					<div class="layui-col-md2">
+						<label class="layui-form-label">仓库</label>
+						<div class="layui-input-inline">
+							<select name="warehouse_search" id="warehouse_search" class="layui-select">
+								<option value=""></option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-col-md2">
+						<label class="layui-form-label">库区编码</label>
+						<div class="layui-input-inline">
+							<input type="text" id="areaCode_search" placeholder="请输入编码" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-col-md2">
+						<label class="layui-form-label">库区名称</label>
+						<div class="layui-input-inline">
+							<input type="text" id="areaName_search" placeholder="请输入名称" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-col-md2">
+						<label class="layui-form-label">库区类型</label>
+						<div class="layui-input-inline">
+							<select name="areaType_search" id="areaType_search" class="layui-select">
+								<option value=""></option>
+							</select>
+						</div>
+					</div>
+
+					<div class="layui-btn-container nav-" style="text-align: right;">
+						{{# if(d.search==null || d.search=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i class="layui-icon  layui-icon-reset"></i>重置</button> {{# } }}
+					</div>
+				</div>
+			</div>
+			<div class="layui-fluid-table">
+				<div class="layui-row layui-form">
+					<div class="layui-btn-container" style="text-align: left;">
+						{{# if(d.search==null || d.search=="true"){ }}
+						<!--<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>-->
+						{{# } }} {{# if(d.add==null || d.add=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>新增</button> {{# } }} {{# if(d.edit==null || d.edit=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>编辑</button> {{# } }} {{# if(d.del==null || d.del=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button> {{# } }} {{# if(d.import==null || d.import=="true"){ }}
+<!--						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="import" id="import" type="button"><i class="layui-icon layui-icon-import"></i>导入</button> {{# } }} {{# if(d.export==null || d.export=="true"){ }}-->
+<!--						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button> {{# } }}-->
+					</div>
+				</div>
+				<table id="areaTab" lay-filter="areaTabF"></table>
+			</div>
+		</script>
+		<script type="text/javascript">
+			var layer = layui.layer;
+			var table = layui.table;
+			var form = layui.form;
+			var oldData; //编辑时使用的
+			var dictItems = null; //数据字典
+			var warehouseData = null; //仓库字典
+			var contextPath = config.basicInfoConfig.contextPath;
+
+			function loadding() {
+				table.render({
+					elem: '#areaTab',
+					id: 'areaTabId',
+					url: contextPath + 'area/',
+					cols: [
+						[{
+							type: 'checkbox'
+						}, {
+							type: 'numbers',
+							title: '序号',
+							width: 80
+						}, {
+							field: 'warehouse',
+							title: '仓库编码',
+						}, {
+							field: 'warehouseName',
+							title: '仓库名称'
+						}, {
+							field: 'areaCode',
+							title: '库区编码'
+						}, {
+							field: 'areaName',
+							title: '库区名称'
+						}, {
+							field: 'areaTypeName',
+							title: '库区类型'
+						}, {
+							field: 'createrName',
+							title: '创建人'
+						}, {
+							field: 'createTime',
+							title: '创建时间'
+						}, {
+							field: 'modifierName',
+							title: '修改人'
+						}, {
+							field: 'modifiedTime',
+							title: '修改时间'
+						}]
+					],
+					where: {
+						sortColums: "area_code desc"
+					},
+					even: true,
+					page: {
+						theme: '#008155'
+					},
+					done: function(res, page, count) { //列表数据回调函数
+					}
+				});
+				$('.layui-btn-container button').on('click', function() {
+					var othis = $(this),
+						method = othis.data('method');
+					active[method] ? active[method].call(this, othis) : '';
+				});
+				initWarehouseSignSelect('warehouse_search', 1, '');
+				queryDictItem('area_type', 'areaType_search', '');
+			}
+			var active = {
+				add: function(othis) {
+					var checkStatus = table.checkStatus('areaTabId');
+					oldData = checkStatus.data;
+					var type = othis.data('type');
+					layer.open({
+						type: 2,
+						title: '新增区域信息',
+						maxmin: false,
+						area: ['450px', '350px'],
+						offset: type,
+						id: 'areaAdd' + type //防止重复弹出
+							,
+						content: '/iles/pages/basicInfo/area/addArea.html',
+						shade: [0.8, '#393D49']
+					});
+				},
+				edit: function(othis) {
+					var checkStatus = table.checkStatus('areaTabId');
+					oldData = checkStatus.data;
+					if(oldData.length <= 0) {
+						layer.alert('请选择要编辑的行！', {
+							icon: 2
+						});
+						return;
+					} else if(oldData.length > 1) {
+						layer.alert('编辑不能超过多行！', {
+							icon: 2
+						});
+						return;
+					}
+					var type = othis.data('type');
+					layer.open({
+						type: 2,
+						title: '编辑区域信息',
+						maxmin: false,
+						area: ['450px', '360px'],
+						offset: type,
+						id: 'areaEdit' + type //防止重复弹出
+							,
+						content: '/iles/pages/basicInfo/area/editArea.html',
+						shade: [0.8, '#393D49'],
+						yes: function() {
+							layer.closeAll();
+						}
+					});
+				},
+				del: function(othis) {
+					var checkStatus = table.checkStatus('areaTabId');
+					oldData = checkStatus.data;
+					if(oldData.length <= 0) {
+						layer.alert('请选择要删除的行！', {
+							icon: 2
+						});
+						return;
+					}
+					var idarrys = new Array();
+					for(var i = 0; i < oldData.length; i++) {
+						idarrys.push(oldData[i].id);
+					}
+					layer.confirm('确定删除该条区域信息', {
+						icon: 3,
+						title: '提示'
+					}, function(index) {
+						//do something
+						var option = {
+							url: contextPath + 'area/deleteArea',
+							type: 'POST',
+							contentType: "application/json",
+							dataType: 'json',
+							data: JSON.stringify(idarrys),
+							success: function(data) {
+								if(data.code == 0) {
+									table.reload('areaTabId'); //刷新列表
+								}
+							},
+							error: function(data) {
+								layer.alert(data.msg);
+							}
+						}
+						$.ajax(option);
+						layer.close(index);
+					});
+				},
+				search: function(othis) {
+					var areaCode = $('#areaCode_search');
+					var areaName = $('#areaName_search');
+					var areaType = $('#areaType_search');
+					var warehouse = $('#warehouse_search');
+					//执行重载
+					table.reload('areaTabId', {
+						where: {
+							areaCode: areaCode.val(),
+							areaName: areaName.val(),
+							areaType: areaType.val(),
+							warehouse: warehouse.val()
+						}
+					});
+				},
+				reset: function(othis) {
+					$('#areaCode_search').val("");
+					$('#areaName_search').val("");
+					$('#areaType_search').val("");
+					$('#warehouse_search').val("");
+					form.render("select");
+				},
+				allow: function(othis) {
+					var checkStatus = table.checkStatus('areaTabId');
+					oldData = checkStatus.data;
+					allowType = 1;
+					if(oldData.length <= 0) {
+						layer.alert('请选择要启用的行！', {
+							icon: 2
+						});
+						return;
+					}
+					var type = othis.data('type');
+					layer.open({
+						type: 2,
+						title: '说明原因',
+						maxmin: false,
+						area: ['220px', '210px'],
+						offset: type,
+						id: 'areaInfo' + type //防止重复弹出
+							,
+						content: '/iles/pages/basicInfo/area/areaRemark.html',
+						shade: [0.8, '#393D49']
+					});
+				},
+				forbid: function(othis) {
+					var checkStatus = table.checkStatus('areaTabId');
+					oldData = checkStatus.data;
+					allowType = 0;
+					if(oldData.length <= 0) {
+						layer.alert('请选择要禁用的行！', {
+							icon: 2
+						});
+						return;
+					}
+					var type = othis.data('type');
+					layer.open({
+						type: 2,
+						title: '说明原因',
+						maxmin: false,
+						area: ['220px', '210px'],
+						id: 'areaInfo' + type //防止重复弹出
+							,
+						content: '/iles/pages/basicInfo/area/areaRemark.html',
+						shade: [0.8, '#393D49']
+					});
+				},
+				import: function(othis) {
+					layer.open({
+						type: 2,
+						title: '导入库区信息',
+						maxmin: false,
+						area: ['550px', '350px'],
+						id: 'importAreaE' //防止重复弹出
+							,
+						content: '/iles/pages/basicInfo/area/importArea.html',
+						shade: 0, //不显示遮罩
+
+						yes: function() {
+							layer.closeAll();
+						}
+					});
+				},
+				export: function(othis) {
+					var data = table.cache.areaTabId;
+					if(data.length > 0) {
+						var areaCode = $('#areaCode_search').val();
+						var areaName = $('#areaName_search').val();
+						var areaType = $('#areaType_search').val();
+						var warehouse = $('#warehouse_search').val();
+						var token = window.localStorage.token;
+						var params = "";
+						params = params + "areaCode=" + areaCode + "&areaName=" + areaName + "&areaType=" + areaType +
+							"&warehouse=" + warehouse + "&token=" + token;
+						window.open(contextPath + 'area/exportArea?' + params);
+					} else {
+						layer.alert('导出失败！无数据', {
+							icon: 2
+						});
+					}
+				}
+			};
+		</script>
+	</body>
+
+</html>

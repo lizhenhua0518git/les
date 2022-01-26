@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.oms.dao.WaveDao">
+
+<select id="listWave" resultType="com.zkzn.les.oms.pojo.Wave">
+	select * from t_wave w where  running_track=0 and type=1 and exists (
+    	select po.id from t_process_order_detail p left join t_process_order po on po.id=p.process_order_id
+       		where po.storage_location in
+       		<foreach collection="list" open="(" close=")" separator="," index="index" item="item">
+       			#{item}
+       		</foreach>
+       		and p.leave_over=0 and w.tab=po.tab
+	)
+</select>
+<insert id="saveWaves" >
+	<foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">
+		INSERT INTO T_WAVE 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="item.id !=null and  ''!= item.id">ID,</if>
+			<if test="item.waveNum !=null and  ''!= item.waveNum">WAVE_NUM,</if>
+			<if test="item.waveCode !=null and  ''!= item.waveCode">WAVE_CODE,</if>
+			<if test="item.runningTrack !=null">RUNNING_TRACK,</if>
+			<if test="item.createTimeS !=null and  ''!= item.createTimeS">CREATE_TIME,</if>
+			<if test="item.storageLocation !=null and  ''!= item.storageLocation">STORAGE_LOCATION,</if>
+			<if test="item.tab !=null and  ''!= item.tab">TAB,</if>
+			<if test="item.requiredTimeS !=null and  ''!= item.requiredTimeS">REQUIRED_TIME,</if>
+			<if test="item.type !=null">TYPE,</if>
+			<if test="item.carCode !=null">car_code,</if>
+		</trim>
+	   	<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="item.id !=null and  ''!= item.id">'${item.id}',</if>
+			<if test="item.waveNum !=null and  ''!= item.waveNum">'${item.waveNum}',</if>
+			<if test="item.waveCode !=null and  ''!= item.waveCode">'${item.waveCode}',</if>
+			<if test="item.runningTrack !=null">'${item.runningTrack}',</if>
+			<if test="item.createTimeS !=null and  ''!= item.createTimeS">str_to_date('${item.createTimeS}',' %Y-%m-%d %H:%i:%s'),</if>
+			<if test="item.storageLocation !=null and  ''!= item.storageLocation">'${item.storageLocation}',</if>
+			<if test="item.tab !=null and  ''!= item.tab">'${item.tab}',</if>
+			<if test="item.requiredTimeS !=null and  ''!= item.requiredTimeS">str_to_date('${item.requiredTimeS}',' %Y-%m-%d %H:%i:%s'),</if>
+			<if test="item.type !=null">'${item.type}',</if>
+			<if test="item.carCode !=null">'${item.carCode}',</if>
+		</trim>
+	</foreach>
+</insert>
+</mapper>

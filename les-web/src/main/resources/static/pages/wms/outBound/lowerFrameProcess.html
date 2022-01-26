@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>下架作业进度</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+
+<script src="/iles/pages/layui/layui.all.js"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/layui/lay/modules/layer.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js"></script>
+<script type="text/html" id="bodyTpl">
+<div class="layui-fluid" style="margin-top:10px;">
+	<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+                <label class="layui-form-label">仓库:</label>
+                 <div class="layui-input-block">
+					<select id="warehouseCode" xm-select="select1" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+                </div>
+     		</div>
+			<div class="layui-col-md2">
+				<label class="layui-form-label">产品线:</label>
+				 <div class="layui-input-block">
+			      <input type="text" id="productLine" class="layui-input">
+			    </div>
+			</div>
+			 <div class="layui-col-md2">
+       			<label class="layui-form-label">分厂:</label>
+       			<div class="layui-input-block layui-form">
+					<select  id="subFactory" xm-select="select5" xm-select-show-count="1" xm-select-search="">
+						<option value="">请选择</option>
+					</select>
+				</div>
+      		</div>
+			 <div class="layui-col-md2">
+			 	<label class="layui-form-label">产线:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="pipeLineCode" class="layui-input">
+			    </div>
+			 </div>
+			 <div class="layui-col-md2">
+       			<label class="layui-form-label">工位:</label>
+      			<div class="layui-input-block layui-form">
+					<select  id="stationCode" xm-select="select8" xm-select-show-count="1" xm-select-search="">
+						<option value="">请选择</option>
+					</select>
+			</div>
+
+   			</div>
+		</div>
+
+		<div class="layui-row layui-form" style="margin-bottom: 0;margin-top: 10px;">
+			 <div class="layui-col-md3">
+			 	<label class="layui-form-label">派工时间:</label>
+			 	 <div class="layui-input-block">
+			     <input type="text" id="atime" class="layui-input" placeholder="yyyy-MM-dd - yyyy-MM-dd">
+			    </div>
+			 </div>
+			 <div class="layui-col-md2">
+			 	<label class="layui-form-label">工序物料:</label>
+			 	 <div class="layui-input-block">
+			     <input type="text" id="mcode" class="layui-input">
+			    </div>
+			 </div>
+			 <div class="layui-col-md2">
+			 	<label class="layui-form-label">物料号:</label>
+			 	 <div class="layui-input-block">
+			     <input type="text" id="materialCode" class="layui-input">
+			    </div>
+			 </div>
+			  <div class="layui-col-md2">
+				<label class="layui-form-label">下架状态:</label>
+			 	 <div class="layui-input-block">
+			       <select  id="xjJobNode">
+			        <option value="-1">请选择</option>
+			        <option value="1">已下架</option>
+			        <option value="0">未下架</option>
+			      </select>
+			    </div>
+			</div>
+
+		</div>
+		<div class="layui-row layui-form">
+				<div class="layui-btn-container">
+					{{# if(d.search==null || d.search=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+					{{# } }}
+				</div>
+		</div>
+</div>
+<table class="layui-hide" id="xjWorkTab" lay-filter="xjWorkTabF"></table>
+</script>
+<script type="text/javascript">
+var element = layui.element;
+var layer = layui.layer;
+var table = layui.table;
+var form = layui.form;
+var contextPath = config.wmsConfig.contextPath;
+var dictItems = null;//存储数据字典
+var lowerFrameData;
+var active = {
+		search:function(othis){
+		      //执行重载
+		      var storageLocation = layui.formSelects.value('select1', 'storagelocationStr');
+		      var stationCode = layui.formSelects.value('select8', 'valueStr');
+		      var subFactory = layui.formSelects.value('select5', 'valueStr');
+		      table.reload('xjWorkTabId', {
+		        where:{
+		        	type:1,
+		        	aStartTime:$('#atime').val().substring(0,10),
+		        	aEndTime:$('#atime').val().substring(13),
+		        	productLine: $('#productLine').val(),
+		        	subFactory:subFactory,
+		        	pipeLineCode:$('#pipeLineCode').val(),
+		        	stationCode:stationCode,
+		        	storageLocation:storageLocation,
+		        	mcode:$('#mcode').val(),
+		        	xjJobNode:$('#xjJobNode').val(),
+		        	materialCode:$('#materialCode').val(),
+		        }
+		        ,page:{"curr":1}
+		      });
+		},back:function(othis){
+			window.history.go(-1);
+		},reset:function(othis){
+			$('#productLine').val("");
+			$('#subFactory').val("");
+			$('#pipeLineCode').val("");
+			$('#stationCode').val("");
+			$('#storageLocation').val("");
+			$('#mcode').val("");
+			$('#materialCode').val("");
+			$('#xjJobNode').val("");
+			$('#atime').val("");
+			layui.formSelects.value('select1', []);
+			layui.formSelects.value('select5', []);
+			layui.formSelects.value('select8', []);
+			form.render('select');
+		}
+	};
+function loadding(){
+	layui.use('laydate', function(){
+		var laydate = layui.laydate;
+		//时间选择器
+		  laydate.render({
+		    elem: '#atime'
+		    ,type: 'date'
+		    ,range: true
+		  });
+	});
+	initWarehouseMultiSelect("warehouseCode","select1","0",null);
+	initStationCode();
+	initSubFactory();
+	lowerFrameData = table.render({
+		elem:'#xjWorkTab',
+		id:'xjWorkTabId',
+		url:contextPath+'outBoundPlanManger/listLowerFrameProcess',
+		cols:[[
+		 	{type:'numbers',title:'序号',fixed: 'left'},
+		 	{field:'warehouseCode', title: '仓库编码',fixed: 'left',width:100},
+			{field:'warehouseName', title: '仓库名称',fixed: 'left',width:100},
+		 	{field:'productLine',width:80,title:'产品线',fixed: 'left'},
+		 	{field:'subFactory',width:80,title:'分厂',fixed: 'left'},
+		 	{field:'pipeLineCode',width:80,title:'产线',fixed: 'left'},
+		 	{field:'stationCode',width:80,title:'工位',fixed: 'left'},
+		 	{field:'ocode',width:120,title:'工序订单号',fixed: 'left'},
+		 	{field:'mcode',width:140,title:'工序订单物料号',fixed: 'left'},
+		 	{field:'mdesc',width:140,title:'工序订单物料描述'},
+		 	{field:'rtime',width:160,title:'需求时间'},
+
+		 	{field:'storageLocation',width:120,title:'库存地点'},
+		 	{field:'storageBinId',width:120,title:'仓位号'},
+		 	{field:'materialCode',width:120,title:'物料号'},
+		 	{field:'materialDesc',width:120,title:'物料描述'},
+		 	{field:'accountCount',width:120,title:'数量'},
+		 	{field:'materialUnit',width:120,title:'单位'},
+		 	{field:'batchNum',width:120,title:'批次号'},
+		 	{field:'lowerFrameUid',width:120,title:'下架操作人'},
+		 	{field:'jobNode',width:120,title:'下架状态'},
+		 	{field:'atime',width:160,title:'派工时间'},
+		 	{field:'lowerFrameTime',width:160,title:'下架时间'},
+		 	//{field:'lower_date',width:160,title:'下架用时'},
+		 	//{field:'ORDER_MATERIAL_CODE',width:120,title:'标准时长'},
+		 	//{field:'IS_URGENT',width:120,title:'超时状态'},
+		 	{field:'deliverPlatform',width:120,title:'配送台位'},
+		 	{field:'voucherCode',width:120,title:'凭证号'},
+		 	{field:'voucherLineNum',width:120,title:'凭证行项目'},
+		 	{field:'voucherYear',width:120,title:'凭证年度'},
+		 	{field:'toNum',width:120,title:'TO'},
+		 	{field:'toLineNum',width:120,title:'TO行'},
+		 	{field:'reserveCode',width:120,title:'预留号'},
+		 	{field:'reserveRow',width:120,title:'预留行'},
+		 	{field:'assembleOrderCode',width:120,title:'集配单据号'},
+		 	//{field:'ACTIVE_NUM',width:120,title:'集配序号'}
+		 ]],
+		 page:{theme: '#008155'},
+		 where:{
+			 type:1
+		 },
+		 even:true,
+		 title:'下架作业',
+		 done:function(res){
+			 //changeItemName(res.data);
+			 //initTableDate(res.data);
+		}
+	});
+
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+	});
+}
+
+function initTableDate(data){
+	$("[data-field='jobNode']").children().each(function(i,e){
+		if(i>0){
+			if(data[i-1].JOB_NODE ==31){
+				$(this).html("待下架");
+			}else{
+				$(this).html("已下架");
+			}
+			element.init();
+		}
+	});
+}
+function initSubFactory(){//分厂
+	$.ajax({
+		url:config.basicInfoConfig.contextPath+"subFactory/listSubFactory?status=1&useStatus=1",
+		type:"GET",
+		success:function(result){
+			$('#subFactory').html("");
+			$('#subFactory').append('<option value="">请选择</option>');
+			var data = result.data;
+			if(result.code==0 && data && data.length>0){
+				var optionItem;
+				var optoinArray = new Array();
+				for(var i=0;i<data.length;i++){
+					optionItem = {"name":""+data[i].subFactoryName, "value":""+data[i].subFactoryCode};
+					optoinArray.push(optionItem);
+				}
+				layui.formSelects.data('select5','local',{
+					arr:optoinArray
+				});
+			}else{
+				layui.formSelects.data('select5','local',{
+					arr:[]
+				});
+			}
+      	 	form.render('select');
+		},error: function (XMLHttpResponse, textStatus, errorThrown) {
+            console.log("1 异步调用返回失败,XMLHttpResponse.readyState:"+XMLHttpResponse.readyState);
+            console.log("2 异步调用返回失败,XMLHttpResponse.status:"+XMLHttpResponse.status);
+            console.log("3 异步调用返回失败,textStatus:"+textStatus);
+            console.log("4 异步调用返回失败,errorThrown:"+errorThrown);
+        }
+	});
+}
+function initStationCode(){//工位
+	$.ajax({
+		url:config.basicInfoConfig.contextPath+"stationManager/getAllStationCode",
+		type:"GET",
+		success:function(result){
+			$('#stationCode').html("");
+			$('#stationCode').append('<option value="">请选择</option>');
+      	  	var stationSet = result.data;
+			if(result.code==0 && stationSet && stationSet.length>0){
+				var optionItem;
+				var optoinArray = new Array();
+				for(var i=0;i<stationSet.length;i++){
+					optionItem = {"name":""+stationSet[i].stationCode, "value":""+stationSet[i].stationCode};
+					optoinArray.push(optionItem);
+				}
+				layui.formSelects.data('select8','local',{
+					arr:optoinArray
+				});
+			}else{
+				layui.formSelects.data('select8','local',{
+					arr:[]
+				});
+			}
+      	 	form.render('select');
+		},error: function (XMLHttpResponse, textStatus, errorThrown) {
+            console.log("1 异步调用返回失败,XMLHttpResponse.readyState:"+XMLHttpResponse.readyState);
+            console.log("2 异步调用返回失败,XMLHttpResponse.status:"+XMLHttpResponse.status);
+            console.log("3 异步调用返回失败,textStatus:"+textStatus);
+            console.log("4 异步调用返回失败,errorThrown:"+errorThrown);
+        }
+	});
+}
+//手动计算数据
+function changeItemName(data){
+	$("[data-field='lower_date']").children().each(function(i,e){
+		if(i>0){
+			var myDate = new Date().getTime();
+			if(data[i-1].ATIME!=null){
+				myDate = new Date(data[i-1].ATIME).getTime();
+			}
+			var date = new Date().getTime();
+			if(data[i-1].LOWER_FRAME_TIME!=null){
+				date =  new Date(data[i-1].LOWER_FRAME_TIME).getTime();
+			}
+			date = date-myDate;
+		    var days    = date / 1000 / 60 / 60 / 24;
+		    var daysRound= Math.floor(days);
+		    var hours    = date/ 1000 / 60 / 60 - (24 * daysRound);
+		    var hoursRound   = Math.floor(hours);
+		    var minutes   = date / 1000 /60 - (24 * 60 * daysRound) - (60 * hoursRound);
+		    var minutesRound  = Math.floor(minutes);
+		    var seconds   = date/ 1000 - (24 * 60 * 60 * daysRound) - (60 * 60 * hoursRound) - (60 * minutesRound);
+		    var secondsRound  = Math.floor(seconds);
+		    var time ="";
+
+		    if(!isNaN(daysRound)){
+		    	 time+= daysRound+"天";
+		    }
+		    if(!isNaN(hoursRound)){
+		    	 time+= hoursRound +"时";
+		    }
+		    if(!isNaN(minutesRound)){
+		    	time+= minutesRound+"分";
+		    }
+		    if(time==""){
+		    	time="0分";
+		    }
+			$(this).html(time);
+			element.init();
+		}
+
+	});
+}
+</script>
+</body>
+</html>

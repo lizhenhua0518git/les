@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="Content-Type" content="charset=UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+	<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+	<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+	<script src="/iles/pages/js/jquery-3.3.1.min.js"></script>
+	<script src="/iles/pages/js/printer/jquery-migrate-1.2.1.min.js"></script>
+	<script src="/iles/pages/js/printer/jquery.jqprint-0.3.js"></script>
+	<script src="/iles/pages/lib/jquery-qrcode-0.14.0/jquery-qrcode-0.14.0.min.js"></script>
+	<script src="/iles/pages/lib/jquery-barcode/jquery-migrate-1.2.1.min.js"></script>
+	<script src="/iles/pages/lib/jquery-barcode/jquery.jqprint-0.3.js"></script>
+	<script src="/iles/pages/lib/jquery-barcode/jquery-barcode.js"></script>
+	<script src="/iles/pages/layui/layui.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/layer.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+	<title>点收任务详情</title>
+</head>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+	<div class="layui-fluid" style="margin-top: 10px">
+		<form class="layui-form" action="">
+			<input type="hidden" id="oldJobNode">
+			<input type="hidden" name="arrivalDetailId" id="arrivalDetailId"/>
+			<div class="layui-row layui-form">
+				<!-- 查询条件 begin-->
+				<div class="layui-col-md3">
+					<label class="layui-form-label">凭证号:</label>
+					<div class="layui-input-block">
+						<input type="text" id="voucherNo" name="voucherNo" class="layui-input" placeholder="请输入凭证号">
+					</div>
+				</div>
+				<div class="layui-col-md3">
+					<label class="layui-form-label">紧急状态:</label>
+					<div class="layui-input-block">
+						<select id="isUrgent" name="isUrgent">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+				<!-- 查询条件 end-->
+				<!-- 按钮区域begin -->
+				<div class="layui-col-md6">
+					<div class="layui-btn-container" style="text-align: right;">
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>编辑</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm" onclick="printDetailShelfData();" data-method="print" type="button"><i class="mine-icon icon-print"></i>货架打印</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm" onclick="printDetailFloorData();" data-method="print" type="button"><i class="mine-icon icon-print"></i>地堆打印</button>
+					</div>
+				</div>
+				<input type="hidden" id="carrierCode" value="">
+				<!-- 按钮区域end -->
+			</div>
+		</form>
+	</div>
+	<table id="receiveWorkDetailTab" lay-filter="receiveWorkDetailTabF"></table>
+</script>
+<script type="text/javascript">
+	//打印
+	var laytpl = layui.laytpl;
+	//货架打印
+	function printDetailShelfData(){
+		var checkStatus = table.checkStatus('receiveTabId');
+		var data = checkStatus.data;
+		if(data.length==0){
+			layer.alert('未选中行',{icon: 2});
+			return false;
+		}
+		for(var i=0;i<data.length;i++){
+			if(data[i].isDiffer == '2'){
+				layer.alert('请选择已到货物料！',{icon: 2});
+				return false;
+			}
+		}
+		var flag = false;
+		$.ajax({
+			type: 'POST',
+			async: false,
+			url: wmsContextPath+"receiveWork/printDetailShelfData",
+			dataType: "json",
+			data:JSON.stringify(data),
+			contentType : 'application/json',
+			success: function(result){
+				if(result.code==0){
+					$("#printContent").show();
+					var data = result.data;
+					if(data && data.length>0){
+						var getTpl = stockPrint.innerHTML;
+						var view = document.getElementById('printContent');
+						laytpl(getTpl).render(data, function(html){
+							view.innerHTML = html;
+						});
+						var text="";
+						for(var i=0;i<data.length;i++){
+							text = data[i].voucherNo;
+							$("#canvas_"+i).qrcode({
+								render : 'canvas',    //设置渲染方式，有table和canvas，使用canvas方式渲染性能相对来说比较好
+								text : text, //扫描二维码后显示的内容,\n换行
+								size : 120
+							});
+							var img = document.getElementById("image_"+i); // get image element
+							var canvas  = document.getElementById("canvas_"+i);  // get canvas element
+							img.src = canvas.toDataURL();//"image/png"
+						}
+						flag = true;
+					}else{
+						layer.msg("无数据");
+						return false;
+					}
+				}
+				$("#printContent").jqprint({importCSS:true});
+				$("#printContent").hide();
+			}
+		});
+		//更改打印状态
+		if(flag){
+			$.ajax({
+				type: 'POST',
+				async: false,
+				url: wmsContextPath+"receiveWork/updatePrintStatus",
+				dataType: "json",
+				data:JSON.stringify(data),
+				contentType : 'application/json',
+				success: function(result){
+					console.log("打印状态已更改");
+				}
+			});
+			table.reload('receiveTabId');
+		}
+	}
+
+	function printDetailFloorData(){
+		var checkStatus = table.checkStatus('receiveTabId');
+		var data = checkStatus.data;
+		if(data.length==0){
+			layer.alert('未选中行',{icon: 2});
+			return false;
+		}
+		for(var i=0;i<data.length;i++){
+			if(data[i].isDiffer == '2'){
+				layer.alert('请选择已到货物料！',{icon: 2});
+				return false;
+			}
+		}
+		var flag = false;
+		$.ajax({
+			type: 'POST',
+			async: false,
+			url: wmsContextPath+"receiveWork/printDetailFloorData",
+			dataType: "json",
+			data:JSON.stringify(data),
+			contentType : 'application/json',
+			success: function(result){
+				if(result.code==0){
+					$("#printContent").show();
+					var data = result.data;
+					if(data!=null&&JSON.stringify(data)!='{}'){
+						var getTpl = stockFloorPrint.innerHTML
+						,view = document.getElementById('printContent');
+						laytpl(getTpl).render(data, function(html){
+							view.innerHTML = html;
+						});
+						var text="";
+						for(var item in data){
+							text = data[item][0].carrierCode;
+							$('#barcode_'+item).empty().barcode(text, "code128",{//code128为条形码样式
+								output:'css',
+								color: '#000000',
+								barWidth: 3,        //单条条码宽度
+								barHeight: 80,     //单体条码高度
+								addQuietZone: false
+							});
+						};
+						flag = true;
+					}else{
+						layer.msg("无数据");
+						return false;
+					}
+				}
+				$("#printContent").jqprint({importCSS:true});
+				$("#printContent").hide();
+			}
+		});
+		 //更改打印状态
+		if(flag){
+			$.ajax({
+				type: 'POST',
+				async: false,
+				url: wmsContextPath+"receiveWork/updatePrintStatus",
+				dataType: "json",
+				data:JSON.stringify(data),
+				contentType : 'application/json',
+				success: function(result){
+					console.log("打印状态已更改");
+				}
+			});
+			table.reload('receiveTabId');
+		}
+	}
+</script>
+<!--打印内容-->
+<div style="display: none">
+	<div id="printContent"></div>
+</div>
+<script type="text/html" id="stockPrint">
+	{{#  layui.each(d, function(index, item){ }}
+	<div class='main' style='page-break-before:always; margin:0 auto; padding:20px 15px 20px 35px; width:168mm; height:100mm; background: #fff;line-height:50px;font-family: 'Microsoft YaHei', 'Open Sans', sans-serif;font-size:40px;'>
+		<div class='top' style='height:16mm;'>
+			<h1 style='font-size:30px; margin:0; text-align:center'>物料标签</h1>
+		</div>
+		<table style="height:96mm;width:168mm;">
+			<tr style="height:8mm;"><td style="width:45%;">物料凭证号：{{item.voucherNo}}</td><td style="width:30%;">凭证行项目号：{{item.voucherItemNo}}</td><td rowspan="4">
+				<img id="image_{{index}}" width="120px" height="120px" align="right">
+				<canvas id="canvas_{{index}}" height="120px" width="120px" style="display: none "></canvas></td>
+			</tr>
+			<tr style="height:8mm;"><td colspan="2">检验批号：{{item.inspectBatchNo}}</td></tr>
+			<tr style="height:8mm;"><td colspan="2" ><h2 style="font-size:30px;">物料号：<b>{{item.materialCode}}</b></h2></td></tr>
+			<tr style="height:8mm;"><td colspan="2">物料描述：{{item.materialDesc}}</td></tr>
+			<tr style="height:8mm;"><td colspan="2">载具编号：{{item.carrierCode}}</td></tr>
+			<tr style="height:8mm;"><td>数量/单位：{{item.accountCount}}/{{item.materialUnit}}</td><td  colspan="2">收货者：{{item.userName}}</td></tr>
+			<tr style="height:8mm;"><td>保质期：{{item.expireDate}}</td><td colspan="2">仓库标识：{{item.storageLocation}}</td></tr>
+			<tr style="height:8mm;"><td colspan="2">供应商名称：{{item.supplierName}}</td><td>工厂：{{item.factory}}</td></tr>
+			<tr style="height:8mm;"><td colspan="3">序列号：{{item.serialCode}}</td></tr>
+			<tr style="height:8mm;"><td colspan="1">批次号：{{item.batchNo}}</td><td colspan="2" rowspan="3">
+				<div style="float: right; height: 35mm; width: 75mm; margin-top: -6%;  border: 2px solid; text-align: center; line-height: 35mm">质检贴标处</div></td></tr>
+			<tr style="height:8mm;"><td colspan="1">入库日期：{{item.passTime}}</td></tr>
+			<tr style="height:8mm;"><td colspan="1">制造商：{{item.manufacturer}}</td></tr>
+		</table>
+	</div>
+	{{#  }); }}
+</script>
+<script type="text/html" id="stockFloorPrint">
+	{{#  layui.each(d, function(index, item){ }}
+	{{#
+	var indexArray = index.split("_");
+	var  indexOne = indexArray[0];
+	var  indexTwo = indexArray[1];
+	var carrierCode =$("#carrierCode").val();
+	if(indexOne==carrierCode){
+	}}
+	<div style=" width:210mm;">
+		<div class="layui-fluid" >
+			<table  style="width: 90%;" >
+				<tr style="height:80px;">
+					<td align="center" style="width:260px;text-align:left;"><span style="font-size:40px; margin:0;">点收物料清单</span></td>
+					<td colspan="2" style="text-align:reght;"><span style="float:left;margin-top:55px; font-size:20px">载具:</span><div id="barcode_{{index}}" align="right"></div></td>
+				</tr>
+				<tr style="height:40px;">
+					<td><span style="font-size:20px;width:250px;">物料凭证号：{{item[0].voucherNo}}</span></td>
+					<td><span style="font-size:20px;width:250px;">工厂：{{item[0].factory}}</span></td>
+					<td><span style="font-size:20px;width:250px;">项目编号：{{item[0].factory}}</span></td>
+				</tr>
+				<tr style="height:40px;">
+					<td><span style="font-size:20px;width:250px;">仓储类型：</span></td>
+					<td><span style="font-size:20px;width:250px;">仓位号：{{item[0].areaName}}</span></td>
+					<td><span style="font-size:20px;width:250px;">入库日期：{{item[0].passTime}}</span></td>
+				</tr>
+				<tr style="height:40px;">
+					<td colspan="2"><span style="font-size:20px;width:250px;">供应商名称：{{item[0].supplierName}}</span></td>
+					<td><span style="font-size:20px;">收货者：{{item[0].userName}}</span></td>
+				</tr>
+	  		</table>
+		</div>
+		<div class="layui-fluid" >
+			<table style="border: 1px solid black;   width: 90%;  border-collapse:collapse;   font-size:18px;">
+				<th style="border: 1px solid black;  padding-left:5px;height:40px;">序号</th><th style=  "border: 1px solid black;  padding-left:5px;">物料号</th><th style=  "border: 1px solid black;  padding-left:5px;">旧物料号</th><th style=  "border: 1px solid black;  padding-left:5px;">物料描述</th><th style=  "border: 1px solid black;  padding-left:5px;">数量</th><th style=  "border: 1px solid black;  padding-left:5px;">单位</th><th style=  "border: 1px solid black;  padding-left:5px;">批次</th><th style=  "border: 1px solid black;  padding-left:5px;">序列号</th><th style=  "border: 1px solid black;  padding-left:5px;">检验批号</th>
+				{{#  layui.each(item, function(index1, item1){ }}
+					<tr style="height:40px;"><td style="border: 1px solid black;  padding-left:5px;">{{index1+1}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.materialCode}}</td><td style=  "border: 1px solid black;  padding-left:5px;">&nbsp;</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.materialDesc}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.accountCount}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.materialUnit}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.batchNo}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.serialCode}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.inspectBatchNo}}</td></tr>
+				{{#  }); }}
+			</table>
+	 	</div>
+	</div>
+	{{#  }else {
+ 	$("#carrierCode").val(indexOne);
+	}}
+	<div style="page-break-before:always; width:210mm;">
+		<div class="layui-fluid" >
+			<table  style="width: 90%;" >
+				<tr style="height:100px;"><td align="center" style="width:60%;"><span style="font-size:30px; margin:0;">点收物料清单</span></td><td><span style="float:left;margin-top:55px; font-size:20px">载具:</span><div id="barcode_{{index}}"  align="right"></div></td></tr>
+		 		<tr style="height:40px;"><td><span style="font-size:20px;">物料凭证号：{{item[0].voucherNo}}</span></td><td><span style="font-size:20px;">工厂：{{item[0].factory}}</span></td></tr>
+				<tr style="height:40px;"><td><span style="font-size:20px;">仓储类型：</span></td><td><span style="font-size:20px; ">入库日期：{{item[0].passTime}}</span></td></tr>
+				<tr style="height:40px;"><td><span style="font-size:20px;">供应商名称：{{item[0].passTime}}</span></td><td><span style="font-size:20px;">收货者：{{item[0].userName}}</span></td></tr>
+		  	</table>
+		</div>
+		<div class="layui-fluid" >
+			<table style="border: 1px solid black;   width: 90%;  border-collapse:collapse;   font-size:18px;">
+				<th style="border: 1px solid black;  padding-left:5px;height:40px;">序号</th><th style=  "border: 1px solid black;  padding-left:5px;">物料号</th><th style=  "border: 1px solid black;  padding-left:5px;">旧物料号</th><th style=  "border: 1px solid black;  padding-left:5px;">物料描述</th><th style=  "border: 1px solid black;  padding-left:5px;">数量</th><th style=  "border: 1px solid black;  padding-left:5px;">单位</th><th style=  "border: 1px solid black;  padding-left:5px;">批次</th><th style=  "border: 1px solid black;  padding-left:5px;">序列号</th><th style=  "border: 1px solid black;  padding-left:5px;">检验批号</th>
+				{{#  layui.each(item, function(index1, item1){ }}
+					<tr style="height:40px;"><td style="border: 1px solid black;  padding-left:5px;">{{index1+1}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.materialCode}}</td><td style=  "border: 1px solid black;  padding-left:5px;">&nbsp;</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.materialDesc}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.accountCount}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.materialUnit}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.batchNo}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.serialCode}}</td><td style=  "border: 1px solid black;  padding-left:5px;">{{item1.inspectBatchNo}}</td></tr>
+				{{#  }); }}
+			</table>
+	 	</div>
+	</div>
+	{{#  } }}
+	{{#  }); }}
+</script>
+<script type="text/javascript">
+	var table = "";
+	var oldData;
+    var $ = layui.$;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var baseContextPath = config.basicInfoConfig.contextPath;
+    var wmsContextPath = config.wmsoptConfigwmsoptConfig.contextPath;
+    var active = {
+        search:function(othis){
+            //执行重载
+            table.reload('receiveTabId', {
+                where:{
+                    voucherNo : $('#voucherNo').val(),
+                    isUrgent : $('#isUrgent').val(),
+                    page:1
+                }
+            });
+        },
+        reset:function(othis){
+            $('#voucherNo').val("");
+            $('#isUrgent').val('');
+            form.render("select");
+        },
+        edit:function(othis){
+            var checkStatus = table.checkStatus('receiveTabId');
+            oldData = checkStatus.data;
+            if(oldData.length<=0){
+                layer.alert('请选择要编辑的行！',{icon: 2});
+                return ;
+            }else if(oldData.length >1){
+                layer.alert('编辑不能超过多行！',{icon: 2});
+                return ;
+            }
+            var jobNode = (checkStatus.data)[0].jobNode;
+            //alert(JSON.stringify(checkStatus.data))
+            if("08"==jobNode||"09"==jobNode){
+                var type = othis.data('type');
+                $("#oldJobNode").val('').val(jobNode);	//方便子页面取未修改之前的状态
+                $("#arrivalDetailId").val((checkStatus.data)[0].arrivalDetailId);
+                layer.open({
+                    type: 2,
+                    title:'编辑物料详情',
+                    maxmin:true,
+                    area: ['700px', '450px'],
+                    id: 'updateMaterial', //防止重复弹出
+                    content: '${ctx}/pages/mfc/receiveWorkSchedule/MaterialUpdate.html',
+                    shade: 0, //不显示遮罩
+                    yes: function(){
+                        layer.closeAll();
+                    }
+                });
+            }else{
+                layer.alert('只有点收中和已点收才可以进行编辑！',{icon: 2});
+                return ;
+            }
+        },
+    };
+    function loadding() {
+        layui.use(['layer','form','table'],function(){
+            table.render({
+                elem:'#receiveWorkDetailTab',
+                id:'receiveTabId',
+                url:wmsContextPath+'receiveWork/getReceiveWorkScheduleDetail?id='+parent.$("#receiveId").val(),
+                cols: [[
+                    {type:'checkbox',fixed:'left'},
+                    {field:'isUrgent',title: '紧急状态',width:90,fixed:'left'},
+                    {field:'arrivalItemNo',title: '行项目',width:75,fixed:'left'},
+                    {field:'materialCode', title: '物料号',width:140,fixed:'left'},
+                    {field:'materialDesc', title: '物料描述',minWidth:180,fixed:'left'},
+                    {field:'realCount', title: '清点数量',width:90},
+                    {field:'accountCount', title: '过账数量',width:90},
+                    {field:'deliveryCount', title: '交货数量',width:90},
+                    {field:'batchNo', title: '批次号',width:120},
+                    {field:'accountReturnMsg', title: '过账返回信息',width:120},
+                    {field:'storageLocation', title: '库存地点',width:120},
+                    {field:'purchaser', title: '采购员',align: 'center',width:120},
+                    {field:'checkUid', title: '点收人',width:120},
+                    {field:'jobNode', title: '点收状态',width:120},
+                    {field:'voucherNo', title: '凭证号',width:120},
+                    {field:'carrierCode', title: '载具号',width:120},
+                    {field:'printStatus', title: '打印状态',width:90},
+                ]],
+                page: {theme: '#008155'},
+                height: 'full-95',
+                even:true,
+                done:function(res,page,count){//列表数据回调函数
+                    //点收状态/紧急状态 select
+                    var dictType = new Array();
+                    dictType.push("receive_status");
+                    dictType.push("is_urgent");
+                    var option={
+                        url:baseContextPath+'dictItems/listDictItemByTypes',
+                        type:'POST',
+                        dataType:'json',
+                        contentType: "application/json",
+                        data:JSON.stringify(dictType),
+                        success:function(res){
+                            if(res.code==0){
+                                changeItemName(res.data);
+                                defaultSelect(res.data);
+                            }
+                        }
+                    };
+                    $.ajax(option);
+                }
+            });
+            //加载紧急状态select
+            function defaultSelect(dictItems){
+                if(dictItems && dictItems.length>0){
+                    if($("#isUrgent").find("option").length==1){
+                        for(var i=0;i<dictItems.length;i++){
+                            if(dictItems[i].dictTypeId=="is_urgent"){
+                                $("#isUrgent").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+                            }
+                        }
+                        form.render('select');
+                    }
+                }
+            }
+            function changeItemName(data){
+                //table列  点收状态 回显汉字
+                $("[data-field='jobNode']").children().each(function(i,e){
+                    if(i>0){
+                        if($(e).text()!='未到货'){
+                            for(var i=0;i<data.length;i++){
+                                if(data[i].dictTypeId=="receive_status" && data[i].itemValue==$(this).text().trim()){
+                                    $(this).text(data[i].itemName);
+                                }
+                            }
+                        }
+                    }
+                });
+                //table列 紧急状态 回显汉字
+                $("[data-field='isUrgent']").children().each(function(i,e){
+                    if(i>0){
+                        if($(e).text()==1){
+                            $(e).css("color","red");
+                        }
+                    }
+                    for(var i=0;i<data.length;i++){
+                        if(data[i].dictTypeId=="is_urgent" && data[i].itemValue==$(this).text().trim()){
+                            $(this).text(data[i].itemName);
+                        }
+                    }
+                });
+                //table列 打印状态 回显汉字
+                $("[data-field='printStatus']").children().each(function(i,e){
+                    if(i>0){
+                        if($(e).text()=='1'){
+                            $(e).text("已打印");
+                        }else{
+                            $(e).text("未打印");
+                        }
+                    }
+                });
+            }
+            $('.layui-btn-container button').on('click', function(){
+                var othis = $(this), method = othis.data('method');
+                active[method] ? active[method].call(this, othis) : '';
+            });
+        })
+    }
+</script>
+</html>

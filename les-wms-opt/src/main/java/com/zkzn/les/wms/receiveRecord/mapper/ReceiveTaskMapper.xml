@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.receiveRecord.dao.ReceiveTaskDao">
+    <insert id="saveReceiveRecordDetails" parameterType="java.util.List">
+        <if test="list.size() > 0">
+            <foreach collection="list" separator=";" index="index" item="item">
+                insert into w_receive_task_detail
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="item.materialCode !=null and '' !=item.materialCode">MATERIAL_CODE</if>
+                    <if test="item.materialDesc !=null and '' !=item.materialDesc">,MATERIAL_DESC</if>
+                    <if test="item.materialUnit !=null and '' !=item.materialUnit">,MATERIAL_UNIT</if>
+                    <if test="item.receiveNum !=null and '' !=item.receiveNum">,RECEIVE_NUM</if>
+                    <if test="item.batchNo !=null and '' !=item.batchNo">,BATCH_NO</if>
+                    <if test="item.storageLocation !=null and '' !=item.storageLocation">,STORAGE_LOCATION</if>
+                    <if test="item.status !=null and '' !=item.status">,STATUS</if>
+                    <if test="item.receiveTaskCode !=null and '' !=item.receiveTaskCode">,RECEIVED_TASK_CODE</if>
+                    <if test="item.itemNo !=null and '' !=item.itemNo">,ITEM_NO</if>
+                    <if test="item.receiveId !=null and '' !=item.receiveId">,RECEIVE_ID</if>
+                    <if test="item.factory !=null and '' !=item.factory">,FACTORY</if>
+                    <if test="item.arrivalDetailId !=null and '' !=item.arrivalDetailId">,ARRIVAL_DETAIL_ID</if>
+                    <if test="item.sapItemNo !=null and ''!= item.sapItemNo">,SAP_ITEM_NO</if>
+                    <if test="item.shipperName !=null and ''!= item.shipperName">,SHIPPER_NAME</if>
+                    <if test="item.shipperCode !=null and ''!= item.shipperCode">,SHIPPER_CODE</if>
+                    <if test="item.stationCode !=null and ''!= item.stationCode">,STATION_CODE</if>
+                </trim>
+                <trim prefix="values (" suffix=")" suffixOverrides=",">
+                    <if test="item.materialCode !=null and '' !=item.materialCode">#{item.materialCode}</if>
+                    <if test="item.materialDesc !=null and '' !=item.materialDesc">,#{item.materialDesc}</if>
+                    <if test="item.materialUnit !=null and '' !=item.materialUnit">,#{item.materialUnit}</if>
+                    <if test="item.receiveNum !=null and '' !=item.receiveNum">,#{item.receiveNum}</if>
+                    <if test="item.batchNo !=null and '' !=item.batchNo">,#{item.batchNo}</if>
+                    <if test="item.storageLocation !=null and '' !=item.storageLocation">,#{item.storageLocation}</if>
+                    <if test="item.status !=null and '' !=item.status">,#{item.status}</if>
+                    <if test="item.receiveTaskCode !=null and '' !=item.receiveTaskCode">,#{item.receiveTaskCode}</if>
+                    <if test="item.itemNo !=null and '' !=item.itemNo">,#{item.itemNo}</if>
+                    <if test="item.receiveId !=null and '' !=item.receiveId">,#{item.receiveId}</if>
+                    <if test="item.factory !=null and '' !=item.factory">,#{item.factory}</if>
+                    <if test="item.arrivalDetailId !=null and '' !=item.arrivalDetailId">,#{item.arrivalDetailId}</if>
+                    <if test="item.sapItemNo !=null and ''!= item.sapItemNo">,#{item.sapItemNo}</if>
+                    <if test="item.shipperName !=null and ''!= item.shipperName">,#{item.shipperName}</if>
+                    <if test="item.shipperCode !=null and ''!= item.shipperCode">,#{item.shipperCode}</if>
+                    <if test="item.stationCode !=null and ''!= item.stationCode">,#{item.stationCode}</if>
+                </trim>
+            </foreach>
+        </if>
+    </insert>
+
+    <insert id="saveReceiveInfo" parameterType="java.util.HashMap">
+        <if test="list.size() > 0">
+            INSERT INTO w_receive_task
+            <foreach collection="list" item="item" index="index" separator=",">
+                (id
+                <if test="item.orderCode !=null and '' !=item.orderCode">,ORDER_CODE</if>
+                <if test="item.billName !=null and '' !=item.billName">,BILL_NAME</if>
+                <if test="item.billCode !=null and '' !=item.billCode">,BILL_CODE</if>
+                <if test="item.arrivalNoticeId !=null and '' !=item.arrivalNoticeId">,ARRIVAL_ID</if>
+                <if test="item.factory !=null and '' !=item.factory">,FACTORY</if>
+                <if test="item.warehouseCode !=null and '' !=item.warehouseCode">,WAREHOUSE_CODE</if>
+                <if test="item.billType !=null and '' !=item.billType">,BILL_TYPE</if>
+                <if test="item.status !=null and '' !=item.status">,STATUS</if>
+                <if test="item.admissionId !=null and '' !=item.admissionId">,ADMISSION_ID</if>
+                <if test="item.warehouseName !=null and '' !=item.warehouseName">,WAREHOUSE_NAME</if>
+                <if test="item.receiveTaskCode !=null and '' !=item.receiveTaskCode">,RECEIVED_TASK_CODE</if>
+                <if test="item.storageLocation !=null and '' !=item.storageLocation">,STORAGE_LOCATION</if>
+                <if test="item.shipperName !=null and '' !=item.shipperName">,SHIPPER_NAME</if>
+                <if test="item.shipperCode !=null and '' !=item.shipperCode">,SHIPPER_CODE</if>
+                <if test="item.purchaseCode != null and '' != item.purchaseCode">,PURCHASE_CODE</if>
+                <if test="item.uploadPlatCode !=null and '' !=item.uploadPlatCode">,UPLOAD_PLAT_CODE</if>
+                <if test="item.uploadPlatId !=null and '' !=item.uploadPlatId">,UPLOAD_PLAT_ID</if>
+                )
+            </foreach>
+            VALUES
+            <foreach collection="list" item="item" index="index" separator=",">
+                (#{item.id}
+                <if test="item.orderCode !=null and '' !=item.orderCode">,#{item.orderCode}</if>
+                <if test="item.billName !=null and '' !=item.billName">,#{item.billName}</if>
+                <if test="item.billCode !=null and '' !=item.billCode">,#{item.billCode}</if>
+                <if test="item.arrivalNoticeId !=null and '' !=item.arrivalNoticeId">,#{item.arrivalNoticeId}</if>
+                <if test="item.factory !=null and '' !=item.factory">,#{item.factory}</if>
+                <if test="item.warehouseCode !=null and '' !=item.warehouseCode">,#{item.warehouseCode}</if>
+                <if test="item.billType !=null and '' !=item.billType">,#{item.billType}</if>
+                <if test="item.status !=null and '' !=item.status">,#{item.status}</if>
+                <if test="item.admissionId !=null and '' !=item.admissionId">,#{item.admissionId}</if>
+                <if test="item.warehouseName !=null and '' !=item.warehouseName">,#{item.warehouseName}</if>
+                <if test="item.receiveTaskCode !=null and '' !=item.receiveTaskCode">,#{item.receiveTaskCode}</if>
+                <if test="item.storageLocation !=null and '' !=item.storageLocation">,#{item.storageLocation}</if>
+                <if test="item.shipperName !=null and '' !=item.shipperName">,#{item.shipperName}</if>
+                <if test="item.shipperCode !=null and '' !=item.shipperCode">,#{item.shipperCode}</if>
+                <if test="item.purchaseCode != null and '' != item.purchaseCode">,#{item.purchaseCode}</if>
+                <if test="item.uploadPlatCode !=null and '' !=item.uploadPlatCode">,#{item.uploadPlatCode}</if>
+                <if test="item.uploadPlatId !=null and '' !=item.uploadPlatId">,#{item.uploadPlatId}</if>
+                )
+            </foreach>
+        </if>
+    </insert>
+    <select id="listReceiveTask" resultType="java.util.Map">
+        SELECT t.receive_task_id AS "receiveId",
+        t.bill_type AS "billType",
+        t.client_name AS "clientName",
+        t.bill_name AS "typeName",
+        t.receive_status AS "status",
+        t.warehouse_name AS "warehouseName",
+        t.warehouse_code AS "warehouseCode",
+        t.arrival_notice_id AS "arrivalId",
+        t.arrival_code AS "receiveTaskCode",
+        t.receive_start_time AS "receiveStartTime",
+        (select count(0) from w_receive_task_detail d where d.receive_task_id = t.receive_task_id) AS "materialType"
+        FROM w_receive_task t
+        <where>
+            t.receive_status <![CDATA[ < ]]> 30
+            AND t.operate_user_id = #{userId}
+            <if test="warehouseCode != null and '' != warehouseCode">
+                AND t.warehouse_code = #{warehouseCode}
+            </if>
+            <if test="receiveId != null and '' != receiveId">
+                AND t.receive_task_id = #{receiveId}
+            </if>
+            <if test="ltStatus != null">
+                AND t.receive_status <![CDATA[ <= ]]> #{ltStatus}
+            </if>
+            <if test="gtStatus != null">
+                AND t.receive_status <![CDATA[ >= ]]> #{gtStatus}
+            </if>
+            <if test="status != null">
+                AND t.receive_status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <update id="updateReceiveTask">
+        UPDATE w_receive_task
+        <set>
+            <if test="status != null ">receive_status=#{status},</if>
+            <if test="modifierId != null">update_user_id=#{modifierId},</if>
+            <if test="modifierName != null">update_user_id=#{modifierName},</if>
+            <if test="modifiedTime != null">update_time=#{modifiedTime},</if>
+            <if test="receiveStartTime != null ">receive_start_time=#{receiveStartTime},</if>
+            <if test="receiveEndTime != null ">receive_end_time=#{receiveEndTime},</if>
+            <if test="receiveTotalTime != null ">receive_total_time=#{receiveTotalTime},</if>
+        </set>
+        WHERE receive_task_id = #{receiveId}
+    </update>
+
+    <update id="updateReceiveTaskByPojo" parameterType="com.zkzn.les.wms.receiveRecord.pojo.UpdateReceiveTaskPojo">
+        UPDATE w_receive_task
+        <set>
+            <if test="receiveStatus != null ">receive_status=#{receiveStatus},</if>
+            <if test="receiveStartTime != null ">receive_start_time=#{receiveStartTime},</if>
+            <if test="receiveEndTime != null ">receive_end_time=#{receiveEndTime},</if>
+            <if test="receiveTotalTime != null ">receive_total_time=#{receiveTotalTime},</if>
+            <if test="updateUserId != null">update_user_id=#{updateUserId},</if>
+            <if test="updateName != null">update_name=#{updateName},</if>
+            <if test="updateTime != null">update_time=#{updateTime}</if>
+        </set>
+        WHERE receive_task_id = #{receiveTaskId}
+    </update>
+
+    <update id="updateReceiveDetailByTaskId" parameterType="com.zkzn.les.wms.receiveRecord.pojo.UpdateReceiveTaskPojo">
+        UPDATE w_receive_task_detail
+        <set>
+            <if test="receiveStatus != null ">
+                receive_detail_status = #{receiveStatus}
+            </if>
+        </set>
+        <where>
+            <if test="receiveTaskId != null">
+                receive_task_id = #{receiveTaskId}
+            </if>
+        </where>
+    </update>
+
+    <update id="updateReceiveDetailTask" parameterType="com.zkzn.les.wms.receiveRecord.pojo.SaveReceiveDetailPojo">
+        UPDATE w_receive_task_detail
+        <set>
+            <if test="receiveDetailStatus != null">
+                receive_detail_status =#{receiveDetailStatus}
+            </if>
+            <if test="receiveNum != null ">
+                ,receive_num = #{receiveNum}
+            </if>
+            <if test="remarks != null ">
+                ,remarks = #{remarks}
+            </if>
+            <if test="pointerName != null ">
+                ,pointer_name = #{pointerName}
+            </if>
+            <if test="pointerId != null ">
+                ,pointer_id = #{pointerId}
+            </if>
+            <if test="receiveTime != null ">
+                ,receive_time = #{receiveTime}
+            </if>
+        </set>
+        <where>
+            <if test="receiveDetailId != null">
+                receive_detail_id = #{receiveDetailId}
+            </if>
+        </where>
+    </update>
+
+    <update id="updateReceiveDetailTasks">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            update w_receive_task_detail
+            <set>
+                <if test="item.status != null ">
+                    status =#{item.status},
+                </if>
+                <if test="item.receiveNum != null ">
+                    receive_num = #{item.receiveNum}
+                </if>
+                <if test="item.actualNum != null">
+                    actual_num = #{item.actualNum}
+                </if>
+            </set>
+            where id = #{item.receiveDetailId,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+
+    <select id="listArea" resultType="java.util.Map">
+        SELECT
+        t.AREA_CODE AS "areaCode",
+        t.id AS "id",
+        t.AREA_NAME AS "areaName",
+        t.AREA_TYPE AS "areaType",
+        t.USE_STATUS AS "useStatus",
+        t.AREA_LEVEL AS "areaLevel"
+        FROM t_area t
+        WHERE t.area_type =#{areaType} AND t.STATUS = 0
+        <if test="null != list and list.size >0">
+            <foreach collection="list" open=" and t.area_code in  (" close=")" index="index" item="item" separator=",">
+                #{item.areaCode}
+            </foreach>
+        </if>
+    </select>
+
+    <insert id="saveMaterialSerial" parameterType="java.util.List">
+        <if test="list.size()>0">
+            insert into t_material_serial (ID,BATCH_NO, CREATER_ID, CREATE_TIME,
+            CREATER_NAME, MATERIAL_CODE,
+            SERIAL_NUM, RECEIVED_TASK_CODE, TASK_ID,
+            TASK_TYPE,CARRIER_CODE, CARRIER_ID, CARRIER_TYPE)
+            select replace(uuid(),'-',''),a.* from(
+            <foreach collection="list" item="list" index="index" separator="UNION ALL">
+                select
+                #{list.batchNo,jdbcType=VARCHAR},
+                #{list.curUserId,jdbcType=VARCHAR},
+                #{list.createTime,jdbcType=TIMESTAMP},
+                #{list.curUserName,jdbcType=VARCHAR},
+                #{list.materialCode,jdbcType=VARCHAR},
+                #{list.serialNum,jdbcType=VARCHAR},
+                #{list.receivedTaskCode,jdbcType=VARCHAR},
+                #{list.taskId,jdbcType=VARCHAR},
+                #{list.taskType}
+                #{list.carrierCode,jdbcType=VARCHAR},
+                #{list.carrierId,jdbcType=VARCHAR},
+                #{list.carrierType,jdbcType=VARCHAR}
+                from dual
+            </foreach>
+            ) a
+        </if>
+    </insert>
+
+    <insert id="saveAbnormalMaterialInfo" parameterType="java.util.HashMap">
+        insert into t_receive_abnormal (RECEIVE_DETAIL_ID,
+                                        CREATER_ID,
+                                        CREATE_TIME,
+                                        CREATER_NAME,
+                                        REMARK,
+                                        MATERIAL_CODE,
+                                        MATERIAL_DESC,
+                                        MATERIAL_UNIT,
+                                        MATERIAL_NUM,
+                                        ABNORMAL_REASON,
+                                        BATCH_NO)
+        values (#{receiveDetailId},
+                #{createrId,jdbcType=VARCHAR},
+                #{createTime,jdbcType=TIMESTAMP},
+                #{remark,jdbcType=VARCHAR},
+                #{createrName,jdbcType=VARCHAR},
+                #{materialCode,jdbcType=VARCHAR},
+                #{materialDesc,jdbcType=VARCHAR},
+                #{materialUnit,jdbcType=VARCHAR},
+                #{abnormalNum},
+                #{abnormalReason},
+                #{batchNo})
+    </insert>
+
+    <select id="listReceiveRecordDetail" resultType="java.util.Map">
+        SELECT
+            trtd.receive_detail_id AS "receiveDetailId",
+            trtd.material_desc AS "materialDesc",
+            trtd.material_unit AS "materialUnit",
+            trtd.actual_num AS "actualNum",
+            trtd.receive_num AS "receiveNum",
+            trtd.receive_detail_status AS "status",
+            trtd.pointer_name AS "pointerName",
+            trtd.pointer_id AS "pointerId",
+            wrt.arrival_code AS "receiveTaskCode",
+            wrt.client_name AS "clientName",
+            trtd.item_no AS "itemNo",
+            trtd.receive_task_id AS "receiveId",
+            trtd.remarks
+        FROM w_receive_task_detail trtd
+        LEFT JOIN w_receive_task wrt on trtd.receive_task_id = wrt.receive_task_id
+        <where>
+            <if test="receiveDetailId != null ">
+                trtd.receive_detail_id = #{receiveDetailId}
+            </if>
+            <if test="receiveId != null">
+                AND trtd.receive_task_id = #{receiveId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getReceiveRecordDetailAllInfo" resultType="java.util.HashMap">
+        select t.ID                 AS "id",
+               t.MATERIAL_CODE      AS "materialCode",
+               t.MATERIAL_DESC      AS "materialDesc",
+               m.MATERIAL_UNIT      AS materialUnit,
+               t.RECEIVE_NUM        AS "receiveNum",
+               t.BATCH_NO           AS "batchNo",
+               t.STORAGE_LOCATION   AS "storageLocation",
+               t.FACTORY            AS "factory",
+               t.STATUS             AS "status",
+               t.CREATE_TIME        AS "createTime",
+               t.RECEIVED_TASK_CODE AS "receivedTaskCode",
+               t.ITEM_NO            AS "itemNo",
+               t.RECEIVE_ID         AS "receiveId",
+               t.ORDER_ITEM_NO      AS "orderItemNo",
+               p.sales_order_code   AS "salesOrderCode",
+               p.sales_order_item   AS "salesOrderItem",
+               p.subject_type       AS "subjectType",
+               trt.order_code       AS "orderCode",
+               trt.shipper_name     AS "shipperName",
+               trt.shipper_code     AS "shipperCode"
+        from w_receive_task_detail t
+                 left join w_receive_task trt on t.RECEIVE_ID = trt.id
+                 left join t_arrival_notice_detail d on d.id = t.ARRIVAL_DETAIL_ID
+                 left join t_purchase_bill_detail p on p.order_code = d.purchase_code and d.purchase_item = p.item_no
+                 left join t_material m on t.MATERIAL_CODE = m.MATERIAL_CODE
+        where t.id = #{receiveDetailId,jdbcType=INTEGER}
+    </select>
+
+    <select id="listReceiveCarrierInfo" resultType="java.util.Map">
+        SELECT trc.CARRIER_CODE AS "carrierCode",
+               trc.CARRY_NUMBER AS "carryNumber",
+               trc.ID           AS "receiveCarrierId",
+               trc.BATCH_NO     AS "batchNo"
+        FROM w_receive_carrier trc
+                 left join w_receive_task_detail trtd on trc.RECEIVE_DETAIL_ID = trtd.ID
+        WHERE trtd.RECEIVE_ID = #{receiveId}
+    </select>
+
+    <select id="getUpperFrameData" resultType="com.zkzn.les.wms.upperFrame.pojo.UpperFrameData">
+        SELECT
+            r.receive_task_id AS "receiveTaskId",
+            rtd.receive_detail_id AS "receiveDetailId",
+            rtd.material_desc AS "materialDesc",
+            rtd.material_unit AS "materialUnit",
+            rc.carry_number AS "materialNum",
+            rc.qualified_type AS "upperType",
+            rc.carrier_code AS "carrierCode",
+            r.arrival_code AS "upperTaskCode",
+            r.operate_user_id AS "operateUserId",
+            r.operate_user_name AS "operateUserName",
+            rc.batch_no AS "batchNo",
+            r.client_manage_id AS "clientManageId",
+            r.client_name AS "clientName",
+            r.warehouse_name AS "warehouseName",
+            r.warehouse_code AS "warehouseCode",
+            1 AS "upperOrigin",
+            0 AS "status"
+        FROM
+            w_receive_task r
+            LEFT JOIN w_receive_task_detail rtd ON r.receive_task_id = rtd.receive_task_id
+            LEFT JOIN w_receive_carrier rc ON rtd.receive_detail_id = rc.receive_detail_id
+        WHERE r.receive_task_id = #{receiveTaskId}
+    </select>
+
+    <insert id="AddUpperFrameData" parameterType="com.zkzn.les.wms.upperFrame.pojo.UpperFrameData" useGeneratedKeys="true" keyProperty="upperFrameId">
+        insert into w_upper_frame_record
+            (receive_task_id,
+            receive_detail_id,
+            material_desc,
+            material_unit,
+            material_num,
+            operate_user_id,
+            operate_user_name,
+            upper_type,
+            carrier_code,
+            batch_no,
+            client_manage_id,
+            client_name,
+            upper_origin,
+            warehouse_name,
+            warehouse_code,
+            status,
+            create_time)
+        values
+            (#{receiveTaskId},
+            #{receiveDetailId},
+            #{materialDesc},
+            #{materialUnit},
+            #{materialNum},
+            #{operateUserId},
+            #{operateUserName},
+            #{upperType},
+            #{carrierCode},
+            #{batchNo},
+            #{clientManageId},
+            #{clientName},
+            1,
+            #{warehouseName},
+            #{warehouseCode},
+            0,
+            sysdate())
+    </insert>
+
+    <insert id="addUpperPositionPojo" parameterType="java.util.List">
+        <foreach collection="list" separator=";" index="index" item="item">
+            insert into w_recommend_positions
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.upperFrameId !=null and '' !=item.upperFrameId">upper_frame_id</if>
+                <if test="item.storagePositionId !=null and '' !=item.storagePositionId">,storage_position_id</if>
+                <if test="item.positionCode !=null and '' !=item.positionCode">,position_code</if>
+                <if test="item.sumCount !=null and '' !=item.sumCount">,sum_count</if>
+                <if test="item.materialUnit !=null and '' !=item.materialUnit">,material_unit</if>
+                <if test="item.positionStatus !=null">,position_status</if>
+                <if test="item.positionCarCode !=null and '' !=item.positionCarCode">,position_car_code</if>
+                ,create_time
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="item.upperFrameId !=null and '' !=item.upperFrameId">#{item.upperFrameId}</if>
+                <if test="item.storagePositionId !=null and '' !=item.storagePositionId">,#{item.storagePositionId}</if>
+                <if test="item.positionCode !=null and '' !=item.positionCode">,#{item.positionCode}</if>
+                <if test="item.sumCount !=null and '' !=item.sumCount">,#{item.sumCount}</if>
+                <if test="item.materialUnit !=null and '' !=item.materialUnit">,#{item.materialUnit}</if>
+                <if test="item.positionStatus !=null">,#{item.positionStatus}</if>
+                <if test="item.positionCarCode !=null and '' !=item.positionCarCode">,#{item.positionCarCode}</if>
+                ,sysdate()
+            </trim>
+        </foreach>
+    </insert>
+</mapper>

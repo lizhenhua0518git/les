@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.oms.delivery.dao.MesHandoverDao">
+
+    <select id="listHandoverOrderList" resultType="com.zkzn.les.oms.stationOrder.pojo.PcShipmentTaskPojo" parameterType="com.zkzn.les.oms.stationOrder.pojo.PcShipmentTaskPojo">
+        SELECT
+            st.shipment_task_id AS "shipmentTaskId",
+            w.ORG_NAME AS	"warehouseName",
+            w.ORG_CODE AS	"warehouseCode",
+            st.client_name AS "clientName",
+            st.order_code AS "orderCode",
+            st.order_type AS "orderType",
+            st.task_status AS "taskStatus",
+            st.connect_name AS "connectName",
+            st.connect_time AS "connectTime",
+            st.creater_time AS "createrTime"
+        FROM
+            o_shipment_task st
+        LEFT JOIN t_warehouse w ON w.ORG_CODE = st.warehouse_code
+        where 1=1
+        <if test="startTime !=null and ''!= startTime and endTime !=null and ''!= endTime">
+            and st.connect_time between str_to_date(#{startTime}, '%Y-%m-%d') and str_to_date(#{endTime}, '%Y-%m-%d')
+        </if>
+        <if test="orderCode !=null and ''!= orderCode">
+            and st.order_code like '%${orderCode}%'
+        </if>
+        <if test="warehouseCode !=null and ''!= warehouseCode">
+            <foreach collection="warehouseCode.split(';')" open="and st.warehouse_code in(" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+        order by st.creater_time desc
+    </select>
+
+    <select id="listHandoverMaterialList" resultType="com.zkzn.les.oms.stationOrder.pojo.PcShipmentTaskPojo" parameterType="com.zkzn.les.oms.stationOrder.pojo.PcShipmentTaskPojo">
+        SELECT
+            std.shipment_task_id AS "shipmentTaskId",
+            std.shipment_task_detail_id AS "shipmentTaskDetailId",
+            w.ORG_NAME AS	"warehouseName",
+            w.ORG_CODE AS	"warehouseCode",
+            st.client_name AS "clientName",
+            st.order_code AS "orderCode",
+            std.material_desc AS "materialDesc",
+            std.material_desc AS "materialUnit",
+            std.shipment_count AS "shipmentCount",
+            std.position_code AS "positionCode",
+            std.batch_no AS "batchNo",
+            std.stock_status AS "stockStatus",
+            std.shipment_status AS "shipmentStatus",
+            std.creater_time AS "createrTime"
+        FROM
+        o_shipment_task_detail std
+        LEFT JOIN o_shipment_task st ON std.shipment_task_id = st.shipment_task_id
+        LEFT JOIN t_warehouse w ON w.ORG_CODE = st.warehouse_code
+        where 1=1
+        <if test="materialDesc !=null and ''!= materialDesc">
+            AND std.material_desc like '%${materialDesc}%'
+        </if>
+        <if test="orderCode !=null and ''!= orderCode">
+            and st.order_code like '%${orderCode}%'
+        </if>
+        <if test="shipmentTaskId !=null">
+            and std.shipment_task_id = '%${shipmentTaskId}%'
+        </if>
+        order by std.creater_time desc
+    </select>
+</mapper>

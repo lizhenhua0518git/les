@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+    <link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/tableFilter.css"  type="text/css" />
+    <title>生产退补料详情出库</title>
+</head>
+<body >
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid-1" >
+        <div class="layui-fluid-table">
+            <div class="layui-row layui-form">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="distributing" type="button"><i class="layui-icon layui-icon-edit"></i>任务派发</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="layui-hide" id="transferSlipInfo" lay-filter="transferSlipInfoF"></table>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+</script>
+<script type="text/javascript">
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var laydate = layui.laydate;
+    var beforeData = parent.oldData;
+    var oldData;
+    var parentProcessId=parent.$("#pid").val();
+    var parentMaterialCode = parent.$("#materialCode").val();
+    var contextPath = config.wmsConfig.contextPath;
+    var omsContextPath = config.omsConfig.contextPath;
+    var active = {
+        // 任务派发
+        distributing : function(othis) {
+            var checkStatus = table.checkStatus('transferSlipInfoId');
+            oldData = checkStatus.data;
+            var idarrys = new Array();
+
+            if(oldData.length <=0) {
+                layer.alert('请选择需要派发的订单！', {
+                    icon: 2
+                });
+                return;
+            }
+            for(var i=0;i<oldData.length;i++){
+                idarrys.push(oldData[i].id);
+            }
+            var type = othis.data('type');
+            layer.confirm('已选中'+oldData.length+'条数据，确认派发?', {icon: 3, title:'提示'}, function(index){
+                var option ={
+                    url:omsContextPath+'stationOrder/taskStationOrder',
+                    type:'POST',
+                    contentType: "application/json",
+                    dataType:'json',
+                    data:JSON.stringify(idarrys),
+                    success:function(data){
+                        if(data.code==0){
+                            layer.alert("任务下发成功,可以拣料了");
+                        }else{
+                            layer.alert("任务已下发失败");
+                        }
+                        table.reload('stationOrderTabId');
+                    },error:function(data){
+                        layer.alert(data.msg);
+                    }
+                }
+                $.ajax(option);
+                layer.close(index);
+            });
+        }
+    };
+
+    function loadding() {
+
+        table.render({
+            elem : '#transferSlipInfo',
+            id : 'transferSlipInfoId',
+            url : contextPath + 'abnormalMaterialWorkshop/findStationOrderInfo',
+            cols : [ [ {
+                type : 'checkbox'
+            }, {
+                type : 'numbers',
+                title : '序号'
+            },{
+                field : 'taskOrder',
+                title : '退补料作业出库任务号'
+            }, {
+                field : 'materialCode',
+                title : '物料号'
+            }, {
+                field : 'materialDesc',
+                title : '物料描述'
+            }, {
+                field : 'positionCode',
+                title : '补料出库库位'
+            }, {
+                field : 'pickNum',
+                title : '下架数量'
+            }, {
+                field : 'status',
+                title : '派发状态',
+                templet:function(d){
+                    return d.status == "0" ? "未派发" : "已派发";
+                }
+            }, {
+                field : 'statusIsOrder',
+                title : '是否已下架',
+                templet:function(d){
+                    return d.status == "5" ? "未下架" : d.status == "20" || d.status == "25" ? "已下架":"";
+                }
+            }, {
+                field : 'statusIsDelivery',
+                title : '是否已交接',
+                templet:function(d){
+                    return d.status == "20" ? "未交接" : d.status == "25" ? "已交接":"";
+                }
+            }
+
+            ] ],
+            where : {
+            //传值 startDate : startDate,
+                processId:parentProcessId,
+                materialCode:parentMaterialCode
+            },
+            page : {
+                theme: '#008155'
+            },
+            even : true,
+        });
+        $('.layui-btn-container button').on('click', function() {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+    }
+
+</script>
+</body>
+</html>

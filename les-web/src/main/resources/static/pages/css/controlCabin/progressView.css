@@ -1,0 +1,280 @@
+/**
+* 数据观象台
+* @author	GaoYuan
+* @date		2019.07.23
+*/
+
+@import "base.css";
+
+.ml60{margin-left: 0.6rem;}
+.mt50{margin-top: 0.5rem;}
+.ml50{margin-left: 0.5rem;}
+.mr50{margin-right: 0.5rem;}
+.mt30{margin-top: 0.3rem;}
+.ml20{margin-left: 0.2rem;}
+.mr20{margin-right: 0.2rem;}
+
+html{background: linear-gradient(#001a47,#022558); min-height: 100%;}
+body{min-height: 100%; color: #c0dcfe; font-size: 0.16rem;}
+.progressTop{margin: 0 0.5rem; padding-top: 0.3rem; font-size: 0.3rem; overflow: hidden;}
+.dateChoose{float: left;}
+.dateChoose ._inline{display: inline-block;}
+.dateChoose ._inline input{box-sizing: border-box; width: 2.6rem; height: 0.5rem; line-height: 0.5rem; padding:0 0.15rem; border: 1px solid #2a69c7; border-radius: 5px; color: #c0dcfe;}
+.buttonGroup{float: right;}
+.buttonGroup button{height: 0.46rem; padding: 0 0.3rem; background-color: #1f4e94; border: 1px solid #2a69c7; border-radius: 5px; color: #c0dcfe; font-size: 0.24rem; cursor: pointer;}
+
+.container{overflow: hidden; position: relative;}
+.container .tit{margin-bottom: 0.25rem; font-size: 0.24rem; line-height: 0.32rem;}
+.container .tit .collapse{float: right; cursor: pointer;}
+.container .tit::before{content: "\e715"; font-family: "layui-icon"; margin-right: 0.2em;}
+.container .sectionTit,
+.container .sectionTit2{margin-bottom: 0.1rem; overflow: hidden;}
+.container .sectionTit h1{float: left; font-size: 0.20rem; font-weight: normal;}
+.container .sectionTit h1:first-child{width: calc((100% - 0.9rem)*3/4 + 1.9rem);}
+.container .sectionTit2 h2{float: left; font-size: 0.20rem; font-weight: normal; width: calc((100% - 0.6rem)/3 + 0.3rem);}
+.container .sectionTit2 h2:last-child{width: auto;}
+
+.light{background:radial-gradient(#043991 5%,transparent 70%, transparent);}
+.light .layui-table-view{border-right: none; border-left: none; border-color: #1f4e94;}
+.light .layui-table-view .layui-table{width: 100%; background-color: transparent; border: none;}
+.light .layui-table-view .layui-table-header{border: none; background-color: #1f4e94;}
+.light .layui-table-view .layui-table-body .layui-table-hover{background-color: #1f4e94;}
+.light .layui-table th,
+.light .layui-table td{font-size: 0.24rem; border-bottom: 1px solid #1f4e94; color: #c0dcfe;}
+.light .layui-table th{color: #89bef3; background-color: #1f4e94;}
+.light .layui-table-cell{line-height: 0.6rem; height: 0.6rem;}
+
+ul.section{width: auto; overflow: hidden; background:radial-gradient(#043991 5%,transparent 70%, transparent); position: relative;}
+ul.section > li{float: left; box-sizing: border-box; width: calc((100% - 0.6rem)/3); height: 4rem; padding: 2px; background: radial-gradient(rgba(25,59,106,0.6) 78%,rgba(38,105,168,1)); margin-left: 0.3rem; margin-bottom: 0.3rem;}
+ul.section > li:nth-child(3n + 1){margin-left: auto;}
+ul.section > li > div{height: 100%; background: rgba(25,59,106,1); box-sizing: border-box; position: relative;}
+ul.section > li .desc{position: absolute; top: 0.2rem; left: 0.3rem;}
+ul.section > li .desc h1{font-size: 0.2rem; font-weight: normal; color: #89bef3;}
+ul.section > li .desc p{font-size: 0.3rem; color: #c0dcfe;}
+ul.section > li .chart{position: absolute; left: 0; top: 0; bottom: 0; right: 0; margin: auto;}
+ul.section > li .minValue{position: absolute; left: 1rem; bottom: 0.2rem; font-size: 0.24rem; color: #c0dcfe;}
+ul.section > li .maxValue{position: absolute; right: 1rem; bottom: 0.2rem; font-size: 0.24rem; color: #c0dcfe;}
+
+ul.sectionBorder{margin-bottom: 0.3rem;}
+ul.sectionBorder > li{width: calc((100% - 0.9rem)/5); height: 3rem;}
+ul.sectionBorder > li:nth-child(3n + 1){margin-left: 0.3rem;}
+ul.sectionBorder > li:nth-child(4n + 1){margin-left: auto;}
+ul.sectionBorder > li:nth-child(4n + 4){width: calc((100% - 0.9rem)*2/5);}
+
+.rateList{padding: 0 0.15rem; overflow: hidden;}
+.rateList > li{float: left; box-sizing: border-box; width: calc((100% - 0.2rem)/2); height: 0.46rem; margin-top: 0.4rem; line-height: 0.46rem; font-size: 0.24rem; color: #e7f3ff;}
+.rateList > li:nth-child(even){float: right;}
+.rateList > li label{float: left; width: 1.4rem; height: 100%; margin-right: 0.1rem; text-align: center; background: #174586; border-radius: 4px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
+.rateList > li span{float: right;}
+.rateList > li > div{overflow: hidden;}
+.rateList .flip-clock-wrapper ul{width: 0.3rem; height: 0.46rem;  margin: 0; margin-left: 0.05rem; font-weight: normal;}
+.rateList .flip-clock-wrapper ul li{height: 0.46rem; line-height: 0.46rem;}
+.rateList .flip-clock-wrapper ul li a div div.inn{font-size: 0.3rem;}
+
+ul.sectionOverflow{}
+ul.sectionOverflow > li{height: 9rem; overflow: hidden;}
+ul.sectionOverflow .production{height: 100%; overflow: auto;}
+ul.sectionOverflow .production li{box-sizing: border-box; height: 33.33%; border-bottom: 1px solid #34588e;}
+ul.sectionOverflow .production li .item{height: 100%;}
+ul.sectionOverflow .production::-webkit-scrollbar{width: 1px; height: 0px;}
+ul.sectionOverflow .production::-webkit-scrollbar-thumb{
+	border-radius: 5px;
+	box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+	-webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+	background: #74F7F4;
+}
+ul.sectionOverflow .production::-webkit-scrollbar-track{
+	box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+	-webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+	border-radius: 5px;
+	background: #2C42EC;
+}
+
+ul.section2{margin-left: 80px;}
+ul.section2 > li{width: calc((100% - 0.4rem)/3); margin-left: 0.2rem; margin-bottom: 0.2rem; height: auto; min-height: 4rem;}
+ul.section2 > li > div{min-height: 4rem;}
+ul.section2 > li:nth-child(3n + 1){clear: both;}
+ul.percentInfo{position: absolute; bottom: calc(50% + 0.2rem); left: 0; width: 80px;}
+ul.percentInfo.percentInfo2{bottom: 0.2rem;}
+ul.percentInfo li{text-align: center; color: white; padding: 3px 0;}
+ul.percentInfo li:nth-child(1){padding: 20px 0; background-color: #2ec9cf;}
+ul.percentInfo li:nth-child(2){background-color: #f3b131;}
+ul.percentInfo li:nth-child(3){background-color: #ee7f52;}
+ul.percentInfo li:nth-child(4){background-color: #f15a5a;}
+ul.percentInfo li:nth-child(5){background-color: #9b6ef6;}
+ul.percentInfo li:nth-child(6){background-color: #4b9bec;}
+ul.percentInfo li p{font-size: 16px;}
+ul.percentInfo li span{font-size: 20px; font-weight: bold;}
+
+ul.asTable{padding: 0.15rem 0.15rem;}
+ul.asTable li{margin-top: 0.15rem; display: flex; font-size: 0.14rem; text-align: center;}
+ul.asTable li:nth-child(1){margin-top: 0; line-height: 0.28rem;}
+ul.asTable li:nth-child(1) > div{color: #89bef3;}
+ul.asTable li:nth-child(1) > div:nth-child(1){font-size: 0.2rem; text-align: left; color: #eef7ff;}
+ul.asTable li > div:nth-child(1){flex-grow:1;}
+ul.asTable li > div:nth-child(2){width: 80px;}
+ul.asTable li > div:nth-child(3){width: 80px;}
+ul.asTable li > div:nth-child(4){width: 80px;}
+ul.asTable li > div:nth-child(1) label{float: left; text-align: right; width: 110px; line-height: 22px; text-overflow: ellipsis; overflow:hidden; white-space:nowrap;}
+ul.asTable li > div > a{color: #c0dcfe;}
+
+.customBar{margin-left: 120px; margin-right: 15px; overflow: hidden;}
+.customBar .layui-progress{height: 0.22rem; border-radius: 3px; background-color: #1f4e94; border: 1px solid #2a69c7; box-sizing: border-box;}
+.customBar .layui-progress .layui-progress-bar{height: 0.22rem; border-radius: 3px; background-color: #2cc0f7; margin: -1px 0 0 -1px;}
+
+ul.section3{margin-left: 0; width: auto;}
+ul.section3 > li{margin-left: auto; float: none; width: auto; height: auto; min-height: inherit;}
+ul.section3 > li > div{min-height: inherit;}
+ul.section3 ul.asTable{overflow: hidden;}
+ul.section3 ul.asTable li{width: 50%; float: left; padding-left: 10px; box-sizing: border-box;}
+ul.section3 ul.asTable li:nth-child(2){margin-top: 0; line-height: 0.28rem;}
+ul.section3 ul.asTable li > div:nth-child(1) label{width: 80px;}
+ul.section3 ul.asTable li:nth-child(3){clear: both;}
+ul.section3 ul.asTable .customBar{margin-left: 100px; margin-right: 0.3rem;}
+
+ul.section4{width: auto;}
+ul.section4 > li{width: 8.9rem; height: 4.9rem; margin-left: auto;}
+ul.section4 > li:nth-child(even){float: right;}
+ul.section4 > li h1{font-size: 0.2rem; color: #89bef3; line-height: 0.6rem; text-indent: 1em;}
+
+
+
+/*.customBorder{box-sizing: border-box; height: 8.2rem; padding: 2px; background: radial-gradient(rgba(25,59,106,0.6) 78%,rgba(38,105,168,1)); margin-bottom: 0.4rem;}
+.customBorder > div{height: 100%; background: rgba(25,59,106,1); box-sizing: border-box; position: relative;}
+.customBorder .progressBox{width: 10.3rem; margin: 0 auto; position: relative;}
+.customBorder .progressBox h1{font-size: 0.24rem; text-align: center; padding-top: 0.4rem; margin-bottom: 0.8rem;}
+.customBorder .progressBox .progressBar{margin-top: 0.6rem; position: relative; z-index: 1;}
+.customBorder .progressBox .progressBar label{float: left; width: 2rem; text-align: right; font-size: 0.24rem; line-height: 0.36rem;}
+.customBorder .progressBox .progressBar > div{margin-left: 2.2rem; overflow: hidden;}
+.customBorder .progressBox .layui-progress{height: 0.36rem; border-radius: 5px; background-color: transparent;}
+.customBorder .progressBox .layui-progress .layui-progress-bar{height: 100%; border-radius: 5px;}
+
+.progressBox .progressBar:nth-child(1) .layui-progress-bar{background-color:#4b9bec;}
+.progressBox .progressBar:nth-child(2) .layui-progress-bar{background-color:#2ec9cf;}
+.progressBox .progressBar:nth-child(3) .layui-progress-bar{background-color:#eabc2e;}
+.progressBox .progressBar:nth-child(4) .layui-progress-bar{background-color:#ee8a62;}
+.progressBox .progressBar:nth-child(5) .layui-progress-bar{background-color:#9b6ef6;}
+.progressBox .progressBar:nth-child(6) .layui-progress-bar{background-color:#f06161;}
+
+.progressBox > p{margin-top: 0.4rem; font-size: 0.24rem; margin-left: 2.2rem; text-align: center;}
+.progressBox > p span{float: left;}
+.progressBox > p span + span{float: none;}
+
+.progressBox .gline{position: absolute; right: 0; top: 1.2rem; width: auto; height: 6rem; }
+.progressBox .gline div{position: absolute; width: 1px; height: 100%; border-left: 1px dashed; border-color: rgba(80,129,188,0.4); z-index: 0;}
+.progressBox .gline div::before{content: "G3"; position: absolute; top: -0.4rem; left: -0.6em; font-size: 0.24rem;}
+.progressBox .gline div::after{content: "100%"; font-size: 0.24rem; position: absolute; bottom: -0.2rem; left: -1em;}
+.progressBox .gline div:nth-child(2){right: 1.22rem;}
+.progressBox .gline div:nth-child(2)::before{content: "G2"}
+.progressBox .gline div:nth-child(2)::after{content: "85%";}
+.progressBox .gline div:nth-child(3){right:2.03rem;}
+.progressBox .gline div:nth-child(3)::before{content: "G1"}
+.progressBox .gline div:nth-child(3)::after{content: "75%";}*/
+
+/*.progressBox .gline div:nth-child(4){right: 1.62rem;}
+.progressBox .gline div:nth-child(4)::before{content: "";}
+.progressBox .gline div:nth-child(4)::after{content: "80%";}
+.progressBox .gline div:nth-child(5){right: 3.24rem;}
+.progressBox .gline div:nth-child(5)::before{content: "";}
+.progressBox .gline div:nth-child(5)::after{content: "60%";}
+.progressBox .gline div:nth-child(6){right: 4.86rem;}
+.progressBox .gline div:nth-child(6)::before{content: "";}
+.progressBox .gline div:nth-child(6)::after{content: "40%";}
+.progressBox .gline div:nth-child(7){right: 6.48rem;}
+.progressBox .gline div:nth-child(7)::before{content: "";}
+.progressBox .gline div:nth-child(7)::after{content: "20%";}
+.progressBox .gline div:nth-child(8){right: 8.1rem;}
+.progressBox .gline div:nth-child(8)::before{content: "";}
+.progressBox .gline div:nth-child(8)::after{content: "0"; left: -0.3em;}
+.progressBox .gline div:nth-child(9){}
+.progressBox .gline div:nth-child(9)::before{content: "";}
+.progressBox .gline div:nth-child(9)::after{content: "100%";}*/
+
+
+.planeMenu{overflow: hidden;}
+.planeMenu ul{width: 19.5rem; overflow: hidden;}
+.planeMenu ul li{float: left; width: 5.86rem; height: 2.14rem; margin-right: 0.3rem; margin-bottom: 0.3rem; color: white; text-align: center;}
+.planeMenu ul li h1{font-size: 0.3rem; line-height: 0.6rem; margin-top: 0.4rem;}
+.planeMenu ul li p{font-size: 0.4rem;}
+.planeMenu ul li:nth-child(1){background-color: #2ec9cf;}
+.planeMenu ul li:nth-child(2){background-color: #4b9bec;}
+.planeMenu ul li:nth-child(3){background-color: #ae8af7;}
+.planeMenu ul li:nth-child(4){background-color: #e4b458;}
+.planeMenu ul li:nth-child(5){background-color: #e5825a;}
+.planeMenu ul li:nth-child(6){background-color: #ec6666;}
+
+
+ul._panel{width: auto;}
+ul._panel > li{width: 8.9rem; float: left; margin-left: auto;}
+ul._panel > li:nth-child(1){height: 2rem;}
+ul._panel > li:nth-child(1) > div{background-color: #19498c;}
+ul._panel > li:nth-child(2){float: right; height: 7.1rem; position: relative;}
+ul._panel > li:nth-child(3){height: 4.8rem;}
+ul._panel > li:nth-child(2) h1{position: absolute; font-size: 0.3rem; color: #89bef3;}
+ul._panel > li:nth-child(2) h1:nth-child(1){left: calc(20% - 2em); top: 13%;}
+ul._panel > li:nth-child(2) h1:nth-child(2){left: calc(50% - 2em); top: 13%;}
+ul._panel > li:nth-child(2) h1:nth-child(3){right: calc(20% - 2em); top: 13%;}
+ul._panel > li:nth-child(2) h1:nth-child(4){left: calc(20% - 2em); top: 55%;}
+ul._panel > li:nth-child(2) h1:nth-child(5){left: calc(50% - 2em); top: 55%;}
+ul._panel > li:nth-child(2) h1:nth-child(6){right: calc(20% - 2em); top: 55%;}
+ul._panel > li .chartBar,
+ul._panel > li .chartPie{height: 100%;}
+ul._panel > li .title{float: left; min-width: 3rem; max-width: 4.2rem; margin-left: 0.5rem; margin-top: 0.3rem;}
+ul._panel > li .title h1{font-size: 0.3rem;}
+ul._panel > li .title .clock{margin-top: 0.1rem; overflow: hidden;}
+ul._panel > li dl{float: left; width: 1.5rem; margin-top: 0.5rem; line-height: 0.5rem;}
+ul._panel > li dl dt{text-align: center; font-size: 0.2rem; color: #89bef3;}
+ul._panel > li dl dd{text-align: center; font-size: 0.36rem; color: #4fd4ff;}
+ul._panel > li .circleProgress{float: right; width: 1.3rem; height: 1.3rem; margin-right: 0.3rem; margin-top: 0.5rem; position: relative;}
+ul._panel > li .circleProgress h1{position: absolute; font-size: 0.2rem; color: #89bef3; top: -.4rem; white-space: nowrap;}
+
+ul._panel2{width: 895px; margin: 0 auto;}
+ul._panel2 > li{width: 100%;}
+ul._panel2 > li:nth-child(1){height: 200px;}
+ul._panel2 > li:nth-child(2){display: none;}
+ul._panel2 > li:nth-child(3){height: 480px;}
+ul._panel2 > li .title{min-width: 300px; max-width: 420px; margin-left: 50px; margin-top: 30px;}
+ul._panel2 > li .title h1{font-size: 30px;}
+ul._panel2 > li .title .clock{margin-top: 10px;}
+ul._panel2 > li dl{width: 150px; margin-top: 50px; line-height: 50px;}
+ul._panel2 > li dl dt{font-size: 20px;}
+ul._panel2 > li dl dd{font-size: 36px;}
+ul._panel2 > li .circleProgress{width: 130px; height: 130px; margin-right: 30px; margin-top: 50px;}
+
+ul._panel2 .flip-clock-wrapper ul {
+  margin: 5px;
+  width: 50px;
+  height: 70px;;
+  font-size: 50px;
+  line-height: 70px;
+}
+ul._panel2 .flip-clock-wrapper ul li {
+  line-height: 70px;
+}
+ul._panel2 .flip-clock-wrapper ul li a {
+  -webkit-perspective: 200px;
+  -moz-perspective: 200px;
+  perspective: 200px;
+}
+ul._panel2 .flip-clock-wrapper ul li a div {
+  font-size: 50px;
+}
+ul._panel2 .flip-clock-wrapper ul li a div div.inn {
+  font-size: 50px;
+}
+
+.easypiechart{height: 100%; position: relative;}
+.easypiechart span{position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto; height: 0.4rem; font-size: 0.3rem; text-align: center;}
+.easypiechart canvas{width: 100%; height: 100%; position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto;}
+
+
+
+
+@media screen and (max-width:1400px){
+	.container{margin-left: 0.4rem; margin-right: 0.4rem;}
+}
+
+@media screen and (max-width:1560px){
+	ul.section4 > li .chart{top:0.4rem;}
+}
+

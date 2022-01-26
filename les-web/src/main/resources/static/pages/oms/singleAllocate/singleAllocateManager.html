@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>调拨订单管理</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+</head>
+<script type="text/html" id="toolbar">
+	<a class="layui-btn layui-btn-xs" lay-event="showDetail">查看</a>
+</script>
+<script type="text/html" id="bodyTpl">
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">订单号</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="allocationOrder_search" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">调出仓库</label>
+				<div class="layui-input-block">
+			        <select  id="outWarehouseCode_search" lay-filter="outWarehouseCodeFilter" xm-select="outWarehouseCodeSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">调出仓库库存地</label>
+			 	 <div class="layui-input-block">
+			        <select  id="outStorageLocation_search" xm-select="outStorageLocationSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			    <label class="layui-form-label">调出工厂</label>
+			 	 <div class="layui-input-block">
+			        <select  id="outFactory_search" xm-select="outFactorySelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+		        <label class="layui-form-label">调出工厂库存地</label>
+			 	 <div class="layui-input-block">
+			        <select  id="sapOutStorageLocation_search" xm-select="sapOutStorageLocationSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<div class="layui-btn-container" style="text-align: left;">
+				{{# if(d.search==null || d.search=="true"){ }}
+             	 	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+              	{{# } }}
+			</div>
+		</div>
+	</div>
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">创建时间</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="createTime_search" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">调入仓库</label>
+			 	<div class="layui-input-block">
+			        <select  id="inWarehouseCode_search" xm-select="inWarehouseCodeSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">调入仓库库存地</label>
+			 	<div class="layui-input-block">
+			        <select  id="inStorageLocation_search"  xm-select="inStorageLocationSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">调入工厂</label>
+			 	<div class="layui-input-block">
+			        <select  id="inFactory_search" xm-select="inFactorySelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">调入工厂库存地</label>
+			 	 <div class="layui-input-block">
+			        <select  id="sapInStorageLocation_search" xm-select="sapInStorageLocationSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+	</div>
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">SAP订单号</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="sapAllocationOrder_search" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">订单状态</label>
+				<div class="layui-input-block">
+			        <select  id="status_search" xm-select="statusSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">单据类型</label>
+				<div class="layui-input-block">
+			        <select  id="billType_search" xm-select="billTypeSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">库存审核状态</label>
+				<div class="layui-input-block">
+			        <select  id="stockCheckStatus_search" xm-select="stockCheckStatusSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+	</div>
+</div>
+<div class="layui-fluid-table">
+<div class="layui-row layui-form" style="margin-bottom: 0">
+		<div class="layui-btn-container" style="text-align: left;">
+              {{# if(d.add==null || d.add=="true"){ }}
+              <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>新增</button>
+              {{# } }}
+              {{# if(d.edit==null || d.edit=="true"){ }}
+              <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>修改</button>
+              {{# } }}
+              {{# if(d.orderCheck==null || d.orderCheck=="true"){ }}
+             	 <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="orderCheck" type="button"><i class="layui-icon layui-icon-delete"></i>订单审核</button>
+              {{# } }}
+			  {{# if(d.stockCheck==null || d.stockCheck=="true"){ }}
+              	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="stockCheck" type="button"><i class="layui-icon layui-icon-delete"></i>库存审核</button>
+              {{# } }}
+			  {{# if(d.cancel==null || d.cancel=="true"){ }}
+              	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="cancel" type="button"><i class="layui-icon layui-icon-delete"></i>取消</button>
+              {{# } }}
+              {{# if(d.import==null || d.import=="true"){ }}
+              <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="import" id="import" type="button"><i class="layui-icon icon-inport"></i>导入</button>
+              {{# } }}
+              {{# if(d.export==null || d.export=="true"){ }}
+              <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="export" type="button"><i class="layui-icon icon-export"></i>导出</button>
+         	  {{# } }}
+         </div>
+	</div>
+<table class="layui-hide" id="singleAllocateTab" lay-filter="singleAllocateTabF"></table>
+</div>
+</script>
+
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+
+<script type="text/javascript">
+var table = layui.table;
+var element = layui.element;
+var contextPath = config.omsConfig.contextPath;
+var form = layui.form;
+var storage = window.localStorage;
+var token = storage.token;
+var layer = layui.layer;
+var laydate = layui.laydate;
+var oldData;
+var factoryCodes;
+var active = {
+		add:function(othis){
+			var type = othis.data('type');
+  			layer.open({
+	        type: 2
+	        ,title:'新增调拨订单'
+	        ,maxmin:false
+	        ,area: ['100%', '100%']
+	        ,offset: type
+	        ,id: 'documentTypeadd'+type //防止重复弹出
+	        ,content: 'addSingleAllocate.html'
+	        ,shade: 0 //不显示遮罩
+	        ,yes: function(){
+	          layer.closeAll();
+	        }
+	      });
+		},
+		edit:function(othis){
+			var checkStatus = table.checkStatus('singleAllocateTabId');
+ 				oldData = checkStatus.data;
+			if(oldData.length<=0){
+				layer.alert('请选择要编辑的行！',{icon: 2});
+ 					return ;
+			}else if(oldData.length >1){
+ 					layer.alert('编辑不能超过多行！',{icon: 2});
+ 					return ;
+ 				}
+			var type = othis.data('type');
+  			layer.open({
+		        type: 2
+		        ,title:'编辑调拨订单'
+		        ,maxmin:false
+		        ,area: ['100%', '100%']
+		        ,offset: type
+		        ,id: 'documentTypeEdit'+type //防止重复弹出
+		        ,content: 'editSingleAllocate.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+	     	 });
+		},cancel:function(othis){
+			var checkStatus = table.checkStatus('singleAllocateTabId');
+ 			var	cancelData = checkStatus.data;
+			if(cancelData.length<=0){
+				layer.alert('请选择要取消的行！',{icon: 2});
+ 					return ;
+			}
+			var idarrys = new Array();
+			var flg = false;
+			for(var i=0;i<cancelData.length;i++){
+				if(cancelData[i].stockCheckStatus==5){
+					flg = true;
+					break;
+				}
+				idarrys.push(cancelData[i].id);
+			}
+			if(flg){
+				layer.msg("订单已经审核不能取消");
+				return ;
+			}
+			var params = {};
+			params.idarrys=idarrys;
+			params.status = 99;
+			layer.confirm('确定取消订单信息', {icon: 3, title:'提示'}, function(index){
+	  			  //do something
+	  			  var option ={
+						url: contextPath +'singleAllocate/batchHandleSingleAllocate',
+						type:'POST',
+						contentType: "application/json",
+						dataType:'json',
+						data:JSON.stringify(params),
+						success:function(data){
+							if(data.code==0){
+								layer.msg("取消成功");
+								table.reload('singleAllocateTabId');
+							}
+						},error:function(data){
+							layer.alert(data.msg);
+						}
+					}
+					$.ajax(option);
+	  			  layer.close(index);
+	  			});
+		},search:function(othis){
+			var allocationOrder = $('#allocationOrder_search').val();
+			var outWarehouseCode = layui.formSelects.value('outWarehouseCodeSelect', 'valueStr');
+			var outStorageLocation = layui.formSelects.value('outStorageLocationSelect', 'valueStr');
+			var outFactory = layui.formSelects.value('outFactorySelect', 'valueStr');
+			var sapOutStorageLocation = layui.formSelects.value('sapOutStorageLocationSelect', 'valueStr');
+			var createTime = $('#createTime_search').val();
+			var inWarehouseCode =layui.formSelects.value('inWarehouseCodeSelect', 'valueStr');
+			var inStorageLocation = layui.formSelects.value('inStorageLocationSelect', 'valueStr');
+			var inFactory = layui.formSelects.value('inFactorySelect', 'valueStr');
+			var sapInStorageLocation =layui.formSelects.value('sapInStorageLocationSelect', 'valueStr');
+			var sapAllocationOrder = $('#sapAllocationOrder_search').val();
+			var status = layui.formSelects.value('statusSelect', 'valueStr');
+			var billType = layui.formSelects.value('billTypeSelect', 'valueStr');
+			var stockCheckStatus = layui.formSelects.value('stockCheckStatusSelect', 'valueStr');
+			if(sapOutStorageLocation && sapOutStorageLocation.length>0){
+				if(outFactory==''){
+					layer.alert("请选择调出工厂");
+					return;
+				}
+			}
+			if(sapInStorageLocation && sapInStorageLocation.length>0){
+				if(inFactory==''){
+					layer.alert("请选择调入工厂");
+					return;
+				}
+			}
+			var startTimeStr = null;
+			var endTimeStr = null;
+			if(createTime && createTime.length>0){
+				startTimeStr = createTime.substring(0,10);
+				endTimeStr = createTime.substring(13);
+			}
+		      //执行重载
+		      table.reload('singleAllocateTabId', {
+		        where:{
+		        	allocationOrder: allocationOrder
+		           ,outWarehouseCode:outWarehouseCode
+		           ,outStorageLocation:outStorageLocation
+		           ,outFactory:outFactory
+		           ,sapOutStorageLocation:sapOutStorageLocation
+		           ,inWarehouseCode:inWarehouseCode
+		           ,inStorageLocation:inStorageLocation
+		           ,inFactory:inFactory
+		           ,sapInStorageLocation:sapInStorageLocation
+		           ,sapAllocationOrder:sapAllocationOrder
+		           ,statusStr:status
+		           ,billType:billType
+		           ,stockCheckStatusStr:stockCheckStatus
+		           ,startTimeStr:startTimeStr
+		           ,endTimeStr:endTimeStr
+		        }
+		        ,page:{"curr":1}
+		      });
+		},reset:function(othis){
+			$('#allocationOrder_search').val("");
+			$('#createTime_search').val("");
+			$('#sapAllocationOrder_search').val("");
+			layui.formSelects.value('outWarehouseCodeSelect', []);
+    		layui.formSelects.value('outStorageLocationSelect', []);
+    		layui.formSelects.value('outFactorySelect', []);
+    		layui.formSelects.value('sapOutStorageLocationSelect', []);
+    		layui.formSelects.value('inWarehouseCodeSelect', []);
+    		layui.formSelects.value('inStorageLocationSelect', []);
+    		layui.formSelects.value('inFactorySelect', []);
+    		layui.formSelects.value('sapInStorageLocationSelect', []);
+    		layui.formSelects.value('statusSelect', []);
+    		layui.formSelects.value('billTypeSelect', []);
+    		layui.formSelects.value('stockCheckStatusSelect', []);
+            form.render("select");
+		},export:function(othis){
+			var allocationOrder = $('#allocationOrder_search').val();
+			var outWarehouseCode = layui.formSelects.value('outWarehouseCodeSelect', 'valueStr');
+			var outStorageLocation = layui.formSelects.value('outStorageLocationSelect', 'valueStr');
+			var outFactory = layui.formSelects.value('outFactorySelect', 'valueStr');
+			var sapOutStorageLocation = layui.formSelects.value('sapOutStorageLocationSelect', 'valueStr');
+			var createTime = $('#createTime_search').val();
+			var inWarehouseCode =layui.formSelects.value('inWarehouseCodeSelect', 'valueStr');
+			var inStorageLocation = layui.formSelects.value('inStorageLocationSelect', 'valueStr');
+			var inFactory = layui.formSelects.value('inFactorySelect', 'valueStr');
+			var sapInStorageLocation =layui.formSelects.value('sapInStorageLocationSelect', 'valueStr');
+			var sapAllocationOrder = $('#sapAllocationOrder_search').val();
+			var status = layui.formSelects.value('statusSelect', 'valueStr');
+			var billType = layui.formSelects.value('billTypeSelect', 'valueStr');
+			var stockCheckStatus = layui.formSelects.value('stockCheckStatusSelect', 'valueStr');
+			if(sapOutStorageLocation && sapOutStorageLocation.length>0){
+				if(outFactory==''){
+					layer.alert("请选择调出工厂");
+					return;
+				}
+			}
+			if(sapInStorageLocation && sapInStorageLocation.length>0){
+				if(inFactory==''){
+					layer.alert("请选择调入工厂");
+					return;
+				}
+			}
+			var startTimeStr = '';
+			var endTimeStr = '';
+			if(createTime && createTime.length>0){
+				startTimeStr = createTime.substring(0,10);
+				endTimeStr = createTime.substring(13);
+			}
+			var params = "token="+token+"&allocationOrder="+allocationOrder+"&outWarehouseCode="+outWarehouseCode+"&outStorageLocation="+outStorageLocation
+			+"&outFactory="+outFactory
+			+"&sapOutStorageLocation="+sapOutStorageLocation
+			+"&inWarehouseCode="+inWarehouseCode
+			+"&inStorageLocation="+inStorageLocation
+			+"&inFactory="+inFactory
+			+"&sapInStorageLocation="+sapInStorageLocation
+			+"&sapAllocationOrder="+sapAllocationOrder
+			+"&statusStr="+status
+			+"&billType="+billType
+			+"&stockCheckStatusStr="+stockCheckStatus
+			+"&startTimeStr="+startTimeStr
+			+"&endTimeStr="+endTimeStr;
+			window.open(contextPath+"singleAllocate/exportSingleAllocate?"+params);
+		},orderCheck:function(othis){
+			var checkStatus = table.checkStatus('singleAllocateTabId');
+ 			var	cancelData = checkStatus.data;
+			if(cancelData.length<=0){
+				layer.alert('请选择要审核的行！',{icon: 2});
+ 					return ;
+			}
+			var idarrys = new Array();
+			var flg = false;
+			for(var i=0;i<cancelData.length;i++){
+				if(cancelData[i].status>0){
+					flg = true;
+					break;
+				}
+				idarrys.push(cancelData[i].id);
+			}
+			if(flg){
+				layer.msg("此订单状态不能审核");
+				return ;
+			}
+			var params = {};
+			params.idarrys=idarrys;
+
+			layer.confirm('', {btn: ['审核通过', '审核不通过'],icon: 3, title:'订单审核'}, function(index){
+	  			  //do something
+	  			  params.status = 5;
+	  			  var option ={
+						url: contextPath +'singleAllocate/batchHandleSingleAllocate',
+						type:'POST',
+						contentType: "application/json",
+						dataType:'json',
+						data:JSON.stringify(params),
+						success:function(data){
+							if(data.code==0){
+								layer.msg("操作成功");
+								table.reload('singleAllocateTabId');
+								layer.close(index);
+							}
+						},error:function(data){
+							layer.alert(data.msg);
+						}
+					}
+					$.ajax(option);
+
+	  		},function(index){
+	  			params.status = 99;
+	  			var option ={
+						url: contextPath +'singleAllocate/batchHandleSingleAllocate',
+						type:'POST',
+						contentType: "application/json",
+						dataType:'json',
+						data:JSON.stringify(params),
+						success:function(data){
+							if(data.code==0){
+								layer.msg("操作成功");
+								table.reload('singleAllocateTabId');
+								layer.close(index);
+							}
+						},error:function(data){
+							layer.alert(data.msg);
+						}
+					}
+					$.ajax(option);
+	  		});
+		},stockCheck:function(othis){
+			layer.msg("此功能涉及库存及出库单，等出库定后在补充此功能");
+		},import:function(othis){
+			layer.open({
+		        type: 2
+		        ,title:'导入调拨订单'
+		        ,maxmin:false
+		        ,area: ['800px', '350px']
+		        ,id: 'importSingleAllocateE' //防止重复弹出
+		        ,content: 'importSingleAllocate.html'
+		        ,shade: 0 //不显示遮罩
+		        ,yes: function(){
+		          layer.closeAll();
+		        }
+	     	 });
+		}
+}
+function loadding(){
+	table.render({
+		elem:'#singleAllocateTab',
+		id:'singleAllocateTabId',
+		url: contextPath +'singleAllocate/listSingleAllocate',
+		cols:[[
+		{type:'checkbox'},
+		{ align:'center',title:'操作', toolbar:"#toolbar"},
+		{type:'numbers',title:'序号',width: 60},
+		{field:'allocationOrder',title:'订单号',width: 105},
+		{field:'sapAllocationOrder',title:'SAP订单号',width: 100},
+		{field:'outWarehouseCode', title: '调出仓库编码',width: 100},
+		{field:'outWarehouseName',title: '调出仓库名称',width: 100},
+		{field:'outStorageLocation', title: '调出仓库库存地',width: 100},
+		{field:'inWarehouseCode', title: '调入仓库编码',width: 100},
+		{field:'inWarehouseName', title: '调入仓库名称',width: 100},
+		{field:'inStorageLocation', title: '调入仓库库存地',width: 100},
+		{field:'outFactory', title: '调出工厂编码',width: 100},
+		{field:'outFactoryName', title: '调出工厂名称',width: 100},
+		{field:'sapOutStorageLocation', title: '调出工厂库存地',width: 100},
+		{field:'inFactory', title: '调入工厂编码',width: 100},
+		{field:'inFactoryName', title: '调入工厂名称',width: 100},
+		{field:'sapInStorageLocation', title: '调入工厂库存地',width: 100},
+		{field:'statusStr', title: '订单状态',width: 100},
+		{field:'stockCheckStatusStr', title: '库存审核状态',width: 100},
+		{field:'billType', title: '单据类型编码',width: 100},
+		{field:'billName', title: '单据类型名称',width: 100},
+		{field:'createrName', title: '创建人',width: 100},
+		{field:'createTime', title: '创建时间',width: 100},
+		{field:'modifierName', title: '修改人',width: 100},
+		{field:'modifiedTime', title: '修改时间',width: 100}
+		]],
+		page: {theme: '#008155'},
+   		even:true
+	});
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+  	});
+
+	//创建时间区间
+ 	laydate.render({
+	    elem: '#createTime_search',
+	    range: true
+	});
+	//加载字典开始
+	var dictTypes = ["allocate_status","allocate_check_status"]
+	var selectItems = ["statusSelect","stockCheckStatusSelect"]
+	var defaultValues = [[],[]]
+	initDictItemMultiSelect(dictTypes,selectItems,defaultValues);
+	//加载字典结束
+
+	//加载调出仓库、库存地开始
+	initWarehouseMultiSelect("outWarehouseCode_search","outWarehouseCodeSelect",0,'');
+	var selectIds = ["outStorageLocationSelect","sapOutStorageLocationSelect"];
+	var cols = ["storagelocation","sapStoragelocation"];
+	var defualtValues = [[],[]];
+	linkageSelect("outWarehouseCodeSelect",selectIds,cols,defualtValues);
+	//加载调出仓库、库存地结束
+
+
+	//加载调入仓库、库存地开始
+	initWarehouseMultiSelect("inWarehouseCode_search","inWarehouseCodeSelect",0,'');
+	var selectIds = ["inStorageLocationSelect","sapInStorageLocationSelect"];
+	var cols = ["storagelocation","sapStoragelocation"];
+	var defualtValues = [[],[]];
+	linkageSelect("inWarehouseCodeSelect",selectIds,cols,defualtValues);
+	//加载调入仓库、库存地结束
+
+	inintBillTypeMultiSelect('billTypeSelect',[]);
+	inintFactoryMultiSelect('inFactorySelect',[]);
+
+
+	table.on('tool(singleAllocateTabF)', function(obj){
+		var eventName = obj.event;
+		var data = obj.data;
+		var orderCode = data.allocationOrder;
+		var id = "singleAllocateDetail";
+		var url = "oms/singleAllocate/singleAllocateDetail.html?orderCode="+orderCode;
+		var currHeight = parent.$(document).height();
+		if(eventName == "showDetail"){
+			parent.element.tabDelete('indexTab', id);
+			parent.element.tabAdd('indexTab', {
+		        title: "调拨订单明细"
+		        ,content: ' <iframe id="'+id+'" frameborder="0"  src="'+url+'" width="100%" height="'+currHeight+'px"></iframe>'
+		        ,id: id //实际使用一般是规定好的id，这里以时间戳模拟下
+		    });
+			parent.element.tabChange('indexTab', id); //切换到：用户管理
+		}
+	});
+}
+/**
+ * 初始化工厂信息
+ */
+function inintFactoryMultiSelect(xmselectId,defualtValue){
+	var contextPath = config.basicInfoConfig.contextPath
+	var option = {
+		url:contextPath + 'plmPlantStructure/listFactoryByType?modelType=1',
+		type:"get",
+		success:function(result){
+			if(result.code==0){
+				var factoryCodes=result.data;
+				if (factoryCodes.length>0){
+					 var optoinArray = new Array();
+					 for(var i=0;i<factoryCodes.length;i++){
+						  itemOption = {"name":""+factoryCodes[i].modelName, "value":""+factoryCodes[i].modelCode};
+						  optoinArray.push(itemOption);
+					 }
+					 layui.formSelects.data(xmselectId,'local',{
+							arr:optoinArray
+					 });
+			      	 layui.formSelects.value(xmselectId, defualtValue,true);
+
+			      	 layui.formSelects.data("outFactorySelect",'local',{
+						arr:optoinArray
+					 });
+			      	 layui.formSelects.value("outFactorySelect", defualtValue,true);
+					 layui.form.render("select");
+
+					}
+				}
+			}
+	}
+	$.ajax(option);
+}
+</script>
+<body id="bodyDiv">
+
+</body>
+
+</html>

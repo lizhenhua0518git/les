@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Access-Control-Allow-Origin" content="*" />
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-COMPATIBLE" content="IE=edge,chrome=1"/>
+<title>工装小车使用分析-产品线</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/mfc/controlCabinNew/productPlanBoard/plugins/digital/flipclock.css">
+<link rel="stylesheet" href="/iles/pages/mfc/controlCabinNew/productPlanBoard/css/progressView.css">
+<script src="/iles/pages/js/jquery-3.3.1.min.js"></script>
+</head>
+
+<body>
+<div class="container ml50 mr20" >
+	<div class="tit">
+		工装小车使用分析-产品线
+	</div>
+	<ul class="_panel section">
+		<li style="height: 6.3rem; margin-bottom: 0">
+			<div>
+				<div class="chartBar" id="DoubleBar"></div>
+			</div>
+		</li>
+		<li style="height: 6.3rem; margin-bottom: 0">
+			<div>
+				<div class="chartBar" id="DoubleLine"></div>
+			</div>
+		</li>
+	</ul>
+</div>
+
+<script src="/iles/pages/mfc/controlCabinNew/productPlanBoard/js/resetFontSize.js"></script>
+<script src="/iles/pages/layui/layui.js"></script>
+<script src="/iles/pages/mfc/controlCabinNew/productPlanBoard/plugins/digital/flipclock.js"></script>
+<script src="/iles/pages/mfc/controlCabinNew/productPlanBoard/js/easypiechart.js"></script>
+<script src="/iles/pages/mfc/controlCabinNew/productPlanBoard/js/echarts.js"></script>
+<script src="/iles/pages/mfc/controlCabinNew/productPlanBoard/js/productPlanBoard.js"></script>
+
+<script type="text/javascript">
+$(function(){
+	initDoubleBarDatan();
+	initLineBarData();
+	function initDoubleBarDatan(){
+		$.ajax({
+			url:"/iles/carrier/carrierUsedByWarehouse",
+			success:function(res){
+				initDoubleBarn("DoubleBar",res.data);
+			}
+		});	
+	};
+	
+	function initLineBarData(){
+		$.ajax({
+			url:"/iles/carrier/carrierUsedByUseTime",
+			success:function(res){
+				initLineBar("DoubleLine",res.data);
+			}
+		});	
+	}
+	function initDoubleBarn(id,resData){
+		var bar = document.getElementById(id);
+		var option = {
+			title: {
+		        text: '工装小车使用实时统计-产品线'
+	        	,textStyle:{
+		        	color:"#89bef3"
+		        }
+		    },
+			color: [ '#ee8a62','#2cc0f7'],
+			grid: {
+				top:'25%',
+				bottom:'15%'
+			},
+			xAxis: {
+				type: 'category',
+				axisLine:{show:false},
+				axisTick: {show: false},
+				axisLabel: {color:"#89bef3",fontSize:16},
+				data: resData.name
+			},
+			yAxis: {
+				type: 'value',
+				axisLine:{show:false},
+				axisLabel: {color:"#89bef3",fontSize:16},
+				splitLine:{
+					lineStyle:{
+						color:"#295288",
+					}
+				}
+			},
+			dataZoom:[
+				{
+					type:'inside',
+				}
+			],
+			tooltip:{
+				show:true,
+			},
+			series: [
+				{
+					type: 'bar',
+					barWidth:30,
+					barGap: "-100%",
+					stack: 'one',
+					itemStyle:{
+						barBorderRadius:[5,5,0,0],
+						opacity:1,
+					},
+					label: {
+						normal: {
+							show: true,
+							position: 'top',
+							color:'#fff',
+							fontSize:16,
+						}
+					},
+					//data: [12,20 ,22 ,23 ,24 ,25 ]//工位制与非工位制数据对应总和
+					data:resData.carrierCount
+				},
+				{
+					type: 'bar',
+					barWidth:30,
+					barGap: "-100%",
+					stack: 'two',
+					itemStyle:{
+						barBorderRadius:[5,5,0,0]
+					},
+					//data: [12,20 ,22 ,23 ,24 ,25 ]
+					data:resData.carrierCount
+				}
+			]
+		};
+		echarts.init(bar).setOption(option);
+	}
+	
+	function initLineBar(id,data){
+		var bar = document.getElementById(id);
+		var productList = data.productList;
+		var productListNew = new Array();
+		var tempData = data.carrierUse;
+		var seriesData;
+		var tempArray;
+		var porductName;
+		var str = "[";
+		var tempCarrierUseData;
+		s:for(var i=0;i<productList.length;i++){
+			porductName = productList[i];
+			tempCarrierUseData = tempData[porductName];
+			if(tempCarrierUseData!=null){//
+				tempArray = new Array();
+				if(tempCarrierUseData.a!=null){
+					tempArray.push(tempCarrierUseData.a);
+				}
+				if(tempCarrierUseData.b!=null){
+					tempArray.push(tempCarrierUseData.b);
+				}
+				if(tempCarrierUseData.c!=null){
+					tempArray.push(tempCarrierUseData.c);
+				}
+				if(tempCarrierUseData.d!=null){
+					tempArray.push(tempCarrierUseData.d);
+				}
+				if(tempCarrierUseData.e!=null){
+					tempArray.push(tempCarrierUseData.e);
+				}
+				if(tempCarrierUseData.f!=null){
+					tempArray.push(tempCarrierUseData.f);
+				}
+				if(tempCarrierUseData.g!=null){
+					tempArray.push(tempCarrierUseData.g);
+				}
+				if(tempCarrierUseData.h!=null){
+					tempArray.push(tempCarrierUseData.h);
+				}
+				if(tempCarrierUseData.i!=null){
+					tempArray.push(tempCarrierUseData.i);
+				}
+				if(tempCarrierUseData.j!=null){
+					tempArray.push(tempCarrierUseData.j);
+				}
+				if(tempCarrierUseData.k!=null){
+					tempArray.push(tempCarrierUseData.k);
+				}
+				if(tempCarrierUseData.l!=null){
+					tempArray.push(tempCarrierUseData.l);
+				}
+				str = str + "{name:'"+porductName+"',type:'line',stack: '总量',data:["+tempArray+"]},";
+				productListNew.push(porductName);
+			}
+		};
+		if(str.length>1){
+			str = str.substring(0,str.length-1)+"]";
+		}
+		seriesData =  eval('('+str+')');
+		option = {
+			    title: {
+			        text: '工装小车使用趋势分析-产品线',
+			        textStyle:{
+			        	color:"#89bef3"
+			        }
+			    },
+			    color:['#c23531','#bda29a', '#61a0a8', '#d48265', '#91c7ae'],
+			    tooltip: {
+			        trigger: 'axis'
+			    },
+			    legend: {
+			        //data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+			    	 data:productListNew,
+				     textStyle: {
+				        color: '#89bef3'
+			        }
+			    },
+			    grid: {
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true
+			    },
+			    xAxis: {
+			        type: 'category',
+			        boundaryGap: false,
+			        axisLabel: {color:"#89bef3",fontSize:16},
+			        //data: ['周一','周二','周三','周四','周五','周六','周日']
+			        data:['8','9','10','11','12','13','14','15','16','17','18','19']
+			    },
+			    yAxis: {
+			        type: 'value',
+			        axisLabel: {color:"#89bef3",fontSize:16},
+		        	splitLine:{
+						lineStyle:{
+							color:"#295288",
+						}
+					}
+			    },
+			    series:seriesData /* [
+			        {
+			            name:data.productList[0],
+			            type:'line',
+			            stack: '总量',
+			            data:[120, 132, 101, 134, 90, 230, 210]
+			        },
+			        {
+			            name:data.productList[1],
+			            type:'line',
+			            stack: '总量',
+			            data:[220, 182, 191, 234, 290, 330, 310]
+			        },
+			        {
+			            name:data.productList[2],
+			            type:'line',
+			            stack: '总量',
+			            data:[150, 232, 201, 154, 190, 330, 410]
+			        },
+			        {
+			            name:data.productList[3],
+			            type:'line',
+			            stack: '总量',
+			            data:[320, 332, 301, 334, 390, 330, 320]
+			        },
+			        {
+			            name:data.productList[4],
+			            type:'line',
+			            stack: '总量',
+			            data:[820, 932, 901, 934, 1290, 1330, 1320]
+			        }
+			    ]  */
+			};
+		echarts.init(bar).setOption(option);
+	}
+});
+</script>
+</body>
+</html>

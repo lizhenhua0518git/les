@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>新增库存类型配置</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="${ctx}/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="${ctx}/pages/css/layui_extend.css"  media="all">
+</head>
+<body>
+<div class="layui-container" style="padding-top: 20px;">
+		<form class="layui-form" action="">
+			<div class="layui-form-item">
+			 	<div class="layui-inline">
+			 	<label class="layui-form-label">库存类型:</label>
+			 	 <div class="layui-input-block">
+			       <select name="stockType" id="stockType" class="layui-select">
+						<option value="">请选择</option>
+						<option value="1">流动库存</option>
+	                    <option value="2">积压库存</option>
+	                    <option value="3">呆滞库存</option>
+	                    <option value="4">低效库存</option>
+					</select>
+			    </div>
+			 	
+			 	</div>
+			 	 
+			</div>
+			<div class="layui-form-item">
+                
+		     <div class="bottom">
+		       <table style="width:98%; text-align:left; margin-left:0px" id="strategyTable">
+		    	 
+		      	<tbody id="content">
+		      	
+		      	<tr>
+		      	<td >
+		      	
+		      	 <span>规则&nbsp;&nbsp;&nbsp;   </span>
+		      	
+		      	  <input type="checkbox"  lay-skin="primary" >
+		      	</td>
+		      	<td>
+		      	1、
+		      	</td>
+		      	<td>
+                  <input type="text" name="num1" lay-verify="num1" style="width:100px;"autocomplete="off" placeholder="1-365" class="layui-input">              
+		      	</td>
+		      	<td>
+		      	  天以内有消耗且非限制库存<=未来 
+		      	</td>
+		      	<td>
+		      	 <input type="text" name="num2" lay-verify="num2" style="width:100px;"autocomplete="off" placeholder="1-365" class="layui-input">
+		      	</td>
+		      	<td>
+		      	  天生产需求             
+		      	</td>
+		      	</tr>
+		      	
+		      	
+		      	<tr>
+		      	<td >
+		      	 <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   </span>
+		      	<input type="checkbox"  lay-skin="primary" style="width:60px;">
+		      	</td>
+		      	<td>
+		      	 2、
+		      	</td>
+		      	<td>
+                  <input type="text" name="num3" lay-verify="num3" style="width:100px;"autocomplete="off" placeholder="1-365" class="layui-input">              
+		      	</td>
+		      	<td>
+		      	  天以内无消耗 
+		      	</td>
+		      	<td>
+		      	 
+		      	</td>
+		      	<td>
+		      	      
+		      	</td>
+		      	</tr>
+		      	
+		      		<tr>
+		      	<td > 
+		      	 <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   </span>
+		      	<input type="checkbox"  lay-skin="primary" >
+		      	</td>
+		      	<td>
+		      	 3、
+		      	</td>
+		      	<td>
+		      	非限制库存>=未来 
+                 
+		      	</td>
+		      	<td>
+		      	 <input type="text" name="num1" lay-verify="num1" style="width:100px;"autocomplete="off" placeholder="1-365" class="layui-input">              
+		      	</td>
+		      	<td>
+		      	 天生产需求
+		      	</td>
+		      	<td>
+		      	      
+		      	</td>
+		      	</tr>
+		      	</tbody>
+		    </table>
+		   
+		</div>
+	</div>
+               
+          
+			
+			 <div class="layui-form-item">
+			    <div class="layui-input-block">
+			      <button class="layui-btn" lay-submit="" lay-filter="stockTypeDeploySubit">立即提交</button>
+			      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			      <input type="hidden" name="rule" id="rule">
+			      <input type="hidden" name="formula" id="formula">
+			      
+			    </div>
+			  </div>
+			
+		</form>
+	</div>
+	<script src="${ctx}/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form
+		var dictItems = null;//数据字典
+	 
+		layui.use(['form', 'layedit'], function(){
+			  
+			  //监听提交
+			  form.on('submit(stockTypeDeploySubit)', function(data){
+				saveDict(data);
+				return false;
+			 });
+		});
+		function saveDict(data){
+			if(data.field.stockType ==='' ){
+				layer.alert("请选择库存类型",{icon: 2});
+				return;
+			}
+			var flag =0;
+			$("input[type='checkbox']").each(function(i,e){
+				if(e.checked == true){
+					flag++;
+				}
+			
+			});
+			if(flag <1){
+				layer.alert("请选择一个",{icon: 2});
+				return;
+			}else if(flag >1){
+				layer.alert("只能选择一个",{icon: 2});
+				return;
+			}
+			flag =0;
+			
+			$("input[type='checkbox']").each(function(i,e){
+				 
+				 
+				if(e.checked == true){
+					if("1、"===$.trim($(e).parent().parent().find('td:eq(1)').text())){
+						if($.trim($(e).parent().parent().find('td:eq(2)').find("input").val()) == ""){
+							flag =1; 
+							 
+						}
+						if($.trim($(e).parent().parent().find('td:eq(4)').find("input").val()) == ""){
+							flag =1; 
+							
+						}
+						
+						
+						var rule =  $.trim($(e).parent().parent().find('td:eq(2)').find("input").val())
+			            +$.trim($(e).parent().parent().find('td:eq(3)').text())
+			             +$.trim($(e).parent().parent().find('td:eq(4)').find("input").val())
+			            + $.trim($(e).parent().parent().find('td:eq(5)').text());
+						data.field.rule =rule;
+						data.field.formula=$.trim($(e).parent().parent().find('td:eq(2)').find("input").val())
+								+","
+								+$.trim($(e).parent().parent().find('td:eq(4)').find("input").val());
+					}else if("2、"===$.trim($(e).parent().parent().find('td:eq(1)').text())){
+						if($.trim($(e).parent().parent().find('td:eq(2)').find("input").val()) == ""){
+							flag =1; 
+						}
+						
+						var rule =  $.trim($(e).parent().parent().find('td:eq(2)').find("input").val())
+			            +$.trim($(e).parent().parent().find('td:eq(3)').text());
+						data.field.rule =rule;
+						data.field.formula=$.trim($(e).parent().parent().find('td:eq(32)').find("input").val());
+					}else if("3、"===$.trim($(e).parent().parent().find('td:eq(1)').text())){
+						if($.trim($(e).parent().parent().find('td:eq(3)').find("input").val()) == ""){
+							flag =1; 
+						}
+						var rule =$.trim($(e).parent().parent().find('td:eq(2)').text())
+			             +$.trim($(e).parent().parent().find('td:eq(3)').find("input").val())
+			            + $.trim($(e).parent().parent().find('td:eq(4)').text());
+						data.field.rule =rule;
+						data.field.formula=$.trim($(e).parent().parent().find('td:eq(3)').find("input").val());
+					}
+					
+					
+				}
+				
+				
+				       
+			});
+			if(flag ==1){
+				layer.alert('请填写对应天数值',{icon: 2});
+				return  ;
+			}
+			var option = {
+		    	url:'${ctx}/stockTypeDeploy/add',
+		    	data:JSON.stringify(data.field),
+		    	type:'POST',
+		    	contentType:'application/json',
+		    	success:function(data){
+		    		if(data.code==0){
+		    			var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+		    			parent.layer.close(index);  // 关闭layer
+		    			parent.table.reload('stockTypeDeployInfoTabId');
+		    		}else{
+		    			layer.alert(data.data);
+		    		}
+		    	},error:function(data){
+		    		layer.alert(data.msg)
+		    	}
+		    }
+		    $.ajax(option); 
+		}
+	
+ 
+	</script>
+</body>
+</html>

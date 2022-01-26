@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="Content-Type" content="charset=UTF-8">
+	<meta name="viewport"
+		  content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+	<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+	<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+	<title>退料上架作业管理</title>
+</head>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+	<input type="hidden" name="storageBinId" id="storageBinId">
+	<input type="hidden" name="storageBinCode" id="storageBinCode">
+	<input type="hidden" name="id" id="upperId">
+
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+				<label class="layui-form-label">上架日期:</label>
+				<div class="layui-input-block layui-form">
+					<input type="text" class="layui-input" name="getTime" id="getTime" placeholder="请选择上架日期">
+				</div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">物料号:</label>
+				<div class="layui-input-block">
+					<input type="text" name="materialCode" id="materialCode" class="layui-input" placeholder="请输入物料号">
+				</div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">物料描述:</label>
+				<div class="layui-input-block">
+					<input type="text" name="materialDesc" id="materialDesc" class="layui-input" placeholder="请输入物料描述">
+				</div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">操作员:</label>
+				<div class="layui-input-block">
+					<input type="text" name="upperFrameName" id="upperFrameName" class="layui-input" placeholder="请输入操作员">
+				</div>
+			</div>
+		</div>
+		<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+				<label class="layui-form-label">收货凭证号:</label>
+				<div class="layui-input-block">
+					<input type="text" name="receiptVoucherNo" id="receiptVoucherNo" class="layui-input" placeholder="请输入收货凭证号">
+				</div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">上架单号:</label>
+				<div class="layui-input-block">
+					<input type="text" name="dumpOrderCode" id="dumpOrderCode" class="layui-input" placeholder="请输入上架单号">
+				</div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">目的仓位:</label>
+				<div class="layui-input-block">
+					<input type="text" name="storageBinId" id="storageBinId" class="layui-input" placeholder="请输入目的仓位">
+				</div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">是否合格:</label>
+				<div class="layui-input-block">
+					<select id="qualifiedStatus" name="qualifiedStatus">
+						<option value=""></option>
+						<option value="0">不合格</option>
+						<option value="1">合格</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+				<label class="layui-form-label">上架状态:</label>
+				<div class="layui-input-block layui-form">
+					<select id="upperStatus" name="upperStatus">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-col-md3">
+				<label class="layui-form-label">仓库编号:</label>
+				<div class="layui-input-block">
+					<select id="warehouseCode" xm-select="select1" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<!-- 按钮区域begin -->
+			<div class="layui-col-md5">
+				<div class="layui-btn-container" style="text-align: right;">
+<!--					<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>-->
+					<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+<!--					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>重新指定仓位</button>-->
+				</div>
+			</div>
+			<!-- 按钮区域end -->
+		</div>
+	</div>
+	<table id="scheduleTab" lay-filter="scheduleTabF"></table>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script type="text/javascript">
+	//获取运营决策页面带来的数据
+	var arrivalId = getQueryVariable("arrivalId");
+	function getQueryVariable(variable){
+		var query = window.location.search.substring(1);
+		var vars = query.split("&");
+		for (var i=0;i<vars.length;i++) {
+			var pair = vars[i].split("=");
+			if(pair[0] == variable){
+				return pair[1];
+			}
+		}
+		return "";
+	}
+
+	var $ = layui.$;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+    var wmsContextPath = config.wmsConfig.contextPath;
+    var baseContextPath = config.basicInfoConfig.contextPath;
+	var oldData;
+
+	var active = {
+		search:function(othis){
+			//执行重载
+			var storageLocation = layui.formSelects.value('select1', 'storagelocationStr');
+			table.reload('scheduleTabId', {
+				where:{
+					inspectAreaId : $('#inspectAreaId').val(),
+					startTime : $('#getTime').val().substring(0,11),
+					endTime : $('#getTime').val().substring(13),
+					materialCode : $('#materialCode').val(),
+					materialDesc : $('#materialDesc').val(),
+					upperFrameName : $("#upperFrameName").val(),
+					receiptVoucherNo : $("#receiptVoucherNo").val(),
+					inspectBatchNo : $("#inspectBatchNo").val(),
+					inspectType : $("#inspectType").val(),
+					dumpOrderCode : $("#dumpOrderCode").val(),
+					storageBinId : $("#storageBinId").val(),
+					qualifiedStatus : $("#qualifiedStatus").val(),
+					upperStatus : $('#upperStatus').val(),
+					urgentStatus : $('#urgentStatus').val(),
+					storageLocation:storageLocation,
+				},
+				page : {
+					"curr" : 1
+				}
+			});
+		},
+		reset:function(othis){
+			$('#inspectAreaId').val("");
+			$('#getTime').val("");
+			$('#materialCode').val('');
+			$('#materialDesc').val('');
+			$('#upperFrameName').val('');
+			$('#receiptVoucherNo').val('');
+			$('#inspectBatchNo').val('');
+			$('#inspectType').val('');
+			$('#dumpOrderCode').val('');
+			$('#storageBinId').val('');
+			$('#qualifiedStatus').val('');
+			$('#upperStatus').val('');
+			$('#urgentStatus').val('');
+			form.render("select");
+		},
+		export:function(othis){
+			var inspectAreaId = $('#inspectAreaId').val();
+			var startTime = $('#getTime').val().substring(0,20);
+			var endTime = $('#getTime').val().substring(22);
+			var materialCode = $('#materialCode').val();
+			var materialDesc = $('#materialDesc').val();
+			var upperFrameName = $("#upperFrameName").val();
+			var receiptVoucherNo = $("#receiptVoucherNo").val();
+			var inspectBatchNo = $("#inspectBatchNo").val();
+			var inspectType = $("#inspectType").val();
+			var dumpOrderCode = $('#dumpOrderCode').val();
+			var storageBinId = $('#storageBinId').val();
+			var qualifiedStatus = $('#qualifiedStatus').val();
+			var upperStatus = $('#upperStatus').val();
+			var urgentStatus = $('#urgentStatus').val();
+
+			var params = "inspectAreaId="+inspectAreaId+"&startTime="+startTime+"&endTime="+endTime+"&materialCode="+materialCode
+					+"&materialDesc="+materialDesc+"&upperFrameName="+upperFrameName+"&receiptVoucherNo="+receiptVoucherNo+"&inspectBatchNo="+inspectBatchNo
+					+"&inspectType="+inspectType+"&dumpOrderCode="+dumpOrderCode+"&storageBinId="+storageBinId+"&qualifiedStatus="+qualifiedStatus
+					+"&upperStatus="+upperStatus+"&urgentStatus="+urgentStatus;
+			window.open(wmsContextPath+"upperWork/exportExcel?"+params);
+		},
+		edit:function(othis){
+			var checkStatus = table.checkStatus('scheduleTabId');
+			oldData = checkStatus.data;
+			debugger;
+			var length = oldData.length;
+			if(length<=0){
+				layer.alert('请选择要重新指定仓位的数据！',{icon: 2});
+				return ;
+			}else if(length>1){
+				layer.alert('请选择一条数据重新指定仓位！',{icon: 2});
+				return ;
+			}
+			layer.open({
+				type: 2,
+				title:'重新指定仓位',
+				maxmin:true,
+				area: ['80%', '650px'],
+				id: 'getMaterialOfStorageList', //防止重复弹出
+				content: '${ctx}/pages/mfc/upperWorkSchedule/storageUpdate.html',
+				shade: 0, //不显示遮罩
+				yes: function(){
+					layer.closeAll();
+				}
+			});
+		}
+	};
+
+	function loadding() {
+		table.render({
+			elem:'#scheduleTab',
+			id:'scheduleTabId',
+			url:wmsContextPath+'upperWork/getUpperWorkScheduleListT?arrivalId='+arrivalId,
+			cols: [[
+				//{type:'checkbox',width:40,fixed:'left'},
+				{field:'materialCode',title: '物料编号',align:'center',minWidth:140,fixed:'left'},
+				{field:'materialDesc', title: '物料描述',align:'center',minWidth:140,fixed:'left'},
+				{field:'receiptVoucherNo', title: '收货凭证号',align:'center',minWidth:120},
+				{field:'upperFrameName', title: '操作员',align:'center',minWidth:90},
+				{field:'dumpOrderCode', title: '转储单号',align:'center',minWidth:120},
+				{field:'storageBinCode', title: '目的仓位',align:'center',minWidth:120},
+				{field:'qualifiedStatus', title: '是否合格',align:'center',minWidth:100},
+				{field:'upperStatus', title: '上架状态',align:'center',minWidth:100},
+				{field:'upperTime', title: '上架时长',align:'center',minWidth:120},
+			]],
+			page: {theme: '#008155'},
+			height: '500px',
+			even:true,
+			done:function(res,page,count){//列表数据回调函数
+				//质检类型/上架状态/紧急状态 select
+				var dictType = new Array();
+				dictType.push("inspect_type");
+				dictType.push("upper_status");
+				dictType.push("is_urgent");
+				var option={
+					url:baseContextPath+'dictItems/listDictItemByTypes',
+					type:'POST',
+					dataType:'json',
+					contentType: "application/json",
+					data:JSON.stringify(dictType),
+					success:function(res){
+						if(res.code==0){
+							changeItemName(res.data);
+							defaultSelect(res.data);
+						}
+					}
+				};
+				$.ajax(option);
+			}
+		});
+
+		function changeItemName(data){
+			//table列 是否合格 回显汉字
+			$("[data-field='qualifiedStatus']").children().each(function(i,e){
+				if(i>0){
+					if($(e).text()=='0'){
+						$(e).text('不合格');
+					}else if($(e).text()=='1'){
+						$(e).text('合格');
+					}
+				}
+			});
+			//table列 上架状态 回显汉字
+			$("[data-field='upperStatus']").children().each(function(i,e){
+				for(var i=0;i<data.length;i++){
+					if(data[i].dictTypeId=="upper_status" && data[i].itemValue==$(this).text().trim()){
+						$(this).text(data[i].itemName);
+					}
+				}
+			});
+			//table列 上架时长 文字替换
+			$("[data-field='upperTime']").children().each(function(i,e){
+				if(i>0){
+					var isHaveNum = /[0-9]/;
+					var flag = isHaveNum.test($(e).text());
+					if(!flag){
+						$(e).text("--");
+					}
+				}
+			});
+		}
+		function defaultSelect(dictItems){
+			//加载上架状态select
+			if(dictItems && dictItems.length>0){
+				if($("#upperStatus").find("option").length==1){
+					for(var i=0;i<dictItems.length;i++){
+						if(dictItems[i].dictTypeId=="upper_status"){
+							$("#upperStatus").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+						}
+					}
+					form.render('select');
+				}
+			}
+		}
+		var laydate = layui.laydate;
+		//时间选择器
+		laydate.render({
+			elem: '#getTime',
+			range: true
+		});
+		initWarehouseMultiSelect("warehouseCode","select1","0",null);
+		form.render();
+		$('.layui-btn-container button').on('click', function(){
+			var othis = $(this), method = othis.data('method');
+			active[method] ? active[method].call(this, othis) : '';
+		});
+	}
+
+</script>
+</html>

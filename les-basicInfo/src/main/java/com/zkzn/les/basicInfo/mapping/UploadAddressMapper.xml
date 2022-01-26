@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.basicInfo.dao.UploadAddressDao">
+
+
+	<select id="listUploadAddress" resultType="com.zkzn.les.basicInfo.pojo.UploadAddress">
+		select * from t_upload_address
+		<where>
+			<if test="warehouseCodes !=null and warehouseCodes.size()>0">
+				<foreach collection="warehouseCodes" open="and warehouse_code in (" close=")" index="index" item="item" separator=",">
+					#{item}
+				</foreach>
+			</if>
+			<if test="uploadCode !=null and ''!= uploadCode">
+				and upload_code =#{uploadCode}
+			</if>
+			<if test="uploadName !=null and ''!= uploadName">
+				and upload_name like '%${uploadName}%'
+			</if>
+			<if test="useStatus !=null">and use_status=#{useStatus}</if>
+		</where>
+	</select>
+	
+	
+	<insert id="saveUploadAddress" parameterType="com.zkzn.les.basicInfo.pojo.UploadAddress">
+		insert into t_upload_address
+		
+		 <trim prefix=" (" suffix=")" suffixOverrides=",">
+
+		 	<if test="uploadCode !=null and ''!= uploadCode">upload_code,</if>
+			<if test="uploadName !=null and ''!= uploadName">upload_name,</if>
+			<if test="useStatus !=null">use_status,</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">warehouse_code,</if>
+			<if test="warehouseName !=null and ''!= warehouseName">warehouse_Name,</if>
+			<if test="createrId !=null and ''!= createrId">creater_id,</if>
+			<if test="createrName !=null and ''!= createrName">creater_name,</if>
+			<if test="createTime !=null ">create_time,</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")"  suffixOverrides=",">
+
+		 	<if test="uploadCode !=null and ''!= uploadCode">#{uploadCode},</if>
+			<if test="uploadName !=null and ''!= uploadName">#{uploadName},</if>
+			<if test="useStatus !=null">#{useStatus},</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">#{warehouseCode},</if>
+			<if test="warehouseName !=null and ''!= warehouseName">#{warehouseName},</if>
+			<if test="createrId !=null and ''!= createrId">#{createrId},</if>
+			<if test="createrName !=null and ''!= createrName">#{createrName},</if>
+			<if test="createTime !=null ">#{createTime},</if>
+		 </trim>
+	</insert>
+	
+	<update id="updateUploadAddress" parameterType="com.zkzn.les.basicInfo.pojo.UploadAddress">
+		update t_upload_address 
+		<trim prefix="set " suffixOverrides=",">
+		 	<if test="uploadCode !=null and ''!= uploadCode">upload_code = #{uploadCode},</if>
+			<if test="uploadName !=null and ''!= uploadName">upload_Name = #{uploadName},</if>
+			<if test="useStatus !=null">use_status=#{useStatus},</if>
+			<if test="warehouseCode !=null and ''!= warehouseCode">warehouse_code=#{warehouseCode},</if>
+			<if test="warehouseName !=null and ''!= warehouseName">warehouse_name=#{warehouseName},</if>
+			<if test="modifierId !=null and ''!= modifierId">modifier_id=#{modifierId},</if>
+			<if test="modifierName !=null and ''!= modifierName">modifier_name=#{modifierName},</if>
+			<if test="modifiedTime !=null ">modified_time = #{modifiedTime},</if>
+		 </trim>
+		 where id=#{id}
+	</update>
+	
+	<delete id="deleteUploadAddress">
+		delete from t_upload_address where id in 
+		<foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

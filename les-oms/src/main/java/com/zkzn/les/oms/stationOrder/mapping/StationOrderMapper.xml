@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.oms.stationOrder.dao.StationOrderDao">
+    <select id="listBOMMainList" parameterType="com.zkzn.les.oms.stationOrder.pojo.OrderTaskPojo" resultType="com.zkzn.les.oms.stationOrder.pojo.OrderTaskPojo">
+        SELECT
+            o.order_task_id AS "orderTaskId",
+            o.warehouse_code AS "warehouseCode",
+            w.ORG_NAME AS "warehouseName",
+            o.client_name AS "clientName",
+            o.order_code AS "orderCode",
+            o.order_type AS "orderType",
+            o.operate_user_id AS "operateUserId",
+            o.operate_user_name AS "operateUserName",
+            o.order_status AS "orderStatus",
+            o.remark AS "remark",
+            o.creater_time AS "createrTime"
+        FROM
+            o_order_task o
+        LEFT JOIN t_warehouse w ON o.warehouse_code = w.ORG_CODE
+        LEFT JOIN b_client_manage c ON c.client_name = o.client_name
+        where 1=1
+        <if test="orderCode !=null and ''!= orderCode">
+            and st.order_code like '%${orderCode}%'
+        </if>
+        <if test="clientName !=null and ''!= clientName">
+            <foreach collection="clientName.split(';')" open="and c.client_manage_id in(" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="warehouseCode != null and '' != warehouseCode">
+            <foreach collection="warehouseCode.split(';')" open="and o.warehouse_code in (" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+        /*GROUP BY o.creater_time DESC*/
+    </select>
+    <select id="listStationOrder" parameterType="com.zkzn.les.oms.stationOrder.pojo.PcShipmentTaskPojo" resultType="com.zkzn.les.oms.stationOrder.pojo.PcShipmentTaskPojo">
+        SELECT
+            std.shipment_task_id AS "shipmentTaskId",
+            std.shipment_task_detail_id AS "shipmentTaskDetailId",
+            w.ORG_NAME AS	"warehouseName",
+            w.ORG_CODE AS	"warehouseCode",
+            st.client_name AS "clientName",
+            st.order_code AS "orderCode",
+            std.material_desc AS "materialDesc",
+            std.material_desc AS "materialUnit",
+            std.shipment_count AS "shipmentCount",
+            std.position_code AS "positionCode",
+            std.batch_no AS "batchNo",
+            std.carrier_code AS "carrierCode",
+            std.area_code AS "areaCode",
+            std.stock_status AS "stockStatus",
+            std.shipment_status AS "shipmentStatus",
+            std.creater_time AS "createrTime"
+        FROM
+            o_shipment_task_detail std
+        LEFT JOIN o_shipment_task st ON std.shipment_task_id = st.shipment_task_id
+        LEFT JOIN t_warehouse w ON w.ORG_CODE = st.warehouse_code
+        where 1=1
+        <if test="materialDesc !=null and ''!= materialDesc">
+            AND std.material_desc like '%${materialDesc}%'
+        </if>
+        <if test="orderCode !=null and ''!= orderCode">
+            and st.order_code like '%${orderCode}%'
+        </if>
+        <if test="positionCode !=null and ''!= positionCode">
+            and std.position_code like '%${positionCode}%'
+        </if>
+        <if test="warehouseCode !=null and ''!= warehouseCode">
+            <foreach collection="warehouseCode.split(';')" open="and st.warehouse_code in(" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+        order by std.creater_time desc
+    </select>
+
+    <insert id="saveStationOrder">
+        <foreach collection="list" open="begin" close=";end;" index="index" item="item" separator=";">
+            insert into t_station_order
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.id !=null and ''!= item.id">id,</if>
+                <if test="item.workshopCode !=null and ''!= item.workshopCode">workshop_Code,</if>
+                <if test="item.lineCode !=null and ''!= item.lineCode">line_Code,</if>
+                <if test="item.stationCode !=null and ''!= item.stationCode">station_Code,</if>
+                <if test="item.warehouseCode !=null and ''!= item.warehouseCode">warehouse_Code,</if>
+                <if test="item.warehouseName !=null and ''!= item.warehouseName">warehouse_Name,</if>
+                <if test="item.requiredDate !=null ">required_Date,</if>
+                <if test="item.orderCode !=null and ''!= item.orderCode">order_Code,</if>
+                <if test="item.priority !=null ">priority,</if>
+                <if test="item.vinCode !=null and ''!= item.vinCode">vin_Code,</if>
+                <if test="item.factory !=null and ''!= item.factory">factory,</if>
+                <if test="item.createTime !=null ">create_Time,</if>
+                <if test="item.orderType !=null ">order_Type,</if>
+                <if test="item.busiType !=null ">BUSI_TYPE,</if>
+                <if test="item.waveId !=null and ''!= item.waveId">wave_Id,</if>
+                <if test="item.processOrderId !=null and ''!= item.processOrderId">process_Order_Id,</if>
+                <if test="item.status !=null ">status,</if>
+                <if test="item.carModel !=null and ''!= item.carModel">car_model,</if>
+                <if test="item.stationDesc !=null and ''!= item.stationDesc">station_desc,</if>
+                <if test="item.costCenterOrder != null and '' != item.costCenterOrder">COST_CENTER_ORDER,</if>
+            </trim>
+            <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="item.id !=null and ''!= item.id">#{item.id},</if>
+                <if test="item.workshopCode !=null and ''!= item.workshopCode">#{item.workshopCode},</if>
+                <if test="item.lineCode !=null and ''!= item.lineCode">#{item.lineCode},</if>
+                <if test="item.stationCode !=null and ''!= item.stationCode">#{item.stationCode},</if>
+                <if test="item.warehouseCode !=null and ''!= item.warehouseCode">#{item.warehouseCode},</if>
+                <if test="item.warehouseName !=null and ''!= item.warehouseName">#{item.warehouseName},</if>
+                <if test="item.requiredDate !=null ">#{item.requiredDate},</if>
+                <if test="item.orderCode !=null and ''!= item.orderCode">#{item.orderCode},</if>
+                <if test="item.priority !=null ">#{item.priority},</if>
+                <if test="item.vinCode !=null and ''!= item.vinCode">#{item.vinCode},</if>
+                <if test="item.factory !=null and ''!= item.factory">#{item.factory},</if>
+                <if test="item.createTime !=null ">#{item.createTime},</if>
+                <if test="item.orderType !=null ">#{item.orderType},</if>
+                <if test="item.busiType !=null ">#{item.busiType},</if>
+                <if test="item.waveId !=null and ''!= item.waveId">#{item.waveId},</if>
+                <if test="item.processOrderId !=null and ''!= item.processOrderId">#{item.processOrderId},</if>
+                <if test="item.status !=null ">#{item.status},</if>
+                <if test="item.carModel !=null and ''!= item.carModel">#{item.carModel},</if>
+                <if test="item.stationDesc !=null and ''!= item.stationDesc">#{item.stationDesc},</if>
+                <if test="item.costCenterOrder != null and '' != item.costCenterOrder">#{item.costCenterOrder},</if>
+            </trim>
+        </foreach>
+    </insert>
+
+    <!--sql硬编码了 status code编码应该传入-->
+    <update id="update">
+        update t_station_order_detail
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="status =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item !=null and ''!= item ">
+                        when id=#{item} then 5
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </update>
+
+
+    <update id="updateOrder">
+        update t_station_order
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="wave_id =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.waveId !=null and item.waveId != '' ">
+                        when id=#{item.id} then #{item.waveId}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+
+
+    <select id="selectAllById" resultType="com.zkzn.les.oms.pojo.StationOrder">
+        SELECT t.id as "id",t.workshop_code as "workShopCode",t.line_code as "lineCode",t.station_code as "stationCode",
+        t.WAREHOUSE_CODE as "warehouseCode",t.WAREHOUSE_NAME as "warehouseName",t.CREATE_TIME as "createTime"
+        FROM t_station_order t
+        WHERE t.id in (SELECT t_order.station_order_id as id
+                    FROM t_station_order_detail t_order
+         <where>
+            <if test="ids !=null and ids.size > 0 ">
+                <foreach collection="ids" open="t_order.id in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY t_order.station_order_id)
+    </select>
+
+    <select id="listPurchaseBillDetailById" parameterType="com.zkzn.les.oms.pojo.PurchaseBillDetail"
+            resultType="com.zkzn.les.oms.pojo.PurchaseBillDetail">
+        SELECT
+        pbd.ID,
+        pbd.ORDER_CODE,
+        pbd.PARENT_ID,
+        pbd.ITEM_NO,
+        pbd.ITEM_TYPE,
+        pbd.SUBJECT_TYPE,
+        pbd.MATERIAL_CODE,
+        pbd.FACTORY,
+        pbd.STORAGE_LOCATION,
+        pbd.MATERIAL_NUM,
+        m.MATERIAL_UNIT,
+        pbd.IS_RETURN,
+        pbd.IS_FREE,
+        pbd.DELIVERY_DATE,
+        pbd.BILL_DATE,
+        pbd.SALES_ORDER_CODE,
+        pbd.SALES_ORDER_ITEM,
+        pbd.ELIKZ,
+        pbd.UEBTO,
+        pbd.UNTTO,
+        pbd.CREATE_TIME,
+        pb.ORDER_TYPE,
+        pb.SUPPLIER_CODE,
+        pb.SUPPLIER_NAME,
+        fw.WAREHOUSE_NAME,
+        m.MATERIAL_DESC,
+        IFNULL(msb.ENABLE_COUNT ,0) ENABLE_COUNT
+        FROM
+        t_purchase_bill_detail pbd
+        LEFT JOIN t_purchase_bill pb ON pbd.parent_id = pb.id
+        LEFT JOIN t_material m ON m.MATERIAL_CODE = pbd.MATERIAL_CODE
+        LEFT JOIN t_factory_warehouse fw ON fw.STORAGE_LOCATION = pbd.STORAGE_LOCATION
+        LEFT JOIN t_material_storage_bin msb ON msb.MATERIAL_CODE = pbd.MATERIAL_CODE
+        AND msb.STORAGE_LOCATION = pbd.STORAGE_LOCATION
+        WHERE
+        1 =1
+        <if test="ids !=null and ids.size > 0 ">
+            <foreach collection="ids" open="and pbd.id in (" close=")" separator="," index="index" item="item">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <insert id="saveWave" >
+        insert into T_WAVE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            <if test="stationWave.sendAddress !=null and ''!=stationWave.sendAddress ">send_address,</if>
+            <if test="stationWave.waveCode !=null and ''!= stationWave.waveCode">wave_code,</if>
+            <if test="stationWave.platNum !=null ">plat_num,</if>
+            <if test="stationWave.wareShopCode !=null and ''!= stationWave.wareShopCode">wareshop_code,</if>
+            <if test="stationWave.lineCode !=null and ''!= stationWave.lineCode">line_code,</if>
+            <if test="stationWave.stationCode !=null and ''!= stationWave.stationCode">station_code,</if>
+            <if test=" stationWave.wareHouseCode!=null and ''!=stationWave.wareHouseCode ">warehouse_code,</if>
+            <if test = "stationWave.wareHouseName!=null and ''!=stationWave.wareHouseName">wareHouse_name,</if>
+            <if test="stationWave.createTime != null ">create_time,</if>
+            <if test="stationWave.status != null" >status</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{stationWave.id}
+            <if test="stationWave.sendAddress !=null and ''!= stationWave.sendAddress">,#{stationWave.sendAddress}</if>
+            <if test="stationWave.waveCode !=null and ''!=stationWave.waveCode ">,#{stationWave.waveCode}</if>
+            <if test=" stationWave.platNum!=null ">,#{stationWave.platNum}</if>
+            <if test="stationWave.wareShopCode !=null and ''!= stationWave.wareShopCode">,#{stationWave.wareShopCode}</if>
+            <if test="stationWave.lineCode !=null and ''!= stationWave.lineCode">,#{stationWave.lineCode}</if>
+            <if test="stationWave.stationCode !=null and ''!=stationWave.stationCode">,#{stationWave.stationCode}</if>
+            <if test="stationWave.wareHouseCode !=null and ''!= stationWave.wareHouseCode">,#{stationWave.wareHouseCode}</if>
+            <if test="stationWave.wareHouseName !=null and ''!= stationWave.wareHouseName">,#{stationWave.wareHouseName}</if>
+            <if test="stationWave.createTime !=null">,#{stationWave.createTime}</if>
+            <if test="stationWave.status != null" >,#{stationWave.status}</if>
+        </trim>
+    </insert>
+    <update id="updateOrderType">
+        update o_order_task
+        <set>
+            order_status=1
+        </set>
+        where order_task_id = #{orderTaskId}
+    </update>
+    <select id="getShipmentTaskData" resultType="com.zkzn.les.oms.stationOrder.pojo.ShipmentTaskData">
+        SELECT
+            ot.order_task_id AS "orderTaskId",
+            otd.order_task_detail_id AS "orderTaskDetailId",
+            ot.warehouse_code AS "warehouseCode",
+            ot.client_name AS "clientName",
+            ot.order_code AS "orderCode",
+            ot.order_type AS "orderType",
+            ot.operate_user_id AS "operateUserId",
+            ot.operate_user_name AS "operateUserName",
+            otd.material_desc AS "materialDesc",
+            otd.material_unit AS "materialUnit",
+            otd.send_number AS "sendNumber",
+            otd.batch_no AS "batchNo",
+            msb.storage_bin_id AS "storageBinId",
+            msb.storage_position_id AS "storagePositionId",
+            msb.stock_count AS "stockCount",
+            msb.position_car_code AS "positionCarCode",
+            s.position_code AS "positionCode"
+        FROM
+            o_order_task ot
+            LEFT JOIN o_order_task_detail otd ON ot.order_task_id = otd.order_task_id
+            LEFT JOIN s_material_storage_bin msb ON msb.material_desc = otd.material_desc
+            AND IF(msb.batch_no IS NULL,"",msb.batch_no) = IF(otd.batch_no IS NULL,"",otd.batch_no)
+            AND msb.warehouse_code = ot.warehouse_code AND msb.client_name = ot.client_name AND msb.stock_status = ot.order_type
+            LEFT JOIN b_storage_position s ON s.storage_position_id = msb.storage_position_id
+	    WHERE
+        ot.order_task_id = #{orderTaskId}
+        AND ot.order_status = 0
+        ORDER BY msb.stock_count ASC
+    </select>
+    <insert id="addShipmentTask" parameterType="com.zkzn.les.oms.stationOrder.pojo.ShipmentTaskData" keyProperty="shipmentTaskId" keyColumn="shipment_task_id" useGeneratedKeys="true">
+        insert into o_shipment_task (
+            order_task_id,warehouse_code,client_name,
+            order_code,order_type,task_status,operate_user_id,
+            operate_user_name,creater_user_id,creater_time
+        ) values (
+            #{orderTaskId},#{warehouseCode},#{clientName}
+            ,#{orderCode},#{orderType},1,#{operateUserId}
+            ,#{operateUserName},#{createrUserId},sysdate()
+        )
+    </insert>
+    <insert id="addShipmentTaskDetail">
+            insert into o_shipment_task_detail (
+                shipment_task_id,order_task_detail_id,material_desc,
+                material_unit,shipment_count,storage_position_id,
+                position_code,batch_no,position_car_code,stock_status,shipment_status,
+                creater_user_id,creater_time
+            )
+            values
+            <foreach collection="shipmentTaskDataList" item="item" separator=",">
+                (
+                    #{item.shipmentTaskId},#{item.orderTaskDetailId},#{item.materialDesc},
+                    #{item.materialUnit},#{item.stockCount},#{item.storagePositionId},
+                    #{item.positionCode},#{item.batchNo},#{item.positionCarCode},#{item.orderType},0,
+                    #{item.createrUserId},sysdate()
+                )
+            </foreach>
+    </insert>
+    <update id="updatePreUseCount" parameterType="com.zkzn.les.oms.stationOrder.pojo.ShipmentTaskData">
+            update s_material_storage_bin
+            <set>
+                stock_count = stock_count-#{stockCount},
+                pre_use_count = pre_use_count+#{stockCount}
+            </set>
+            where storage_bin_id = #{storageBinId}
+    </update>
+    <insert id="bommAdd" parameterType="com.zkzn.les.oms.stationOrder.pojo.OrderTaskPojo">
+        insert into o_order_task(
+            warehouse_code,client_name,order_code,
+            order_type,operate_user_id,operate_user_name,
+            order_status,creater_user_id,creater_time
+        ) values (
+            #{warehouseCode},#{clientName},#{orderCode},
+            #{orderType},#{operateUserId},#{operateUserName},
+            0,#{createrUserId},sysdate()
+        )
+    </insert>
+    <select id="getClientManage" resultType="java.util.Map">
+        SELECT
+            operate_user_id AS "operateUserId",
+            operate_user_name AS "operateUserName"
+        FROM
+            b_client_manage
+        WHERE
+            client_name = #{clientName}
+    </select>
+    <delete id="deleteOrderTask">
+        DELETE FROM o_order_task WHERE order_task_id IN
+        <foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    <select id="listBOMDetailList" parameterType="com.zkzn.les.oms.stationOrder.pojo.OrderTaskDetailPojo" resultType="com.zkzn.les.oms.stationOrder.pojo.OrderTaskDetailPojo">
+        SELECT
+            ord.order_task_detail_id AS "orderTaskDetailId",
+            ord.material_desc AS "materialDesc",
+            ord.material_unit AS "materialUnit",
+            ord.send_number AS "sendNumber",
+            ord.batch_no AS "batchNo",
+            ord.creater_time AS "createrTime"
+        FROM
+            o_order_task_detail ord
+        WHERE
+            ord.order_task_id = #{orderTaskId}
+        <if test="materialDesc !=null and ''!= materialDesc">
+            and ord.material_desc like '%${materialDesc}%'
+        </if>
+        ORDER BY ord.creater_time
+    </select>
+    <insert id="orderTaskDetailAdd" parameterType="com.zkzn.les.oms.stationOrder.pojo.OrderTaskDetailPojo">
+        insert into o_order_task_detail(
+            order_task_id,material_desc,material_unit,
+            send_number,batch_no,creater_user_id,creater_time
+        ) values (
+            #{orderTaskId},#{materialDesc},#{materialUnit},
+            #{sendNumber},#{batchNo},#{createrUserId},sysdate()
+        )
+    </insert>
+    <delete id="deleteOrderTaskDetail">
+        DELETE FROM o_order_task_detail WHERE order_task_detail_id IN
+        <foreach collection="list" open="(" close=")" index="index" item="item" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

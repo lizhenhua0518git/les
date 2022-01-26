@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/tableFilter.css"  type="text/css" />
+<title>出库计划(工位制)</title>
+<style> .layui-layer-content{background: linear-gradient(#001a47,#022558);}</style>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js"></script>
+<script type="text/html" id="bodyTpl">
+<!--<div class="layui-row layui-form" style="font-size: 20px;margin-bottom:20px;font-family:Microsoft Yahei;font-weight:600"> 出库计划明细表<i class="layui-icon layui-icon-help" style="font-size: 24px;color: #bdbd19;" onclick="helpDoc()"></i></div>-->
+<div class="layui-row layui-form">
+	<div class="layui-col-md3">
+                 <label class="layui-form-label">仓库:</label>
+                 <div class="layui-input-block">
+					<select id="warehouseCode" xm-select="select1" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+                </div>
+	</div>
+<div class="layui-col-md2">
+       <label class="layui-form-label">工序订单号:</label>
+        <div class="layui-input-block">
+         <input type="text" id="processOrderCode" class="layui-input">
+       </div>
+   </div>
+   <div class="layui-col-md2">
+       <label class="layui-form-label"> 订单号:</label>
+        <div class="layui-input-block">
+         <input type="text" id="orderCode" class="layui-input">
+       </div>
+   </div>
+ <div class="layui-col-md2">
+       <label class="layui-form-label">物料编码:</label>
+        <div class="layui-input-block">
+         <input type="text" id="materialCode" class="layui-input">
+       </div>
+   </div>
+  <div class="layui-col-md2">
+       <label class="layui-form-label">工位:</label>
+      	<div class="layui-input-block layui-form">
+		<select  id="stationCode" xm-select="select8" xm-select-show-count="1" xm-select-search="">
+			<option value="">请选择</option>
+		</select>
+	</div>
+
+   </div>
+
+</div>
+
+<div class="layui-row layui-form" style="margin-bottom: 0">
+  <div class="layui-col-md3">
+       <label class="layui-form-label">需求日期:</label>
+       <div class="layui-input-block layui-form">
+           <input type="text" class="layui-input" name="requiredDate" id="requiredDate" placeholder=" - ">
+       </div>
+</div>
+ <div class="layui-col-md2">
+       <label class="layui-form-label">项目号:</label>
+      <div class="layui-input-block layui-form">
+		<select  id="projectCode" xm-select="select2" xm-select-show-count="1" xm-select-search="">
+			<option value="">请选择</option>
+		</select>
+	</div>
+
+   </div>
+   <div class="layui-col-md2">
+       <label class="layui-form-label">分厂:</label>
+       <div class="layui-input-block layui-form">
+		 <select  id="subFactory" xm-select="select5" xm-select-show-count="1" xm-select-search="">
+			<option value="">请选择</option>
+		 </select>
+		</div>
+    </div>
+	<div class="layui-col-md2">
+       <label class="layui-form-label">下架任务创建状态:</label>
+       <div class="layui-input-block layui-form">
+		 <select  id="toStatus">
+			<option value="">请选择</option>
+            <option value="0">未创建</option>
+            <option value="1">部分创建</option>
+            <option value="2">已创建</option>
+		 </select>
+		</div>
+    </div>
+</div>
+<div class="layui-row layui-form" style="margin-bottom: 0">
+	<div class="layui-btn-container">
+	{{# if(d.search==null || d.search=="true"){ }}
+		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+	{{# } }}
+	{{# if(d.export==null || d.export=="true"){ }}
+		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+	{{# } }}
+	{{# if(d.goDown==null || d.goDown=="true"){ }}
+		<button class="layui-btn layui-btn-normal layui-btn-sm" id="goDown" data-method="goDown" type="button"><i class="layui-icon">&#xe61a;</i>创建下架任务</button>
+	{{# } }}
+	</div>
+</div>
+<div class="layui-row layui-form" style="margin-bottom: 0">
+	<div class="layui-col-md6">
+		<div style="margin-top: 12px">
+			<nobr><span  index="1">计划出库总数：<span id="sunCount">0</span></span></nobr>
+			<nobr><span  index="2">工位制总数：<span id="planCount">0</span></span></nobr>
+			<nobr><span  index="3">非工位制总数：<span id="noPlanCount">0</span></span></nobr>
+		</div>
+	</div>
+</div>
+<table   id="distributionTaskDetailStationTab" lay-filter="distributionTaskDetailStationTabF"></table>
+<div id="helpDocDiv" style="display:none">
+	<div class="layui-col-md12">
+      <div class="layui-card" style="background: linear-gradient(#001a47,#022558);">
+        <div class="layui-card-header" style="color: #c0dcfe;border-bottom: 1px solid #2a69c7;font-size: 22px;padding-top: 22px;">数据来源</div>
+        <div class="layui-card-body"  style="border-bottom: 1px solid #2a69c7;color: #c0dcfe;">
+        	<p>默认查询需求日期是明天的SAP工位制生产订单物料明细表。输入的任何查询条件如果没有选择需求日期则会默认按照需求时间是明天的条件</p>
+        	<p>计划出库总数:统计工位制需求日期是明天的所有生产计划+非工位制创建日期加72个小时是明天的所有凭证详情</p>
+        	<p>工位制总数:统计工位制需求日期是明天的所有生产计划</p>
+        	<p>非工位制总数:非工位制创建日期加72个小时是明天的所有凭证详情</p>
+
+        </div>
+      </div>
+    </div>
+</div>
+</script>
+<script type="text/html" id="indexTpl">
+     {{d.LAY_TABLE_INDEX+1}}
+</script>
+<script type="text/javascript">
+    var contextPath = config.wmsConfig.contextPath;
+    var tableFilter;
+    var table;
+    var tableFilterIns;
+    var element;
+    var layer,form,formSelects;
+    var oldData;
+    var curDate = new Date();
+	curDate.setDate(curDate.getDate()+1);
+	var active;
+	var storageLocation="";
+	var laydate;
+	var curDateStr = dateFtt("yyyy-MM-dd",curDate)
+    layui.use(['form','table','layer','laydate','formSelects'],function(){
+	    element = layui.element;
+	   	layer = layui.layer;
+	    table = layui.table;
+	    form = layui.form;
+	    formSelects = layui.formSelects;
+	    tableFilter = layui.tableFilter;
+		laydate = layui.laydate;
+	    active = {
+
+	            search:function(othis){
+	                var materialCode=$.trim($('#materialCode').val());
+	                var orderCode=$.trim($('#orderCode').val());
+	                var processOrderCode=$.trim($('#processOrderCode').val());
+	                var  netState = $('#netState').val();
+	                storageLocation = layui.formSelects.value('select1', 'storagelocationStr');
+	                var  overtimeState = $('#overtimeState').val();
+	                var requiredDateStr = $('#requiredDate').val();
+	                if(requiredDateStr && requiredDateStr.length>0){
+	                	startTime = requiredDateStr.substring(0,11);
+	                	endTime = requiredDateStr.substring(13);
+	                }else{
+	                	startTime = curDateStr;
+	                	endTime = curDateStr;
+	                }
+	                var stationCode = layui.formSelects.value('select8', 'valueStr');
+	       			var project = layui.formSelects.value('select2', 'valueStr');
+	       			var subFactory = layui.formSelects.value('select5', 'valueStr');
+	       			var toStatus = $("#toStatus").val();
+	                var params={};
+	                params.materialCode=materialCode;
+	                params.orderCode=orderCode;
+	                params.startTime=startTime;
+	                params.endTime=endTime;
+	                params.stationCode=stationCode;
+	                params.processOrderCode=processOrderCode;
+	                params.project=project;
+	                params.subFactory=subFactory;
+	                params.storageLocation=storageLocation;
+	                params.toStatus = toStatus;
+	                  //执行重载
+	                  table.reload('distributionTaskDetailStationId', {
+	                    where:params,
+	                    page:{"curr":1}
+	                  });
+	            },
+            reset:function(othis){
+	                $('#materialCode').val("");
+	                $('#orderCode').val("");
+
+	                $('#requiredDate').val("");
+
+	                $('#netState').val("");
+	                $('#processOrderCode').val("");
+	                $('#overtimeState').val("");
+	                $("#toStatus").val("");
+	                layui.formSelects.value('select1', []);
+	        		layui.formSelects.value('select2', []);
+	        		layui.formSelects.value('select3', []);
+	        		layui.formSelects.value('select4', []);
+	        		layui.formSelects.value('select5', []);
+	                form.render("select");
+	                form.render("checkbox");
+
+	            },
+	            export:function(othis){
+	                var token = window.localStorage.token;
+	                var materialCode=$.trim($('#materialCode').val());
+	                var orderCode=$.trim($('#orderCode').val());
+	                var processOrderCode=$.trim($('#processOrderCode').val());
+	                storageLocation = layui.formSelects.value('select1', 'storagelocationStr');
+	                var requiredDateStr = $('#requiredDate').val();
+	                if(requiredDateStr && requiredDateStr.length>0){
+	                	startTime = requiredDateStr.substring(0,11);
+	                	endTime = requiredDateStr.substring(13);
+	                }else{
+	                	startTime = curDateStr;
+	                	endTime = curDateStr;
+	                }
+	                var stationCode = layui.formSelects.value('select8', 'valueStr');
+	       			var project = layui.formSelects.value('select2', 'valueStr');
+	       			var subFactory = layui.formSelects.value('select5', 'valueStr');
+	       			var toStatus = $("#toStatus").val();
+	               var params = "materialCode="+materialCode+"&orderCode="+orderCode
+	                +"&storageLocation="+storageLocation+"&startTime="+startTime+"&endTime="+endTime
+
+	                +"&project="+project+"&subFactory="+subFactory
+
+	                +"&processOrderCode="+processOrderCode
+
+	                +"&stationCode="+stationCode+"&token="+token+"&toStatus="+toStatus;
+
+	                window.open(contextPath+"outBoundPlanManger/exportCurdateOutStation?"+params);
+	            },
+	            goDown:function(othis){
+	            	var checkStatus = table.checkStatus('distributionTaskDetailStationId');
+     				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要创建的行！',{icon: 2});
+	     				return ;
+					}
+					var flg = false;
+					var idarrys = new Array();
+					for(var i=0;i<oldData.length;i++){
+						if(oldData[i].toStatus=="2"){
+							flg = true;
+						}
+						idarrys.push(oldData[i].id);
+					}
+					if(flg){
+						layer.alert('已创建任务不能重复创建',{icon: 2});
+						return ;
+					}
+					var option ={
+                            url:config.apiConfig.contextPath+'push/createToByIdG',
+                            type:'POST',
+                            contentType: "application/json",
+                            dataType:'json',
+                            data:JSON.stringify(idarrys),
+                            success:function(data){
+                                if(data.code==0){
+                                	layer.msg("创建成功");
+                                	table.reload('distributionTaskDetailStationId');//刷新列表
+                                }
+                            },error:function(data){
+                                layer.alert(data.msg);
+                            }
+                        }
+                   $.ajax(option);
+		        }
+
+	    };
+
+
+
+    });
+    function loadding(){
+
+    	//日期范围
+     	laydate.render({
+    	    elem: '#requiredDate',
+    	    range: true
+    	});
+    	initStationCode();//工位
+    	initSubFactory();//分厂
+    	initProjectCode();//项目
+
+
+		table.render({
+	        elem:'#distributionTaskDetailStationTab',
+	        id:'distributionTaskDetailStationId',
+	        url:contextPath+'outBoundPlanManger/curdateOutWarehouse',
+	        limits:[50, 100, 200, 300, 400],
+	        limit:100,
+	        cols:[[
+				   {type:'checkbox'},
+	               {type:'numbers',title:'序号',width: 60},
+	               {field:'warehouseCode', title: '仓库编码',width:100},
+	    		   {field:'warehouseName', title: '仓库名称',width:100},
+	               {field:'aufnr', width:120, title: '订单号'},
+	               {field:'leadAufnr', width:120, title: '工序订单号'},
+	               {field:'matnr', width:130, title: '物料编号'},
+	               {field:'maktx', width:150, title: '物料描述'},
+	               {field:'meins', width:100, title: '物料单位'},
+	               {field:'mmatnr', width:100, title: '工序物料编号'},
+	               {field:'mmaktx', width:150, title: '工序物料描述'},
+	               {field:'bdmng', width:100, title: '需求数量'},
+	               {field:'zwcrq', width:130, title: '需求日期'},
+	               {field:'zwcsj', width:130, title: '需求时间'},
+	               {field:'projectCode', width:100, title: '项目号'},
+	               {field:'pspnr1', width:100, title: 'WBS元素号'},
+	               {field:'zchdm', width:100, title: '车号代码'},
+	               {field:'zlscpx', width:100, title: '产品线'},
+	               {field:'zfcdm', width:100, title: '分厂'},
+	       			{field:'zcxdm', width:100, title: '产线'},
+	               {field:'zgwdm', width:100, title: '工位编号'},
+	               {field:'zpsfs', width:100, title: '配送方式'},
+	               {field:'toStatus', width:100, title: '下架任务创建状态'},
+	               {field:'waitMatchNum', width:100, title: '待分配数量'},
+	               {field:'lgort', width:100, title: '库存地点'}
+	        ]],
+	        page:{theme: '#008155'},
+	        where:{
+	        	startTime:curDateStr,
+	        	endTime:curDateStr
+	        },
+	        height: 'full-95',
+	        done:function(res,page,count){//列表数据回调函数
+	        	//initTableDate(res.data);
+	        	$("[data-field='toStatus']").children().each(function(){
+	            	if($(this).text()=='0'){
+	                    $(this).text('未创建');
+	                }else if($(this).text()=='1'){
+	                    $(this).text('部分创建');
+	                } else if($(this).text()=='2'){
+	                    $(this).text('已创建');
+	                }
+
+	            });
+	          	head();
+	        }
+	    });
+
+	    tableFilterIns = tableFilter.render({
+
+	        'elem' : '#distributionTaskDetailStationTab',//table的选择器
+	        'mode' : 'local',//过滤模式
+	        'id':'distributionTaskDetailStationId',
+	        'filters' : [
+	        			{field:'warehouseName',name:'仓库名称',type:'checkbox'},
+	                     {field:'projectCode',name:'项目号',type:'checkbox'},
+	        			 {field:'zlscpx',name:'产品线',type:'checkbox'},
+	        			 {field:'zfcdm',name:'分厂',type:'checkbox'},
+	        			 {field:'lgort',name:'库存地点',type:'checkbox'},
+	        			 {field:'zgwdm',name:'工位',type:'checkbox'},
+
+	        			],//过滤项配置
+	        'done': function(filters){
+
+	        }
+	    })
+
+	    $('.layui-btn-container button').on('click', function(){
+	        var othis = $(this), method = othis.data('method');
+	        active[method] ? active[method].call(this, othis) : '';
+	    });
+	    initWarehouseMultiSelect("warehouseCode","select1","0",null);
+	}
+    function dateFtt(fmt,date)
+	{ //author: meizz
+	  var o = {
+	    "M+" : date.getMonth()+1,                 //月份
+	    "d+" : date.getDate(),                    //日
+	    "h+" : date.getHours(),                   //小时
+	    "m+" : date.getMinutes(),                 //分
+	    "s+" : date.getSeconds(),                 //秒
+	    "q+" : Math.floor((date.getMonth()+3)/3), //季度
+	    "S"  : date.getMilliseconds()             //毫秒
+	  };
+	  if(/(y+)/.test(fmt))
+	    fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));
+	  for(var k in o)
+	    if(new RegExp("("+ k +")").test(fmt))
+	  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+	  return fmt;
+	}
+    function helpDoc(){
+    	layer.open({
+    		  type: 1,
+    		  area:['50%','50%'],
+    		  title:'',
+    		  content: $('#helpDocDiv'), //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+    		  cancel: function(index, layero){
+    				$("#helpDocDiv").hide();
+    			}
+    	});
+    }
+  //表格数据初始化
+    function initTableDate(data){
+
+        $("[data-field='taskState']").children().each(function(){
+        	if($(this).text()=='-1'){
+                $(this).text('未分匹');
+            }else if($(this).text()=='0'){
+                $(this).text('送达未交接');
+            }else if($(this).text()=='1'){
+                $(this).text('集料未送达');
+            }
+            else if($(this).text()=='2'){
+                $(this).text('有料未集');
+            }
+            else if($(this).text()=='3'){
+                $(this).text('其他');
+            }
+            else if($(this).text()=='4'){
+                $(this).text('配送完成');
+            }
+        });
+        $("[data-field='neatState']").children().each(function(){
+        	if($(this).text()=='0'){
+                $(this).text('齐套');
+            }else if($(this).text()=='1'){
+                $(this).text('未齐套');
+            }
+
+        });
+
+        $("[data-field='overtimeState']").children().each(function(){
+        	if($(this).text()=='0'){
+                $(this).text('未超时');
+            }else if($(this).text()=='1') {
+                $(this).text('超时');
+            }
+
+        });
+    }
+    function head(){
+  		var createDate = new Date();
+    	var createDateStr = dateFtt("yyyy-MM-dd",createDate)
+  		$.ajax({
+	        url: contextPath+"outBoundPlanManger/curdatePlanTotal?requiredDate="+curDateStr+"&createDate="+createDateStr+"&storageLocation="+storageLocation,
+	        dataType:'json',
+			type:'GET',
+	        async: false,
+	        success: function (result) {
+	            var a = "0";
+                if(result.code==0){
+                	var data = result.data;
+	                	$('#planCount').text(data.stationCount);
+	                	$('#noPlanCount').text(data.unStationCount);
+	                	$('#sunCount').text(data.total);
+                    }else{
+                    	$('#planCount').text("0");
+                    	$('#noPlanCount').text("0");
+                    	$('#sunCount').text("0")
+                    }
+        	}
+	    });
+  	}
+    function initStationCode(){//工位
+		$.ajax({
+			url:config.basicInfoConfig.contextPath+"stationManager/getAllStationCode",
+			type:"GET",
+			success:function(result){
+				$('#stationCode').html("");
+				$('#stationCode').append('<option value="">请选择</option>');
+	      	  	var stationSet = result.data;
+				if(result.code==0 && stationSet && stationSet.length>0){
+					var optionItem;
+					var optoinArray = new Array();
+					for(var i=0;i<stationSet.length;i++){
+						optionItem = {"name":""+stationSet[i].stationCode, "value":""+stationSet[i].stationCode};
+						optoinArray.push(optionItem);
+					}
+					layui.formSelects.data('select8','local',{
+						arr:optoinArray
+					});
+				}else{
+					layui.formSelects.data('select8','local',{
+    					arr:[]
+    				});
+				}
+	      	 	form.render('select');
+			},error: function (XMLHttpResponse, textStatus, errorThrown) {
+	            console.log("1 异步调用返回失败,XMLHttpResponse.readyState:"+XMLHttpResponse.readyState);
+	            console.log("2 异步调用返回失败,XMLHttpResponse.status:"+XMLHttpResponse.status);
+	            console.log("3 异步调用返回失败,textStatus:"+textStatus);
+	            console.log("4 异步调用返回失败,errorThrown:"+errorThrown);
+	        }
+		});
+	}
+
+
+
+	function initSubFactory(){//分厂
+		$.ajax({
+			url:config.basicInfoConfig.contextPath+"subFactory/listSubFactory?status=1&useStatus=1",
+			type:"GET",
+			success:function(result){
+				$('#subFactory').html("");
+				$('#subFactory').append('<option value="">请选择</option>');
+				var data = result.data;
+				if(result.code==0 && data && data.length>0){
+					var optionItem;
+					var optoinArray = new Array();
+					for(var i=0;i<data.length;i++){
+						optionItem = {"name":""+data[i].subFactoryName, "value":""+data[i].subFactoryCode};
+						optoinArray.push(optionItem);
+					}
+					layui.formSelects.data('select5','local',{
+						arr:optoinArray
+					});
+				}else{
+					layui.formSelects.data('select5','local',{
+						arr:[]
+					});
+				}
+	      	 	form.render('select');
+			},error: function (XMLHttpResponse, textStatus, errorThrown) {
+	            console.log("1 异步调用返回失败,XMLHttpResponse.readyState:"+XMLHttpResponse.readyState);
+	            console.log("2 异步调用返回失败,XMLHttpResponse.status:"+XMLHttpResponse.status);
+	            console.log("3 异步调用返回失败,textStatus:"+textStatus);
+	            console.log("4 异步调用返回失败,errorThrown:"+errorThrown);
+	        }
+		});
+	}
+
+	function initProjectCode(){//项目号
+		$.ajax({
+			url:config.basicInfoConfig.contextPath+"projectInfo/listProjectInfo?projectStatus=1",
+			type:"GET",
+			success:function(result){
+				$('#projectCode').html("");
+				$('#projectCode').append('<option value="">请选择</option>');
+			    var data = result.data;
+				if(result.code==0 && data && data.length>0){
+					var optionItem;
+					var optoinArray = new Array();
+					for(var i=0;i<data.length;i++){
+						optionItem = {"name":""+data[i].projectName, "value":""+data[i].projectCode};
+						optoinArray.push(optionItem);
+					}
+					layui.formSelects.data('select2','local',{
+						arr:optoinArray
+					});
+				}else{
+					layui.formSelects.data('select2','local',{
+						arr:[]
+					});
+				}
+	      	 	form.render('select');
+			},error: function (XMLHttpResponse, textStatus, errorThrown) {
+	            console.log("1 异步调用返回失败,XMLHttpResponse.readyState:"+XMLHttpResponse.readyState);
+	            console.log("2 异步调用返回失败,XMLHttpResponse.status:"+XMLHttpResponse.status);
+	            console.log("3 异步调用返回失败,textStatus:"+textStatus);
+	            console.log("4 异步调用返回失败,errorThrown:"+errorThrown);
+	        }
+		});
+
+
+	}
+</script>
+
+</body>
+</html>

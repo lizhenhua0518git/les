@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="renderer" content="webkit|ie-comp|ie-stand">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta http-equiv="Content-Type" content="charset=UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css" />
+	    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  type="text/css" />
+	    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+
+		<title>物料基础信息管理</title>
+	</head>
+
+	<body id="bodyDiv">
+
+		<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+		<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+		<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+		<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+		<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+		<script type="text/html" id="bodyTpl">
+			<div class="layui-fluid">
+				<div class="layui-row layui-form">
+					<div class="layui-col-md2">
+						<label class="layui-form-label">物料编号</label>
+						<div class="layui-input-inline">
+							<input type="text" id="materialCode_search" placeholder="请输入物料编号" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-col-md2">
+						<label class="layui-form-label">物料名称</label>
+						<div class="layui-input-inline">
+							<input type="text" id="materialDesc_search" placeholder="请输入物料名称" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-col-md2">
+						<label class="layui-form-label">物料类型:</label>
+						<div class="layui-input-inline">
+							<select id="materialType_search" lay-filter="materialType_search">
+								<option value="">请选择</option>
+							</select>
+						</div>
+					</div>
+
+
+					<div class="layui-col-md2">
+						<label class="layui-form-label">关键物料</label>
+						<div class="layui-input-inline">
+							<select id="isKey">
+								<option value="">请选择</option>
+								<option value="0">否</option>
+								<option value="1">是</option>
+
+							</select>
+						</div>
+					</div>
+
+				</div>
+					<div class="layui-row layui-form">
+
+					<div class="layui-col-md2">
+						<label class="layui-form-label">仓  库</label>
+						<div class="layui-input-inline">
+							<select id="warehouseCode" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+								<option value="">请选择</option>
+							</select>
+						</div>
+					</div>
+
+
+
+
+					<div class="layui-btn-container" style="text-align: right;">
+					{{# if(d.search==null || d.search=="true"){ }}
+             	 		<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              			<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon  layui-icon-reset"></i>重置</button>
+              		{{# } }}
+			</div>
+				</div>
+			</div>
+			<div class="layui-fluid-table">
+				<div class="layui-row layui-form" style="margin-bottom: 0">
+					<div class="layui-btn-container" style="text-align: left;">
+
+						{{# if(d.add==null || d.add=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm" data-method="syn" data-type="auto" type="button"><i class="layui-icon  layui-icon-syncronize"></i>同步数据</button>
+                        {{# } }}
+
+					</div>
+				</div>
+				<table id="materialTab" lay-filter="materialTabF"></table>
+			</div>
+		</script>
+
+		<script type="text/javascript">
+			var element = layui.element;
+			var layer = layui.layer;
+			var table = layui.table;
+			var form = layui.form;
+			var upload = layui.upload;
+			var oldData;
+			var dictItems = null; //数据字典
+			var contextPath = config.basicInfoConfig.contextPath;
+
+			function loadding() {
+
+				table.render({
+					elem: '#materialTab',
+					id: 'materialTabId',
+					url: contextPath + 'material/',
+					cols: [
+						[{
+								type: 'checkbox'
+							},
+							//{field:'id', title: 'ID', sort: true},
+							{
+								type: 'numbers',
+								title: '序号'
+							},
+							{
+								field: 'materialCode',
+								title: '物料编号'
+							},
+							//{
+							//	field: 'materialCodeOld',
+							//	title: '旧物料号'
+							//},
+							{
+								field: 'materialDesc',
+								width: 150,
+								title: '物料名称'
+							},
+							{
+								field: 'materialUnit',
+								title: '单位'
+							},
+							{
+								field: 'isKey',
+								title: '关键组件',templet(d){
+									if(d.isKey=='0'){
+										return '否';
+									}else if(d.isKey=='1'){
+										return '是';
+									}else{
+										return '-';
+									}
+								}
+							},
+							{
+								field: 'factory',
+								title: '工厂'
+							},
+							{
+								field: 'isBatch',
+								title: '批次管理'
+							},
+							{
+								field: 'storageLocation',
+								title: '库存地点'
+							},
+							{
+								field: 'purchaseTypeName',
+								title: '采购类型 '
+							},
+							{
+								field: 'warehouseName',
+								title: '仓库名称'
+							},
+							{
+								field: 'purchaseClassName',
+								title: '特殊采购类'
+							},
+							{
+								field: 'maxCapacity',
+								width: 90,
+								title: '仓位最大容量'
+							},
+							{
+								field: 'materialTypeName',
+								title: '物料类型'
+							},
+							{
+								field: 'status',
+								title: '是否启用',templet(d){
+									if(d.status=='0'){
+										return '否';
+									}else if(d.status=='1'){
+										return '是';
+									}else{
+										return '-';
+									}
+								}
+							},
+							{
+								field: 'createTime',
+								title: '创建时间'
+							}
+						]
+					],
+					page: {
+						theme: '#008155'
+					},
+
+					even: true,
+					done: function(res, page, count) { //列表数据回调函数
+
+					}
+				});
+
+				$('.layui-btn-container button').on('click', function() {
+					var othis = $(this),
+						method = othis.data('method');
+					active[method] ? active[method].call(this, othis) : '';
+				});
+				//加载字典开始
+				var dictTypes = ["material_type"]
+				var selectItems = ["materialType_search"]
+				var defaultValues = [[],[],[]]
+				initDictItemMultiSelect(dictTypes,selectItems,defaultValues);
+				//加载字典结束
+
+				//加载仓库、库存地开始
+				initWarehouseMultiSelect("warehouseCode","warehouseCodeSelect",0,'');
+
+				//加载仓库、库存地结束
+
+				form.render("select");
+			}
+
+			var active = {
+
+				syn: function(othis) {
+
+
+					layer.open({
+						type: 2,
+						title: '同步数据',
+						maxmin: true,
+						area: ['400px', '300px'],
+						id: 'pullMaterial' //防止重复弹出
+							,
+						content: '/iles/pages/basicInfo/material/pullData.html',
+						shade: 0 //不显示遮罩
+							,
+						yes: function() {
+							layer.closeAll();
+						}
+					});
+
+				},
+				search: function(othis) {
+					var materialCode = $('#materialCode_search').val();
+					var materialDesc = $('#materialDesc_search').val();
+					var materialType = $('#materialType_search').val();
+					var storageType = $('#storageType_search').val();
+					var inspectType = $('#inspectType_search').val();
+
+					var warehouse = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+					var factory = $('#factory_search').val();
+					var isKey = $('#isKey').val();
+					var params = {};
+					params.materialCode = materialCode;
+					params.materialDesc = materialDesc;
+					params.materialType = materialType;
+					params.storageType = storageType;
+					params.inspectType = inspectType;
+
+					params.warehouse = warehouse;
+					params.isKey=isKey;
+					//执行重载
+					table.reload('materialTabId', {
+						where: params,
+						page: {
+							"curr": 1
+						}
+					});
+				},
+				reset: function(othis) {
+					$('#materialCode_search').val('');
+					$('#materialDesc_search').val('');
+					$('#materialType_search').val('');
+					$('#storageType_search').val('');
+					$('#inspectType_search').val('');
+					layui.formSelects.value('warehouseCodeSelect', []);
+
+					$('#factory_search').val('');
+					$('#isKey').val('');
+					form.render("select");
+				}
+
+			};
+
+
+
+		</script>
+
+	</body>

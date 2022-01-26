@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css" type="text/css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<title>仓库基础信息管理</title>
+</head>
+<body>
+<div id="bodyDiv">
+
+</div>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>
+<script type="text/html" id="bodyTpl">
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			<label class="layui-form-label ">仓库编码</label>
+			<div class="layui-input-block">
+				<input type="text" id="warehouseCode_search" placeholder="请输入仓库编码"  class="layui-input">
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">仓库名称</label>
+			<div class="layui-input-block">
+				<input type="text" id="warehouseName_search" placeholder="请输入仓库名称"  class="layui-input">
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">仓库类型</label>
+			<div class="layui-input-block">
+				<select  id="warehouseType_search" xm-select="warehouseTypeSelect" xm-select-show-count="1">
+					<option value="">请选择</option>
+				</select>
+			</div>
+		</div>
+		<div class="layui-col-md2">&nbsp;</div>
+		<div class="layui-btn-container" style="text-align: right;">
+		{{# if(d.search==null || d.search=="true"){ }}
+			<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+			<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+		{{# } }}
+		</div>
+	</div>
+	<div class="layui-fluid-table">
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+			<div class="layui-btn-container" style="text-align: left;">
+				{{# if(d.add==null || d.add=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>新增</button>
+				{{# } }}
+				{{# if(d.edit==null || d.edit=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon  layui-icon-edit"></i>修改</button>
+				{{# } }}
+				{{# if(d.del==null || d.del=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon  layui-icon-delete"></i>删除</button>
+				{{# } }}
+			 </div>
+		</div>
+		<table class="layui-hide" id="warehouseTab" lay-filter="warehouseTabF"></table>
+	</div>
+</div>
+</script>
+<script type="text/javascript">
+	var $ = layui.$;
+	var layer = layui.layer;
+	var table = layui.table;
+	var form = layui.form;
+	var oldData;//编辑时使用的
+	var allowType;
+	var contextPath = config.basicInfoConfig.contextPath;
+	function loadding(){
+		table.render({
+			elem:'#warehouseTab',
+			id:'warehouseTabId',
+			url:contextPath+'warehouse/',
+			title:'仓库信息',
+			cellMinWidth: 80
+			,cols:[[
+			{type:'checkbox'}
+			,{type:'numbers',title:'序号'}
+			,{field:'orgCode',title:'仓库编码',sort:true}
+			,{field:'orgName',title:'仓库名称'}
+			,{field:'orgTypeName',title:'仓库类型'}
+			,{field:'contacts',title:'联系人'}
+			,{field:'phone',title:'联系人电话'}
+			,{field:'orgAddress',title:'仓库地址'}
+			,{field:'statusName',title:'是否启用'}
+			,{field:'createrName',title:'创建人'}
+			,{field:'createTime',title:'创建时间'}
+			,{field:'modifierName',title:'修改人'}
+			,{field:'modifiedTime',title:'修改时间'}
+			]],
+			page: {theme: '#008155'},
+
+			even:true
+			,done:function(res,page,count){//列表数据回调函数
+
+			}
+			,where:{
+				sortColums:'create_time desc'
+			}
+		});
+	var active = {
+		add:function(othis){
+			var checkStatus = table.checkStatus('warehouseTabId');
+			oldData = checkStatus.data;
+			var type = othis.data('type');
+			layer.open({
+				type: 2
+				,title:'新增仓库信息'
+				,maxmin:false
+				,area:['700px', '500px']
+				,offset: type
+				,id: 'warehouseAdd'+type //防止重复弹出
+				,content: '/iles/pages/basicInfo/warehouse/addWarehouse.html'
+				,shade: [0.8, '#393D49']
+			});
+		},
+		edit:function(othis){
+			var checkStatus = table.checkStatus('warehouseTabId');
+			oldData = checkStatus.data;
+			if(oldData.length<=0){
+				layer.alert('请选择要编辑的行！',{icon: 2});
+				return ;
+			}else if(oldData.length >1){
+				layer.alert('编辑每次只能选择一条数据！',{icon: 2});
+				return ;
+			}
+			var type = othis.data('type');
+			layer.open({
+				type: 2
+				,title:'编辑仓库信息'
+				,maxmin: false
+				,area: ['700px', '500px']
+				,offset: type
+				,id: 'warehouseEdit'+type //防止重复弹出
+				,content: '/iles/pages/basicInfo/warehouse/editWarehouse.html'
+				,shade: [0.8, '#393D49']
+				,yes: function(){
+					layer.closeAll();
+				}
+			});
+		},
+		del:function(othis){
+			var checkStatus = table.checkStatus('warehouseTabId');
+			oldData = checkStatus.data;
+			if(oldData.length<=0){
+				layer.alert('请选择要删除的行！',{icon: 2});
+				return ;
+			}
+			var idarrys = new Array();
+			for(var i=0;i<oldData.length;i++){
+				idarrys.push(oldData[i].id);
+			}
+			layer.confirm('确定删除'+idarrys.length+'条仓库信息?', {icon: 3, title:'提示'}, function(index){
+			var option ={
+				url:contextPath+'warehouse/deleteWarehouse',
+				type:'POST',
+				contentType: "application/json",
+				dataType:'json',
+				data:JSON.stringify(idarrys),
+				success:function(data){
+					if(data.code==0){
+					  	table.reload('warehouseTabId');//刷新列表
+					}else{ layer.alert(data.data);}
+				},error:function(data){
+				  	layer.alert(data.msg);
+				}
+			}
+			$.ajax(option);
+			layer.close(index);
+			});
+		},
+		search:function(othis){
+			var warehouseCode = $('#warehouseCode_search');
+			var warehouseName =  $('#warehouseName_search');
+			var orgType =layui.formSelects.value('warehouseTypeSelect', 'valueStr');
+			//执行重载
+			table.reload('warehouseTabId', {
+				where:{
+					orgTypeName:orgType,
+					orgCode: warehouseCode.val()
+					,orgName: warehouseName.val()
+				}
+			,page:{"curr":1}
+			});
+		},
+		reset:function(othis){
+			$('#warehouseCode_search').val("");
+			$('#warehouseName_search').val("");
+			layui.formSelects.value('warehouseTypeSelect', []);
+
+			form.render("select");
+		},
+		  // allow:function(othis){
+			//   var checkStatus =  table.checkStatus('warehouseTabId');
+			//   oldData = checkStatus.data;
+			//   allowType = 1;
+			//   if(oldData.length<=0){
+			// 	  layer.alert('请选择要启用的行！',{icon: 2});
+			// 	  return ;
+			//   }
+			//   var useStatus = oldData[0].status;
+			//   if(1==useStatus){
+			// 	  layer.alert('已经启用了！',{icon: 2});
+			// 	  return ;
+			//   }
+			//   var type = othis.data('type');
+			//   layer.open({
+			// 	  type: 2
+			// 	  ,title:'说明原因'
+			// 	  ,area: ['220px', '210px']
+			// 	  ,maxmin: false
+			// 	  ,offset: type
+			// 	  ,id: 'warehouseInfo'+type //防止重复弹出
+			// 	  ,content: '/iles/pages/basicInfo/warehouse/warehouseRemark.html'
+			// 	  ,shade: [0.8, '#393D49']
+			//    });
+		  // },
+		  // forbid:function(othis){
+			//   var checkStatus =  table.checkStatus('warehouseTabId');
+			//   oldData = checkStatus.data;
+			//   allowType = 0;
+			//   if(oldData.length<=0){
+			// 	  layer.alert('请选择要禁用的行！',{icon: 2});
+			// 	  return ;
+			//   }
+			//   var useStatus = oldData[0].status;
+			//   if(0==useStatus){
+			// 	  layer.alert('已经禁用了！',{icon: 2});
+			// 	  return ;
+			//   }
+			//   var type = othis.data('type');
+			//   layer.open({
+			// 	  type: 2
+			// 	  ,title:'说明原因'
+			// 	  ,area: ['220px', '210px']
+			// 	  ,maxmin: false
+			// 	  ,offset: type
+			// 	  ,id: 'warehouseInfo'+type //防止重复弹出
+			// 	  ,content: '/iles/pages/basicInfo/warehouse/warehouseRemark.html'
+			// 	  ,shade: [0.8, '#393D49']
+			//    });
+		  // }
+	};
+	$('.layui-btn-container button').on('click', function(){
+	  var othis = $(this), method = othis.data('method');
+	  active[method] ? active[method].call(this, othis) : '';
+	});
+
+//加载字典开始
+	var dictTypes = ["warehouse_type"]
+	var selectItems = ["warehouseTypeSelect"]
+	var defaultValues = [[]]
+	initDictItemMultiSelect(dictTypes,selectItems,defaultValues);
+	//加载字典结束
+	form.render("select");
+}
+
+</script>
+</body>
+</html>

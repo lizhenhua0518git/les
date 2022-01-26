@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+
+<title>生产订单管理</title>
+</head>
+<script type="text/html" id="toolbar">
+	<a class="layui-btn layui-btn-xs" lay-event="showDetail">明细</a>
+</script>
+    <script type="text/html" id="bodyTpl">
+	<div class="layui-fluid">
+		<div class="layui-row layui-form" >
+			<div class="layui-col-md2">
+				<label class="layui-form-label">出库任务号</label>
+				<div class="layui-input-inline">
+					<input type="text" id="orderCode" placeholder="请输入订单号"  class="layui-input">
+				</div>
+            </div>
+			<div class="layui-col-md2">
+				<label class="layui-form-label">仓库名称</label>
+				<div class="layui-input-inline">
+					<select id="warehouseCode" xm-select="warehouseCodeSelect" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-col-md2">
+				<label class="layui-form-label">客户名称</label>
+				<div class="layui-input-inline">
+					<select id="clientName" xm-select="clientManageSelect" xm-select-show-count="1">
+						<option value="">请选择</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-col-md2">
+				<div class="layui-btn-container" style="text-align: right;">
+					{{# if(d.search==null || d.search=="true"){ }}
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+						<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-syncronize"></i>重置</button>
+					{{# } }}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+			<div class="layui-btn-container">
+				{{# if(d.add==null || d.add=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon  layui-icon-add-circle"></i>增加</button>
+				{{# } }}
+				{{# if(d.del==null || d.del=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon layui-icon-delete"></i>删除</button>
+				{{# } }}
+				{{# if(d.edit==null || d.edit=="true"){ }}
+				<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon layui-icon-edit"></i>匹配库存</button>
+				{{# } }}
+			</div>
+		</div>
+	</div>
+	<table class="layui-hide" id="BOMTab" lay-filter="BOMTabF"></table>
+</script>
+
+    <script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/clientManage.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+    <script type="text/javascript">
+
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+    var form = layui.form;
+    var contextPath = config.omsConfig.contextPath;
+    var oldData;
+    var orderTaskId ;
+
+    function loadding(){
+		table.render({
+			elem:'#BOMTab',
+			id:'BOMTabId',
+			url: contextPath + 'stationOrder/listBOMMainList',
+			cols:[[
+			{type:'checkbox'},
+			{field:'orderCode',title:'发货任务号',align:'center'},
+			{field:'warehouseName', title: '仓库名称',align:'center'},
+			{field:'warehouseCode', title: '仓库编码',align:'center'},
+			{field:'orderType', title: '单据类型',align:'center',templet(d){
+					if(d.orderType=='0'){
+						return '合格品出库';
+					}else if(d.orderType=='1'){
+						return '不合格品出库';
+					}else if(d.orderType=='2'){
+						return '调拨出库';
+					}
+				}},
+			{field:'clientName', title: '客户名称',align:'center'},
+			{field:'operateUserName', title: '操作人员',align:'center'},
+			{field:'orderStatus', title: '匹配库存状态',align:'center',templet(d){
+					if(d.orderStatus=='0'){
+						return '未匹配';
+					}else if(d.orderStatus=='1'){
+						return '已匹配';
+					}
+				}},
+			// {field:'remark', title: '备注',align:'center'},
+			{field:'createrTime', title: '创建时间',align:'center'},
+			{align:'center',title:'操作', toolbar:"#toolbar",fixed: 'right'}
+			]],
+			page: {theme: '#008155'},
+			even:true,
+			done:function(res,page,count){//列表数据回调函数
+
+			}
+		});
+
+		$('.layui-btn-container button').on('click', function(){
+			var othis = $(this), method = othis.data('method');
+			active[method] ? active[method].call(this, othis) : '';
+		});
+
+		initWarehouseMultiSelect("warehouseCode","warehouseCodeSelect","1",'');
+		initClientManageList("clientManageSelect",[]);
+		form.render("select");
+
+		table.on('tool(BOMTabF)', function(obj){
+			var eventName = obj.event;
+			var data = obj.data;
+			orderTaskId = data.orderTaskId;
+			var id = "BOMMian";
+			var url = "/iles/pages/basicInfo/BOM/BOMDetailManager.html?orderTaskId="+orderTaskId;
+			var currHeight = parent.$(document).height();
+			if(eventName == "showDetail"){
+				parent.element.tabDelete('indexTab', id);
+				parent.element.tabAdd('indexTab', {
+					title: "出库订单明细"
+					,content: ' <iframe id="'+id+'" frameborder="0"  src="'+url+'" width="100%" height="'+currHeight+'px"></iframe>'
+					,id: id //实际使用一般是规定好的id，这里以时间戳模拟下
+				});
+				parent.element.tabChange('indexTab', id); //切换到：用户管理
+			}
+		});
+	}
+
+	var active = {
+		add:function(othis){
+			var type = othis.data('type');
+			layer.open({
+				type: 2
+				,title:'新增出库单'
+				,maxmin:true
+				,area: ['800px', '450px']
+				,offset: type
+				,id: 'bommAdd'+type //防止重复弹出
+				,content: 'bommAdd.html'
+				,shade: 0 //不显示遮罩
+				,yes: function(){
+					layer.closeAll();
+				}
+			});
+		},
+		edit:function(othis){
+			var checkStatus = table.checkStatus('BOMTabId');
+			oldData = checkStatus.data;
+			if(oldData.length<=0){
+				layer.alert('请选择要匹配库存的行！',{icon: 2});
+				return ;
+			}else if(oldData.length >1){
+				layer.alert('匹配库存不能超过多行！',{icon: 2});
+				return ;
+			}
+			var orderStatus = oldData[0].orderStatus;
+			if (orderStatus == 1){
+				layer.alert('数据已匹配！',{icon: 2});
+				return ;
+			}
+			var idarrys = new Array();
+			for(var i=0;i<oldData.length;i++){
+				idarrys.push(oldData[i].orderTaskId);
+			}
+			layer.confirm('确定匹配该条资源信息?', {icon: 3, title:'提示'}, function(index){
+				var option ={
+					url:contextPath+'stationOrder/matchingInventory',
+					type:'POST',
+					contentType: "application/json",
+					dataType:'json',
+					data:JSON.stringify(idarrys),
+					success:function(data){
+						if(data.code==0){
+							layer.alert("匹配库存成功");
+							table.reload('BOMTabId');
+						}else {
+							layer.alert("匹配库存失败");
+							table.reload('BOMTabId');
+						}
+					},error:function(data){
+						layer.alert(data.data);
+						table.reload('BOMTabId');
+					}
+				}
+				$.ajax(option);
+				layer.close(index);
+			});
+		},
+		del:function(othis){
+			var checkStatus = table.checkStatus('BOMTabId');
+			oldData = checkStatus.data;
+			if(oldData.length<=0){
+				layer.alert('请选择要删除的行！',{icon: 2});
+				return ;
+			}
+			var idarrys = new Array();
+			for(var i=0;i<oldData.length;i++){
+				idarrys.push(oldData[i].orderTaskId);
+			}
+			layer.confirm('确定删除该条资源信息?', {icon: 3, title:'提示'}, function(index){
+				//do something
+				var option ={
+					url:contextPath+'stationOrder/deleteOrderTask',
+					type:'POST',
+					contentType: "application/json",
+					dataType:'json',
+					data:JSON.stringify(idarrys),
+					success:function(data){
+						if(data.code==0){
+							layer.alert("删除成功");
+						}
+					},error:function(data){
+						layer.alert(data.msg);
+					}
+				}
+				$.ajax(option);
+				layer.close(index);
+			});
+		},
+		search:function(othis){
+			var clientName = layui.formSelects.value('clientManageSelect', 'valueStr');//客户名称
+			var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');//仓库编号
+			var orderCode=$('#orderCode').val();
+			var params={};
+			params.clientName=clientName;
+			params.orderCode=orderCode;
+			params.warehouseCode=warehouseCode;
+			//执行重载
+			table.reload('BOMTabId', {
+				where:params,
+				page:{"curr":1}
+			});
+		},
+		reset:function(othis){
+			layui.formSelects.value('clientManageSelect', []);//客户名称
+			layui.formSelects.value('warehouseCodeSelect', []);//仓库编号
+			$('#orderCode').val("");
+			form.render("select");
+		}
+	};
+</script>
+<body id="bodyDiv">
+</body>
+</html>

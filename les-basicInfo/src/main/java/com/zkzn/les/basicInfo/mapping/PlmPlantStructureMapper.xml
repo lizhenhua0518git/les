@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.basicInfo.dao.PlmPlantStructureDao">
+
+
+    <select id="listTree" resultType="Map">
+
+        select t.model_code "id",
+        t.plant_item_id "parentId",
+        t.model_name "title",
+        t.model_code "field",
+        t.model_type "type"
+
+        from t_plm_plant_structure t
+
+        <where>
+            <if test="parentIdList.size() >0">
+                and
+                <foreach collection="parentIdList" item="item" open="(" separator="or" close=")">
+                    t.plant_item_id in
+                    <foreach collection="item" item="item2" open="(" separator="," close=")">
+                        #{item2}
+                    </foreach>
+                </foreach>
+            </if>
+
+        </where>
+ order by t.create_time  
+
+    </select>
+
+
+    <select id="listBypage" resultType="com.zkzn.les.basicInfo.pojo.PlmPlantStructure">
+
+        select t.id "id",
+        t.plant_item_id ,
+        t.model_name ,
+        t.model_code ,
+        t.model_type ,
+        str_to_date(date_format(t.create_time, '%Y-%m-%d'), '%Y-%m-%d') create_time
+        from t_plm_plant_structure t
+
+        <where>
+            <if test="id !=null and '' !=id ">and t.id =#{id}</if>
+            
+            <if test="plantItemId !=null and '' !=plantItemId ">and t.plant_item_id =#{plantItemId}</if>
+
+            <if test="modelCode !=null and '' !=modelCode ">and t.model_code =#{modelCode}</if>
+
+            <if test="modelName !=null and '' !=modelName ">and t.model_name =#{modelName}</if>
+
+        </where>
+          order by t.create_time  
+
+    </select>
+
+    <select id="listFactoryModelByDto" resultType="java.util.Map" parameterType="com.zkzn.les.basicInfo.pojo.PlantModelDto">
+        SELECT MODEL_CODE AS "modelCode", MODEL_NAME AS "modelName", ID AS "oId"
+        FROM t_plm_plant_structure
+        <where>
+            <if test="dto.type != null and dto.type != ''">
+                AND model_type = #{dto.type}
+            </if>
+            <if test="dto.modelCode != null">
+                AND PLANT_ITEM_ID in
+            <foreach collection="dto.modelCode" item="code" open="(" close=")" separator="," >
+                #{code}
+            </foreach>
+
+            </if>
+        </where>
+    </select>
+
+    <!--节点数据查询-->
+    <select id="selectFactoryById" resultType="java.util.Map">
+        SELECT t2.model_code as "modelCode",t2.model_name as "modelName"
+            FROM t_plm_plant_structure t1
+            LEFT JOIN t_plm_plant_structure t2
+            on t1.id = t2.PLANT_ITEM_ID
+            <where>
+                <if test="param.id !=null">
+                    t1.id = #{param.id}
+                </if>
+                <if test="param.modelType != null '' !=param.modelType ">
+                    AND t2.model_type = #{param.modelType}
+                </if>
+            </where>
+
+    </select>
+
+    <select id="listFactoryByType" resultType="java.util.Map">
+  	select model_code as "modelCode",model_name as "modelName",ID as "oId" from t_plm_plant_structure where model_type = #{modelType}
+  </select>
+
+<!--    <select id="listFactoryByTypeAndPid" resultType="java.util.Map">-->
+<!--    SELECT model_code as "modelCode",model_name as "modelName", ID as "id" FROM "t_plm_plant_structure" WHERE ID IN (SELECT * FROM "t_plm_plant_structure" WHERE PLANT_ITEM_ID = ) AND MODEL_TYPE=-->
+<!--  	select model_code as "modelCode",model_name as "modelName", ID as "id" from t_plm_plant_structure where model_type = #{modelType} and id = #{pid}-->
+<!--  </select>-->
+</mapper>

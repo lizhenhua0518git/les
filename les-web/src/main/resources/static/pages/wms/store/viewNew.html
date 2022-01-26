@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	 
+	<meta charset="UTF-8">
+	<title>移库详情</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+    <link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+    <link rel="stylesheet" href="/iles/pages/layui/css/modules/layer/default/layer.css"  type="text/css" />
+</head>
+<body>
+	 <div id="bodyDiv">
+
+</div>
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+			 <input type="text"  id="materialCodeValue" name="materialCodeValue" hidden="true" />
+			  <input type="text"  id="factoryValue"   hidden="true"/>
+			  <input type="text"  id="positionCode" name="positionCode" hidden="true"/>
+			   <input type="text"  id="transferInBin"  hidden="true"/>
+             
+		</div>
+	 <button class="layui-btn layui-btn-normal layui-btn-sm"  onclick="print()" type="button"><i class="mine-icon icon-print"></i>打印</button>
+		   
+	<table id="editStoreTransferDetail" lay-filter="editStoreTransferDetailTabF"></table> 
+	</div>
+	 <!--打印内容-->
+	<div style="display: none"><!-- style="display: none" -->
+		<div id="printContent"></div>
+	</div>
+	<!-- 二维码 -->
+	<div id="codeDiv" style="display:none">
+		<canvas id="code" height="210px" width="210px" style="display: none "></canvas>
+		<!-- <div id="code" style='float: right;width:140px;height:140px;margin-top:30px;position:absoulte;margin-right: 30px'></div> -->
+	</div>
+
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+    <script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+	<script src="/iles/pages/lib/jquery-qrcode-0.14.0/jquery.min.js"></script>
+	<script src="/iles/pages/lib/jquery-qrcode-0.14.0/jquery-qrcode-0.14.0.min.js"></script>
+	<script src="/iles/pages/lib/jquery-barcode/jquery-migrate-1.2.1.min.js"></script>
+	<script src="/iles/pages/lib/jquery-barcode/jquery-barcode.js"></script>
+	<script src="/iles/pages/lib/jquery-barcode/jquery.jqprint-0.3.js"></script>
+    <script type="text/html" id="bodyTpl"></script>
+    
+	<script type="text/javascript">
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var laydate = layui.laydate;
+		var contextPath = config.wmsConfig.contextPath;
+		var transferBinId =parent.$("#transferBinId").val();
+		function loadding(){
+			table.render({
+				elem:'#editStoreTransferDetail',
+				id:'editStoreTransferDetailTabId',
+				url: contextPath +'storeTransfer/queryTransferBinDetail',
+				where:{transferBinId:transferBinId},
+				cellMinWidth: 100,
+			    cols: [[
+			    	{type:'numbers',title:'序号',width: 80},
+				    {field:'materialCode',title: '物料号',event: 'setMaterialCode', style:'cursor: pointer;'},
+		            {field:'factory',title: '工厂'},
+				    {field:'materialDesc',title: '物料描述'},
+				    {field:'transferOutCount',title: '移动数量'},
+				    {field:'materialUnit',title: '单位'},
+				    {field:'batchNo',title: '批次号'},
+				    {field:'transferOutBin',title: '移出仓位'},
+				    {field:'transferOutUName',title: '移出操作人'},
+				    {field:'transferInBin',title: '移入仓位',event: 'setTransferInBin', style:'cursor: pointer;'},
+				    {field:'transferLaneUName',title: '巷道操作人'},
+				    {field:'transferInUName', title: '移入操作人'},
+				    {field:'remainCount', title: '剩余承载数'},
+				    {field:'projectId', title: '项目号'},
+				    {field:'stationCode', title: '工位'},
+			    	]],
+				height: 'full-95',
+	    		even:true,
+	    		done:function(res,page,count){//列表数据回调函数
+	    		//	initTableDate(res.data) ;
+	    		}
+			});	
+		  
+			$('.layui-btn-container button').on('click', function(){
+			    var othis = $(this), method = othis.data('method');
+			    active[method] ? active[method].call(this, othis) : '';
+		  	});
+		}
+				function print (){
+					var token = window.localStorage.token;
+					$.ajax({
+						type: 'POST',
+						async: false,
+				  	  	url: contextPath +"storeTransfer/queryTransferBinDetail?token="+token+"&transferBinId="+transferBinId,
+				  	  	dataType: "json",
+						contentType : 'application/json',
+				  	  	success: function(res){
+					  	  	var list = res.data;
+							var str = "";
+							if(list&&list.length>0){
+								for(var i=0;i<list.length;i++){
+									
+									//生成二维码
+									var newStr = list[i].materialCode+"\n"+ "目的仓位："+list[i].transferInBin+"\n"+ "物料编号："+list[i].materialCode;
+									
+									$("#code").qrcode({
+										render : 'canvas',    //设置渲染方式，有table和canvas，使用canvas方式渲染性能相对来说比较好
+				            			text : newStr, //扫描二维码后显示的内容,\n换行
+				            			size : 210  
+									});
+									//二维码暂存给img
+									var qrcodeImgSrc = $("canvas")[0].toDataURL('image/jpg');//二维码canvas转img
+									var img = "<img src='"+qrcodeImgSrc+"' alt='' id='codeImg' style='float:right;width:130px;height:130px;margin-right:50px;'>";
+			      				    str += "<div class='main' style='margin:0 auto; padding:0px 10px 10px 10px; width:100%; height:65%; background: #fff;line-height:40px;font-family: 'Microsoft YaHei', 'Open Sans', sans-serif;'>"+
+			      							      "<div class='top' style='height:130px;'>"+ 
+			      							          img+
+			      							  	      "<h2 style='font-size:35px; font-weight:bold; margin:0; text-align:center;margin-left:135px'>移库单</h2>"+
+			      							  	      "<div style='height:90px;line-height:90px;'><span style='font-size:25px;'>目的仓位：</span><span style='font-size:90px;letter-spacing:4px;font-weight:bold;'>"+list[i].transferInBin+"</span></div>"+
+			      							  	  "</div>"+
+			      							  	  "<div class='bottom'>"+
+			      							  	  	  "<div>"+
+			      							  	  		  "<div style='height:90px;line-height:90px;'><span style='font-size:25px;'>物料号：</span><span style='font-size:90px'>"+list[i].materialCode+"</span></div>"+
+			      							  	  		  "<span style='font-size:18px;'>物料描述：</span><span style='font-size:18px;margin-right:50px;'>"+list[i].materialDesc+"</span>"+
+			      							  	          "<div style='height:43px;line-height:43px;'><span style='font-size:25px;'>批次号：</span><span style='font-size:35px;margin-right:20px;width:180px'>"+list[i].batchNo+"</span></div>"+
+			    										  "<div style='height:38px'><span style='font-size:18px;'>数量/单位：</span><span style='font-size:18px;margin-right:50px;width:150px'>"+list[i].transferInCount+'/'+list[i].materialUnit+"</span></div>"+
+			    										  "<div style='height:38px'><span style='font-size:18px;'>项目号：</span><span style='font-size:18px;margin-right:50px;width:150px'>"+list[i].projectId+"</span></div>"+
+			      							  	      	  "<div style='height:38px'><span style='font-size:18px;'>工厂：</span><span style='font-size:18px;margin-right:50px;'>"+list[i].factory+"</span></div>"+
+			      							  	          "<div style='height:38px'><span style='font-size:18px;'>移出仓位：</span><span style='font-size:18px;margin-right:10px;width:240px'>"+list[i].transferOutBin+"</span></div>"+
+			      							  	          "<div style='height:38px'><span style='font-size:18px;'>剩余承载数量：</span><span style='font-size:18px;margin-right:20px;width:150px'>"+list[i].remainCount+"</span></div>"+
+			      							  	      "</div>"+
+			      							  	      "<div style='clear:both'></div>"+
+			      							  	  "</div>"+
+			      							  "</div>"+
+			      							  "<div style='page-break-after:always;'></div>";
+							}
+		      				$("#printContent").empty().append(str).jqprint();
+						}
+				  	} 
+				});
+			}
+		 
+	</script>
+	 
+</body>
+</html>

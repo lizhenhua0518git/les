@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+    <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css"/>
+    <title>报废主任务</title>
+</head>
+<div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+    <div class="layui-fluid">
+        <div class="layui-row layui-form">
+
+            <div class="layui-col-md2">
+                <label class="layui-form-label">仓库名称</label>
+                <div class="layui-input-inline">
+                    <select id="warehouseCode" xm-select="warehouseCodeSelect" xm-select-show-count="1"
+                            xm-select-radio="">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-col-md2">
+                <label class="layui-form-label">报废任务code</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="taskCode" id="taskCode" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-col-md2">
+                <label class="layui-form-label">报废申请人</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="createrName" id="createrName" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-col-md2">
+                <label class="layui-form-label">报废日期</label>
+                <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="discardDates" placeholder="点击选择盘点日期">
+                </div>
+            </div>
+
+            <div class="layui-btn-container nav-" style="text-align: right;">
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="search" id="search" type="button">
+                    <i class="layui-icon layui-icon-search"></i>查询
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="reset" id="reset" type="button"><i
+                        class="layui-icon layui-icon-reset"></i>重置
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <div class="layui-fluid-table">
+        <div class="layui-row layui-form">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="new" id="new" type="button"
+                        title="新建"><i class="layui-icon layui-icon-add-circle"></i>新建
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="delete" id="delete" type="button"
+                        title="删除"><i class="layui-icon layui-icon-delete"></i>删除
+                </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="scrapApply" id="scrapApply" type="button"
+                        title="提交报废申请(单个任务)"><i class="layui-icon layui-icon-release"></i>报废
+                </button>
+
+            </div>
+        </div>
+
+        <table id="taskTab" lay-filter="taskTabF"></table>
+    </div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script src="/iles/pages/layui/lay/modules/formSelects-v4.js" charset="UTF-8"></script>
+<!--<script src="/iles/pages/js/common/dictSelelct.js" charset="UTF-8"></script>-->
+
+<script type="text/html" id="toolBar">
+    <a class="layui-btn layui-btn-xs" lay-event="detail" title="查看报废清单详情">详情</a>
+</script>
+<script type="text/javascript">
+    var wmsContextPath = config.wmsConfig.contextPath;
+    var table = layui.table;
+    var form = layui.form;
+    var formSelects = layui.formSelects;
+    var laydate = layui.laydate;
+    var oldData;
+    var active = {
+        /** 搜索 */
+        search: function (othis) {
+            let dateArr = $('#discardDates').val().split(" - ");
+
+            let warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+            let taskCode = $('#taskCode').val()
+            let createrName = $('#createrName').val()
+            let startTime = dateArr[0];
+            let endTime = dateArr[1];
+
+            //执行重载
+            table.reload('taskTabId', {
+                where: {
+                    storageLocation: warehouseCode,
+                    startTime: startTime,
+                    endTime: endTime,
+                    taskCode: taskCode,
+                    createrName: createrName
+                },
+                page: {"curr": 1}
+            });
+        },
+        /** 重置 */
+        reset: function (othis) {
+            layui.formSelects.value('warehouseCodeSelect', []);//仓库编号
+
+            $('.layui-fluid input').each(function (one) {
+                $(this).val("");
+            })
+            form.render();
+        },
+        /** 新建 */
+        new: function (othis) {
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                , title: '新增报废任务'
+                , maxmin: false
+                , area: ['340px', '450px']
+                , offset: type
+                , id: 'task_new' + type //防止重复弹出
+                , content: '/iles/pages/wms/inventory/scrapSheet/task/createTask.html'
+                , shade: [0.8, '#393D49'] //显示遮罩
+                , yes: function () {
+                    layer.closeAll();
+                }
+            });
+        },
+        /** 报废申请 */
+        scrapApply: function (othis) {
+            let task = table.checkStatus('taskTabId').data;
+
+            if (task.length <= 0) {
+                layer.alert('请选择要报废申请的行！', {icon: 2});
+                return;
+            } else if (task.length > 1) {
+                layer.alert('报废申请不能超过多行！', {icon: 2});
+                return;
+            }
+            oldData = task[0];
+            if (oldData.applicationStatus!=0){
+                layer.alert('任务状态错误:该报废任务已提交报废申请', {icon: 2});
+                return;
+            }
+            var type = othis.data('type');
+            layer.open({
+                type: 2
+                , title: '报废任务提交'
+                , maxmin: false
+                , area: ['340px', '450px']
+                , offset: type
+                , id: 'task_submit' + type //防止重复弹出
+                , content: 'submit.html'
+                , shade: [0.8, '#393D49'] //显示遮罩
+                , yes: function () {
+                    layer.closeAll();
+                }
+            });
+
+        },
+        /** 删除 */
+        delete: function (othis) {
+            let task = table.checkStatus('taskTabId').data;
+            if (task == null || task.length === 0) {
+                layer.alert('请选择要删除的报废任务信息！', {icon: 2});
+                return;
+            }
+            var list = new Array();
+            for (let i = 0; i < task.length; i++) {
+                if (task[i].applicationStatus!=0){
+                    layer.alert('任务状态错误:该报废任务已提交报废申请,不可删除', {icon: 2});
+                    return;
+                }
+                list.push(task[i].id);
+            }
+            console.log(">>>>>删除list:", list);
+            layer.confirm('是否删除所选的记录?', {icon: 3, title: '提示'}, function (index) {
+                var option = {
+                    url: wmsContextPath + 'discardMainPC/scrapTaskDel',
+                    type: 'POST',
+                    contentType: "application/json",
+                    dataType: 'json',
+                    data: JSON.stringify(list),
+                    success: function (data) {
+                        if (data.code == 0) {
+                            layer.alert("执行成功");
+                            table.reload('taskTabId');
+                        } else {
+                            console.log(">>>>data", data);
+                            layer.alert("执行失败:"+data.msg);
+                        }
+                    }, error: function (data) {
+                        console.error("错误>>>",data);
+                        layer.alert("执行失败");
+                    }
+                };
+                $.ajax(option);
+                layer.close(index);
+            });
+        },
+
+    };
+
+    function loadding() {
+        table.render({
+            elem: '#taskTab',
+            id: 'taskTabId',
+            url: wmsContextPath + 'discardMainPC/mainPageResult',
+            cols: [[
+                {type: 'checkbox', fixed: 'left'},
+                {type: 'numbers', title: '序号', fixed: 'left'},
+                {field: 'taskCode', title: '报废任务号'},
+                {field: 'storageLocation', title: '仓库编码'},
+                {field: 'locationName', title: '仓库名称'},
+                {field: '', title: '报废创建人/申请人',
+                    templet(d) {
+                        let createrName = d.createrName != null?d.createrName:'-';
+                        let modifierName = d.modifierName != null?d.modifierName:'-';
+
+                        return createrName+'-'+modifierName;
+                    }},
+                {field: 'createTime', title: '创建时间'},
+                {field: 'modifiedTime', title: '申请时间'},
+                {field: 'numberOf', title: '报废详情项目数'},
+                {field: 'applicationStatus', title: '申请状态',
+                    templet(d) {
+                       if (d.applicationStatus == 0){
+                           return "未申请";
+                       }else if (d.applicationStatus == 5){
+                           return "已申请";
+                       }else {
+                           return "-";
+                       }
+                    }
+                },
+                {field: 'obsoleteStatus', title: '报废申请结果',
+                    templet(d) {
+                        if (d.obsoleteStatus == 0){
+                            return "-";
+                        }else if (d.obsoleteStatus == 5){
+                            return "部分报废";
+                        }else if (d.obsoleteStatus == 10) {
+                            return "全部报废";
+                        }else {
+                            return "-";
+                        }
+                    }},
+                {align:'center',title: '操作',toolbar:'#toolBar',width:185,fixed: 'right'}
+
+            ]],
+            page: {theme: '#008155'},
+            height: 'full-130',
+            even: true,
+            done: function (res, page, count) {//列表数据回调函数
+
+            }
+        });
+
+        //监听工具条
+        table.on('tool(taskTabF)', function (obj) {
+            var eventName = obj.event;
+            var clickObj = obj.data;
+            console.log("clickObj", clickObj);
+
+            /** 报废任务详情 */
+            if (eventName == "detail") {//详情
+                oldData = obj.data;
+                let storageLocation = oldData.storageLocation;
+                let locationName = oldData.locationName;
+                let title_2 = '('+storageLocation+'-'+locationName+')';
+                layer.open({
+                    type: 2
+                    , title: '报废任务详情'+title_2
+                    , maxmin: true
+                    , area: ['100%', '100%']
+                    , offset: 2
+                    , id: 'taskTabFDetail' + 2 //防止重复弹出
+                    , content: '/iles/pages/wms/inventory/scrapSheet/detail/detailSheet.html'
+                    , shade: [0.8, '#fff'] //显示遮罩
+                    , yes: function () {
+                        layer.closeAll();
+                    }
+                });
+            }
+        });
+
+        $('.layui-btn-container button').on('click', function () {
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+        laydate.render({
+            elem: '#discardDates'
+            , type: 'date'
+            , trigger: 'click'
+            , range: true
+        });
+        initWarehouseMultiSelect("warehouseCode", "warehouseCodeSelect", "1", '');
+
+        form.render();
+    }
+</script>
+
+</html>

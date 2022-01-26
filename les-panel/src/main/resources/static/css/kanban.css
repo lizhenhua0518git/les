@@ -1,0 +1,98 @@
+html,body{
+    height: 100%;
+}
+.kbWrap{
+    min-height: 100%;
+    background: #0c112a url("../images/kanban_bg.png") no-repeat center;
+    background-size: cover;
+    color: white;
+}
+.kbWrap .card{
+    padding: 20px 20px 0px;
+}
+.kbWrap .cardHead{
+    border-bottom: 1px solid rgba(133,177,236,0.2);
+}
+.kbWrap .cardHead .title{
+    text-align: center;
+    font-size: 24px;
+    line-height: 28px;
+    font-weight: bold;
+    color: #85b1ec;
+    padding-bottom: 3px;
+}
+.kbWrap .cardHead .subTitle{
+    overflow: hidden;
+    line-height: 30px;
+    padding-bottom: 3px;
+}
+.kbWrap .cardHead .textTime{
+    color: #3679d4;
+    float: left;
+}
+.kbWrap .cardHead .listLabel{
+    margin-left: 150px;
+    text-align: right;
+}
+.kbWrap .cardHead .itemLabel{
+    margin-left: 20px;
+    display: inline-block;
+    color: #3679d4;
+    padding-left: 25px;
+    position: relative;
+}
+.kbWrap .cardHead .itemLabel::before{
+    position: absolute;
+    top: 7px;
+    left: 0;
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: #32486E;
+    border-radius: 3px;
+}
+.kbWrap .cardHead .itemLabel.complete::before{
+    background-color: #44A94D;
+}
+.kbWrap .cardBody{
+    padding: 8px 0;
+}
+.kbWrap .itemStore{
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+.kbWrap .itemStore .title{
+    color: #8cb0e1;
+    text-align: center;
+    line-height: 33px;
+    padding-left: 50px;
+}
+.kbWrap .itemStore .content{
+    clear: left;
+}
+.kbWrap .itemStore .textLabel{
+    color: #8cb0e1;
+    float: left;
+    display: inline-block;
+    width: 100px;
+    text-align: right;
+}
+.kbWrap .itemStore .layui-progress{
+    margin-left: 110px;
+    background-color: #32486E;
+    height: 20px;
+    line-height: 20px;
+}
+.kbWrap .itemStore .layui-progress .layui-progress-bar{
+    background-color: #44A94D;
+    text-align: center;
+    min-width: 20px;
+    height: 20px;
+    line-height: 20px;
+}
+.kbWrap .itemStore .layui-progress .otherBar{
+    position: absolute;
+    right: 0;
+    text-align: center
+}

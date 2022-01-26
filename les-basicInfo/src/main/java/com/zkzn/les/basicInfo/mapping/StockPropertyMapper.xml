@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.basicInfo.dao.StockPropertyDao">
+	<resultMap id="BaseResultMap" type="com.zkzn.les.basicInfo.pojo.StockProperty">
+	    <id column="ID" jdbcType="VARCHAR" property="id" />
+	    <result column="WAREHOUSE_NAME" jdbcType="VARCHAR" property="warehouseName" />
+	    <result column="WAREHOUSE_CODE" jdbcType="VARCHAR" property="warehouseCode" />
+	    <result column="STORAGE_LOCATION" jdbcType="VARCHAR" property="storageLocation" />
+	    <result column="PRODUCT_LINE" jdbcType="VARCHAR" property="productLine" />
+	     <result column="produce_line_name" jdbcType="VARCHAR" property="productLineName" />
+	    <result column="TEAM_LEADER" jdbcType="VARCHAR" property="teamLeader" />
+	    <result column="TEAM_LEADER_ID" jdbcType="VARCHAR" property="teamLeaderId" />
+	    <result column="SAP_MANAGER" jdbcType="VARCHAR" property="sapManager" />
+	    <result column="SAP_MANAGER_ID" jdbcType="VARCHAR" property="sapManagerId" />
+	    <result column="BUSINESS_LEADER" jdbcType="VARCHAR" property="businessLeader" />
+	    <result column="BUSINESS_LEADER_ID" jdbcType="VARCHAR" property="businessLeaderId" />
+	     <result column="SAP_MANAGER_ID" jdbcType="VARCHAR" property="sapManagerId" />
+	    <result column="BUSINESS_LEADER" jdbcType="VARCHAR" property="businessLeader" />
+	    <result column="BUSINESS_LEADER_ID" jdbcType="VARCHAR" property="businessLeaderId" />
+	    <result column="MINISTER" jdbcType="VARCHAR" property="minister" />
+	    <result column="MINISTER_ID" jdbcType="VARCHAR" property="ministerId" />
+	    <result column="CREATE_USER" jdbcType="VARCHAR" property="createUser" />
+	    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+	    
+	    
+	        <result column="BUSINESS_MANAGER" jdbcType="VARCHAR" property="businessManager" />
+	    <result column="BUSINESS_MANAGER_ID" jdbcType="VARCHAR" property="businessManagerId" />
+	    
+	        <result column="MAIN_MINISTER" jdbcType="VARCHAR" property="mainMinister" />
+	    <result column="MAIN_MINISTER_ID" jdbcType="VARCHAR" property="mainMinisterId" />
+	    
+	        <result column="MATERIAL_CONTROL" jdbcType="VARCHAR" property="materialControl" />
+	    <result column="MATERIAL_CONTROL_ID" jdbcType="VARCHAR" property="materialControlId" />
+	  </resultMap>
+	<select id="listStockProperty" parameterType="java.lang.String" resultMap="BaseResultMap">
+	   select t.id,
+	       t.warehouse_name,
+	       t.warehouse_code,
+	       t.product_line,
+	       l.produce_line_name,
+	       t.team_leader,
+	       t.team_leader_id,
+	       t.sap_manager,
+	       t.sap_manager_id,
+	       t.business_leader,
+	       t.business_leader_id,
+	       t.minister,
+	       t.minister_id,
+	       t.material_control,
+	       t.material_control_id,
+	       t.main_minister,
+	       t.main_minister_id,
+	       t.business_manager_id,
+	       t.business_manager
+	  from t_stock_property t
+	  left join t_produce_line l
+	    on l.produce_line_code = t.product_line
+	
+	  <where>
+	    <if test="warehouseCode !=null and warehouseCode !=''">
+	    
+	    and t.warehouse_code = #{warehouseCode}
+	    
+	    
+	    </if>
+	    
+	      <if test="teamLeader !=null and teamLeader !=''">
+	      and  t.team_leader like '%${teamLeader}%'
+	    
+	    </if>
+	     <if test="sapManager !=null and sapManager !=''">
+	    
+	      and  t.sap_manager like '%${sapManager}%'
+	    </if>
+	    
+	    
+	    
+	    </where>
+	    
+	    <if test="sortColums ==null or  '' ==sortColums">order by t.create_time desc</if>
+	    <if test="sortColums !=null and  '' !=sortColums">order by ${sortColums}</if>
+	    
+	  </select>
+	  <insert id="saveStockProperty" parameterType="com.zkzn.les.basicInfo.pojo.StockProperty">
+        <selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">
+            select  replace(uuid(),'-','') from dual
+        </selectKey>
+        INSERT INTO T_STOCK_PROPERTY
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+              id,
+              WAREHOUSE_NAME, 
+              WAREHOUSE_CODE, 
+              STORAGE_LOCATION,
+		      PRODUCT_LINE, 
+		      TEAM_LEADER, 
+		      TEAM_LEADER_ID, 
+		      SAP_MANAGER, 
+		      SAP_MANAGER_ID, 
+		      BUSINESS_LEADER, 
+		      BUSINESS_LEADER_ID, 
+		      MINISTER, 
+		      MINISTER_ID, 
+		      MATERIAL_CONTROL,
+		      MATERIAL_CONTROL_ID,
+		      MAIN_MINISTER,
+		      MAIN_MINISTER_ID,
+		      BUSINESS_MANAGER,
+		      BUSINESS_MANAGER_ID,
+		      CREATE_USER, 
+		      CREATE_TIME
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+             #{id},
+             #{warehouseName}, 
+             #{warehouseCode}, 
+		     #{storageLocation},
+		      #{productLine}, 
+		      #{teamLeader}, 
+		      #{teamLeaderId}, 
+		      #{sapManager}, 
+		      #{sapManagerId}, 
+		      #{businessLeader}, 
+		      #{businessLeaderId},
+		       #{minister}, 
+		      #{ministerId}, 
+		       
+		      #{materialControl}, 
+		      #{materialControlId}, 
+		   
+		      #{mainMinister}, 
+		      #{mainMinisterId}, 
+		     
+		      #{businessManager}, 
+		      #{businessManagerId}, 
+		 
+		      #{createUser}, 
+		      #{createTime}
+        </trim>
+    </insert>
+    <update id="updateStockProperty" parameterType="com.zkzn.les.basicInfo.pojo.StockProperty">
+	    update T_STOCK_PROPERTY
+	    <set>
+	      <if test="warehouseName != null">
+	        WAREHOUSE_NAME = #{warehouseName},
+	      </if>
+	      <if test="warehouseCode != null">
+	        WAREHOUSE_CODE = #{warehouseCode},
+	      </if>
+	      <if test="storageLocation != null">
+	        STORAGE_LOCATION = #{storageLocation},
+	      </if>
+	      <if test="productLine != null">
+	        PRODUCT_LINE = #{productLine},
+	      </if>
+	      <if test="teamLeader != null">
+	        TEAM_LEADER = #{teamLeader},
+	      </if>
+	      <if test="teamLeaderId != null">
+	        TEAM_LEADER_ID = #{teamLeaderId},
+	      </if>
+	      <if test="sapManager != null">
+	        SAP_MANAGER = #{sapManager},
+	      </if>
+	      <if test="sapManagerId != null">
+	        SAP_MANAGER_ID = #{sapManagerId},
+	      </if>
+	      <if test="businessLeader != null">
+	        BUSINESS_LEADER = #{businessLeader},
+	      </if>
+	      <if test="businessLeaderId != null">
+	        BUSINESS_LEADER_ID = #{businessLeaderId},
+	      </if>
+	      <if test="minister != null">
+	        MINISTER = #{minister},
+	      </if>
+	      <if test="ministerId != null">
+	        MINISTER_ID = #{ministerId},
+	      </if>
+	       
+	       
+	         <if test="materialControl != null">
+	        MATERIAL_CONTROL = #{materialControl},
+	      </if>
+	      <if test="materialControlId != null">
+	        MATERIAL_CONTROL_id = #{materialControlId},
+	      </if>
+	      
+	        <if test="mainMinister != null">
+	        MAIN_MINISTER = #{mainMinister},
+	      </if>
+	      <if test="mainMinisterId != null">
+	        MAIN_MINISTER_ID = #{mainMinisterId},
+	      </if>
+	      
+	        <if test="businessManager != null">
+	        BUSINESS_MANAGER = #{businessManager},
+	      </if>
+	      <if test="businessManagerId != null">
+	        BUSINESS_MANAGER_ID = #{businessManagerId},
+	      </if>
+	    </set>
+	    where ID = #{id}
+	  </update>
+	 <delete id="removeStockProperty">
+      <if test="list.size()>0">
+        delete from T_STOCK_PROPERTY where
+        <foreach collection="list" item="item" index="index" open="(" separator="or" close=")">
+            id=#{item}
+        </foreach>
+        </if>
+    </delete>
+</mapper>

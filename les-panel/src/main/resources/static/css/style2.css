@@ -1,0 +1,72 @@
+/* march-in */
+html,body{
+    height: 100%;
+}
+body{
+    font-family: Microsoft YaHei;
+}
+.wrap{
+    min-height: 100%;
+}
+.marchIn{
+    background: #070a1a url("../images/marchInBg.jpg") no-repeat center;
+    background-size: cover;
+}
+.marchIn .header{
+    height: 96px;
+    padding: 0 20px;
+    position: relative;
+    overflow: hidden;
+}
+.marchIn .header::after{
+    content:"";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background-color: rgba(255,255,255,0.2);
+}
+.marchIn .header .textTitle{
+    padding-top: 30px;
+    text-align: center;
+    font-size: 24px;
+    color: #85b1ec;
+    font-weight: bold;
+}
+.marchIn .header .textTime{
+    padding-top: 10px;
+    float: left;
+    font-size: 14px;
+    color: #3578d3;
+}
+.marchIn .main{
+    padding: 10px 20px 20px;
+}
+/* lay ui */
+.layui-table-box{
+    border: none;
+    overflow-x: hidden;
+}
+.layui-table-box th{
+    color: #85b1ec;
+    font-size: 16px;
+    font-weight: bold;
+}
+.layui-table tbody tr:hover, .layui-table thead tr, .layui-table-click, .layui-table-header, .layui-table-hover, .layui-table-mend, .layui-table-patch, .layui-table-tool, .layui-table-total, .layui-table-total tr, .layui-table[lay-even] tr:nth-child(even){
+    background-color: transparent;
+}
+.layui-table{
+    background-color: transparent;
+}
+.layui-table td{
+    color: #3679d4;
+    font-size: 14px;
+}
+.layui-table td .textStatus{
+    color: #54bd5e;
+}
+.layui-table td .textStatus.wait{
+    color: #f3a745;
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="Content-Type" content="charset=UTF-8">
+<meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<title>点收记录管理</title>
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" type="text/css" href="/iles/pages/css/layui_extend.css"/>
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+</head>
+<script type="text/html" id="useStatusTemp">
+	{{# if(d.useStatus==0){ }}
+			空闲
+	{{# }else if(d.useStatus==1){ }}
+			占用
+	{{# } }}
+</script>
+<body id="bodyDiv">
+<script type="text/html" id="bodyTpl">
+<div class="layui-fluid">
+	<div class="layui-row layui-form">
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">仓库</label>
+			 	 <div class="layui-input-inline">
+			        <select  id="warehouseCode_search"  xm-select="warehouseCodeSelect" xm-select-show-count="1">
+			        	<option value="">请选择</option>
+			      	</select>
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">卸货点编码</label>
+			 	<div class="layui-input-inline">
+			      <input type="text" id="uploadCode_search" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			 	<label class="layui-form-label">卸货点名称</label>
+			 	<div class="layui-input-inline">
+			      <input type="text" id="uploadName_search" class="layui-input">
+			    </div>
+		</div>
+		<div class="layui-col-md2">
+			<label class="layui-form-label">使用状态</label>
+			<div class="layui-input-inline">
+			        <select  id="useStatus_search" >
+			        	<option value="">请选择</option>
+						<option value="0">空闲</option>
+						<option value="1">占用</option>
+			      	</select>
+			</div>
+		</div>
+		<div class="layui-col-md2">
+			&nbsp;
+		</div>
+		<div class="layui-col-md2">
+			<div class="layui-btn-container" style="text-align: right;">
+				{{# if(d.search==null || d.search=="true"){ }}
+             	 	<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+					<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" id="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>
+              	{{# } }}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="layui-fluid-table">
+<div class="layui-row layui-form">
+        <div class="layui-btn-container" style="text-align: left;">
+             {{# if(d.search==null || d.search=="true"){ }}
+              <!--<button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+              <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon layui-icon-reset"></i>重置</button>-->
+                 {{# } }}
+                 {{# if(d.add==null || d.add=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="add" data-type="auto" type="button"><i class="layui-icon layui-icon-add-circle"></i>新增</button>
+                 {{# } }}
+                {{# if(d.edit==null || d.edit=="true"){ }}
+               <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="edit" type="button"><i class="layui-icon  layui-icon-edit "></i>编辑</button>
+                 {{# } }}
+                  {{# if(d.del==null || d.del=="true"){ }}
+                <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="del" type="button"><i class="layui-icon  layui-icon-delete"></i>删除</button>
+                 {{# } }}
+         </div>
+	</div>
+<table class="layui-hide" id="uploadAddressTab" lay-filter="uploadAddressTabF"></table>
+</div>
+</script>
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/loginInspect.js" charset="UTF-8"></script>
+<script src="/iles/pages/js/common/warehouseSelect.js" charset="UTF-8"></script>
+<script type="text/javascript">
+var table = layui.table;
+var contextPath = config.basicInfoConfig.contextPath;
+var form = layui.form;
+var oldData;
+var active = {
+		search:function(othis){
+			var warehouseCode = layui.formSelects.value('warehouseCodeSelect', 'valueStr');
+			var uploadCode = $("#uploadCode_search").val();
+			var uploadName = $("#uploadName_search").val();
+			var useStatus = $("#useStatus_search").val();
+			table.reload('uploadAddressTabId',{
+				where:{
+					warehouseCode:warehouseCode,
+					uploadCode:uploadCode,
+					uploadName:uploadName,
+					useStatus:useStatus
+				}
+			});
+		},
+		reset:function(othis){
+			layui.formSelects.value('warehouseCodeSelect', []);
+    		$("#uploadCode_search").val("");
+ 			$("#uploadName_search").val("");
+ 			$("#useStatus_search").val("");
+ 			form.render("select");
+	 },
+	 add:function(othis){
+		 var type = othis.data('type');
+		 layer.open({
+	        type: 2
+	        ,title:'新增卸货地点'
+	        ,maxmin:false
+	        ,area: ['500px', '400px']
+	        ,offset: type
+	        ,id: 'uploadAddressadd'+type //防止重复弹出
+	        ,content: 'addUploadAddress.html'
+	        ,shade: 0 //不显示遮罩
+	        ,yes: function(){
+	          layer.closeAll();
+	        }
+	      });
+	 },edit:function(othis){
+		var checkStatus = table.checkStatus('uploadAddressTabId');
+		oldData = checkStatus.data;
+		if(oldData.length<=0){
+			layer.alert('请选择要编辑的行！',{icon: 2});
+					return ;
+		}else if(oldData.length >1){
+					layer.alert('编辑不能超过多行！',{icon: 2});
+					return ;
+				}
+		var type = othis.data('type');
+			layer.open({
+	        type: 2
+	        ,title:'编辑卸货地点'
+	        ,maxmin:false
+	        ,area: ['500px', '400px']
+	        ,offset: type
+	        ,id: 'uploadAddressEdit'+type //防止重复弹出
+	        ,content: 'editUploadAddress.html'
+	        ,shade: 0 //不显示遮罩
+	        ,yes: function(){
+	          layer.closeAll();
+	        }
+     	 });
+	},del:function(othis){
+		var checkStatus = table.checkStatus('uploadAddressTabId');
+			var	cancelData = checkStatus.data;
+		if(cancelData.length<=0){
+			layer.alert('请选择要删除的行！',{icon: 2});
+					return ;
+		}
+		var idarrys = new Array();
+		for(var i=0;i<cancelData.length;i++){
+			idarrys.push(cancelData[i].id);
+		}
+		layer.confirm('确定删除卸货点信息?', {icon: 3, title:'提示'}, function(index){
+  			  //do something
+  			  var option ={
+					url: contextPath +'uploadAddress/deleteUploadAddress',
+					type:'POST',
+					contentType: "application/json",
+					dataType:'json',
+					data:JSON.stringify(idarrys),
+					success:function(data){
+						if(data.code==0){
+							layer.msg("删除成功");
+							table.reload('uploadAddressTabId');
+						}
+					},error:function(data){
+						layer.alert(data.msg);
+					}
+				}
+				$.ajax(option);
+  			  layer.close(index);
+  			});
+	}
+};
+function loadding(){
+	table.render({
+		elem:'#uploadAddressTab',
+		id:'uploadAddressTabId',
+		url: contextPath +'uploadAddress/listUploadAddress',
+		cols:[[
+		{type:'checkbox'},
+		{type:'numbers',title:'序号',width: 60},
+		{field:'uploadCode',title:'卸货点编码'},
+		{field:'uploadName',title:'卸货点名称'},
+		{field:'warehouseCode', title: '仓库编码'},
+		{field:'warehouseName',title: '仓库名称'},
+		{field:'useStatus', title: '使用状态',templet:'#useStatusTemp'},
+		{field:'createrName', title: '创建人'},
+		{field:'createTime', title: '创建时间'},
+		{field:'modifierName', title: '修改人'},
+		{field:'modifiedTime', title: '修改时间'}
+		]],
+		page: {theme: '#008155'},
+   		even:true
+	});
+	$('.layui-btn-container button').on('click', function(){
+	    var othis = $(this), method = othis.data('method');
+	    active[method] ? active[method].call(this, othis) : '';
+  	});
+	initWarehouseMultiSelect("warehouseCode_search","warehouseCodeSelect",1,'');
+	form.render("select");
+}
+
+</script>
+</body>
+
+</html>

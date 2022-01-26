@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>工位齐套管理</title>
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+
+<script>
+	function toIndex(url) {
+		parent.location.href = url;
+	}
+</script>
+</head>
+<body>
+ <div id="bodyDiv"></div>
+
+<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+	<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+	<script type="text/html" id="bodyTpl">
+<div class="layui-fluid">
+<div class="layui-row layui-form" style="font-size: 20px;margin-bottom:10px;font-family:Microsoft Yahei;font-weight:600"> 物料缺失预警</div>
+	<div class="layui-row layui-form">
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">日期:</label>
+		 	 <div class="layui-input-block">
+		      <input type="text" id="requiredDate" class="layui-input">
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">项目号:</label>
+		 	 <div class="layui-input-block">
+		      <select  id="project" xm-select="select6" xm-select-show-count="1" xm-select-search="">
+					<option value="">请选择</option>
+				</select>
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">分厂:</label>
+		 	 <div class="layui-input-block">
+		      <select  id="subfactory" xm-select="select3" xm-select-show-count="1" xm-select-search="">
+					<option value="">请选择</option>
+				</select>
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">工位:</label>
+		 	 <div class="layui-input-block">
+		      <select  id="station" xm-select="select5" xm-select-show-count="1" xm-select-search="">
+					<option value="">请选择</option>
+				</select>
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">物料号:</label>
+		 	 <div class="layui-input-block">
+		      <input type="text" id="materialCode" class="layui-input">
+		    </div>
+		 </div>
+	</div>
+	<div class="layui-row layui-form">
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">车号:</label>
+		 	 <div class="layui-input-block">
+		      <input type="text" id="carCode" class="layui-input">
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">库存地点:</label>
+		 	 <div class="layui-input-block">
+		      <input type="text" id="storageLocation" class="layui-input">
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">采购组:</label>
+		 	 <div class="layui-input-block">
+		      <input type="text" id="purchaseTeam" class="layui-input">
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">工位负责人:</label>
+		 	 <div class="layui-input-block">
+		      <input type="text" id="stationManager" class="layui-input">
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">SAP管理工:</label>
+		 	 <div class="layui-input-block">
+		      <input type="text" id="sapManager" class="layui-input">
+		    </div>
+		 </div>
+	</div>
+	<div class="layui-row layui-form">
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">质检状态:</label>
+		 	 <div class="layui-input-block">
+		      <select id="inspectionStatus" name="inspectionStatus" >
+					<option value="">请选择</option>
+					<option value="1">待质检</option>
+					<option value="0">已质检</option>
+				</select>
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">供应商合格库存:</label>
+		 	 <div class="layui-input-block">
+		      <select id="supplierNumber" name="supplierNumber" >
+					<option value="">请选择</option>
+					<option value="1">合格库存</option>
+					<option value="0">不合格库存</option>
+				</select>
+		    </div>
+		 </div>
+		 <div class="layui-col-md2">
+		 	<label class="layui-form-label">缺料评估:</label>
+			<div class="layui-input-block" >
+				<select id="estimateStatus" name="estimateStatus" >
+					<option value="">请选择</option>
+					<option value="0">齐套</option>
+					<option value="1">缺料-属地</option>
+					<option value="2">缺料-远地</option>
+					<option value="3">缺料-供应商</option>
+				</select>
+				<ul class="layui-nav-item">
+				 <a href="">共计<span class="layui-badge" id=lack_ty></span></a>
+			    </ul>
+			</div>
+		 </div>
+		  <div class="layui-col-md2">
+		 	<label class="layui-form-label">配送方式:</label>
+		 	<div class="layui-input-block">
+		 	 <select id="deliveryType" name="deliveryType" xm-select="select1">
+					<option value="">请选择</option>
+					<!-- <option value="A">A</option>
+					<option value="B">B</option>
+					<option value="C">C</option> -->
+			 </select>
+			 <ul class="layui-nav-item">
+				<a href="">共计<span class="layui-badge" id=lack_qty></span></a>
+			 </ul>
+
+			</div>
+		 </div>
+
+	</div>
+	 <div class="layui-row layui-form">
+		 <div class="layui-col-md6">
+		 	<div class="layui-btn-container" style="text-align: left;">
+		     {{# if(d.search==null || d.search=="true"){ }}
+			   <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search" id="search" type="button"><i class="layui-icon layui-icon-search"></i>查询</button>
+		 	   <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset" type="button"><i class="layui-icon-reset"></i>重置</button>
+	         {{# } }}
+    {{# if(d.export==null || d.export=="true"){ }}
+     <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="export" type="button"><i class="layui-icon layui-icon-export"></i>导出</button>
+		 {{# } }}
+	</div>
+		 </div>
+	</div>
+</div>
+<table class="layui-hide" id="warningLackMaterialDetailTab" lay-filter="warningLackMaterialDetailTabF"></table>
+</script>
+       <script type="text/html" id="subfactoryTpl">
+  {{#  if(d.branch ==='ZZ1' ){ }}
+     {{ '预组装'}}
+  {{#  } else { }}
+   {{ '总组装'}}
+  {{#  } }}
+</script>
+
+ <script type="text/html" id="estimateStatusTpl">
+  {{#  if(d.estimateStatus==0){  }}
+
+  	<h4 class="layui-btn layui-btn-sm layui-btn-radius" >齐套</h4>
+
+  {{#  } else if (d.estimateStatus==1) { }}
+   		<h4  class="layui-btn layui-btn-sm layui-btn-radius layui-btn-warm" >缺料-属地</h4>
+  {{#  } else if (d.estimateStatus==2) { }}
+   		<h4  class="layui-btn layui-btn-sm layui-btn-radius layui-btn-warm" >缺料-远地</h4>
+  {{#  }else if (d.estimateStatus==3) { }}
+		<h4  class="layui-btn layui-btn-sm layui-btn-radius layui-btn-warm" >缺料-供应商</h4>
+  {{#  } }}
+</script>
+<script type="text/javascript">
+    //全局定义一次, 加载formSelects
+    layui.config({
+        base: '/iles/pages/layui/lay/modules/' //此处路径请自行处理, 可以使用绝对路径
+    }).extend({
+        formSelects: 'formSelects-v4'
+    });
+
+    var contextPath = config.wmsConfig.contextPath;
+    var $ = layui.$;
+    var element = layui.element;
+    var layer = layui.layer;
+    var table = layui.table;
+
+    var form = layui.form;
+     var oldData;
+    function loadding(){
+    layui.use(['form','table','layer','laydate','formSelects','tableFilter'],function(){
+
+        //initData();
+        var status= '1';
+        var sysDate=new Date();
+        var requiredDate=new Date(sysDate.getTime());
+        var requestTime= getFormatDate(requiredDate);
+        var subfactory= '';
+        var station= '';
+        var process= '';
+        var carCode= '';
+        var endTime= getFormatDate(requiredDate);
+
+      //初始化项目号
+        initProjectCode();
+        //初始化工厂
+        initSubFactory();
+        //初始化工位
+        initStationCode();
+
+
+        /* $('#requestTime').val(requestTime);
+        $('#endTime').val(requestTime); */
+        $('#subfactory').val(subfactory)
+        $('#station').val(station);
+
+        var optoinArray = new Array();
+        optoinArray.push({"name": "A", "value": "A" });
+        optoinArray.push({"name": "B", "value": "B" });
+        optoinArray.push({"name": "C", "value": "C" });
+        layui.formSelects.data('select1', 'local', {
+			 arr:optoinArray
+	     });
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            //时间选择器
+            laydate.render({
+                elem: '#requiredDate',
+                type:'date',
+                value:requestTime+" - "+requestTime,
+                isInitValue:true,
+                range: true
+
+            });
+        });
+
+
+        table.render({
+            elem:'#warningLackMaterialDetailTab',
+            id:'warningLackMaterialDetailTabId',
+            url:contextPath+'warningLackMateria/listDetailList',
+            //where:{'status':status,'requestTime':requestTime,'subfactory':subfactory,'station':station,'process':process,'carCode':carCode,'endTime':endTime},
+            cols:[[
+             {type:'radio'},
+            {field:'requestTime', width:'8%', title: '需求日期'},
+            {field:'branch', width:'5%', title:'分厂'},
+            {field:'station', width:'5%', title: '工位'},
+            {field:'processDesc', width:'10%', title: '工序'},
+            {field:'materialCode',width:'10%',title:'物料号' },
+
+            {field:'materialDesc', width:'15%', title:'物料描述'},
+            {field:'requireNum', width:'8%', title: '需求数量'},
+            {field:'lackNum', width:'8%', title: '缺失数量'},
+            {field:'inspectionNum', width:'8%', title: '质检数量'},
+          {field:'deliveryWaitNum', width:'8%', title: '待卸货'},
+            {field:'receiveWaitNum', width:'8%', title: '待点收'},
+
+            {field:'estimateStatus', width:'8%', title: '缺料评估',templet: '#estimateStatusTpl'},
+
+            {field:'planReceiveDate', width:'8%', title: '预计到货日期'},
+            {field:'planReceiveNum', width:'8%', title: '预计到货数量'},
+
+            {field:'project', width:'8%', title: '项目'},
+            {field:'productLine', width:'5%', title:'产线'},
+
+            {field:'orderCode', width:'10%', title:'订单号'},
+            {field:'orderType', width:'8%', title:'订单类型'},
+            {field:'carCode', width:'8%', title:'车号'},
+
+            {field:'storageLocation', width:'8%', title: '库位'},
+            {field:'isTurn', width:'8%', title: '是否转序'},
+            {field:'changeStation', width:'5%', title: '转入工位'},
+            {field:'purchaseType', width:'8%', title: '采购类型'},
+            {field:'mrpController', width:'5%', title: 'MRP控制者'},
+            {field:'purchaseTeam', width:'8%', title: '采购组'},
+            {field:'deliveryType', width:'8%', title: '配送方式'},
+            {field:'deliveryInfo', width:'8%', title: '货源信息'},
+            {field:'sapManager', width:'8%', title: 'SAP管理工'},
+            {field:'stationManager', width:'8%', title: '工位负责人'},
+            {field:'supplierNumber', width:'8%', title: '供应商合格库存'},
+            {field:'supplierDj', width:'8%', title: '供应商待检库存'},
+            {field:'supplierOnhead', width:'8%', title: '供应商总库存'},
+            {field:'frozenStock', width:'8%', title: '冻结库存'},
+            {field:'gysqlbs', width:'8%', title: '供应商库存缺料'},
+            {field:'wlccfs', width:'8%', title: '物料存储方式'}
+            ]],
+            page: {theme: '#008155'},
+            limit:1000,
+            limits:[500,1000],
+            height: 'full-95',
+        	where:{
+        		requestTime:requestTime,
+    			project :  getProjectCode(),
+    			subfactory : getSubFactory(),
+    			station : getStationCode(),
+    			estimateStatus:$.trim($('#estimateStatus').val()),
+    			endTime:requestTime,
+    			carCode:"",
+    			process:""
+        	},
+            done:function(res,page,count){//列表数据回调函数
+
+            	$('#lack_qty').html(count+'笔');
+    	        if(count==0){
+    	        	$('#lack_ty').html(count+'种');
+    	        }else{
+    	        	$('#lack_ty').html(res.data[0].lackMaterialType+'种');
+    	        }
+
+            }
+        });
+
+        var active = {
+        		export:function(othis){
+                	var requestDate = $('#requiredDate').val();
+    				var requestTime = requestDate.substring(0,10);
+    				var project =  getProjectCode();
+    				var subfactory = getSubFactory();
+    				var station = getStationCode();
+       			   var estimateStatus=$.trim($('#estimateStatus').val());
+       			   var endTime=requestDate.substring(13);
+       			   //var deliveryType=$('#deliveryType').val();
+       			   var materialCode = $('#materialCode').val();
+       			   var carCode = $('#carCode').val();
+       			   var storageLocation = $('#storageLocation').val();
+       			   var purchaseTeam = $('#purchaseTeam').val();
+       			   var stationManager = $('#stationManager').val();
+       			   var sapManager = $('#sapManager').val();
+       			   var inspectionStatus = $('#inspectionStatus').val();
+       			   var supplierNumber = $('#supplierNumber').val();
+       			   var deliveryTypeArray = layui.formSelects.value('select1', 'val');
+	       		   var deliveryType = "";
+       			   for(var i=0;i<deliveryTypeArray.length;i++){
+       				  deliveryType = deliveryType+deliveryTypeArray[i]+";"
+	   		      	}
+       			var token = window.localStorage.token;
+    				var params = "requestTime="+requestTime+"&endTime="+endTime+"&project="+project+"&subfactory="+subfactory+"&estimateStatus="+estimateStatus+"&station="+station;
+    				params = params +"&deliveryType="+deliveryType+"&carCode="+carCode+"&process=&materialCode="+materialCode+"&storageLocation="+storageLocation+"&purchaseTeam="+purchaseTeam;
+    				params = params +"&stationManager="+stationManager+"&sapManager="+sapManager+"&inspectionStatus="+inspectionStatus+"&supplierNumber="+supplierNumber;
+    				params = params +"&token="+token;
+    				window.open(contextPath+"warningLackMateria/listDetailListExport?"+params);
+                },
+                search:function(othis){
+                	var params={};
+                	var requestDate = $('#requiredDate').val();
+    				var requestTime = requestDate.substring(0,10);
+    				var project =  getProjectCode();
+    				var subfactory = getSubFactory();
+    				var station = getStationCode();
+       			   var estimateStatus=$.trim($('#estimateStatus').val());
+       			   var endTime=requestDate.substring(13);
+       			   //var deliveryType=$('#deliveryType').val();
+       			   var materialCode = $('#materialCode').val();
+       			   var carCode = $('#carCode').val();
+       			   var storageLocation = $('#storageLocation').val();
+       			   var purchaseTeam = $('#purchaseTeam').val();
+       			   var stationManager = $('#stationManager').val();
+       			   var sapManager = $('#sapManager').val();
+       			   var inspectionStatus = $('#inspectionStatus').val();
+       			   var supplierNumber = $('#supplierNumber').val();
+       			   var deliveryTypeArray = layui.formSelects.value('select1', 'val');
+	       		   var deliveryType = "";
+       			   for(var i=0;i<deliveryTypeArray.length;i++){
+       				  deliveryType = deliveryType+deliveryTypeArray[i]+";"
+	   		      	}
+    				params.requestTime = requestTime;
+    				params.endTime = endTime;
+    				params.project = project;
+    				params.subfactory = subfactory;
+    				params.estimateStatus = estimateStatus;
+    				params.station = station;
+    				params.deliveryType=deliveryType;
+    				params.carCode=carCode;
+    				params.process="";
+    				params.materialCode = materialCode;
+    				params.carCode = carCode;
+    				params.storageLocation = storageLocation;
+    				params.purchaseTeam = purchaseTeam;
+    				params.stationManager = stationManager;
+    				params.sapManager = sapManager;
+    				params.inspectionStatus = inspectionStatus;
+    				params.supplierNumber = supplierNumber;
+    				//执行重载
+    				table.reload('warningLackMaterialDetailTabId', {
+    					where : params,
+    					page : {
+    						"curr" : 1
+    					},
+    				  done:function(res,page,count){//列表数据回调函数
+
+    			        	$('#lack_qty').html(count+'笔');
+    			        	if(count==0){
+    				        	$('#lack_ty').html(count+'种');
+    				        }else{
+    				        	$('#lack_ty').html(res.data[0].lackMaterialType+'种');
+    				        }
+    			        }
+    				});
+
+
+
+                },reset:function(othis){
+                	$('#project').val("");
+                	$('#station').val("");
+                	$('#estimateStatus').val("");
+                	$('#deliveryType').val("");
+                	$('#materialCode').val("");
+                	$('#carCode').val("");
+                	$('#storageLocation').val("");
+                	$('#purchaseTeam').val("");
+                	$('#stationManager').val("");
+                	$('#sapManager').val("");
+                	$('#inspectionStatus').val("");
+                	$('#supplierNumber').val("");
+                	layui.formSelects.value('select6', []);
+            		layui.formSelects.value('select3', []);
+            		layui.formSelects.value('select5', []);
+            		form.render("select");
+                }
+
+
+        };
+		$('.layui-btn-container button').on('click', function() {
+			var othis = $(this), method = othis.data('method');
+			active[method] ? active[method].call(this, othis) : '';
+		});
+
+
+		//获取父级页面传来的参数
+		function getQueryVariable(variable) {
+			var query = window.location.search.substring(1);
+			var vars = query.split("&");
+			for (var i = 0; i < vars.length; i++) {
+				var pair = vars[i].split("=");
+				if (pair[0] == variable) {
+					return pair[1];
+				}
+			}
+			return (false);
+		}
+		//初始化表单数据
+		function initData() {
+			var oldData = parent.oldData;
+
+			if (oldData && oldData.length > 0) {
+				var formData = eval('('
+						+ JSON.stringify(oldData[0]) + ')');
+				requestTime = formData.requestTime;
+
+			}
+		}
+		function showTab(type, url) {
+			var title = "";
+			var dataId = "";
+
+			if (type == 1) {
+
+				title = '物料进度统计';
+				dataId = "scheduleStatistics";
+			}
+			var isData = false;
+			var liObj = $("body", parent.document).find(
+					".layui-tab-title li[lay-id]");
+			if (dataId && dataId.length > 0) {
+				$.each(liObj, function() {
+					if ($(this).attr("lay-id") == dataId) {
+						isData = true;
+					}
+				})
+				if (isData == false) {
+					window.parent.active.tabAdd(url, dataId, title);
+				}
+				window.parent.active.tabChange(dataId);
+			}
+		}
+		//格式化日期
+		function getFormatDate(date){
+			var seperator1 = "-";
+		    var year = date.getFullYear();
+		    var month = date.getMonth() + 1;
+		    var strDate = date.getDate();
+		    if (month >= 1 && month <= 9) {
+		        month = "0" + month;
+		    }
+		    if (strDate >= 0 && strDate <= 9) {
+		        strDate = "0" + strDate;
+		    }
+		    var currentdate = year + seperator1 + month + seperator1 + strDate;
+		    return currentdate;
+		}
+
+		//获取项目号
+		function getProjectCode(){
+			var pCode = "";
+			//获取项目号
+			var pCodeArray = layui.formSelects.value('select6', 'val');
+			for(var i=0;i<pCodeArray.length;i++){
+				pCode += "'"+pCodeArray[i]+"',"
+			}
+			if(pCode != ""){
+				pCode = pCode.substring(0,pCode.length-1);
+			}
+			return pCode;
+		}
+		//获取工厂
+		function getSubFactory(){
+			var subFactory = "";
+			var subFactoryArray = layui.formSelects.value('select3', 'val');
+			for(var i=0;i<subFactoryArray.length;i++){
+				subFactory += "'"+subFactoryArray[i]+"',"
+			}
+			if(subFactory != ""){
+				subFactory = subFactory.substring(0,subFactory.length-1);
+			}
+			return subFactory;
+		}
+		//获取工位
+		function getStationCode(){
+			var stationCode = "";
+			var stationCodeArray = layui.formSelects.value('select5', 'val');
+			for(var i=0;i<stationCodeArray.length;i++){
+				stationCode += "'"+stationCodeArray[i]+"',"
+			}
+			if(stationCode != ""){
+				stationCode = stationCode.substring(0,stationCode.length-1);
+			}
+			return stationCode;
+		}
+
+
+    })
+
+    form.render("select");
+    }
+
+  //初始化项目号方法
+	function initProjectCode(){
+		$.ajax({
+			url:contextPath+"neatRatrRealTime/getProjectCode",
+			type:"post",
+			success:function(result){
+				$('#project').html("");
+				$('#project').append('<option value="">请选择</option>');
+	      	  	var order = result.data;
+				if(order && order.length>0){
+				var optionItem;
+				var optoinArray = new Array();
+					for(var i=0;i<order.length;i++){
+					optionItem = {"name":""+order[i], "value":""+order[i]};
+					optoinArray.push(optionItem);
+					}
+					layui.formSelects.data('select6','local',{
+						arr:optoinArray
+					});
+				}
+			}
+		});
+	}
+
+
+	//初始化分厂方法
+	function initSubFactory(){
+		$.ajax({
+			url:contextPath+"neatRateDetailHisReport/getSubFactory",
+			type:"post",
+			success:function(result){
+				$('#subfactory').html("");
+				$('#subfactory').append('<option value="">请选择</option>');
+	      	  	var order = result.data;
+				if(order && order.length>0){
+				var optionItem;
+				var optoinArray = new Array();
+					for(var i=0;i<order.length;i++){
+					optionItem = {"name":""+order[i], "value":""+order[i]};
+					optoinArray.push(optionItem);
+					}
+					layui.formSelects.data('select3','local',{
+						arr:optoinArray
+					});
+				}
+			}
+		});
+	}
+
+	//初始化工厂方法
+	function initStationCode(){
+		$.ajax({
+			url:contextPath+"neatRateDetailHisReport/getStationCode",
+			type:"post",
+			success:function(result){
+				$('#station').html("");
+				$('#station').append('<option value="">请选择</option>');
+	      	  	var order = result.data;
+				if(order && order.length>0){
+				var optionItem;
+				var optoinArray = new Array();
+					for(var i=0;i<order.length;i++){
+					optionItem = {"name":""+order[i], "value":""+order[i]};
+					optoinArray.push(optionItem);
+					}
+					layui.formSelects.data('select5','local',{
+						arr:optoinArray
+					});
+				}
+			}
+		});
+	}
+	</script>
+</body>
+</html>

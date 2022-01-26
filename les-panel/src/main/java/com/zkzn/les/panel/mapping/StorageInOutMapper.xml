@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.panel.dao.StorageInOutDao">
+
+    <resultMap id="inStockReportMap" type="com.zkzn.les.panel.domain.stock.InStockReport">
+        <result column="warehouse_name" property="warehouseName"/>
+        <result column="client_name" property="clientName"/>
+        <result column="arrival_code" property="arrivalCode"/>
+        <result column="material_desc" property="materialDesc"/>
+        <result column="arrival_count" property="arrivalCount"/>
+        <result column="material_unit" property="materialUnit"/>
+        <result column="create_time" property="createTime"/>
+        <result column="receive_start_time" property="receiveStartTime"/>
+        <result column="receive_end_time" property="receiveEndTime"/>
+        <result column="batch_no" property="batchNo"/>
+        <result column="up_start" property="upStart"/>
+        <result column="up_end" property="upEnd"/>
+        <result column="position_code" property="positionCode"/>
+        <result column="carrier_code" property="carrierCode"/>
+    </resultMap>
+
+    <select id="selectInStockReportList" resultMap="inStockReportMap"
+            parameterType="map">
+        select
+        wrt.warehouse_name,
+        wrt.client_name,
+        wrt.arrival_code,
+        wand.material_desc,
+        wand.arrival_count,
+        wand.material_unit,
+        wand.create_time,
+        wrt.receive_start_time,
+        wrt.receive_end_time,
+        wufr.batch_no,
+        wufr.create_time      as 'up_start',
+        wufr.upper_upper_time as 'up_end',
+        wufr.position_code,
+        wufr.carrier_code
+        from w_arrival_notice_detail wand
+        left join w_receive_task_detail wrtd on wrtd.arrival_detail_id = wand.arrival_detail_id
+        left join w_receive_task wrt on wrt.receive_task_id = wrtd.receive_task_id
+        left join w_upper_frame_record wufr
+        on wufr.receive_task_id = wrt.receive_task_id and wufr.receive_detail_id = wrtd.receive_task_id
+        <where>
+            <if test="clientNames != '' and clientNames != null">
+                <foreach collection="clientNames.split(',')" open="and wrt.client_name in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="warehouseNames != null and '' != warehouseNames">
+                <foreach collection="warehouseNames.split(',')" open="and wrt.warehouse_code in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="positionCode != '' and positionCode != null">
+                and wufr.position_code = #{positionCode}
+            </if>
+            <if test="positionCarCode != '' and positionCarCode != null">
+                and wufr.carrier_code = #{positionCarCode}
+            </if>
+            <if test="begin != null and begin != '' and  end != null and end != ''">
+                and wand.create_time between #{begin} and #{end}
+            </if>
+        </where>
+        order by wrt.warehouse_name, wrt.client_name, wrt.arrival_code
+    </select>
+
+
+    <resultMap id="OutStockReportMap" type="com.zkzn.les.panel.domain.stock.OutStockReport">
+        <result column="ORG_NAME" property="warehouseName"/>
+        <result column="client_name" property="clientName"/>
+        <result column="order_code" property="orderCode"/>
+        <result column="material_desc" property="materialDesc"/>
+        <result column="material_unit" property="materialUnit"/>
+        <result column="batch_no" property="batchNo"/>
+        <result column="position_code" property="positionCode"/>
+        <result column="position_car_code" property="carrierCode"/>
+        <result column="creater_time" property="createTime"/>
+        <result column="connect_time" property="connectTime"/>
+        <result column="connect_name" property="connectName"/>
+    </resultMap>
+
+    <select id="selectOutStockReportList" resultMap="OutStockReportMap"
+            parameterType="map">
+        select
+        tw.ORG_NAME,
+        ost.client_name,
+        ost.order_code,
+        ostd.material_desc,
+        ostd.material_unit,
+        ostd.batch_no,
+        ostd.position_code,
+        ostd.position_car_code,
+        ostd.creater_time,
+        ost.connect_time,
+        ost.connect_name
+        from o_shipment_task_detail ostd
+        left join o_shipment_task ost on ost.shipment_task_id = ostd.shipment_task_id
+        left join t_warehouse tw on tw.ORG_CODE = ost.warehouse_code
+        <where>
+            <if test="clientNames != '' and clientNames != null">
+                <foreach collection="clientNames.split(',')" open="and ost.client_name in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="warehouseNames != null and '' != warehouseNames">
+                <foreach collection="warehouseNames.split(',')" open="and ost.warehouse_code in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="positionCode != '' and positionCode != null">
+                and ostd.position_code = #{positionCode}
+            </if>
+            <if test="positionCarCode != '' and positionCarCode != null">
+                and ostd.position_car_code = #{positionCarCode}
+            </if>
+            <if test="begin != null and begin != '' and  end != null and end != ''">
+                and ostd.creater_time between #{begin} and #{end}
+            </if>
+        </where>
+        order by tw.ORG_NAME, ost.client_name, ost.order_code
+    </select>
+</mapper>

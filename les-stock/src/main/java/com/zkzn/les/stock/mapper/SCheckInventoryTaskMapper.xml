@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zkzn.les.stock.dao.SCheckInventoryTaskDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zkzn.les.stock.pojo.SCheckInventoryTask">
+        <id column="task_id" property="taskId" />
+        <result column="task_number" property="taskNumber" />
+        <result column="position_num" property="positionNum" />
+        <result column="client_name" property="clientName" />
+        <result column="warehouse_code" property="warehouseCode" />
+        <result column="verify_user_id" property="verifyUserId" />
+        <result column="verify_user_name" property="verifyUserName" />
+        <result column="create_by" property="createBy" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        task_id,
+        task_number,
+        client_name,
+        warehouse_code,
+        position_num,
+        verify_user_id,
+        verify_user_name,
+        verify_status,
+        check_status,
+        create_by,
+        create_time,
+        end_time,
+        verify_time
+    </sql>
+
+    <insert id="saveTask" parameterType="com.zkzn.les.stock.pojo.SCheckInventoryTask"  useGeneratedKeys="true" keyProperty="taskId">
+        insert into s_check_inventory_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskNumber != null">
+                task_number,
+            </if>
+            <if test="positionNum != null">
+                position_num,
+            </if>
+            <if test="clientName != null">
+                client_name,
+            </if>
+            <if test="warehouseCode != null">
+                warehouse_code,
+            </if>
+            <if test="verifyUserId != null">
+                verify_user_id,
+            </if>
+            <if test="verifyUserName != null">
+                verify_user_name,
+            </if>
+            <if test="verifyStatus != null">
+                verify_status,
+            </if>
+            <if test="checkStatus != null">
+                check_status,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="verifyTime != null">
+                verify_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskNumber != null">
+                #{taskNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="positionNum != null">
+                #{positionNum,jdbcType=INTEGER},
+            </if>
+            <if test="clientName != null">
+                #{clientName,jdbcType=VARCHAR},
+            </if>
+            <if test="warehouseCode != null">
+                #{warehouseCode,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyUserId != null">
+                #{verifyUserId,jdbcType=INTEGER},
+            </if>
+            <if test="verifyUserName != null">
+                #{verifyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyStatus != null">
+                #{verifyStatus,jdbcType=TINYINT},
+            </if>
+            <if test="checkStatus != null">
+                #{checkStatus,jdbcType=TINYINT},
+            </if>
+            <if test="createBy != null">
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="verifyTime != null">
+                #{verifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateStoragePosition">
+        UPDATE b_storage_position SET occupy_status = #{status} WHERE warehouse_code = #{warehouseCode}
+    </update>
+    <update id="updateStorageBinAtCheck" parameterType="java.lang.String">
+        update s_material_storage_bin
+        set check_count = stock_count,
+        stock_count = 0.00
+        where stock_count > 0
+        and warehouse_code = #{warehouseCode}
+        and client_name = #{clientName}
+    </update>
+    <update id="updateByPrimaryKeySelective" parameterType="com.zkzn.les.stock.pojo.SCheckInventoryTask">
+        update s_check_inventory_task
+        <set>
+            <if test="taskNumber != null">
+                task_number = #{taskNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="clientName != null">
+                client_name = #{clientName,jdbcType=VARCHAR},
+            </if>
+            <if test="warehouseCode != null">
+                warehouse_code = #{warehouseCode,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyUserId != null">
+                verify_user_id = #{verifyUserId,jdbcType=INTEGER},
+            </if>
+            <if test="verifyUserName != null">
+                verify_user_name = #{verifyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="verifyStatus != null">
+                verify_status = #{verifyStatus,jdbcType=TINYINT},
+            </if>
+            <if test="checkStatus != null">
+                check_status = #{checkStatus,jdbcType=TINYINT},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="verifyTime != null">
+                verify_time = #{verifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where task_id = #{taskId}
+    </update>
+    <select id="listTask" resultType="com.zkzn.les.stock.pojo.SCheckInventoryTask"
+            parameterType="com.zkzn.les.stock.pojo.SCheckInventoryTask">
+        select task_id,
+        task_number,
+        client_name,
+        warehouse_code,
+        verify_user_id,
+        verify_user_name,
+        verify_status,
+        check_status,
+        position_num,
+        create_by,
+        create_time,
+        end_time,
+        verify_time
+        from s_check_inventory_task scit
+        <where>
+            <if test="taskNumber != null  and taskNumber != ''">
+                and task_number like concat('%', #{taskNumber}, '%')
+            </if>
+            <if test="verifyStatus != null">
+                and scit.verify_status = #{verifyStatus}
+            </if>
+            <if test="checkStatus != null">
+                and scit.check_status >= #{checkStatus}
+            </if>
+            <if test="warehouseCode != null">
+                and scit.warehouse_code = #{warehouseCode}
+            </if>
+        </where>
+    </select>
+    <select id="listTaskDetail" resultType="com.zkzn.les.stock.pojo.vo.SCheckInventoryDetailVO"
+            parameterType="com.zkzn.les.stock.pojo.vo.SCheckInventoryDetailVO">
+        select scid.detail_id,
+        scid.task_id,
+        scid.storage_bin_id,
+        scid.check_count,
+        scid.stock_count,
+        scid.handled_by,
+        scid.handled_time,
+        smsb.material_desc,
+        smsb.material_unit,
+        smsb.batch_no,
+        smsb.stock_status,
+        smsb.position_car_code,
+        bsp.position_code
+        from s_check_inventory_detail scid
+        left join s_material_storage_bin smsb on scid.storage_bin_id = smsb.storage_bin_id
+        left join b_storage_position bsp on smsb.storage_position_id = bsp.storage_position_id
+        <where>
+            <if test="materialDesc != null  and materialDesc != ''">
+                and smsb.material_desc like concat('%', #{materialDesc}, '%')
+            </if>
+            <if test="storagePositionId != null">
+                and smsb.storage_position_id = #{storagePositionId}
+            </if>
+            <if test="positionCode != null  and positionCode != ''">
+                and bsp.position_code like  concat('%', #{positionCode}, '%')
+            </if>
+            <if test="taskId != null">
+                and scid.task_id = #{taskId}
+            </if>
+        </where>
+    </select>
+    <select id="selectByPrimaryKey" resultType="com.zkzn.les.stock.pojo.SCheckInventoryTask"
+            parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List" />
+        from s_check_inventory_task
+        where task_id = #{taskId}
+    </select>
+
+    <resultMap id="MaterialsGroupVOMap" type="com.zkzn.les.stock.pojo.vo.MaterialsGroupVO">
+        <id column="storage_position_id" property="storagePositionId" />
+        <result column="position_code" property="storagePositionCode" />
+        <collection
+                property="materials"
+                ofType="com.zkzn.les.stock.pojo.vo.BeCountedMaterialsVO"
+                select="getMaterials"
+                column="{storage_position_id = storage_position_id,warehouse_code = warehouse_code,client_name = client_name}"/>
+    </resultMap>
+
+    <select id="selectMaterialsToBeCounted" resultMap="MaterialsGroupVOMap"
+            parameterType="com.zkzn.les.stock.pojo.SCheckInventoryTask">
+        select bsp.storage_position_id,
+        bsp.position_code,
+        count(smsb.storage_position_id) as 'num',
+        #{warehouseCode} as 'warehouse_code',
+        #{clientName} as 'client_name'
+        from b_storage_position bsp
+        left join s_material_storage_bin smsb on smsb.storage_position_id = bsp.storage_position_id
+        where bsp.warehouse_code = #{warehouseCode}
+        and smsb.client_name = #{clientName}
+        and smsb.check_count > 0
+        group by bsp.storage_position_id, bsp.position_code
+        having count(smsb.storage_position_id) > 0
+        order by bsp.position_code
+    </select>
+
+    <select id="getMaterials" resultType="com.zkzn.les.stock.pojo.vo.BeCountedMaterialsVO" parameterType="map" >
+        select
+        smsb.storage_position_id,
+        smsb.storage_bin_id,
+        smsb.position_car_code,
+        smsb.material_desc,
+        smsb.material_unit,
+        smsb.batch_no,
+        smsb.stock_status,
+        smsb.check_count as 'be_counted',
+        scid.detail_id,
+        scid.check_count,
+        scid.handled_by,
+        scid.handled_time
+        from s_material_storage_bin smsb
+        left join s_check_inventory_detail scid on scid.storage_bin_id = smsb.storage_bin_id
+        where smsb.storage_position_id = #{storage_position_id} and smsb.client_name = #{client_name} and smsb.warehouse_code = #{warehouse_code}
+        and smsb.check_count > 0
+    </select>
+
+    <select id="listTaskPC" resultType="com.zkzn.les.stock.pojo.SCheckInventoryTask" parameterType="map">
+        select scit.task_id,
+        scit.task_number,
+        scit.client_name,
+        scit.warehouse_code,
+        w.ORG_NAME as 'warehouse_name',
+        scit.verify_user_id,
+        scit.verify_user_name,
+        scit.verify_status,
+        scit.check_status,
+        scit.position_num,
+        scit.create_by,
+        scit.create_time,
+        scit.end_time,
+        scit.verify_time
+        from s_check_inventory_task scit
+        left join t_warehouse w ON scit.warehouse_code = w.ORG_CODE
+        <where>
+            <if test="taskNumber != null  and taskNumber != ''">
+                and task_number like concat('%', #{taskNumber}, '%')
+            </if>
+            <if test="verifyStatus != null and verifyStatus != ''">
+                and scit.verify_status = #{verifyStatus}
+            </if>
+            <if test="checkStatus != null and checkStatus != ''">
+                and scit.check_status = #{checkStatus}
+            </if>
+            <if test="warehouseCode != null and '' != warehouseCode">
+                <foreach collection="warehouseCode.split(';')" open="and scit.warehouse_code in (" close=")" separator="," index="index" item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectVerifyUserList" resultType="java.util.Map">
+        SELECT u.user_id   AS "verifyUserId",
+        u.user_name AS "verifyUserName"
+        FROM t_user u
+        WHERE u.STATUS = 1
+    </select>
+    <select id="selectTaskByEntity" resultType="com.zkzn.les.stock.pojo.SCheckInventoryTask">
+        select
+        <include refid="Base_Column_List" />
+        from s_check_inventory_task
+        <where>
+            <if test="clientName != null and clientName != ''">
+                and client_name = #{clientName}
+            </if>
+            <if test="warehouseCode != null and warehouseCode != ''">
+                and warehouse_code = #{warehouseCode}
+            </if>
+            <if test="verifyStatus != null">
+                and verify_status = #{verifyStatus}
+            </if>
+        </where>
+    </select>
+    <select id="countToBeCheckedPositionNum" resultType="java.lang.Integer">
+        select count(bsp.storage_position_id)
+        from b_storage_position bsp
+        left join s_material_storage_bin smsb on smsb.storage_position_id = bsp.storage_position_id
+        where bsp.warehouse_code = #{warehouseCode}
+        and smsb.client_name = #{clientName}
+        and smsb.stock_count> 0
+    </select>
+
+    <delete id="deleteTask">
+        delete from s_check_inventory_task where task_id = #{id}
+    </delete>
+
+</mapper>

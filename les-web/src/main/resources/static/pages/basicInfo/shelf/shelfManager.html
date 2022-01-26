@@ -1,0 +1,253 @@
+<#assign  title="货架信息管理" />
+<#include '/header.html' />
+<meta charset="UTF-8">
+<#if athemTag.loginFlag=="true" && athemTag.menuFlag=="true">
+	<div class="layui-fluid">
+		<div class="layui-row layui-form">
+			<div class="layui-col-md3">
+			 	<label class="layui-form-label">货架编号:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="shelfCode_search" class="layui-input">
+			    </div>
+			</div>
+<!-- 			<div class="layui-col-md3">
+			 	<label class="layui-form-label">货架名称:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="shelfName_search" class="layui-input">
+			    </div>
+			</div> -->
+			<div class="layui-col-md3">
+			 	<label class="layui-form-label">所在区域:</label>
+			 	 <div class="layui-input-block">
+			      <input type="text" id="areaId_search" class="layui-input">
+			    </div>
+			</div>
+			<div class="layui-col-md3">
+			 	<label class="layui-form-label">状态:</label>
+			 	 <div class="layui-input-block">
+			       <select name="status_search" id="status_search" class="layui-select">
+						<option value=""></option>
+					</select>
+			    </div>
+			</div>
+		</div>
+		<div class="layui-row layui-form" style="margin-bottom: 0">
+			<div class="layui-col-md6">&nbsp;</div>
+			<div class="layui-col-md6">
+				<div class="layui-btn-container" style="text-align: right;">
+					<#include '/bottonContainer.html' />
+				</div>
+			</div>
+		</div>
+	</div>
+	<table id="shelfTab" lay-filter="shelfTabF"></table>
+	<script src="${ctx}/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script type="text/javascript">
+		var $ = layui.$;
+		var element = layui.element;
+		var layer = layui.layer;
+		var table = layui.table;
+		var form = layui.form;
+		var oldData;//编辑时使用的
+		var dictItems = null;//数据字典
+		table.render({
+			elem:'#shelfTab',
+			id:'shelfTabId',
+			url:'${ctx}/shelf/',
+			cols:[[
+			{type:'checkbox'}
+			,{field:'shelfCode',title:'货架编号',sort:true}
+			,{field:'shelfName',title:'货架名称',sort:true}
+			,{field:'areaId',title:'所在区域',sort:true}
+			,{field:'status',title:'状态'}
+			]],
+			page: {theme: '#008155'},
+			height: 'full-95',
+    		even:true
+    		,done:function(res,page,count){//列表数据回调函数
+    			var dictType = new Array();
+    			dictType.push("enable");
+    			//查询字典
+    			var option={
+    					url:'${ctx}/dictItems/queryDictItemByTypes',
+    					type:'POST',
+    					dataType:'json',
+    					contentType: "application/json",
+    					data:JSON.stringify(dictType),
+    					success:function(res){
+    						if(res.code==0){
+    							dictItems = res.data
+    							//列表中的状态赋值
+    							changeItemName(res.data);
+    							//搜索框的状态赋值
+    							defulatSelect(dictItems);
+    						}
+    					}
+	    			};
+    			$.ajax(option);
+    		}
+		});
+		var active = {
+				add:function(othis){
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'新增货架信息'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type
+				        ,id: 'shelfAdd'+type //防止重复弹出
+				        ,content: '${ctx}/pages/basicInfo/shelf/addShelf.html'
+				        ,shade: 0 //不显示遮罩
+			      	});
+				},
+				edit:function(othis){
+					var checkStatus = table.checkStatus('shelfTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要编辑的行！',{icon: 2});
+      					return ;
+					}else if(oldData.length >1){
+      					layer.alert('编辑不能超过多行！',{icon: 2});
+      					return ;
+      				}
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'编辑货架信息'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type
+				        ,id: 'shelfEdit'+type //防止重复弹出
+				        ,content: '${ctx}/pages/basicInfo/shelf/editShelf.html'
+				        ,shade: 0 //不显示遮罩
+				        ,yes: function(){
+				          layer.closeAll();
+				        }
+			     	 });
+				},del:function(othis){
+					var checkStatus = table.checkStatus('shelfTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要删除的行！',{icon: 2});
+      					return ;
+					}
+					var idarrys = new Array();
+					for(var i=0;i<oldData.length;i++){
+						idarrys.push(oldData[i].id);
+					}
+					layer.confirm('确定删除该条货架信息?', {icon: 3, title:'提示'}, function(index){
+			  			  //do something
+			  			  var option ={
+								url:'${ctx}/shelf/deleteShelf',
+								type:'POST',
+								contentType: "application/json",
+								dataType:'json',
+								data:JSON.stringify(idarrys),
+								success:function(data){
+									if(data.code==0){
+										table.reload('shelfTabId');//刷新列表
+									}
+								},error:function(data){
+									layer.alert(data.msg);
+								}
+							}
+							$.ajax(option);
+			  			  layer.close(index);
+			  			});
+				},search:function(othis){
+					var shelfCode = $('#shelfCode_search');
+					var areaId =  $('#areaId_search');
+					var status =  $('#status_search');
+				      //执行重载
+				      table.reload('shelfTabId', {
+				        where:{
+				        	shelfCode: shelfCode.val()
+				        	,areaId: areaId.val()
+				        	,status: status.val()
+				        }
+				        ,page:{"curr":1}
+				      });
+				},reset:function(othis){
+					$('#shelfCode_search').val("");
+					$('#areaId_search').val("");
+					$('#status_search').val("");
+					form.render("select");
+				},check:function(othis){
+					var checkStatus =  table.checkStatus('shelfTabId');
+      				oldData = checkStatus.data;
+					if(oldData.length<=0){
+						layer.alert('请选择要查看的行！',{icon: 2});
+      					return ;
+					}else if(oldData.length >1){
+      					layer.alert('查看不能超过多行！',{icon: 2});
+      					return ;
+      				}
+					var type = othis.data('type');
+		  			layer.open({
+				        type: 2
+				        ,title:'货架信息'
+				        ,maxmin:true
+				        ,area: ['800px', '450px']
+				        ,offset: type
+				        ,id: 'shelfInfo'+type //防止重复弹出
+				        ,content: '${ctx}/pages/basicInfo/shelf/shelfInfo.html'
+				        ,shade: 0 //不显示遮罩
+			     	 });
+				}
+
+
+
+		};
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		function changeItemName(data){
+	    		//状态数据处理
+	    		$("[data-field='status']").children().each(function(){
+	    			for(var i=0;i<data.length;i++){
+	    				if(data[i].dictTypeId=="enable" && data[i].itemValue==$(this).text().trim()){
+	    					$(this).text(data[i].itemName);
+	    				}
+	    			}
+	    		});
+		}
+		function defulatSelect(dictItems){
+			if(dictItems && dictItems.length>0){
+				if($("#status_search").find("option").length==1){
+				  for(var i=0;i<dictItems.length;i++){
+					   if(dictItems[i].dictTypeId=="enable"){
+						  $("#status_search").append("<option value="+dictItems[i].itemValue+">"+dictItems[i].itemName+"</option>");
+					  }
+				  }
+				  form.render('select');
+			  }
+			}
+		}
+		table.on('sort(shelfTabF)', function (obj) {
+			var sortColums;
+			if(obj.field=="shelfCode"){
+				sortColums = "shelf_code "+obj.type;
+			}else if(obj.field=="areaId"){
+				sortColums = "area_name "+obj.type;
+			}
+			var shelfCode = $('#shelfCode_search');
+			var areaId =  $('#areaId_search');
+			var status =  $('#status_search');
+		      //执行重载
+		      table.reload('shelfTabId', {
+		        where:{
+		        	shelfCode: shelfCode.val()
+		        	,areaId: areaId.val()
+		        	,status: status.val()
+		        	,sortColums:sortColums
+		        }
+		        ,page:{"curr":1}
+		      });
+		});
+	</script>
+<#else>
+	<#include '/noAuthority.html' />
+</#if>
+<#include '/footer.html' />

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+<link rel="stylesheet" href="/iles/pages/layui/css/layui.css"  type="text/css" />
+<link rel="stylesheet" href="/iles/pages/css/layui_extend.css"  media="all">
+<title>设置人员</title>
+</head>
+<body>
+ <div id="bodyDiv">
+
+</div>
+<script type="text/html" id="bodyTpl">
+	<div style="padding: 20px; background-color: #F2F2F2;">
+  		<div class="layui-row layui-col-space15" style="position:relative;float:left;width:42%;height:100%;margin-top:24px">
+		    <div>
+		      <div class="layui-card">
+		        <div class="layui-card-header">当前对应角色</div>
+		        <div class="layui-card-body">
+		        	<div class="layui-collapse">
+					  	<div class="layui-colla-item">
+						    <h2 class="layui-colla-title">检索信息</h2>
+						    <div class="layui-colla-content">
+						      	<div class="layui-fluid">
+									<div class="layui-row layui-form">
+										 <div class="layui-col-md6">
+										 	<label class="layui-form-label">角色名称:</label>
+										 	 <div class="layui-input-block">
+										      <input type="text" id="roleName_search" class="layui-input">
+										    </div>
+										 </div>
+										 <div class="layui-col-md6">
+										 	<label class="layui-form-label">角色代码:</label>
+										 	 <div class="layui-input-block">
+										      <input type="text" id="roleCode_search" class="layui-input">
+										    </div>
+										 </div>
+									</div>
+									<div class="layui-row layui-form" style="margin-bottom: 0">
+										<div class="layui-col-md6">&nbsp;</div>
+										<div class="layui-col-md6">
+											<div class="layui-btn-container" style="text-align: right;">
+											  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="search"><i class="layui-icon">&#xe615;</i>查询</button>
+											  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="reset"><i class="mine-icon">&#xe640;</i>重置</button>
+											</div>
+										</div>
+									</div>
+								</div>
+						    </div>
+					  	</div>
+					  </div>
+				     <table class="layui-hide" id="currRoleTab" lay-filter="currRoleTabF"></table>
+		        </div>
+		      </div>
+		    </div>
+		 </div>
+		 <div class="layui-row layui-form" style="margin-bottom: 0;position:relative;margin-top:111px;float:left;width:10%;">
+				<div class="layui-col-md5">&nbsp;</div>
+				<div class="layui-col-md5">
+					<div class="layui-btn-container" style="text-align: left;margin-top:15px;">
+					  <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="up" data-type="auto"><!-- <i class="layui-icon">&#xe61f;</i> -->左移</button>
+					  <button class="layui-btn layui-btn-normal layui-btn-sm" data-method="down" style="margin-top:30px;"><!-- <i class="layui-icon">&#xe642;</i> -->右移</button>
+					</div>
+				</div>
+			</div>
+		 <div class="layui-row layui-col-space15" style="position:relative;float:right;width:42%;height:100%;margin-top:24px">
+		    <div>
+		      <div class="layui-card">
+		        <div class="layui-card-header">未设置角色</div>
+		        <div class="layui-card-body">
+		        	<div class="layui-collapse">
+					  	<div class="layui-colla-item">
+						    <h2 class="layui-colla-title">检索信息</h2>
+						    <div class="layui-colla-content">
+						      	<div class="layui-fluid">
+									<div class="layui-row layui-form">
+										 <div class="layui-col-md6">
+										 	<label class="layui-form-label">角色名称:</label>
+										 	 <div class="layui-input-block">
+										      <input type="text" id="roleName_search_n" class="layui-input">
+										    </div>
+										 </div>
+										 <div class="layui-col-md6">
+										 	<label class="layui-form-label">角色代码:</label>
+										 	 <div class="layui-input-block">
+										      <input type="text" id="roleCode_search_n" class="layui-input">
+										    </div>
+										 </div>
+									</div>
+									<div class="layui-row layui-form" style="margin-bottom: 0">
+										<div class="layui-col-md6">&nbsp;</div>
+										<div class="layui-col-md6">
+											<div class="layui-btn-container" style="text-align: right;">
+											  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="searchN"><i class="layui-icon">&#xe615;</i>查询</button>
+											  <button class="layui-btn layui-btn-normal layui-btn-sm"  data-method="resetN"><i class="mine-icon">&#xe640;</i>重置</button>
+											</div>
+										</div>
+									</div>
+								</div>
+						    </div>
+					  	</div>
+					  </div>
+				    <table class="layui-hide" id="roleTab" lay-filter="roleTabF"></table>
+		        </div>
+		      </div>
+		    </div>
+		 </div>
+	</div>
+</script>
+	<script src="/iles/pages/layui/layui.all.js" charset="UTF-8"></script>
+	<script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+	<script src="/iles/pages/layui/lay/modules/tableFilter.js" charset="UTF-8"></script>
+	<script src="/iles/pages/assets/js/jquery-1.10.2.js"></script>
+	<script src="/iles/pages/js/loginInspect.js"></script>
+	<script type="text/javascript">
+	var contextPath = config.basicInfoConfig.contextPath;
+
+	var element = layui.element;
+	var layer = layui.layer;
+	var table = layui.table;
+	var userId = parent.userId;
+
+
+	var active = {
+			up:function(othis){
+				var checkStatus = table.checkStatus('roleTabId');
+  				var userData = checkStatus.data;
+				if(userData.length<=0){
+					layer.alert('请选择要左移的行！',{icon: 2});
+  					return ;
+				}
+				var tempData = "";
+				for(var i=0;i<userData.length;i++){
+					tempData = tempData + "{'userId':"+"'"+userId+"'"+",'roleId':'"+userData[i].id+"'},";
+				}
+				tempData = "["+tempData.substring(0,tempData.length-1)+"]";
+				var option = {
+						url:contextPath+'userRole/saveUserRole',
+						type:'POST',
+						data: JSON.stringify(eval('('+tempData+')')),
+			        	contentType:'application/json',
+						success:function(res){
+							if(res.code==0){//成功后刷新列表
+								table.reload('currRoleTabId');
+								table.reload('roleTabId');
+							}
+						}
+				};
+				$.ajax(option);
+			}
+			,down:function(othis){
+				var checkStatus = table.checkStatus('currRoleTabId');
+  				var userData = checkStatus.data;
+				if(userData.length<=0){
+					layer.alert('请选择要右移的行！',{icon: 2});
+  					return ;
+				}
+				var tempData = "";
+				for(var i=0;i<userData.length;i++){
+					tempData = tempData + "{'userId':"+"'"+userId+"'"+",'roleId':'"+userData[i].id+"'},";
+				}
+				tempData = "["+tempData.substring(0,tempData.length-1)+"]";
+				var option = {
+						url:contextPath+'userRole/deleteUserRole',
+						type:'POST',
+						data: JSON.stringify(eval('('+tempData+')')),
+			        	contentType:'application/json',
+						success:function(res){
+							if(res.code==0){//成功后刷新列表
+								table.reload('currRoleTabId');
+								table.reload('roleTabId');
+							}
+						}
+				};
+				$.ajax(option);
+			},search:function(othis){
+				var roleName = $('#roleName_search');
+				var roleCode = $('#roleCode_search');
+			      //执行重载
+			      table.reload('currRoleTabId', {
+			        where:{
+			        	roleName: roleName.val()
+			           ,roleCode:roleCode.val()
+			        }
+			        ,page:{"curr":1}
+			      });
+			},reset:function(othis){
+				$('#roleName_search').val("");
+				$('#roleCode_search').val("");
+			},searchN:function(othis){
+				var roleName = $('#roleName_search_n');
+				var roleCode = $('#roleCode_search_n');
+			      //执行重载
+			      table.reload('roleTabId', {
+			        where:{
+			        	roleName: roleName.val()
+			           ,roleCode:roleCode.val()
+			        }
+			        ,page:{"curr":1}
+			      });
+			},resetN:function(othis){
+				$('#roleName_search_n').val("");
+				$('#roleCode_search_n').val("");
+
+			}
+	};
+	function loadding(){
+		//未设置用户
+		table.render({
+			elem:'#roleTab',
+			id:'roleTabId',
+			url:contextPath+'role/',
+			cols:[[
+			{type:'checkbox'},
+			{field:'roleName',title:'角色名称'},
+			{field:'roleCode', title: '角色代码'},
+			]],
+			page: {theme: '#008155'},
+			where:{"userId":userId},
+			even:true,
+			done:function(res,page,count){//列表数据回调函数
+			}
+		});
+		//当前对应角色
+		table.render({
+			elem:'#currRoleTab',
+			id:'currRoleTabId',
+			url:contextPath+'user/listUserRole',
+			cols:[[
+			{type:'checkbox'},
+			{field:'roleName',title:'角色名称'},
+			{field:'roleCode', title: '角色代码'},
+			]],
+			page: {theme: '#008155'},
+			where:{"userId":userId},
+			//height: 'full-95',
+			even:true,
+			request: {
+				  pageName: 'pageNumber' //页码的参数名称，默认：page
+				  ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+				},
+			done:function(res,page,count){//列表数据回调函数
+			}
+		});
+		$('.layui-btn-container button').on('click', function(){
+		    var othis = $(this), method = othis.data('method');
+		    active[method] ? active[method].call(this, othis) : '';
+	  	});
+		element.init();
+	}
+
+	</script>
+</body>
+</html>

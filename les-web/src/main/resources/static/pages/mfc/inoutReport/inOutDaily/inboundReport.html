@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>入库统计报表-daily</title>
+  <link rel="stylesheet" href="/iles/pages/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="/iles/pages/layui/css/formSelects-v4.css" />
+
+  <script src="/iles/pages/js/jquery.min.js"></script>
+  <script src="/iles/pages/layui/layui.all.js"></script>
+  <script src="/iles/pages/layui/lay/modules/formSelects-v4.js" type="text/javascript" charset="utf-8"></script>
+  <script src="../inOut.js"></script>
+  <script src="/iles/pages/js/serverPathConfig.js" charset="UTF-8"></script>
+  <style>
+    body {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <form class="layui-form" lay-filter="form">
+    <div class="layui-row">
+      <div class="layui-col-xs3">
+        <div class="layui-form-item">
+          <label class="layui-form-label">客户</label>
+          <div class="layui-input-block">
+            <select id="clientNames" name="clientNames" xm-select="clientNames">
+              <option value="">请选择</option>
+
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs3">
+        <div class="layui-form-item">
+          <label class="layui-form-label">仓库</label>
+          <div class="layui-input-block">
+            <select id="warehouseNames" name="warehouseNames" xm-select="warehouseNames">
+              <option value="">请选择</option>
+
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs3">
+        <div class="layui-form-item">
+          <label class="layui-form-label">仓位号</label>
+          <div class="layui-input-block">
+            <input type="text" name="positionCode" lay-verify="" placeholder="请输入仓位号" autocomplete="off"
+              class="layui-input">
+          </div>
+        </div>
+      </div>
+      <div class="layui-col-xs3">
+        <div class="layui-form-item">
+          <label class="layui-form-label">载具号</label>
+          <div class="layui-input-block">
+            <input type="text" name="positionCarCode" lay-verify="" placeholder="请输入载具号" autocomplete="off"
+              class="layui-input">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="layui-row">
+
+      <div class="layui-col-xs12">
+        <div class="layui-form-item">
+          <div class="layui-input-block" style="float:right">
+            <a class="layui-btn" id="search">搜索</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+
+  <table id="inboundReport" lay-filter="inboundReport"></table>
+
+  <script>
+    layui.config({
+      version: '1632428048355' //为了更新 js 缓存，可忽略
+    });
+
+    //加载模块
+    layui.use(['layer', 'table', 'element', 'form', 'jquery'], function () {
+      //得到各种内置组件
+      var layer = layui.layer //弹层
+        , table = layui.table //表格
+        , element = layui.element //元素操作
+        , $ = layui.jquery
+        , form = layui.form;
+      var formSelects = layui.formSelects;
+      var contextPath = config.panelConfig.contextPath;
+
+      let date = dateFormat('YYYY-mm-dd', new Date());
+      let param = {
+        'begin': date + ' 00:00:00',
+        'end': date + ' 23:59:59',
+      };
+
+      //执行一个 table 实例
+      table.render({
+        elem: '#inboundReport'
+        , id: 'taskTabId'
+        , url: contextPath + 'inboundReport' //数据接口
+        , title: '入库报表'
+        , loading: true
+        , page: true //开启分页
+        , limit: 30
+        , limits: [30, 60, 90]
+        , where: param
+        // , toolbar: 'default' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+        , cols: [[ //表头
+          { field: 'warehouseName', title: '仓库名称', width: 150, }
+          , { field: 'clientName', title: '客户名称', width: 250, }
+          , { field: 'arrivalCode', title: '任务编号', width: 120 }
+          , { field: 'materialDesc', title: '货物名称', width: 200 }
+          , { field: 'arrivalCount', title: '到货数量', width: 80 }
+          , { field: 'materialUnit', title: '单位', width: 80 }
+          , { field: 'batchNo', title: '批次号', width: 100 }
+          , { field: 'createTime', title: '创建时间', width: 150 }
+          , { field: 'receiveStartTime', title: '点收开始时间', width: 150 }
+          , { field: 'receiveEndTime', title: '点收结束时间', width: 150 }
+          , {
+            field: 'receiveTotalTime', title: '点收时长', width: 120, templet: function (d) {
+              return timeInterval(d.receiveStartTime, d.receiveEndTime);
+            }
+          }
+          , { field: 'upStart', title: '上架开始时间', width: 150 }
+          , { field: 'upEnd', title: '上架结束时间', width: 150 }
+          , {
+            field: 'upTotal', title: '上架时长', width: 120, templet: function (d) {
+              return timeInterval(d.upStart, d.upEnd);
+            }
+          }
+          , { field: 'positionCode', title: '上架仓位', width: 100 }
+          , { field: 'carrierCode', title: '仓位载具', width: 100 }
+
+        ]]
+        , done: function (res, curr, count) {
+          //合并
+          merge(res);
+        }
+      });
+      initWarehouseMultiSelect('warehouseNames', 'warehouseNames', null);
+      initClientMultiSelect('clientNames', 'clientNames', null);
+
+
+      /* 初始化仓库 */
+      function initWarehouseMultiSelect(warehouseSelectId, xmselectId, selectValues) {
+        var option = {
+          url: contextPath + 'common/initWarehouseSelect',
+          type: "get",
+          contentType: "application/json",
+          dataType: 'json',
+          success: function (result) {
+            if (result.code == 0) {
+              var warehouseList = result.data;
+              if (warehouseList.length) {
+                var optoinArray = new Array();
+                for (var i = 0; i < warehouseList.length; i++) {
+                  var optionItem = {
+                    "name": warehouseList[i].warehouseName,
+                    "value": warehouseList[i].warehouseCode
+                  };
+                  optoinArray.push(optionItem);
+                }
+                if ($("#" + warehouseSelectId).find("option").length == 1) {
+                  layui.formSelects.data(xmselectId, 'local', {
+                    arr: optoinArray
+                  });
+                }
+                layui.form.render("select");
+              }
+            }
+          }
+        }
+        $.ajax(option);
+      }
+      /* 初始化客户 */
+      function initClientMultiSelect(clientSelectId, xmselectId, selectValues) {
+        var option = {
+          url: contextPath + 'common/initClientSelect',
+          type: "get",
+          contentType: "application/json",
+          dataType: 'json',
+          // data: JSON.stringify(params),
+          success: function (result) {
+            if (result.code == 0) {
+              var clientList = result.data;
+              if (clientList.length) {
+                var optoinArray = new Array();
+                for (var i = 0; i < clientList.length; i++) {
+                  var optionItem = {
+                    "name": clientList[i].clientName,
+                    "value": clientList[i].clientName
+                  };
+                  optoinArray.push(optionItem);
+                }
+                if ($("#" + clientSelectId).find("option").length == 1) {
+                  layui.formSelects.data(xmselectId, 'local', {
+                    arr: optoinArray
+                  });
+                }
+                layui.form.render("select");
+              }
+            }
+          }
+        }
+        $.ajax(option);
+      }
+
+      /* 监听检索按钮 */
+      $("#search").click(function () {
+
+        let clientNames = layui.formSelects.value('clientNames', 'nameStr');
+        let warehouseCode = layui.formSelects.value('warehouseNames', 'valueStr');
+        var data1 = form.val("form");
+        console.log('form.val("form"):::', data1);
+        //执行重载
+        table.reload('taskTabId', {
+          where: form.val("form"),
+        });
+      });
+      /**
+       *合并
+       */
+      function merge(res) {
+
+        var data = res.data;
+        var mergeIndex = 0;//定位需要添加合并属性的行数
+        var mark = 1; //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+        var columsName = ['warehouseName', 'clientName', 'arrivalCode'];//需要合并的列名称
+        var columsIndex = [0, 1, 2];//需要合并的列索引值
+
+        for (var k = 0; k < columsName.length; k++) { //这里循环所有要合并的列
+          var trArr = $(".layui-table-body>.layui-table").find("tr");//所有行
+          for (var i = 1; i < res.data.length; i++) { //这里循环表格当前的数据
+            var tdCurArr = trArr.eq(i).find("td").eq(columsIndex[k]);//获取当前行的当前列
+            var tdPreArr = trArr.eq(mergeIndex).find("td").eq(columsIndex[k]);//获取相同列的第一列
+
+            if (data[i][columsName[k]] === data[i - 1][columsName[k]]) { //后一行的值与前一行的值做比较，相同就需要合并
+              mark += 1;
+              tdPreArr.each(function () {//相同列的第一列增加rowspan属性
+                $(this).attr("rowspan", mark);
+              });
+              tdCurArr.each(function () {//当前行隐藏
+                $(this).css("display", "none");
+              });
+            } else {
+              mergeIndex = i;
+              mark = 1;//一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+            }
+          }
+          mergeIndex = 0;
+          mark = 1;
+        }
+      }
+
+    });
+
+  </script>
+</body>
+
+</html>

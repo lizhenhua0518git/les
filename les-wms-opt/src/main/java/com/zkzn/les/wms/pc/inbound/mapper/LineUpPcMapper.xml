@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.wms.pc.inbound.dao.LineUpPcDao">
+    <select id="listLineUpInfo" resultType="java.util.Map">
+        SELECT
+        t.id,
+        t.QUEUE_CODE,
+        t.UPLOAD_PLAT_CODE,
+        t.IN_FACTORY_TIME,
+        t.OUT_FACTORY_TIME,
+        t.TOTAL_TIME,
+        t.`STATUS`,
+        t.CAR_CODE,
+        t.CREATE_TIME,
+        n.ARRIVAL_CODE,
+        n.BILL_NAME,
+        n.SHIPPER_NAME
+        FROM
+        t_admission_task t
+        LEFT JOIN t_arrival_notice n ON n.id = t.ARRIVAL_NOTICE_ID
+
+        <if test="arrivalCode !=null and ''!= arrivalCode">
+            and n.ARRIVAL_CODE like '%${arrivalCode}%'
+        </if>
+
+        <if test="uplodPlatCode !=null and ''!= uplodPlatCode">
+            and t.UPLOAD_PLAT_CODE =#{uplodPlatCode}
+        </if>
+        <if test="billType !=null and ''!= billType">
+            <foreach collection="billType.split(';')" open="and n.bill_type in (" close=")" index="index" item="item" separator=",">
+                #{item}
+            </foreach>
+        </if>
+
+
+        <if test="statusStr !=null and ''!= statusStr">
+            <foreach collection="statusStr.split(';')" open="and t.status in (" close=")" index="index" item="item" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="startTimeBeginStr !=null and ''!= startTimeBeginStr and startTimeEndStr !=null and ''!= startTimeEndStr">
+            and t.IN_FACTORY_TIME between str_to_date(#{startTimeBeginStr},' %Y-%m-%d %H:%i:%s') and  str_to_date(#{startTimeEndStr},' %Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="endTimeBeginStr !=null and ''!= endTimeBeginStr and endTimeEndStr !=null and ''!= endTimeEndStr">
+            and t.OUT_FACTORY_TIME between str_to_date(#{endTimeBeginStr},' %Y-%m-%d %H:%i:%s') and  str_to_date(#{endTimeEndStr},' %Y-%m-%d %H:%i:%s')
+        </if>
+        <if test="createTimeStr != null and '' != createTimeStr">
+            AND date_format(rr.create_time, '%Y-%m-%d') <![CDATA[ >= ]]> #{startCreateTimeStr} AND date_format(rr.create_time, '%Y-%m-%d') <![CDATA[ <= ]]> #{endCreateTimeStr}
+        </if>
+        order by t.STATUS desc,t.create_time desc
+    </select>
+
+    <select id="listLineUpDetailRecord" resultType="java.util.Map">
+        SELECT
+        d.MATERIAL_CODE,
+        d.MATERIAL_DESC,
+        d.MATERIAL_UNIT,
+        d.ARRIVAL_ITEM_NO,
+        d.ARRIVAL_COUNT,
+        d.STORAGE_LOCATION,
+        n.ARRIVAL_CODE
+
+        FROM
+        t_admission_task t
+        LEFT JOIN t_arrival_notice n ON n.id = t.ARRIVAL_NOTICE_ID
+        LEFT JOIN t_arrival_notice_detail d ON d.ARRIVAL_ID = n.ID
+        where t.id=#{id}
+
+
+
+            <if test="materialCode !=null and ''!= materialCode">
+                and d.material_code like '%${materialCode}%'
+            </if>
+            <if test="materialDesc !=null and ''!= materialDesc">
+                and d.material_desc like '%${materialDesc}%'
+            </if>
+
+
+    </select>
+
+</mapper>

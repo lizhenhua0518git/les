@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zkzn.les.tactics.dao.UploadStrategyDao">
+    <update id="updateUploadAddress">
+        update t_upload_address
+        <set>
+            <if test="useStatus != null ">
+                use_status = #{useStatus},
+            </if>
+            <if test="uploadPlatCode != null and '' != uploadPlatCode">
+                UPLOAD_PLAT_CODE = #{uploadPlatCode,jdbcType=VARCHAR}
+            </if>
+        </set>
+        WHERE ID = #{id}
+    </update>
+    <select id="listStrategyInfo" resultType="java.util.Map">
+        SELECT tsr.dict_type as "strategyType"
+        FROM t_strategy_result tsr
+                 LEFT JOIN t_dict td on tsr.dict_id = td.id
+        where td.dict_type = #{strategyType}
+    </select>
+
+    <select id="listUploadAddress" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select t.upload_code AS "uploadCode",
+        t.id AS "id",
+        t.use_status AS "useStatus",
+        t.UPLOAD_NAME AS "uploadName" from t_upload_address t
+        <where>
+            <if test="warehouseCode!=null and ''!=warehouseCode">
+                t.warehouse_code=#{warehouseCode}
+            </if>
+        </where>
+
+    </select>
+
+
+    <select id="listFreeAddresses" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select t.upload_code AS "uploadCode",
+        t.id AS "id",
+        t.use_status AS "useStatus",
+        t.UPLOAD_NAME AS "uploadName" from t_upload_address t
+        <where>
+            <if test="warehouseCode!=null and ''!=warehouseCode">
+                t.warehouse_code=#{warehouseCode}
+            </if>
+        </where>
+        order by t.use_status,t.priority
+    </select>
+</mapper>
