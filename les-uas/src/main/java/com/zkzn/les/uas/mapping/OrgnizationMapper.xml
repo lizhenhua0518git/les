@@ -5,7 +5,7 @@
 
     <select id="getById" parameterType="java.lang.String" resultMap="orgin">
 	select * from t_organization where id=#{id}
-</select>
+    </select>
 
     <select id="listWarehouseByUserId" resultType="java.util.Map">
     SELECT
@@ -14,7 +14,15 @@
     FROM t_user_organization uo
     LEFT JOIN t_warehouse w ON uo.ORG_ID = w.ID
     WHERE uo.USER_ID = #{userId}
-</select>
+    </select>
+
+    <resultMap type="com.zkzn.les.uas.pojo.Orgnization" id="orgin">
+        <result property="orgCode" column="org_code"/>
+        <result property="orgName" column="org_name"/>
+        <result property="orgType" column="org_type"/>
+        <result property="parentId" column="parent_id"/>
+    </resultMap>
+
 
 </mapper>
 

@@ -40,10 +40,6 @@ public class AuthoUserDetailsServiceImpl implements UserDetailsService{
 		userDetial.setUserName(findUser.getUserName());
 		userDetial.setUserPassword(findUser.getUserPassword());
 		userDetial.setAuthorities(grantedAuths);
-		/*org.springframework.security.core.userdetails.User userDetial
-		= new org.springframework.security.core.userdetails.User(findUser.getPhone(),
-				findUser.getUserPassword(), grantedAuths);*/
-
 		return userDetial;
 	}
 	/**.
