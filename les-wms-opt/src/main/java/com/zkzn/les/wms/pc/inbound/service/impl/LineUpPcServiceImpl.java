@@ -24,17 +24,14 @@ public class LineUpPcServiceImpl implements LineUpPcService {
 
     @Override
     public PageInfo<Map<String, Object>> listLineUpInfo(Map<String, Object> param) {
-//        PageUtil.setPageParam(param);
         List<Map<String, Object>> list =lineUpPcDao.listLineUpInfo(param);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<Map<String, Object>>(list);
-
         return pageInfo;
     }
 
     @Override
     public PageInfo<Map<String, Object>> listLineUpDetailRecord(Map<String, Object> param) {
         // TODO Auto-generated method stub
-//        PageUtil.setPageParam(param);
         List<Map<String, Object>> list = lineUpPcDao.listLineUpDetailRecord(param);
         PageInfo<Map<String, Object>> pageInfo = new PageInfo<Map<String, Object>>(list);
         return pageInfo;
