@@ -28,19 +28,6 @@ public class MaterialInStockController {
 
     @Autowired
     private MaterialInStockService materialInStockService;
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-    @PostMapping("/updateMaterialInStockList")
-    public String updateMaterialInStockList(@RequestBody List<Map<String, Object>> param) {
-        try {
-            materialInStockService.updateMaterialInStockList(param);
-        } catch (Exception e) {
-            LOGGER.error("库存更新失败:{}", e.getMessage(), e);
-            return Result.toJsonUseApp(Ecode.FAIL, "仓库库存更新失败");
-        }
-        return Result.toJsonUseApp(Ecode.SUCCESS, "仓库库存更新成功");
-    }
 
     @PostMapping("/updateMaterialStorageBin")
     public String updateMaterialStorageBin(@RequestBody List<Map<String, Object>> param) {
@@ -51,28 +38,6 @@ public class MaterialInStockController {
             return Result.toJsonUseApp(Ecode.FAIL, "仓位库存更新失败");
         }
         return Result.toJsonUseApp(Ecode.SUCCESS, "仓位库存更新成功");
-    }
-
-    @PostMapping("/minusStorageBinStock")
-    public String minusStorageBinStock(@RequestBody Map<String, Object> param) {
-        try {
-            materialInStockService.minusStorageBinStock(param);
-        } catch (Exception e) {
-            LOGGER.error("库存更新失败:{}", e.getMessage(), e);
-            return Result.toJsonUseApp(Ecode.FAIL, "仓位库存更新失败");
-        }
-        return Result.toJsonUseApp(Ecode.SUCCESS, "仓位库存更新成功");
-    }
-
-    @PostMapping("/reducesMaterialInStock")
-    public String reducesMaterialInStock(@RequestBody List<Map<String, Object>> param) {
-        try {
-            materialInStockService.reducesMaterialInStock(param);
-        } catch (Exception e) {
-            LOGGER.error("库存更新失败:{}", e.getMessage(), e);
-            return Result.toJsonUseApp(Ecode.FAIL, "仓库库存更新失败");
-        }
-        return Result.toJsonUseApp(Ecode.SUCCESS, "仓库库存更新成功");
     }
 
     /**

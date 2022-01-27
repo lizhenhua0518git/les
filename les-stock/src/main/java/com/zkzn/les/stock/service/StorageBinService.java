@@ -40,14 +40,6 @@ public interface StorageBinService {
     PageInfo<MaterialInStockPojo> listMaterialInstock(MaterialInStockPojo  materialInStockPojo);
 
     /***
-     * @Discription: 库存信息更新
-     * @param param
-     * @return void
-     * @Author: zhanglei on 2021/6/30 10:26
-     */
-    void updateStorageBinInfo(Map<String,Object> param) throws Exception;
-
-    /***
      * @Discription: 删除redis中的库存缓存值
      * @param param
      * @return void
