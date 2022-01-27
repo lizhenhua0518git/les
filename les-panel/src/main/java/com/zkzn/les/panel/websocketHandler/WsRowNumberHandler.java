@@ -1,6 +1,6 @@
 package com.zkzn.les.panel.websocketHandler;
+
 import com.zkzn.les.panel.config.WsSessionManager;
-import com.zkzn.les.panel.threadPool.RnPanelRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
