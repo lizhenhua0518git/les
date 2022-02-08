@@ -13,22 +13,11 @@
         <module>les-basicInfo</module>
         <module>les-eureka</module>
         <module>les-gateway</module>
-        <!--<module>les-gawApi</module>-->
-        <!--<module>les-mesApi</module>-->
-        <!--<module>les-message</module>-->
         <module>les-oms</module>
-        <!--<module>les-pshApi</module>-->
-        <!--<module>les-quartz</module>-->
-        <!--<module>les-sap</module>-->
-        <!--<module>les-srmApi</module>-->
         <module>les-uas</module>
         <module>les-web</module>
         <module>les-panel</module>
-        <!--<module>les-mfc</module>-->
-        <!--<module>les-docApi</module>-->
-        <!--<module>les-wms</module>-->
         <module>les-wms-opt</module>
-        <!--<module>les-interface</module>-->
         <module>les-tactics</module>
         <module>les-stock</module>
     </modules>
@@ -138,11 +127,6 @@
                 <artifactId>druid-spring-boot-starter</artifactId>
                 <version>${druid.spring.boot.version}</version>
             </dependency>
-            <!--            <dependency>-->
-            <!--                <groupId>com.auth0</groupId>-->
-            <!--                <artifactId>java-jwt</artifactId>-->
-            <!--                <version>${java-jwt.version}</version>-->
-            <!--            </dependency>-->
             <dependency>
                 <groupId>commons-httpclient</groupId>
                 <artifactId>commons-httpclient</artifactId>

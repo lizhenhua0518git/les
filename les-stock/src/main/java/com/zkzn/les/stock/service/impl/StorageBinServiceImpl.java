@@ -52,20 +52,6 @@ public class StorageBinServiceImpl implements StorageBinService {
     }
 
     /***
-     * @Discription: 库存状态更新
-                     1.数据格式：
-                       {"stockStatus":"0-非限制 1-冻结 2-点收 3-质检 4-上架","data":""}
-     * @return void
-     * @Author: zhanglei on 2021/6/30 10:20
-     */
-    @Override
-    public void updateStorageBinInfo(Map<String, Object> param) throws Exception {
-        //库存状态参数必传
-        EmptyExamine.examine(param, StockConstants.STOCK_STATUS);
-
-    }
-
-    /***
      * @Discription: 删除reids中物料缓存
      * @param param
      * @return void

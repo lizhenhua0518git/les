@@ -8,12 +8,13 @@ import com.zkzn.les.common.util.page.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
 public class ClientManageServiceImpl implements ClientManageService {
 
-    @Autowired
+    @Resource
     private ClientManageDao clientManageDao;
 
     @Override

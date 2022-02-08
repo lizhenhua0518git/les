@@ -40,6 +40,12 @@ import com.zkzn.les.uas.pojo.User;
 @CrossOrigin
 public class UserController {
 
+	@Autowired(required=true)
+	private UserService userService;
+
+	@Autowired
+	private RedisTemplate redisTemplate;
+
 	@GetMapping(value = "/me",produces="application/json; charset=UTF-8")
 	@ResponseBody
 	public String getUser(HttpServletResponse response,HttpServletRequest request ) {
@@ -66,5 +72,27 @@ public class UserController {
 		}
        return Result.toJson(Ecode.SUCCESS, resultMap);
     }
+
+	/**
+	 * 根据用户仓库查询人员信息
+	 * @return
+	 */
+	@RequestMapping(value="/initUserInfo", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public String initUserInfo(HttpServletRequest request){
+		try {
+			String userId = SecurityUserUtil.getCurrentUserId(request);
+			List<String> warehouseCodes = SecurityUserUtil.getUserOrgCode(redisTemplate,userId);
+			String warehouseCode = "";
+			for (int i = 0; i < warehouseCodes.size(); i++) {
+				warehouseCode+=warehouseCodes.get(i)+";";
+			}
+			List<User> list = userService.initUserInfo(warehouseCode);
+			return Result.toJson(Ecode.SUCCESS, list);
+		} catch (Exception e) {
+//			logger.debug("初始人员信息失败：" + e.getMessage());
+			return Result.toJson(Ecode.FAIL, "初始化人员信息失败");
+		}
+	}
 
 }

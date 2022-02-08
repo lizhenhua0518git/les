@@ -2,6 +2,8 @@ package com.zkzn.les.uas.service;
 
 import com.zkzn.les.uas.pojo.User;
 
+import java.util.List;
+
 
 public interface UserService {
 
@@ -24,4 +26,10 @@ public interface UserService {
 	 */
 	User getUserByPhoneAndPwd(String phone, String oldPassWord);
 
+	/**
+	 * 根据用户仓库查询人员信息
+	 * @param warehouseCode
+	 * @return
+	 */
+	List<User> initUserInfo(String warehouseCode);
 }

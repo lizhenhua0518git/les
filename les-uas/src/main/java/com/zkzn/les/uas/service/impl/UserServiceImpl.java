@@ -6,6 +6,8 @@ import com.zkzn.les.uas.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,6 +25,12 @@ public class UserServiceImpl implements UserService {
 	public User getUserByPhoneAndPwd(String phone, String oldPassWord) {
 		// TODO Auto-generated method stub
 		return userDao.getUserByPhoneAndPwd(phone, oldPassWord);
+	}
+
+	@Override
+	public List<User> initUserInfo(String warehouseCode) {
+		List<User> userList = userDao.initUserInfo(warehouseCode);
+		return userList;
 	}
 
 }

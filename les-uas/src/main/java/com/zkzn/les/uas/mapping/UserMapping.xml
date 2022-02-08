@@ -67,6 +67,24 @@
 
     <select id="getUserByPhoneAndPwd" resultMap="BaseResultMap">
 	select * from t_user where PHONE=#{phone} and USER_PASSWORD=#{oldPassWord}
-</select>
+    </select>
+
+    <select id="initUserInfo" resultType="com.zkzn.les.uas.pojo.User">
+        SELECT
+        u.user_id AS "userId",
+        u.user_name AS "userName"
+        FROM
+        t_user u
+        LEFT JOIN t_user_organization uo ON u.ID = uo.USER_ID
+        LEFT JOIN t_warehouse w ON uo.WAREHOUSE_CODE = w.ORG_CODE
+        WHERE
+        <if test="warehouseCode !=null and warehouseCode != ''">
+            w.ORG_CODE in
+            <foreach item="item" index="index" collection="warehouseCode.split(';')" open="(" separator="," close=")">
+                '${item}'
+            </foreach>
+        </if>
+        GROUP BY u.user_id
+    </select>
 
 </mapper>

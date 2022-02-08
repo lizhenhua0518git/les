@@ -41,4 +41,10 @@ public interface UserDao {
 	 */
 	User getUserByPhoneAndPwd(@Param("phone")String phone, @Param("oldPassWord")String oldPassWord);
 
+	/**
+	 * 根据用户仓库查询人员信息
+	 * @param warehouseCode
+	 * @return
+	 */
+	List<User> initUserInfo(@Param("warehouseCode") String warehouseCode);
 }

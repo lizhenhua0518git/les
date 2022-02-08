@@ -353,7 +353,10 @@ public class MediaUploadServiceImpl implements MediaUploadService {
     @Transactional
     public void saveAppPackagesInfo(AppPackage appPackage) throws Exception{
         //升级范围 资源id 不能为空，一个app包信息保存的前提就是有作用范围跟作用资源
-        if (StringUtils.isEmpty(appPackage.getMediaId()) || StringUtils.isEmpty(appPackage.getWareHouseStr())) {
+//        if (StringUtils.isEmpty(appPackage.getMediaId()) || StringUtils.isEmpty(appPackage.getWareHouseStr())) {
+//            throw new Exception("app包升级缺少参数，资源id 或 作用范围");
+//        }
+        if (StringUtils.isEmpty(appPackage.getMediaId())) {
             throw new Exception("app包升级缺少参数，资源id 或 作用范围");
         }
         //创建主表id
