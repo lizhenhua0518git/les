@@ -32,54 +32,6 @@ public interface StationOrderDao {
 	 */
 	List<PcShipmentTaskPojo> listStationOrder(PcShipmentTaskPojo pcShipmentTaskPojo);
 
-	/**.
-	 *
-	 * @param list
-	 * @return
-	 * @Author:wangzhou
-	 * @date:2020年9月3日
-	 * @Description:批量保存工位订单
-	 */
-	int saveStationOrder(List<StationOrder> list);
-
-	/***
-	 * @Discription: 更新订单工位详情状态
-	 * @param
-	 * @return void
-	 * @Author: zhanglei on 2020/9/9 13:31
-	 */
-	void update(@Param("list") List<String> list);
-
-	/***
-	 * @Discription: 更新波次id
-	 * @return void
-	 * @Author: zhanglei on 2020/9/9 13:48
-	 */
-	void updateOrder(@Param("list") List<StationOrder> list);
-
-	/***
-	 * @Discription: 查询工位订单信息ByIds
-	 * @param ids
-	 * @return java.util.List<com.zkzn.les.oms.pojo.StationOrder>
-	 * @Author: zhanglei on 2020/9/9 15:13
-	 */
-	List<StationOrder> selectAllById(@Param("ids")List<String> ids);
-	/***
-	 * @Discription: 根据ID查询退货采购订单详情
-	 * @param ids
-	 * @return java.util.List<com.zkzn.les.oms.pojo.PurchaseBillDetail>
-	 * @Author: luozhihong on 2020/12/2 15:13
-	 */
-	List<PurchaseBillDetail> listPurchaseBillDetailById(@Param("ids")List<String> ids);
-
-	/***
-	 * @Discription: 新增波次
-	 * @param stationWave
-	 * @return java.lang.String
-	 * @Author: zhanglei on 2020/9/9 15:55
-	 */
-	void saveWave(@Param("stationWave") StationWave stationWave);
-
 	/**
 	 * 出来订单管理
 	 * @param orderTaskPojo
