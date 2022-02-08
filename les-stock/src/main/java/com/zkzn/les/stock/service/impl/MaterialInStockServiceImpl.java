@@ -18,28 +18,6 @@ public class MaterialInStockServiceImpl implements MaterialInStockService {
     private MaterialInStockDao materialInStockDao;
 
     @Override
-    @Transactional
-    public void updateMaterialInStockList(List<Map<String, Object>> param) {
-        for (int i = 0; i < param.size(); i++) {
-            Map<String, Object> map = param.get(i);
-            String materialDesc = map.get("materialDesc")+"";
-            String clientName = map.get("clientName")+"";
-            String batchNo = map.get("batchNo")+"";
-            String warehouseCode = map.get("warehouseCode")+"";
-            Integer qualifiedType = Integer.parseInt(map.get("qualifiedType")+"");
-            Integer materialInStockId = materialInStockDao.getMaterialInStock(materialDesc,clientName,batchNo,warehouseCode,qualifiedType);
-            if (materialInStockId != null){
-                map.put("materialInStockId",materialInStockId);
-                materialInStockDao.updateMaterialInStock(map);
-                param.remove(i);
-            }
-        }
-        if (param.size()>0){
-            materialInStockDao.addMaterialInStockList(param);
-        }
-    }
-
-    @Override
     public void updateMaterialStorageBin(List<Map<String, Object>> param) {
         List<Map<String,Object>> addList = new ArrayList<>();
         List<Map<String,Object>> updateList = new ArrayList<>();
@@ -60,21 +38,6 @@ public class MaterialInStockServiceImpl implements MaterialInStockService {
                 materialInStockDao.updateMaterialStorageBin(updateList.get(i));
             }
         }
-    }
-
-    @Override
-    public void minusStorageBinStock(Map<String, Object> param) {
-        materialInStockDao.minusStorageBinStock(param);
-    }
-
-    @Override
-    public void reducesMaterialInStock(List<Map<String, Object>> param) {
-        if (param.size()>0){
-            for (int i = 0; i < param.size(); i++) {
-                materialInStockDao.reducesMaterialInStock(param.get(i));
-            }
-        }
-
     }
 
     @Override

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.zkzn.les.stock.dao.MaterialInStockDao">
+
     <insert id="addMaterialInStockList">
         <if test="list.size() > 0">
             <foreach collection="list" item="item" index="index" separator=";">
@@ -51,62 +52,13 @@
             ,#{item.upperType},sysdate())
         </foreach>
     </insert>
-<!--    <insert id="addMaterialStorageBin">-->
-<!--        <foreach collection="addList" item="item" index="index" separator=";">-->
-<!--            INSERT INTO s_material_storage_bin-->
-<!--            <trim prefix="(" suffix=")" suffixOverrides=",">storagePositionId-->
-<!--                <if test="item.storagePositionId !=null">storage_position_id</if>-->
-<!--                <if test="item.materialDesc !=null and '' !=item.materialDesc">,material_desc</if>-->
-<!--                <if test="item.materialUnit !=null and '' !=item.materialUnit">,material_unit</if>-->
-<!--                <if test="item.stockCount !=null">,stock_count</if>-->
-<!--                ,frozen_count-->
-<!--                ,pre_use_count-->
-<!--                <if test="item.batchNo !=null and '' != item.batchNo">,batch_no</if>-->
-<!--                <if test="item.warehouseCode !=null and '' !=item.warehouseCode">,warehouse_code</if>-->
-<!--                <if test="item.warehouseName !=null and '' !=item.warehouseName">,warehouse_name</if>-->
-<!--                <if test="item.clientName !=null and '' !=item.clientName">,client_name</if>-->
-<!--                <if test="item.stockStatus !=null">,stock_status</if>-->
-<!--                ,create_time-->
-<!--            </trim>-->
-<!--            <trim prefix="values (" suffix=")" suffixOverrides=",">-->
-<!--                <if test="item.storagePositionId !=null">#{storagePositionId}</if>-->
-<!--                <if test="item.materialDesc !=null and '' !=item.materialDesc">,#{materialDesc}</if>-->
-<!--                <if test="item.materialUnit !=null and '' !=item.materialUnit">,#{materialUnit}</if>-->
-<!--                <if test="item.stockCount !=null">,#{stockCount}</if>-->
-<!--                ,0-->
-<!--                ,0-->
-<!--                <if test="item.batchNo !=null and '' != item.batchNo">,#{batchNo}</if>-->
-<!--                <if test="item.warehouseCode !=null and '' !=item.warehouseCode">,#{warehouseCode}</if>-->
-<!--                <if test="item.warehouseName !=null and '' !=item.warehouseName">,#{warehouseName}</if>-->
-<!--                <if test="item.clientName !=null and '' !=item.clientName">,#{clientName}</if>-->
-<!--                <if test="item.stockStatus !=null">,#{stockStatus}</if>-->
-<!--                ,sysdate()-->
-<!--            </trim>-->
-<!--        </foreach>-->
-<!--    </insert>-->
+
     <update id="updateMaterialStorageBin" parameterType="java.util.List">
             UPDATE s_material_storage_bin
             SET stock_count= stock_count+#{upperNumber}
             where storage_position_id=#{storagePositionId} AND material_desc = #{materialDesc}
             AND IF(batch_no is NULL,"",batch_no) = IF(#{batchNo} is NULL,"",#{batchNo}) AND client_name = #{clientName} AND stock_status = #{upperType}
             AND warehouse_code = #{warehouseCode}
-    </update>
-    <update id="minusStorageBinStock">
-        UPDATE s_material_storage_bin
-        SET pre_use_count=pre_use_count-#{shipmentCount}
-        where storage_position_id=#{storagePositionId} AND material_desc = #{materialDesc}
-        AND IF(batch_no is NULL,"",batch_no) = #{batchNo} AND client_name = #{clientName} AND stock_status = #{stockStatus}
-        AND warehouse_code = #{warehouseCode}
-    </update>
-
-    <update id="reducesMaterialInStock">
-        UPDATE s_material_in_stock
-        <trim prefix="set" suffixOverrides=",">
-            unlimited_number=unlimited_number-#{shipmentCount}
-        </trim>
-        where material_desc = #{materialDesc} AND IF(batch_no is NULL,"",batch_no) = #{batchNo}
-        AND client_name = #{clientName} AND qualified_type = #{stockStatus}
-        AND warehouse_code = #{warehouseCode}
     </update>
 
     <update id="storeBinStockStatusChange">
