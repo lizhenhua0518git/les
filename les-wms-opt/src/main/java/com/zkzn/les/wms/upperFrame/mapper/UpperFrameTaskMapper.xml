@@ -802,19 +802,7 @@
             status = #{status}
         WHERE upper_frame_id = #{upperFrameId}
     </update>
-<!--    <insert id="addActualPosition" parameterType="java.util.List">-->
-<!--        <foreach collection="list" open="begin" close=";end;" separator=";" index="index" item="item">-->
-<!--            INSERT INTO w_actual_position-->
-<!--            <trim prefix="(" suffix=")" suffixOverrides=",">-->
-<!--                upper_frame_id,position_code,-->
-<!--                upper_number,material_unit,create_time-->
-<!--            </trim>-->
-<!--            <trim prefix="values (" suffix=")" suffixOverrides=",">-->
-<!--                #{item.upperFrameId,jdbcType=INTEGER},#{item.positionCode,jdbcType=VARCHAR},-->
-<!--                #{item.upperNumber,jdbcType=DOUBLE},#{item.materialUnit,jdbcType=VARCHAR},sysdate()-->
-<!--            </trim>-->
-<!--        </foreach>-->
-<!--    </insert>-->
+
     <insert id="addActualPosition">
         insert into w_actual_position (upper_frame_id,position_code,position_car_code,upper_number,material_unit,create_time) VALUES
         <foreach collection="upperPositionPojos" item="item" separator=",">
