@@ -22,7 +22,6 @@ public class LesOmsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LesOmsApplication.class, args);
 	}
-
 	/**
      * 实例化RestTemplate
      * @return
