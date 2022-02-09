@@ -1,13 +1,16 @@
 package com.zkzn.les.gateway.config;
 
 
-import com.zkzn.les.gateway.util.StringUtil;
-import feign.RequestInterceptor;
-import feign.RequestTemplate;
+
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
+import com.zkzn.les.gateway.util.StringUtil;
+
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
 
 /**.
  * 

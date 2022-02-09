@@ -1,18 +1,31 @@
 package com.zkzn.les.basicInfo.controller;
 
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.basicInfo.pojo.Dict;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.zkzn.les.basicInfo.pojo.DictItems;
-import com.zkzn.les.basicInfo.service.DictService;
-import com.zkzn.les.basicInfo.util.Ecode;
-import com.zkzn.les.basicInfo.util.Result;
-import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.github.pagehelper.PageInfo;
+import com.zkzn.les.basicInfo.service.DictService;
+import com.zkzn.les.basicInfo.util.Ecode;
+import com.zkzn.les.basicInfo.util.Result;
+import com.zkzn.les.basicInfo.pojo.Dict;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 /**.
  *

@@ -1,5 +1,7 @@
 package com.zkzn.les.tactics.factory.storageStrategy;
 
+import com.zkzn.les.tactics.factory.uploadStrategy.UploadPlatStrategyAbstract;
+
 import java.util.List;
 import java.util.Map;
 

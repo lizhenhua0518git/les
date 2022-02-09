@@ -1,8 +1,15 @@
 package com.zkzn.les.basicInfo.config;
 
-import com.zkzn.les.basicInfo.pojo.SecurityUser;
-import com.zkzn.les.basicInfo.util.RedisUtil;
-import io.netty.util.internal.StringUtil;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Map;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,14 +21,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Map;
+import com.zkzn.les.basicInfo.pojo.SecurityUser;
+import com.zkzn.les.basicInfo.util.RedisUtil;
+
+import io.netty.util.internal.StringUtil;
 
 @SuppressWarnings("unchecked")
 @Component

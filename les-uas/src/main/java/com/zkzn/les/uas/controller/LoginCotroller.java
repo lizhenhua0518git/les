@@ -1,11 +1,11 @@
 package com.zkzn.les.uas.controller;
 
-import com.alibaba.druid.util.StringUtils;
-import com.zkzn.les.uas.pojo.User;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.zkzn.les.uas.service.UserService;
-import com.zkzn.les.uas.util.Ecode;
-import com.zkzn.les.uas.util.MD5;
-import com.zkzn.les.uas.util.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +13,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+import com.alibaba.druid.util.StringUtils;
+import com.zkzn.les.uas.pojo.User;
+import com.zkzn.les.uas.util.Ecode;
+import com.zkzn.les.uas.util.MD5;
+import com.zkzn.les.uas.util.Result;
 
 
 @Controller

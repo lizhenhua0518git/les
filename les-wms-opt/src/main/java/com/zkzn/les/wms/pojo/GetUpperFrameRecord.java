@@ -1,6 +1,7 @@
 package com.zkzn.les.wms.pojo;
 
 import com.zkzn.les.common.pojo.MaterialData;
+
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;

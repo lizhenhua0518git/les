@@ -1,9 +1,7 @@
 package com.zkzn.les.uas.service.impl;
 
-import com.zkzn.les.uas.dao.UserDao;
-import com.zkzn.les.uas.pojo.SecurityUser;
-import com.zkzn.les.uas.pojo.User;
-import com.zkzn.les.uas.util.BeanUtil;
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,10 +9,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.zkzn.les.uas.dao.UserDao;
+import com.zkzn.les.uas.pojo.SecurityUser;
+import com.zkzn.les.uas.pojo.User;
+import com.zkzn.les.uas.util.BeanUtil;
 
 @Service
 public class AuthoUserDetailsServiceImpl implements UserDetailsService{

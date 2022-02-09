@@ -1,5 +1,7 @@
 package com.zkzn.les.uas.config;
 
+import java.util.Map;
+
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.wrapper.MapWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
@@ -7,8 +9,6 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.mybatis.spring.boot.autoconfigure.ConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Map;
 
 @Configuration
 public class MybatisConfig {

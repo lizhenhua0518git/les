@@ -1,13 +1,13 @@
 package com.zkzn.les.oms.pojo;
 
+import java.util.Date;
+import java.util.List;
+
 import com.zkzn.les.common.util.page.PageCondition;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import java.util.Date;
-import java.util.List;
 /**
  *
  * @author wangzhou

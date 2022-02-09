@@ -1,14 +1,9 @@
 package com.zkzn.les.common.util.str;
-
 import com.google.common.base.Joiner;
 import com.zkzn.les.common.util.idUtil.IdUtil;
-
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 /**
  * @ClassName StrUtil

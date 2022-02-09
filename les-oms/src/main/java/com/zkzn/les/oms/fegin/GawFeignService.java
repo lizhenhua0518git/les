@@ -1,9 +1,10 @@
 package com.zkzn.les.oms.fegin;
 
-import com.zkzn.les.oms.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import com.zkzn.les.oms.config.FeignConfig;
 
 
 

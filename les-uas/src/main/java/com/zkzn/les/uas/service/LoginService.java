@@ -1,5 +1,6 @@
 package com.zkzn.les.uas.service;
 
+import com.github.pagehelper.PageInfo;
 import com.zkzn.les.uas.pojo.Login;
 
 public interface LoginService {

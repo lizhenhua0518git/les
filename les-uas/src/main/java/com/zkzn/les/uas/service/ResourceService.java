@@ -1,8 +1,11 @@
 package com.zkzn.les.uas.service;
 
-import com.zkzn.les.uas.pojo.Resource;
-
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
+import com.github.pagehelper.PageInfo;
+import com.zkzn.les.uas.pojo.Resource;
 
 public interface ResourceService {
 

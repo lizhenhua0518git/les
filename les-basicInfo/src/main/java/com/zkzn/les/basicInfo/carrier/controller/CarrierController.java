@@ -1,25 +1,33 @@
 package com.zkzn.les.basicInfo.carrier.controller;
 
 
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.basicInfo.carrier.pojo.CarrierPojo;
-import com.zkzn.les.basicInfo.carrier.service.CarrierService;
-import com.zkzn.les.basicInfo.pojo.Carrier;
-import com.zkzn.les.basicInfo.util.Ecode;
-import com.zkzn.les.basicInfo.util.PageUtil;
-import com.zkzn.les.basicInfo.util.Result;
-import com.zkzn.les.basicInfo.util.SecurityUserUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.zkzn.les.basicInfo.carrier.pojo.CarrierPojo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.github.pagehelper.PageInfo;
+import com.zkzn.les.basicInfo.carrier.service.CarrierService;
+import com.zkzn.les.basicInfo.util.Ecode;
+import com.zkzn.les.basicInfo.util.PageUtil;
+import com.zkzn.les.basicInfo.util.Result;
+import com.zkzn.les.basicInfo.util.SecurityUserUtil;
+import com.zkzn.les.basicInfo.pojo.Carrier;
 
 /**
  * 载具管理

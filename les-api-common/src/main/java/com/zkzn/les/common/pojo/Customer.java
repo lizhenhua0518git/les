@@ -1,10 +1,10 @@
 package com.zkzn.les.common.pojo;
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 @Data
 public class Customer implements Serializable {

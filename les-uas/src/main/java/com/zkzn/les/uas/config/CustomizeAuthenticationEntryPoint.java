@@ -1,15 +1,17 @@
 package com.zkzn.les.uas.config;
 
-import com.zkzn.les.uas.util.Ecode;
-import com.zkzn.les.uas.util.Result;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.stereotype.Component;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import com.zkzn.les.uas.util.Ecode;
+import com.zkzn.les.uas.util.Result;
 /**.
  * ajax请求拦截未登陆信息
  * @author wangzhou

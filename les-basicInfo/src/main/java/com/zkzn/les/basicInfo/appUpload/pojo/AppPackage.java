@@ -1,8 +1,6 @@
 package com.zkzn.les.basicInfo.appUpload.pojo;
-
 import lombok.Data;
 import lombok.ToString;
-
 import java.util.Date;
 import java.util.List;
 /**

@@ -1,12 +1,19 @@
 package com.zkzn.les.basicInfo.user.controller;
 
-import com.alibaba.druid.util.StringUtils;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.basicInfo.service.OrgnizationService;
-import com.zkzn.les.basicInfo.service.ResourceService;
 import com.zkzn.les.basicInfo.user.pojo.User;
-import com.zkzn.les.basicInfo.user.service.UserService;
 import com.zkzn.les.basicInfo.util.SecurityUserUtil;
 import com.zkzn.les.common.util.excel.FileUtil;
 import com.zkzn.les.common.util.json.JsonUtil;
@@ -14,25 +21,32 @@ import com.zkzn.les.common.util.lang.MD5;
 import com.zkzn.les.common.util.page.PageUtil;
 import com.zkzn.les.common.util.response.Ecode;
 import com.zkzn.les.common.util.response.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.druid.util.StringUtils;
+import com.github.pagehelper.PageInfo;
+import com.zkzn.les.basicInfo.pojo.Resource;
+import com.zkzn.les.basicInfo.service.OrgnizationService;
+import com.zkzn.les.basicInfo.service.ResourceService;
+import com.zkzn.les.basicInfo.user.service.UserService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 @Api(tags="用户配置服务")

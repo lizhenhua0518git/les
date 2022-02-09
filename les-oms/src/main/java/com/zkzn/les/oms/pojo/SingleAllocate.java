@@ -1,10 +1,10 @@
 package com.zkzn.les.oms.pojo;
 
+import java.util.List;
+
 import com.zkzn.les.common.util.page.PageCondition;
 import io.swagger.annotations.ApiModelProperty;
 import net.logstash.logback.encoder.org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import java.util.List;
 
 /**.
  *

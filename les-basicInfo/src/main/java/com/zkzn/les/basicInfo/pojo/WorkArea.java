@@ -10,8 +10,8 @@
  */
 package com.zkzn.les.basicInfo.pojo;
 
-import com.zkzn.les.basicInfo.util.PageCondition;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import com.zkzn.les.basicInfo.util.PageCondition;
 
 /**.
  *

@@ -1,8 +1,9 @@
 package com.zkzn.les.basicInfo.pojo;
 
-import com.zkzn.les.basicInfo.util.PageCondition;
-import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import com.zkzn.les.basicInfo.util.PageCondition;
+
+import io.swagger.annotations.ApiModelProperty;
 
 /**.
  *  角色实体

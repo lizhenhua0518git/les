@@ -1,10 +1,16 @@
 package com.zkzn.les.common.pojo;
 
-import com.zkzn.les.common.util.PageCondition;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
 import java.util.Date;
+import java.util.List;
+
+import com.zkzn.les.common.util.PageCondition;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 public class ArrivalNoticePojo extends PageCondition {

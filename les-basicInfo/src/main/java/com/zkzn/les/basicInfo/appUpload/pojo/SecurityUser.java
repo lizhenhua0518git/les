@@ -1,9 +1,10 @@
 package com.zkzn.les.basicInfo.appUpload.pojo;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
 
 public class SecurityUser  implements UserDetails{
 

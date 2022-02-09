@@ -1,9 +1,9 @@
 package com.zkzn.les.uas.pojo;
 
+import java.util.Collection;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
 
 public class SecurityUser extends User implements UserDetails{
 

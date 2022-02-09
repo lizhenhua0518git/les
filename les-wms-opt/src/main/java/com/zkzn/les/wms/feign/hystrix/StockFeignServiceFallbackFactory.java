@@ -3,11 +3,13 @@ package com.zkzn.les.wms.feign.hystrix;
 import com.zkzn.les.common.util.response.Ecode;
 import com.zkzn.les.common.util.response.Result;
 import com.zkzn.les.wms.feign.StockFeignService;
+import com.zkzn.les.wms.feign.StrategyFeignService;
 import com.zkzn.les.wms.upperFrame.pojo.UpperPositionPojo;
 import feign.hystrix.FallbackFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;

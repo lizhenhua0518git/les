@@ -6,12 +6,15 @@ import com.zkzn.les.tactics.dao.StorageStrategyDao;
 import com.zkzn.les.tactics.dao.UploadStrategyDao;
 import com.zkzn.les.tactics.factory.storageStrategy.DefaultStorageStrategy;
 import com.zkzn.les.tactics.factory.storageStrategy.StorageStrategyContext;
+import com.zkzn.les.tactics.factory.uploadStrategy.DefaultUploadStrategy;
+import com.zkzn.les.tactics.factory.uploadStrategy.UploadPlatStrategyContext;
 import com.zkzn.les.tactics.service.StorageStrategyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

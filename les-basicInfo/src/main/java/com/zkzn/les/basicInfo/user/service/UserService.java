@@ -1,10 +1,10 @@
 package com.zkzn.les.basicInfo.user.service;
 
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.basicInfo.user.pojo.User;
-
 import java.util.List;
 import java.util.Map;
+
+import com.github.pagehelper.PageInfo;
+import com.zkzn.les.basicInfo.user.pojo.User;
 
 
 public interface UserService {

@@ -1,22 +1,19 @@
 package com.zkzn.les.basicInfo.storagePosition.controller;
 
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.basicInfo.pojo.Area;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLEncoder;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
 import com.zkzn.les.basicInfo.pojo.StoragePosition;
-import com.zkzn.les.basicInfo.service.AreaService;
 import com.zkzn.les.basicInfo.storagePosition.pojo.StoragePositionPojo;
-import com.zkzn.les.basicInfo.storagePosition.service.StoragePositionService;
-import com.zkzn.les.basicInfo.util.ExcelHandleUtil;
-import com.zkzn.les.basicInfo.util.PageUtil;
-import com.zkzn.les.basicInfo.util.SecurityUserUtil;
-import com.zkzn.les.basicInfo.warehouse.pojo.Warehouse;
-import com.zkzn.les.basicInfo.warehouse.service.WarehouseService;
 import com.zkzn.les.common.util.response.Ecode;
 import com.zkzn.les.common.util.response.Result;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -26,16 +23,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.util.*;
+import com.github.pagehelper.PageInfo;
+
+import com.zkzn.les.basicInfo.service.AreaService;
+import com.zkzn.les.basicInfo.storagePosition.service.StoragePositionService;
+import com.zkzn.les.basicInfo.util.ExcelHandleUtil;
+import com.zkzn.les.basicInfo.util.PageUtil;
+import com.zkzn.les.basicInfo.util.SecurityUserUtil;
+import com.zkzn.les.basicInfo.warehouse.pojo.Warehouse;
+import com.zkzn.les.basicInfo.warehouse.service.WarehouseService;
+import com.zkzn.les.basicInfo.pojo.Area;
+
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 
 /**
