@@ -1,5 +1,7 @@
 package com.zkzn.les.uas.config;
 
+import com.zkzn.les.uas.service.impl.AuthoUserDetailsServiceImpl;
+import com.zkzn.les.uas.util.MD5;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,9 +16,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import com.zkzn.les.uas.service.impl.AuthoUserDetailsServiceImpl;
-import com.zkzn.les.uas.util.MD5;
 
 /**.
  * 服务端：安全策略配置 

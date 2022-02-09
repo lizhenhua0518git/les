@@ -8,7 +8,7 @@ import com.zkzn.les.oms.stationOrder.pojo.PcShipmentTaskPojo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.List;
 
 /**
  * 交接pc端

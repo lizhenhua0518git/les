@@ -1,38 +1,27 @@
 package com.zkzn.les.uas.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.zkzn.les.uas.pojo.Resource;
 import com.zkzn.les.uas.pojo.SecurityUser;
-import com.zkzn.les.uas.service.OrgnizationService;
-import com.zkzn.les.uas.service.ResourceService;
+import com.zkzn.les.uas.pojo.User;
 import com.zkzn.les.uas.service.UserService;
-import com.zkzn.les.uas.util.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zkzn.les.uas.util.Ecode;
+import com.zkzn.les.uas.util.Result;
+import com.zkzn.les.uas.util.SecurityUserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.druid.util.StringUtils;
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.uas.fegin.FeignService;
-import com.zkzn.les.uas.pojo.Resource;
-import com.zkzn.les.uas.pojo.User;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Controller

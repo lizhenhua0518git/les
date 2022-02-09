@@ -1,8 +1,6 @@
 package com.zkzn.les.wms.feign;
 
 import com.zkzn.les.wms.config.FeignConfig;
-import com.zkzn.les.wms.feign.hystrix.FeignServiceFallbackFactory;
-import com.zkzn.les.wms.feign.hystrix.StockFeignServiceFallbackFactory;
 import com.zkzn.les.wms.upperFrame.pojo.UpperPositionPojo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;

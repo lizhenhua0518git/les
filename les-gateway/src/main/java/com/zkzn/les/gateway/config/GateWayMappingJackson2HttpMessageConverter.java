@@ -1,10 +1,10 @@
 package com.zkzn.les.gateway.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GateWayMappingJackson2HttpMessageConverter extends MappingJackson2HttpMessageConverter {
 

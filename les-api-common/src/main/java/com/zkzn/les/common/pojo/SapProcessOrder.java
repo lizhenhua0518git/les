@@ -1,13 +1,12 @@
 package com.zkzn.les.common.pojo;
 
-import java.math.BigDecimal;
-
 import com.zkzn.les.common.util.PageCondition;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

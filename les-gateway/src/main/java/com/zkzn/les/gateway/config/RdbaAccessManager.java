@@ -1,11 +1,6 @@
 package com.zkzn.les.gateway.config;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import com.alibaba.fastjson.JSON;
-import com.zkzn.les.gateway.util.RedisUtil;
+import com.zkzn.les.gateway.feign.AuthorFeignService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +16,10 @@ import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
-
-import com.alibaba.fastjson.JSONObject;
-import com.zkzn.les.gateway.feign.AuthorFeignService;
-
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**.
  *

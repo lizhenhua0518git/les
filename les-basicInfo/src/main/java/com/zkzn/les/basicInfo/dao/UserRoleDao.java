@@ -1,10 +1,9 @@
 package com.zkzn.les.basicInfo.dao;
 
-import java.util.List;
-
+import com.zkzn.les.basicInfo.pojo.UserRole;
 import org.apache.ibatis.annotations.Mapper;
 
-import com.zkzn.les.basicInfo.pojo.UserRole;
+import java.util.List;
 @Mapper
 public interface UserRoleDao {
 

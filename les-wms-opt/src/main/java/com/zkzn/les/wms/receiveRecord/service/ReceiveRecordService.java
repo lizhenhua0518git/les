@@ -4,8 +4,6 @@ import com.github.pagehelper.PageInfo;
 import com.zkzn.les.wms.receiveRecord.pojo.ReceiveTaskDetailPojo;
 import com.zkzn.les.wms.receiveRecord.pojo.ReceiveTaskPojo;
 
-import java.util.Map;
-
 /**
  * 点收任务
  */

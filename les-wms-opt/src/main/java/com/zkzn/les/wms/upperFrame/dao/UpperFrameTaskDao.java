@@ -5,7 +5,6 @@ import com.zkzn.les.wms.pojo.MaterialSerial;
 import com.zkzn.les.wms.pojo.MaterialStorageBin;
 import com.zkzn.les.wms.pojo.StoragePosition;
 import com.zkzn.les.wms.pojo.UpperFrameRecord;
-import com.zkzn.les.wms.pojo.upperFrameTask.ReceiveDetailRecord;
 import com.zkzn.les.wms.upperFrame.pojo.BreakUpperPojo;
 import com.zkzn.les.wms.upperFrame.pojo.UpperFrameData;
 import com.zkzn.les.wms.upperFrame.pojo.UpperPositionPojo;

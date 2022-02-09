@@ -1,13 +1,12 @@
 package com.zkzn.les.basicInfo.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.zkzn.les.basicInfo.dao.UserRoleDao;
 import com.zkzn.les.basicInfo.pojo.UserRole;
 import com.zkzn.les.basicInfo.service.UserRoleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserRoleServiceImpl implements UserRoleService {

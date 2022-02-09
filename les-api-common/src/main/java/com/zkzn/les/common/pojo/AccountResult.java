@@ -1,14 +1,12 @@
 package com.zkzn.les.common.pojo;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
 import com.zkzn.les.common.util.PageCondition;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.math.BigDecimal;
+import java.util.Date;
 /**.
  * 
  * 功能描述：过账记录

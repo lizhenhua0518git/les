@@ -1,21 +1,14 @@
 package com.zkzn.les.tactics.config;
 
 import com.google.common.collect.Maps;
-import com.zkzn.les.common.util.lang.SpringUtil;
 import com.zkzn.les.tactics.dao.UploadStrategyDao;
-import com.zkzn.les.tactics.util.RedissonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**

@@ -4,7 +4,6 @@ import com.github.pagehelper.PageInfo;
 import com.github.xiaoymin.knife4j.annotations.DynamicParameter;
 import com.github.xiaoymin.knife4j.annotations.DynamicParameters;
 import com.github.xiaoymin.knife4j.annotations.DynamicResponseParameters;
-import com.zkzn.les.common.util.lang.SecurityUserUtil;
 import com.zkzn.les.common.util.response.Ecode;
 import com.zkzn.les.common.util.response.Result;
 import com.zkzn.les.wms.pc.inbound.service.LineUpPcService;
@@ -14,11 +13,12 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.Map;
 
 /**

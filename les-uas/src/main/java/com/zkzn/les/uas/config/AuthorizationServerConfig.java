@@ -1,7 +1,6 @@
 package com.zkzn.les.uas.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.zkzn.les.uas.service.impl.AuthoUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,8 +15,6 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
-
-import com.zkzn.les.uas.service.impl.AuthoUserDetailsServiceImpl;
 
 
 /**.

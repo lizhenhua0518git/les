@@ -2,8 +2,6 @@ package com.zkzn.les.wms.upperFrame.service;
 
 import com.zkzn.les.common.pojo.MaterialData;
 import com.zkzn.les.wms.pojo.GetUpperFrameRecord;
-import com.zkzn.les.wms.pojo.StoragePosition;
-import com.zkzn.les.wms.pojo.upperFrameTask.ReceiveDetailRecord;
 import com.zkzn.les.wms.upperFrame.pojo.BreakUpperPojo;
 import com.zkzn.les.wms.upperFrame.pojo.UpperPositionPojo;
 import com.zkzn.les.wms.upperFrame.pojo.VerifyPositionPojo;

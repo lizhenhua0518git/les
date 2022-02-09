@@ -1,12 +1,11 @@
 package com.zkzn.les.basicInfo.dao;
 
-import java.util.List;
-
+import com.zkzn.les.basicInfo.pojo.DictItems;
+import com.zkzn.les.basicInfo.pojo.Resource;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.zkzn.les.basicInfo.pojo.Resource;
-import com.zkzn.les.basicInfo.pojo.DictItems;
+import java.util.List;
 
 @Mapper
 public interface ResourceDao {

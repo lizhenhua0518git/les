@@ -1,24 +1,19 @@
 package com.zkzn.les.basicInfo.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.github.pagehelper.PageInfo;
+import com.zkzn.les.basicInfo.dao.ResourceDao;
+import com.zkzn.les.basicInfo.pojo.DictItems;
+import com.zkzn.les.basicInfo.pojo.Resource;
+import com.zkzn.les.basicInfo.service.ResourceService;
+import com.zkzn.les.basicInfo.util.PageUtil;
+import com.zkzn.les.basicInfo.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.basicInfo.dao.ResourceDao;
-import com.zkzn.les.basicInfo.pojo.Resource;
-import com.zkzn.les.basicInfo.service.ResourceService;
-import com.zkzn.les.basicInfo.util.PageUtil;
-import com.zkzn.les.basicInfo.util.RedisUtil;
-import com.zkzn.les.basicInfo.pojo.DictItems;
+import java.util.*;
 
 @Service
 public class ResourceServiceImpl implements ResourceService{

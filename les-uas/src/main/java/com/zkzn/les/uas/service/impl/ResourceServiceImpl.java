@@ -1,20 +1,14 @@
 package com.zkzn.les.uas.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
-import com.github.pagehelper.PageInfo;
 import com.zkzn.les.uas.dao.ResourceDao;
 import com.zkzn.les.uas.pojo.Resource;
 import com.zkzn.les.uas.service.ResourceService;
-import com.zkzn.les.uas.util.PageUtil;
-import com.zkzn.les.uas.util.RedisUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ResourceServiceImpl implements ResourceService{

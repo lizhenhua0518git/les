@@ -1,5 +1,6 @@
 package com.zkzn.les.stock.config.exception;
-import com.zkzn.les.common.util.response.*;
+
+import com.zkzn.les.common.util.response.Ecode;
 
 /**
  * @ClassName 全局异常

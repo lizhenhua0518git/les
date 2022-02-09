@@ -1,24 +1,22 @@
 package com.zkzn.les.basicInfo.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.github.pagehelper.PageInfo;
 import com.zkzn.les.basicInfo.pojo.DictItems;
+import com.zkzn.les.basicInfo.service.DictItemsService;
+import com.zkzn.les.basicInfo.util.Ecode;
+import com.zkzn.les.basicInfo.util.RedisUtil;
+import com.zkzn.les.basicInfo.util.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.basicInfo.service.DictItemsService;
-import com.zkzn.les.basicInfo.util.Ecode;
-import com.zkzn.les.basicInfo.util.RedisUtil;
-import com.zkzn.les.basicInfo.util.Result;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**.
  * 

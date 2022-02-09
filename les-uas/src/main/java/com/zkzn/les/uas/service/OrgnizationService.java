@@ -1,15 +1,5 @@
 package com.zkzn.les.uas.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.annotations.Param;
-
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.uas.pojo.Orgnization;
-
-
-
 /**.
  * 
  * @author wangzhou

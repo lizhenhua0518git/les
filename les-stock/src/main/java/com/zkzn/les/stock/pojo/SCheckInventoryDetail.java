@@ -1,10 +1,5 @@
 package com.zkzn.les.stock.pojo;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.io.Serializable;
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zkzn.les.common.util.page.PageCondition;
 import io.swagger.annotations.ApiModel;
@@ -14,6 +9,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * <p>

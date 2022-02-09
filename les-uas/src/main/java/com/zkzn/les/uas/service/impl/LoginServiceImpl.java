@@ -1,18 +1,14 @@
 package com.zkzn.les.uas.service.impl;
 
-import java.util.Date;
-import java.util.List;
-
+import com.zkzn.les.uas.dao.LoginDao;
+import com.zkzn.les.uas.pojo.Login;
+import com.zkzn.les.uas.service.LoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.uas.dao.LoginDao;
-import com.zkzn.les.uas.pojo.Login;
-import com.zkzn.les.uas.service.LoginService;
+import java.util.Date;
 
 @Service
 public class LoginServiceImpl implements LoginService{

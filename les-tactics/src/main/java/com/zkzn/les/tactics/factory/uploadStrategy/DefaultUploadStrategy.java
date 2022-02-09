@@ -2,21 +2,12 @@ package com.zkzn.les.tactics.factory.uploadStrategy;
 
 import com.google.common.collect.Maps;
 import com.zkzn.les.common.util.lang.SpringUtil;
-import com.zkzn.les.common.util.str.StrUtil;
 import com.zkzn.les.tactics.config.UploadAddressQueue;
-import com.zkzn.les.tactics.constant.TacticsConstants;
-import com.zkzn.les.tactics.dao.UploadStrategyDao;
 import com.zkzn.les.tactics.util.RedissonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.PostConstruct;
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName DefaultUploadStrategy
