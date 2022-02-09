@@ -1,11 +1,10 @@
 package com.zkzn.les.basicInfo.dao;
 
-import java.util.List;
-
+import com.zkzn.les.basicInfo.pojo.DictItems;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.zkzn.les.basicInfo.pojo.DictItems;
+import java.util.List;
 
 /**.
  * 

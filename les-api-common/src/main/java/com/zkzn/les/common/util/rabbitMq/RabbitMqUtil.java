@@ -1,4 +1,5 @@
 package com.zkzn.les.common.util.rabbitMq;
+
 import com.google.common.collect.Lists;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -6,6 +7,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;

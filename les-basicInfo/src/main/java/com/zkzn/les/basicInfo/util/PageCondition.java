@@ -1,10 +1,10 @@
 package com.zkzn.les.basicInfo.util;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 @Data
 public class PageCondition implements Serializable{

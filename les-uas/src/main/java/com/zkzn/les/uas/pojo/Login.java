@@ -1,10 +1,9 @@
 package com.zkzn.les.uas.pojo;
 
-import java.util.Date;
-
+import com.zkzn.les.uas.util.PageCondition;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
-import com.zkzn.les.uas.util.PageCondition;
+import java.util.Date;
 /**.
  * 用户登录日志管理
  * @author wangzhou

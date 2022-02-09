@@ -1,11 +1,10 @@
 package com.zkzn.les.oms.dao;
 
-import java.util.List;
-import java.util.Map;
-
+import com.zkzn.les.oms.pojo.SingleAllocateDetail;
 import org.apache.ibatis.annotations.Mapper;
 
-import com.zkzn.les.oms.pojo.SingleAllocateDetail;
+import java.util.List;
+import java.util.Map;
 
 
 /**.

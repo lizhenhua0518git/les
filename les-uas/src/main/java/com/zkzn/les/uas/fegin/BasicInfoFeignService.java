@@ -1,12 +1,11 @@
 package com.zkzn.les.uas.fegin;
 
-import java.util.List;
-
+import com.zkzn.les.uas.config.FeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.zkzn.les.uas.config.FeignConfig;
+import java.util.List;
  
 
 /**.

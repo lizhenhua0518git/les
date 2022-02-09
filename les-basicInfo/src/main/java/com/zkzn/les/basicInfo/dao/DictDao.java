@@ -1,14 +1,12 @@
 package com.zkzn.les.basicInfo.dao;
 
-import java.util.List;
-import java.util.Map;
-
+import com.zkzn.les.basicInfo.pojo.Dict;
 import com.zkzn.les.basicInfo.pojo.DictItems;
+import feign.Param;
 import org.apache.ibatis.annotations.Mapper;
 
-import com.zkzn.les.basicInfo.pojo.Dict;
-
-import feign.Param;
+import java.util.List;
+import java.util.Map;
 
 /**.
  *

@@ -1,18 +1,16 @@
 package com.zkzn.les.basicInfo.service.impl;
 
-import java.util.List;
-
+import com.github.pagehelper.PageInfo;
+import com.zkzn.les.basicInfo.dao.DictItemsDao;
+import com.zkzn.les.basicInfo.pojo.DictItems;
+import com.zkzn.les.basicInfo.service.DictItemsService;
+import com.zkzn.les.basicInfo.util.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.github.pagehelper.PageInfo;
-import com.zkzn.les.basicInfo.dao.DictItemsDao;
-import com.zkzn.les.basicInfo.service.DictItemsService;
-import com.zkzn.les.basicInfo.util.PageUtil;
-import com.zkzn.les.basicInfo.pojo.DictItems;
-
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class DictItemsServiceImpl implements DictItemsService {

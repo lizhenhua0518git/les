@@ -5,7 +5,6 @@ import com.zkzn.les.basicInfo.dao.ClientManageDao;
 import com.zkzn.les.basicInfo.pojo.ClientManage;
 import com.zkzn.les.basicInfo.service.ClientManageService;
 import com.zkzn.les.common.util.page.PageUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

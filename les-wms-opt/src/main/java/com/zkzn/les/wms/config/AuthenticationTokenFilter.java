@@ -1,4 +1,5 @@
 package com.zkzn.les.wms.config;
+
 import com.zkzn.les.common.pojo.user.SecurityUser;
 import com.zkzn.les.common.util.lang.BeanUtil;
 import com.zkzn.les.common.util.redis.RedisUtil;
@@ -12,6 +13,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

@@ -1,18 +1,15 @@
 package com.zkzn.les.uas.config;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson.JSONObject;
+import com.zkzn.les.uas.pojo.SecurityUser;
+import com.zkzn.les.uas.pojo.User;
 import com.zkzn.les.uas.service.LoginService;
 import com.zkzn.les.uas.service.OrgnizationService;
 import com.zkzn.les.uas.service.UserService;
+import com.zkzn.les.uas.util.BeanUtil;
+import com.zkzn.les.uas.util.Ecode;
+import com.zkzn.les.uas.util.RedisUtil;
+import com.zkzn.les.uas.util.Result;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,23 +18,19 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.security.oauth2.provider.TokenRequest;
+import org.springframework.security.oauth2.provider.*;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSONObject;
-import com.zkzn.les.uas.pojo.SecurityUser;
-import com.zkzn.les.uas.pojo.User;
-import com.zkzn.les.uas.util.BeanUtil;
-import com.zkzn.les.uas.util.Ecode;
-import com.zkzn.les.uas.util.RedisUtil;
-import com.zkzn.les.uas.util.Result;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 /**.
  * 成功处理器
  * @author wangzhou

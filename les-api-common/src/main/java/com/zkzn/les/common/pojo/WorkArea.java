@@ -11,7 +11,6 @@
 package com.zkzn.les.common.pojo;
 
 import com.zkzn.les.common.util.PageCondition;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

@@ -1,9 +1,8 @@
 package com.zkzn.les.basicInfo.warehouse.pojo;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import com.zkzn.les.basicInfo.util.PageCondition;
-
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 /**
  * .

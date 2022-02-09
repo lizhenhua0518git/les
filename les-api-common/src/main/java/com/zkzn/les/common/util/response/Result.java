@@ -1,7 +1,9 @@
 package com.zkzn.les.common.util.response;
+
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import com.zkzn.les.common.util.json.JsonUtil;
+
 import java.util.Map;
 public class Result {
 	private Integer code;

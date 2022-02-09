@@ -1,13 +1,12 @@
 package com.zkzn.les.common.pojo;
 
-import java.util.Date;
-
 import com.zkzn.les.common.util.PageCondition;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.util.Date;
 /**
  * .
  *

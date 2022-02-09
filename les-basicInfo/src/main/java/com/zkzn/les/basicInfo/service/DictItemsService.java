@@ -1,11 +1,9 @@
 package com.zkzn.les.basicInfo.service;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import com.github.pagehelper.PageInfo;
 import com.zkzn.les.basicInfo.pojo.DictItems;
+
+import java.util.List;
 
 /**.
  * 

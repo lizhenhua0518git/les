@@ -1,8 +1,6 @@
 package com.zkzn.les.basicInfo;
 
-import com.zkzn.les.basicInfo.config.ImgToBase64Servlet;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.cache.annotation.EnableCaching;

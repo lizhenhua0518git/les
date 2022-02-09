@@ -4,8 +4,6 @@ import com.zkzn.les.stock.thread.RequestProcessThreadPool;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
 /**
  * @ClassName InitListeren

@@ -1,13 +1,12 @@
 package com.zkzn.les.common.pojo;
 
-import java.util.Date;
-import java.util.List;
-
 import com.zkzn.les.common.util.PageCondition;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.util.Date;
+import java.util.List;
 
 /**.
  * 
